@@ -3,3 +3,6 @@
 URxvt.loginShell: true
 URxvt*scrollBar: false
 URxvt*font: xft:Hack:pixelsize=12
+URxvt.iso14755: False
+URxvt.perl-ext-common: default,clipboard
+URxvt.keysym.Control-Shift-V: perl:clipboard:paste
