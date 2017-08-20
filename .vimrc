@@ -36,6 +36,7 @@ Plug 'tpope/vim-commentary'
 Plug 'nanotech/jellybeans.vim'
 Plug 'scrooloose/syntastic'
 Plug 'kien/ctrlp.vim'
+Plug 'tomlion/vim-solidity'
 
 call plug#end()
 
