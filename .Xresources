@@ -1,0 +1,5 @@
+*background: #222222
+*foreground: #FFFFFF
+URxvt.loginShell: true
+URxvt*scrollBar: false
+URxvt*font: xft:Hack:pixelsize=12
