@@ -1,0 +1,8 @@
+{
+    "workbench.colorTheme": "One Dark Pro",
+    "workbench.iconTheme": "vs-minimal",
+    "vim.disableAnnoyingNeovimMessage": true,
+    "workbench.startupEditor": "newUntitledFile",
+    "editor.scrollBeyondLastLine": false,
+    "editor.rulers": [120]
+}
