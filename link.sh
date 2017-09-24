@@ -17,3 +17,17 @@ if [ -f $HOME/.config/i3/config ]; then
 else
 	echo "No i3 config file found"
 fi
+
+if [ $OSTYPE == "darwin"* ]; then
+    if [ -d $HOME/Library/Application\ Support/Code ]; then
+        ln $HOME/Library/Application\ Support/Code/User/settings.json $HOME/Projects/dotfiles
+    else 
+        echo "No vscode settings found on macOS"
+    fi
+elif [ $OSTYPE == "linux-gnu" ]; then
+    if [ -d $HOME/.config/Code ]; then
+        ln $HOME/.config/Code/User/settings.json $HOME/Projects/dotfiles
+    else
+        echo "No vscode settings found on Linux"
+    fi    
+fi 
