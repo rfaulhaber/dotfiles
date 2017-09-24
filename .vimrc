@@ -5,6 +5,11 @@ cmap w!! w !sudo tee > /dev/null %
 
 " set line numbers
 set number
+set relativenumber
+
+" set highlighting
+set hlsearch
+set incsearch
 
 " replace tabs with four spaces
 filetype plugin indent on
