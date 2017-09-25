@@ -11,6 +11,9 @@ set relativenumber
 set hlsearch
 set incsearch
 
+" ignore case while searching
+set ignorecase
+
 " replace tabs with four spaces
 filetype plugin indent on
 set tabstop=4
