@@ -1,4 +1,4 @@
-{
+    "workbench.iconTheme": "vs-minimal",
     "vim.disableAnnoyingNeovimMessage": true,
     "files.autoSave": "onFocusChange",
     "atomKeymap.promptV3Features": true,

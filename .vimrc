@@ -45,6 +45,7 @@ Plug 'nanotech/jellybeans.vim'
 Plug 'scrooloose/syntastic'
 Plug 'kien/ctrlp.vim'
 Plug 'tomlion/vim-solidity'
+Plug 'terryma/vim-multiple-cursors'
 
 call plug#end()
 
