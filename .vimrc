@@ -46,21 +46,24 @@ Plug 'scrooloose/syntastic'
 Plug 'kien/ctrlp.vim'
 Plug 'tomlion/vim-solidity'
 Plug 'terryma/vim-multiple-cursors'
+Plug 'rakr/vim-one'
 
 call plug#end()
 
 " plugin config
 
+colorscheme one
+set background=dark " for the dark version
+" set background=light " for the light version
+"
 " airline config
 set laststatus=2
 set ttimeoutlen=50
+let g:airline_theme='one'
 
 " jellybean config
-colo jellybeans
-set t_Co=256
-let g:jellybeans_overrides = {
-			\    'background': { 'guibg': '000000' },
-			\}
+"colo jellybeans
+"set t_Co=256
 
 " syntastic config
 set statusline+=%#warningmsg#
