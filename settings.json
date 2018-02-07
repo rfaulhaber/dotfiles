@@ -1,8 +1,14 @@
-{
-    "workbench.colorTheme": "Darktooth",
     "workbench.iconTheme": "vs-minimal",
     "vim.disableAnnoyingNeovimMessage": true,
-    "workbench.startupEditor": "newUntitledFile",
+    "files.autoSave": "onFocusChange",
+    "atomKeymap.promptV3Features": true,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.formatOnPaste": true,
     "editor.scrollBeyondLastLine": false,
-    "editor.rulers": [120]
+    "workbench.colorTheme": "Nord",
+    "editor.lineNumbers": "relative",
+    "editor.rulers": [
+        120
+    ],
+    "window.zoomLevel": 0
 }
