@@ -1,3 +1,4 @@
+{
     "workbench.iconTheme": "vs-minimal",
     "vim.disableAnnoyingNeovimMessage": true,
     "files.autoSave": "onFocusChange",
@@ -5,10 +6,16 @@
     "editor.multiCursorModifier": "ctrlCmd",
     "editor.formatOnPaste": true,
     "editor.scrollBeyondLastLine": false,
-    "workbench.colorTheme": "Nord",
+    "workbench.colorTheme": "Adapta Nokto",
     "editor.lineNumbers": "relative",
     "editor.rulers": [
         120
     ],
-    "window.zoomLevel": 0
+    "window.zoomLevel": 0,
+    "explorer.confirmDragAndDrop": false,
+    "git.autofetch": true,
+    "prettier.printWidth": 120,
+    "prettier.singleQuote": true,
+    "prettier.tabWidth": 5,
+    "editor.formatOnSave": true
 }
