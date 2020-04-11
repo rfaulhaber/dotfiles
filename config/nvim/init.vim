@@ -1,3 +1,19 @@
+" plugins
+call plug#begin(stdpath('data') . '/plugged')
+Plug 'scrooloose/syntastic'
+Plug 'rust-lang/rust.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'editorconfig/editorconfig-vim'
+Plug 'tpope/vim-surround'
+Plug 'vim-airline/vim-airline'
+Plug 'rust-lang/rust.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+call plug#end()
+
+" plugin config
+let g:rust_recommended_style = 0
+
 " vim config
 
 " alias save as sudo to w!!
@@ -21,10 +37,14 @@ nnoremap <C-H> <C-W><C-H>
 set splitbelow
 set splitright
 
-" plugins
-call plug#begin(stdpath('data') . '/plugged')
-Plug 'tpope/vim-surround'
-Plug 'scrooloose/syntastic'
-Plug 'vim-airline/vim-airline'
-Plug 'rust-lang/rust.vim'
-call plug#end()
+" indenting
+set autoindent
+set smartindent
+set noexpandtab " Make sure that every file uses real tabs, not spaces
+set shiftround  " Round indent to multiple of 'shiftwidth'
+set ts=4
+
+" Set the tab width
+let s:tabwidth=4
+exec 'set tabstop='    .s:tabwidth
+exec 'set shiftwidth=' .s:tabwidth
