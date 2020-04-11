@@ -1,0 +1,35 @@
+{
+    "workbench.iconTheme": "vscode-great-icons",
+    "vim.disableAnnoyingNeovimMessage": true,
+    "files.autoSave": "onFocusChange",
+    "atomKeymap.promptV3Features": true,
+    "editor.multiCursorModifier": "ctrlCmd",
+	"editor.formatOnPaste": true,
+    "workbench.colorTheme": "Overnight",
+    "editor.lineNumbers": "on",
+    "editor.rulers": [120],
+    "window.zoomLevel": 0,
+    "explorer.confirmDragAndDrop": false,
+    "git.autofetch": true,
+    "prettier.printWidth": 120,
+    "prettier.singleQuote": true,
+    "prettier.tabWidth": 4,
+    "editor.formatOnSave": true,
+    "[javascript]": {
+        "editor.formatOnSave": true
+    },
+    "gitlens.advanced.messages": {
+        "suppressShowKeyBindingsNotice": true
+    },
+    "gitlens.historyExplorer.enabled": true,
+    "editor.insertSpaces": false,
+    "gitlens.views.fileHistory.enabled": true,
+    "gitlens.views.lineHistory.enabled": true,
+    "rust.clippy_preference": "on",
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "terminal.integrated.fontFamily": "Roboto Mono for Powerline",
+    "java.configuration.checkProjectSettingsExclusions": false,
+	"editor.detectIndentation": false,
+	"todo-tree.tree.showScanModeButton": false
+}
