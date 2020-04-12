@@ -6,13 +6,22 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'editorconfig/editorconfig-vim'
 Plug 'tpope/vim-surround'
 Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'rust-lang/rust.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-vinegar'
+Plug 'chriskempson/base16-vim'
 call plug#end()
 
 " plugin config
 let g:rust_recommended_style = 0
+let g:airline_theme='base16'
+
+" color scheme
+colorscheme base16-default-dark
+set termguicolors
 
 " vim config
 
