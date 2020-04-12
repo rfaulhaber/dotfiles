@@ -1,8 +1,0 @@
-*background: #222222
-*foreground: #FFFFFF
-URxvt.loginShell: true
-URxvt*scrollBar: false
-URxvt*font: xft:Ubuntu Mono derivative Powerline:pixelsize=15
-URxvt.iso14755: False
-URxvt.perl-ext-common: default,clipboard
-URxvt.keysym.Control-Shift-V: perl:clipboard:paste

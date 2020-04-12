@@ -1,2 +1,2 @@
 # dotfiles
-My personal dotfiles. Contains config files for vim, i3, and urxvt.
+My personal dotfiles. Contains config files for neovim, alacritty, bswpm, among others.
