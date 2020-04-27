@@ -54,7 +54,7 @@ set shiftround  " Round indent to multiple of 'shiftwidth'
 set ts=4
 
 " misc
-set audochdir
+set autochdir
 
 " Set the tab width
 let s:tabwidth=4
