@@ -53,6 +53,9 @@ set noexpandtab " Make sure that every file uses real tabs, not spaces
 set shiftround  " Round indent to multiple of 'shiftwidth'
 set ts=4
 
+" misc
+set audochdir
+
 " Set the tab width
 let s:tabwidth=4
 exec 'set tabstop='    .s:tabwidth
