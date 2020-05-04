@@ -13,11 +13,19 @@ Plug 'junegunn/fzf.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-vinegar'
 Plug 'chriskempson/base16-vim'
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 call plug#end()
 
 " plugin config
 let g:rust_recommended_style = 0
 let g:airline_theme='base16'
+
+let g:LanguageClient_serverCommands = {
+\ 'rust': ['rust-analyzer'],
+\ }
 
 " color scheme
 colorscheme base16-default-dark
@@ -60,3 +68,6 @@ set autochdir
 let s:tabwidth=4
 exec 'set tabstop='    .s:tabwidth
 exec 'set shiftwidth=' .s:tabwidth
+
+" open dotfile
+nnoremap <C-D> :tabe ~/.config/nvim/init.vim
