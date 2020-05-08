@@ -52,6 +52,8 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
+(load! "./scripts/buffer-move.el")
+
 ;; custom bindings
 (map!
  :leader
@@ -68,4 +70,9 @@
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 
 ;; custom variable settings
-(setq diary-file (concat org-directory "/diary.org"))
+(setq diary-file "~/org/diary")
+
+;; after hooks
+(after! org
+  (setq org-agenda-files (directory-files "~/org" t "[A-Za-z0-9]+"))
+)
