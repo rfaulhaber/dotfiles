@@ -51,3 +51,6 @@
 (package! org-trello)
 (package! org-super-agenda)
 (package! dap-mode)
+(package! org-roam)
+(package! deft)
+(package! nov)
