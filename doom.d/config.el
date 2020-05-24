@@ -81,8 +81,14 @@
 ;; after hooks
 (after! org
   (setq org-agenda-files (directory-files "~/org" t "[A-Za-z0-9]+"))
+  (load! "./scripts/org-templates.el")
 )
 
 (after! deft
   (setq deft-directory "~/org")
+  (setq deft-recursive t)
+)
+
+(after! nov
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 )

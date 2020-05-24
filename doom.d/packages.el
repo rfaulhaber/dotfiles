@@ -54,3 +54,5 @@
 (package! org-roam)
 (package! deft)
 (package! nov)
+(package! org-cliplink)
+(package! org-download)
