@@ -68,6 +68,8 @@
 
 ;; custom requires
 (require 'dap-lldb)
+(require 'org-trello)
+(require 'org-roam)
 
 ;; plugin config
 ;; hooks
@@ -91,4 +93,8 @@
 
 (after! nov
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+)
+
+(after! org-roam
+  (setq org-roam-directory "~/org/roam")
 )

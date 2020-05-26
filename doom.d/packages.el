@@ -56,3 +56,4 @@
 (package! nov)
 (package! org-cliplink)
 (package! org-download)
+(package! org-ref)
