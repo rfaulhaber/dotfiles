@@ -68,8 +68,7 @@
 
 ;; custom requires
 (require 'dap-lldb)
-(require 'org-trello)
-(require 'org-roam)
+(require 'org-ref)
 
 ;; plugin config
 ;; hooks
@@ -79,10 +78,12 @@
           ))
 
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
+(add-hook 'after-init-hook 'org-roam-mode)
+(add-hook 'after-init-hook 'org-trello-mode)
 
 ;; after hooks
 (after! org
-  (setq org-agenda-files (directory-files "~/org" t "[A-Za-z0-9]+"))
+  (setq org-agenda-files "~/org/todo.org")
   (load! "./scripts/org-templates.el")
 )
 
@@ -97,4 +98,14 @@
 
 (after! org-roam
   (setq org-roam-directory "~/org/roam")
+)
+
+(after! org-ref
+(setq org-ref-bibliography-notes "~/org/bibliography/notes.org"
+      org-ref-default-bibliography '("~/org/bibliography/references.bib")
+      org-ref-pdf-directory "~/org/bibliography/bibtex-pdfs/")
+)
+
+(after! org-journal
+  (setq org-journal-dir "~/org/journal")
 )
