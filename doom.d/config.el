@@ -66,9 +66,7 @@
  "f t" #'treemacs
  )
 
-;; custom requires
-(require 'dap-lldb)
-(require 'org-ref)
+(require 'org-journal)
 
 ;; plugin config
 ;; hooks
@@ -100,12 +98,11 @@
   (setq org-roam-directory "~/org/roam")
 )
 
-(after! org-ref
-(setq org-ref-bibliography-notes "~/org/bibliography/notes.org"
-      org-ref-default-bibliography '("~/org/bibliography/references.bib")
-      org-ref-pdf-directory "~/org/bibliography/bibtex-pdfs/")
-)
-
 (after! org-journal
   (setq org-journal-dir "~/org/journal")
+)
+
+;; see org-ref for use of these variables
+(setq org-ref-bibliography-notes "~/org/bibliography/notes.org"
+      org-ref-default-bibliography '("~/org/bibliography/references.bib")
 )

@@ -57,3 +57,5 @@
 (package! org-download)
 (package! org-ref)
 (package! org-journal)
+(package! ox-pandoc)
+(package! ox-hugo)
