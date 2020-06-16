@@ -6,8 +6,12 @@
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
+
 (setq user-full-name "Ryan Faulhaber"
-      user-mail-address "faulhaberryan@gmail.com")
+      user-mail-address "faulhaberryan@gmail.com"
+      calendar-latitude 41.49
+      calendar-longitude 81.69
+      calendar-location-name "Cleveland, OH")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
@@ -54,19 +58,39 @@
 ;; they are implemented.
 
 ;; emcas config
-;; custom variable settings
-(setq diary-file "~/org/diary.org")
 
-;; custom scripts
-(load! "./scripts/buffer-move.el")
+;; requires
+(require 'org-journal)
+(require 'ob-typescript)
+(require 'ox-reveal)
 
 ;; custom bindings
 (map!
- :leader
- "f t" #'treemacs
- )
+:leader
+"f t" #'treemacs
+)
 
-(require 'org-journal)
+;; custom variable settings
+;; org-agenda
+(setq org-agenda-files (list "~/org/todo.org"))
+
+;; deft
+(setq deft-directory "~/org")
+(setq deft-recursive t)
+
+;; org-roam
+(setq org-roam-directory "~/org/roam")
+
+;; org-journal
+(setq org-journal-dir "~/org/journal")
+;;
+;; org-ref
+(setq org-ref-bibliography-notes "~/org/bibliography/notes.org"
+      org-ref-default-bibliography '("~/org/bibliography/references.bib")
+)
+
+;; custom scripts
+(load! "./scripts/buffer-move.el")
 
 ;; plugin config
 ;; hooks
@@ -81,28 +105,26 @@
 
 ;; after hooks
 (after! org
-  (setq org-agenda-files "~/org/todo.org")
   (load! "./scripts/org-templates.el")
-)
-
-(after! deft
-  (setq deft-directory "~/org")
-  (setq deft-recursive t)
 )
 
 (after! nov
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 )
 
-(after! org-roam
-  (setq org-roam-directory "~/org/roam")
-)
+;; load languages for org-babel
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (typescript . t)
+   (js . t)
+   ))
 
-(after! org-journal
-  (setq org-journal-dir "~/org/journal")
-)
-
-;; see org-ref for use of these variables
-(setq org-ref-bibliography-notes "~/org/bibliography/notes.org"
-      org-ref-default-bibliography '("~/org/bibliography/references.bib")
-)
+;; eshell config
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (setenv "TERM" "xterm-256color")))
+(add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
+(add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
+(setq eshell-output-filter-functions
+     (remove 'eshell-handle-ansi-color eshell-output-filter-functions))

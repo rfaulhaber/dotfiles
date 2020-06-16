@@ -59,3 +59,5 @@
 (package! org-journal)
 (package! ox-pandoc)
 (package! ox-hugo)
+(package! ob-typescript)
+(package! ox-reveal)
