@@ -72,7 +72,7 @@
 
 ;; custom variable settings
 ;; org-agenda
-(setq org-agenda-files (list "~/org/todo.org"))
+(setq org-agenda-files (list "~/org/todo.org" "~/org/habits.org"))
 
 ;; deft
 (setq deft-directory "~/org")
@@ -121,10 +121,6 @@
    ))
 
 ;; eshell config
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (setenv "TERM" "xterm-256color")))
-(add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
-(add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
-(setq eshell-output-filter-functions
-     (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+(add-hook 'eshell-preoutput-filter-functions 'ansi-color-filter-apply)
+(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
