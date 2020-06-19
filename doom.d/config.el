@@ -121,6 +121,8 @@
    ))
 
 ;; eshell config
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-(add-hook 'eshell-preoutput-filter-functions 'ansi-color-filter-apply)
-(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
+(add-hook 'eshell-preoutput-filter-functions 'xterm-color-filter)
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (setenv "TERM" "xterm-256color")))
+(add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
