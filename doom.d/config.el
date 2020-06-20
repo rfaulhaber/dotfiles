@@ -106,6 +106,7 @@
 ;; after hooks
 (after! org
   (load! "./scripts/org-templates.el")
+  (add-to-list 'org-modules 'org-habit t)
 )
 
 (after! nov
