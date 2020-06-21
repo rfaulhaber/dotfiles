@@ -1,0 +1,11 @@
+#+TITLE: README
+
+My dotfiles. Contains configurations for:
+- [[file:config/alacritty/][alacritty]]
+- [[file:config/nvim/][neovim]]
+- [[file:config/bspwm/][bspwm]] and [[file:config/sxhkd/][sxhkd]]
+- [[file:config/polybar/][polybar]]
+- [[file:doom.d/][Emacs]]
+
+This repo is structured such that it's easy to set up links from the home
+directory to here with minimal renaming or guesswork.
