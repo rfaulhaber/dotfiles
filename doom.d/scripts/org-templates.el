@@ -2,14 +2,19 @@
 ;; read about org capture templates here:
 ;; https://orgmode.org/manual/Capture-templates.html
 
+(setq original-capture-templates org-capture-templates)
+
+;; for debugging capture templates...
+(defun reset-capture-templates ()
+    (setq org-capture-templates original-capture-templates))
+
 (add-to-list 'org-capture-templates
-              '("r" "Reading")
-                )
+              '("r" "Reading"))
 (add-to-list 'org-capture-templates
-              '("ra" "Annotation" entry (file "~/org/notes/books/refile.org")
-                "** %T\n%?"
-                :empty-lines 1))
+              '("ri" "Insert link"))
 (add-to-list 'org-capture-templates
-              '("rc" "New chapter" entry (file "~/org/notes/books/refile.org")
-                "* %?"
-                :empty-lines 1))
+             '("ria" "Insert article" entry (file+headline "~/org/reading.org" "Articles")
+              "** [ ] %(org-cliplink-capture)\n" :immediate-finish t))
+(add-to-list 'org-capture-templates
+             '("rib" "Insert book" entry (file+headline "~/org/reading.org" "Books")
+              "** [ ] %(org-cliplink-capture)\n" :immediate-finish t))
