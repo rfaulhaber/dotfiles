@@ -109,6 +109,7 @@
 
 ;; custom scripts
 (load! "./scripts/buffer-move.el")
+(load! "./scripts/self.el")
 
 ;; plugin config
 ;; hooks
