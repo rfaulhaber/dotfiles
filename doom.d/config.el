@@ -8,7 +8,7 @@
 ;; clients, file templates and snippets.
 
 (setq user-full-name "Ryan Faulhaber"
-      user-mail-address "faulhaberryan@gmail.com"
+      user-mail-address "ryan@sys9.net"
       calendar-latitude 41.49
       calendar-longitude 81.69
       calendar-location-name "Cleveland, OH")
@@ -60,19 +60,19 @@
 ;; emcas config
 
 ;; requires
-(require 'org-journal)
 (require 'ob-typescript)
 (require 'ox-reveal)
 
 ;; custom bindings
-(map!
-:leader
-"f t" #'treemacs
-)
+(map! :leader "f t" #'treemacs)
+(map! :leader "n r t" #'org-roam-buffer-toggle-display)
+(map! :leader "m o" #'mu4e)
+(map! :leader "o w" #'self/eww-open-url-window-right)
 
 ;; custom variable settings
 ;; org-agenda
-(setq org-agenda-files (list "~/org/todo.org" "~/org/habits.org"))
+(setq org-agenda-files (list "~/org/todo.org"
+                             "~/org/habits.org"))
 
 ;; deft
 (setq deft-directory "~/org")
@@ -82,12 +82,30 @@
 (setq org-roam-directory "~/org/roam")
 
 ;; org-journal
-(setq org-journal-dir "~/org/journal")
+(setq
+ org-journal-dir "~/org/journal"
+ org-journal-file-format "%Y%m%d.org")
+
 ;;
 ;; org-ref
 (setq org-ref-bibliography-notes "~/org/bibliography/notes.org"
       org-ref-default-bibliography '("~/org/bibliography/references.bib")
 )
+;; nov config
+(defun nov-setup ()
+  (setq nov-text-width t)
+  (setq visual-fill-column-center-text t)
+  (face-remap-add-relative 'variable-pitch :family "Georgia" :height 1.5))
+
+;; mu4e config
+(setq
+  mu4e-sent-folder   "/Sent"
+  mu4e-drafts-folder "/Drafts"
+  mu4e-trash-folder  "/Trash"
+  mu4e-refile-folder "/Archive"
+  smtpmail-default-smtp-server "mail.sys9.net"
+  smtpmail-smtp-server "mail.sys9.net"
+  smtpmail-smtp-service 587)
 
 ;; custom scripts
 (load! "./scripts/buffer-move.el")
@@ -102,15 +120,16 @@
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 (add-hook 'after-init-hook 'org-roam-mode)
 (add-hook 'after-init-hook 'org-trello-mode)
+(add-hook 'nov-mode-hook 'nov-setup)
+(add-hook 'nov-mode-hook 'visual-line-mode)
+(add-hook 'nov-mode-hook 'visual-fill-column-mode)
+
+;; auto-mode-alist config
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
 ;; after hooks
 (after! org
   (load! "./scripts/org-templates.el")
-  (add-to-list 'org-modules 'org-habit t)
-)
-
-(after! nov
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 )
 
 ;; load languages for org-babel

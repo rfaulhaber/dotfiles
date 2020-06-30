@@ -56,3 +56,5 @@
 (package! org-ref)
 (package! ob-typescript)
 (package! ox-reveal)
+(package! indium)
+(package! md4rd)
