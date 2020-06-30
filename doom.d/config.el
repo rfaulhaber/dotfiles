@@ -68,6 +68,7 @@
 (map! :leader "n r t" #'org-roam-buffer-toggle-display)
 (map! :leader "m o" #'mu4e)
 (map! :leader "o w" #'self/eww-open-url-window-right)
+(map! :leader "e" #'elfeed)
 
 ;; custom variable settings
 ;; org-agenda
@@ -106,6 +107,9 @@
   smtpmail-default-smtp-server "mail.sys9.net"
   smtpmail-smtp-server "mail.sys9.net"
   smtpmail-smtp-service 587)
+
+;; elfeed config
+(setq rmh-elfeed-org-files (list (concat org-directory "/elfeed.org")))
 
 ;; custom scripts
 (load! "./scripts/buffer-move.el")
