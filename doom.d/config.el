@@ -28,8 +28,8 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-moonlight)
-;; (setq doom-theme 'doom-laserwave)
+;;(setq doom-theme 'doom-moonlight)
+(setq doom-theme 'doom-vibrant)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -63,12 +63,18 @@
 (require 'ob-typescript)
 (require 'ox-reveal)
 
+;; custom scripts
+(load! "./scripts/buffer-move.el")
+(load! "./scripts/self.el")
+
 ;; custom bindings
 (map! :leader "f t" #'treemacs)
 (map! :leader "n r t" #'org-roam-buffer-toggle-display)
 (map! :leader "m o" #'mu4e)
 (map! :leader "o w" #'self/eww-open-url-window-right)
-(map! :leader "e" #'elfeed)
+(map! :leader "w e" #'elfeed)
+(map! :leader "c l l" #'link-hint-copy-link)
+(map! :leader "c l p" #'link-hint-copy-link-at-point)
 
 ;; custom variable settings
 ;; org-agenda
@@ -110,10 +116,6 @@
 
 ;; elfeed config
 (setq rmh-elfeed-org-files (list (concat org-directory "/elfeed.org")))
-
-;; custom scripts
-(load! "./scripts/buffer-move.el")
-(load! "./scripts/self.el")
 
 ;; plugin config
 ;; hooks
