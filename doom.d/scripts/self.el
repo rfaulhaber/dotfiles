@@ -6,7 +6,6 @@
   "Opens URL in eww-mode in a new window to the right."
   (interactive "sURL: ")
   (let* ((new-buf-name (format "*%s*" url))
-         (new-buf (generate-new-buffer-name new-buf-name))
          (new-window (split-window-right)))
     (with-selected-window new-window
       (switch-to-buffer new-buf-name)
