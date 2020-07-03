@@ -1,4 +1,4 @@
-#+TITLE: README
+#+TITLE: dotfiles
 
 My dotfiles. Contains configurations for:
 - [[file:config/alacritty/][alacritty]]

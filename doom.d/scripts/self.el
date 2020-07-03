@@ -19,3 +19,14 @@
   (let ((new-window (split-window-below)))
     (with-selected-window new-window
       (switch-to-buffer (format "*%s*" (make-temp-name "scratch-"))))))
+;;
+;; this comes from reddit. thank you r/emacs!
+(defun self/org-md-paragraph-unfill (&rest args)
+  "Unfill CONTENTS, the `cadr' in ARGS."
+  (let* ((actual-args (car args))
+         (org-el (nth 0 actual-args))
+         (contents (nth 1 actual-args))
+         (info (nth 2 actual-args)))
+    ;; Unfill contents
+    (setq contents (concat (mapconcat 'identity (split-string contents) " ") "\n"))
+    (list org-el contents info)))
