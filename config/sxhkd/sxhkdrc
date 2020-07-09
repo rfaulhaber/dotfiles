@@ -7,12 +7,25 @@ super + Return
 	alacritty
 
 # program launcher
+# super + @space
+# 	dmenu_run
+
 super + @space
-	dmenu_run
+	rofi -show drun -font "Hack Nerd Font Medium 14"
+
+super + d
+	rofi -show window -font "Hack Nerd Font Medium 14"
+
 
 # make sxhkd reload its configuration files:
 super + Escape
 	pkill -USR1 -x sxhkd
+
+super + e
+	  emacsclient -c
+
+super + b
+	  firefox-developer-edition
 
 #
 # bspwm hotkeys

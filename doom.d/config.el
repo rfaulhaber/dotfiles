@@ -61,7 +61,6 @@
 
 ;; requires
 (require 'ob-typescript)
-(require 'ox-reveal)
 
 ;; custom scripts
 (load! "./scripts/buffer-move.el")

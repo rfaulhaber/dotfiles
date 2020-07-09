@@ -1,0 +1,22 @@
+[module/wlan]
+type = internal/network
+interface = wlp0s20f3
+interval = 1.0
+
+format-connected = <ramp-signal> <label-connected>
+format-connected-padding = 1
+;format-connected-prefix = %{T3}直%{T-}
+format-connected-prefix-foreground = ${colors.nord-green}
+label-connected = "  %downspeed%"
+label-connected-foreground = ${colors.nord-green}
+
+format-disconnected = <label-disconnected>
+format-disconnected-padding = 1
+;format-disconnected-prefix = %{T3}睊%{T-}
+label-disconnected = %{T3}睊%{T-}
+label-disconnected-foreground = ${colors.nord-red}
+
+ramp-signal-0 = %{T3}直%{T-}
+ramp-signal-foreground = ${colors.nord-green}
+
+; vim:ft=dosini

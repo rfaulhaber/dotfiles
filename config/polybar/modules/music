@@ -1,0 +1,14 @@
+[module/music]
+type = internal/mpd
+host = localhost
+port = 6600
+interval = 2
+
+format-online = <label-song>
+format-online-prefix-padding = 0
+
+label-song 		= " %artist% - %title% "
+label-song-padding = 0
+label-song-foreground = ${colors.nord-blue-light}
+
+; vim:ft=dosini

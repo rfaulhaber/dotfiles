@@ -5,7 +5,7 @@
 (defun self/eww-open-url-window-right (url)
   "Opens URL in eww-mode in a new window to the right."
   (interactive "sURL: ")
-  (let* ((new-buf-name (format "*%s*" url))
+  (let* ((new-buf-name "*article*")
          (new-window (split-window-right)))
     (with-selected-window new-window
       (switch-to-buffer new-buf-name)
@@ -19,7 +19,7 @@
   (let ((new-window (split-window-below)))
     (with-selected-window new-window
       (switch-to-buffer (format "*%s*" (make-temp-name "scratch-"))))))
-;;
+
 ;; this comes from reddit. thank you r/emacs!
 (defun self/org-md-paragraph-unfill (&rest args)
   "Unfill CONTENTS, the `cadr' in ARGS."
