@@ -2,8 +2,8 @@
 type = internal/date
 interval = 1
 
-time = " %a, %b %d %H:%M:%S"
-time-alt = " %H:%M"
+time = " %a, %b %d %I:%M:%S %p"
+time-alt = " %I:%M"
 
 format-padding = 1
 format-prefix = %{T3}%{T-}

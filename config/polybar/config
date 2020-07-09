@@ -56,7 +56,7 @@ line-color = #f00
 ; modules
 modules-left = bspwm xwindow
 modules-right = spotify cpu memory pulseaudio date
-module-margin = 0.5
+module-margin = 0
 
 ; tray
 tray-position = right

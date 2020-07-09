@@ -3,7 +3,7 @@ type = internal/memory
 interval = 1
 
 ;format = <ramp-used> <bar-used>
-format = <ramp-used> <label>
+format = <ramp-used><label>
 format-padding = 1
 ;format-prefix = %{T3}﬙%{T-}
 format-prefix-foreground = ${colors.vibrant-cyan}
