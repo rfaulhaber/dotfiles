@@ -29,27 +29,20 @@ include-file = /home/$USER/.config/polybar/modules/pulseaudio
 include-file = /home/$USER/.config/polybar/modules/session
 include-file = /home/$USER/.config/polybar/modules/spotify
 
-[colors]
-background = #222
-background-alt = #444
-foreground = #dfdfdf
-foreground-alt = #555
-primary = #ffb52a
-secondary = #e60053
-alert = #bd2c40
-
 [bar/main]
 enable-ipc = true
+
+background     = ${colors.vibrant-bg}
+background-alt = ${colors.vibrant-bg-alt}
+foreground     = ${colors.vibrant-fg}
+foreground-alt = ${colors.vibrant-fg-alt}
+
 
 ; size
 width = 100%
 height = 30
 bottom = false
 fixed-center = true
-
-; colors
-background = ${colors.background}
-foreground = ${colors.foreground}
 
 ; fonts
 font-0 = "Hack Nerd Font:style=Medium:size=12;3"

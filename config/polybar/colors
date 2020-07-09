@@ -1,44 +1,42 @@
 [colors]
 black = #000
-white = #FFF
+white = #DFDFDF
 
-trans = #00000000
+trans      = #00000000
 semi-trans = #55000000
 
-bg = #000
-fg = #FFF
+primary   = #ffb52a
+secondary = #e60053
+alert     = #bd2c40
 
 success = #A3BE8C
 warning = #EBCB8B
-danger = #BF616A
+danger  = #BF616A
 
-active = {nord-yellow}
-inactive = {nord-blue}
-empty = {nord-purple}
+vibrant-bg        = #242730
+vibrant-bg-alt    = #2a2e38
+vibrant-fg        = #bbc2cf
+vibrant-fg-alt    = #5D656B
+vibrant-grey      = #484854
+vibrant-red       = #ff665c
+vibrant-orange    = #e69055
+vibrant-green     = #7bc275
+vibrant-teal      = #4db5bd
+vibrant-yellow    = #FCCE7B
+vibrant-blue      = #51afef
+vibrant-dark-blue = #1f5582
+vibrant-magenta   = #C57BDB
+vibrant-violet    = #a991f1
+vibrant-cyan      = #5cEfFF
+vibrant-dark-cyan = #6A8FBF
 
-polar-night-1 = #2E3440
-polar-night-2 = #3B4252
-polar-night-3 = #434C5E
-polar-night-4 = #4C566A
-
-snow-storm-1 = #D8DEE9
-snow-storm-2 = #E5E9F0
-snow-storm-3 = #ECEFF4
-
-nord-blue = #81A1C1
-nord-blue-light = #88C0D0
-nord-green = #A3BE8C
-nord-purple = #B48EAD
-nord-red = #BF616A
-nord-yellow = #EBCB8B
-
-code = #CAE8D5
-filemanager = #ABD6BB
-firefox = #FFEC4A
-bspwm = #29B488
+code          = #CAE8D5
+filemanager   = #ABD6BB
+firefox       = #FFEC4A
+bspwm         = #29B488
 google-chrome = #4C8BF5
-launcher = #142D4C
-session = #DD5144
-steam = #00ADEE
-terminal = #63FC01
-window = #EAD673
+launcher      = #142D4C
+session       = #DD5144
+steam         = #00ADEE
+terminal      = #63FC01
+window        = #EAD673

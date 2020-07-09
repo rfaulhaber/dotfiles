@@ -4,4 +4,4 @@ interval = 1
 format-prefix =
 format = <label>
 exec = python ~/.config/polybar/spotify.py -f '{play_pause} {artist}: {song}'
-format-underline = #1db954
+format-underline = {colors.vibrant-green}

@@ -7,6 +7,6 @@ time-alt = " %H:%M"
 
 format-padding = 1
 format-prefix = %{T3}%{T-}
-format-prefix-foreground = ${colors.nord-blue-light}
+format-prefix-foreground = ${colors.vibrant-dark-cyan}
 label = %{T2}%time%%{T-}
-label-foreground = ${colors.nord-blue-light}
+label-foreground = ${colors.white}

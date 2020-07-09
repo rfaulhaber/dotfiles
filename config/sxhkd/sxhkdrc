@@ -13,6 +13,9 @@ super + Return
 super + @space
 	rofi -show drun -font "Hack Nerd Font Medium 14"
 
+super + shift + @space
+	rofi -show run -font "Hack Nerd Font Medium 14"
+
 super + d
 	rofi -show window -font "Hack Nerd Font Medium 14"
 
