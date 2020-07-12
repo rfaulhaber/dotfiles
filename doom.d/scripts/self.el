@@ -30,3 +30,27 @@
     ;; Unfill contents
     (setq contents (concat (mapconcat 'identity (split-string contents) " ") "\n"))
     (list org-el contents info)))
+
+
+(defun self/org-roam-subtree-to-new-file ()
+  "Moves current Org subtree to new org-roam file. Kind of hacky!"
+  (interactive)
+  (let* ((el (org-element-at-point))
+         (title (org-element-property :title el))
+         (type (car el))
+         (header-start (org-element-property :begin el))
+         (el-start (org-element-property :contents-begin el))
+         (el-end (org-element-property :contents-end el)))
+    (if (not (eq 'headline type))
+        (user-error "Not at header")
+      (progn
+        (kill-region el-start el-end)
+        (goto-char header-start)
+        (kill-line)
+        (let ((new-buf (with-temp-buffer
+          (org-mode)
+          (insert "\n")
+          (insert (car (cdr kill-ring)))
+          (buffer-string))))
+          (org-roam-insert nil (list title) nil title))
+          (insert new-buf)))))
