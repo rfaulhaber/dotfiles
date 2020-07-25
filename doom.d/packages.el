@@ -61,3 +61,4 @@
 (package! org-roam-server)
 (package! indium)
 (package! md4rd)
+(package! prettier)

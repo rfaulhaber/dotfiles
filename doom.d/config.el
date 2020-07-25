@@ -103,6 +103,13 @@
   (setq visual-fill-column-center-text t)
   (face-remap-add-relative 'variable-pitch :family "Georgia" :height 1.5))
 
+(add-hook 'nov-mode-hook 'nov-setup)
+(add-hook 'nov-mode-hook 'visual-line-mode)
+(add-hook 'nov-mode-hook 'visual-fill-column-mode)
+
+;; auto-mode-alist config
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+
 ;; mu4e config
 (setq
   mu4e-sent-folder   "/Sent"
@@ -121,20 +128,17 @@
 
 ;; plugin config
 ;; hooks
-(add-hook 'rust-mode-hook
-          (lambda () (setq indent-tabs-mode nil)
-                     (setq lsp-rust-server 'rust-analyzer)
-          ))
-
-(add-hook 'diary-list-entries-hook 'diary-sort-entries t)
+;; init hooks
 (add-hook 'after-init-hook 'org-roam-mode)
 (add-hook 'after-init-hook 'org-trello-mode)
-(add-hook 'nov-mode-hook 'nov-setup)
-(add-hook 'nov-mode-hook 'visual-line-mode)
-(add-hook 'nov-mode-hook 'visual-fill-column-mode)
 
-;; auto-mode-alist config
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+(add-hook 'rust-mode-hook
+          (lambda () (setq lsp-rust-server 'rust-analyzer)))
+
+(add-hook 'js2-mode-hook 'prettier-js-mode)
+(add-hook 'web-mode-hook 'prettier-js-mode)
+
+(add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 
 ;; after hooks
 (after! org
@@ -146,8 +150,7 @@
  'org-babel-load-languages
  '((emacs-lisp . t)
    (typescript . t)
-   (js . t)
-   ))
+   (js . t)))
 
 ;; eshell config
 (add-hook 'eshell-preoutput-filter-functions 'xterm-color-filter)
