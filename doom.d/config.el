@@ -133,6 +133,7 @@
 (add-hook 'after-init-hook 'org-roam-mode)
 (add-hook 'after-init-hook 'org-trello-mode)
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
+(add-hook 'js2-mode-hook 'prettier-js-mode)
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
 (add-hook 'nov-mode-hook 'visual-fill-column-mode)
@@ -140,10 +141,7 @@
 (add-hook 'rust-mode-hook
           (lambda () (setq indent-tabs-mode nil)
                      (setq lsp-rust-server 'rust-analyzer)))
-(add-hook 'js2-mode-hook 'prettier-js-mode)
 (add-hook 'web-mode-hook 'prettier-js-mode)
-(add-hook 'rust-mode-hook
-          (lambda () (setq lsp-rust-server 'rust-analyzer)))
 
 ;; after hooks
 (after! org
