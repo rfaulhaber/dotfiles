@@ -62,3 +62,4 @@
 (package! indium)
 (package! md4rd)
 (package! emojify)
+(package! prettier)
