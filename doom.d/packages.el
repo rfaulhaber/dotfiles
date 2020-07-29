@@ -49,7 +49,7 @@
 ;; packages
 (package! fzf)
 (package! org-trello)
-;;(package! org-super-agenda)
+(package! org-super-agenda)
 (package! dap-mode)
 (package! nov)
 (package! org-cliplink)
@@ -61,3 +61,4 @@
 (package! org-roam-server)
 (package! indium)
 (package! md4rd)
+(package! emojify)

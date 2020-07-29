@@ -69,16 +69,17 @@
 ;; custom bindings
 (map! :leader "f t" #'treemacs)
 (map! :leader "n r t" #'org-roam-buffer-toggle-display)
-(map! :leader "m o" #'mu4e)
 (map! :leader "o w" #'self/eww-open-url-window-right)
-(map! :leader "w e" #'elfeed)
+(map! :leader "e" #'elfeed)
 (map! :leader "c l l" #'link-hint-copy-link)
 (map! :leader "c l p" #'link-hint-copy-link-at-point)
+(map! :leader "C-," #'+ivy/switch-buffer)
 
 ;; custom variable settings
 ;; org-agenda
-(setq org-agenda-files (list "~/org/todo.org"
-                             "~/org/habits.org"))
+(setq org-agenda-files
+      (mapcar (lambda (str) (concat org-directory "/" str))
+      (list "todo.org" "habits.org" "projects.org")))
 
 ;; deft
 (setq deft-directory "~/org")
@@ -121,17 +122,17 @@
 
 ;; plugin config
 ;; hooks
-(add-hook 'rust-mode-hook
-          (lambda () (setq indent-tabs-mode nil)
-                     (setq lsp-rust-server 'rust-analyzer)
-          ))
 
-(add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 (add-hook 'after-init-hook 'org-roam-mode)
 (add-hook 'after-init-hook 'org-trello-mode)
+(add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
 (add-hook 'nov-mode-hook 'visual-fill-column-mode)
+(add-hook 'org-mode-hook 'ob-typescript)
+(add-hook 'rust-mode-hook
+          (lambda () (setq indent-tabs-mode nil)
+                     (setq lsp-rust-server 'rust-analyzer)))
 
 ;; auto-mode-alist config
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))

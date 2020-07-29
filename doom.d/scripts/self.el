@@ -14,7 +14,7 @@
 
 ;; thank you github.com/hrs for the inspiration
 (defun self/new-scratch-buffer ()
-  "Creates and opensa new scratch buffer with a random name"
+  "Creates and opens a new scratch buffer with a random name"
   (interactive)
   (let ((new-window (split-window-below)))
     (with-selected-window new-window
