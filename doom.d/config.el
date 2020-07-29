@@ -59,9 +59,6 @@
 
 ;; emcas config
 
-;; requires
-(require 'ob-typescript)
-
 ;; custom scripts
 (load! "./scripts/buffer-move.el")
 (load! "./scripts/self.el")
@@ -73,7 +70,7 @@
 (map! :leader "e" #'elfeed)
 (map! :leader "c l l" #'link-hint-copy-link)
 (map! :leader "c l p" #'link-hint-copy-link-at-point)
-(map! :leader "C-," #'+ivy/switch-buffer)
+(map! :leader "." #'+ivy/switch-buffer)
 
 ;; custom variable settings
 ;; org-agenda
@@ -137,7 +134,6 @@
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
 (add-hook 'nov-mode-hook 'visual-fill-column-mode)
-(add-hook 'org-mode-hook 'ob-typescript)
 (add-hook 'rust-mode-hook
           (lambda () (setq indent-tabs-mode nil)
                      (setq lsp-rust-server 'rust-analyzer)))
