@@ -73,6 +73,9 @@
 (map! :leader "." #'+ivy/switch-buffer)
 
 ;; custom variable settings
+;; GPG key used by org-crypt
+(setq org-crypt-key "A2205925F3B6C5B96F26C3CB544650C5A306061B")
+
 ;; org-agenda
 (setq org-agenda-files
       (mapcar (lambda (str) (concat org-directory "/" str))
