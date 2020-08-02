@@ -63,3 +63,4 @@
 (package! md4rd)
 (package! emojify)
 (package! prettier)
+(package! carbon-now-sh)
