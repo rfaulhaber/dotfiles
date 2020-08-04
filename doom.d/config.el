@@ -73,6 +73,10 @@
 (map! :leader "." #'+ivy/switch-buffer)
 
 ;; custom variable settings
+;; Tramp shell prompt, to allow it to work with terminal colors
+;; thank you stackoverflow
+(setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
+
 ;; GPG key used by org-crypt
 (setq org-crypt-key "A2205925F3B6C5B96F26C3CB544650C5A306061B")
 
