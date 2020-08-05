@@ -71,6 +71,7 @@
 (map! :leader "c l l" #'link-hint-copy-link)
 (map! :leader "c l p" #'link-hint-copy-link-at-point)
 (map! :leader "." #'+ivy/switch-buffer)
+(map! :v "s-/" 'comment-or-uncomment-region)
 
 ;; custom variable settings
 ;; Tramp shell prompt, to allow it to work with terminal colors
