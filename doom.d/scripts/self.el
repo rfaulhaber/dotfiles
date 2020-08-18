@@ -28,7 +28,8 @@
          (contents (nth 1 actual-args))
          (info (nth 2 actual-args)))
     ;; Unfill contents
-    (setq contents (concat (mapconcat 'identity (split-string contents) " ") "\n"))
+    (unless (eq (car org-el) 'src-block)
+        (setq contents (concat (mapconcat 'identity (split-string contents) " ") "\n")))
     (list org-el contents info)))
 
 

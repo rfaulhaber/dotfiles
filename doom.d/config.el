@@ -81,10 +81,13 @@
 ;; GPG key used by org-crypt
 (setq org-crypt-key "A2205925F3B6C5B96F26C3CB544650C5A306061B")
 
+;; use rust-analyzer for rust lsp server
+(setq rustic-lsp-server 'rust-analyzer)
+
 ;; org-agenda
 (setq org-agenda-files
       (mapcar (lambda (str) (concat org-directory "/" str))
-      (list "todo.org" "habits.org" "projects.org")))
+      (list "todo.org" "habits.org" "projects.org" "blog.org")))
 
 ;; deft
 (setq deft-directory "~/org")
@@ -142,10 +145,12 @@
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
 (add-hook 'nov-mode-hook 'visual-fill-column-mode)
-(add-hook 'rust-mode-hook
-          (lambda () (setq indent-tabs-mode nil)
-                     (setq lsp-rust-server 'rust-analyzer)))
 (add-hook 'web-mode-hook 'prettier-js-mode)
+
+(add-hook 'before-save-hook (lambda ()
+                              (when (or (eq 'rust-mode major-mode) (eq 'rustic-mode major-mode))
+                                (lsp-format-buffer))))
+
 
 ;; after hooks
 (after! org
