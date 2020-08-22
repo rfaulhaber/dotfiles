@@ -11,13 +11,19 @@ super + Return
 # 	dmenu_run
 
 super + @space
-	rofi -show drun -font "Hack Nerd Font Medium 14"
+	rofi -show drun -modi drun,run -show-icons
 
 super + shift + @space
-	rofi -show run -font "Hack Nerd Font Medium 14"
+	rofi -show run -show-icons
 
 super + d
-	rofi -show window -font "Hack Nerd Font Medium 14"
+	rofi -show window
+
+super + alt + s
+	gnome-screenshot -i
+
+super + alt + p
+	  polybar-msg cmd restart
 
 
 # make sxhkd reload its configuration files:

@@ -17,25 +17,26 @@
 ;==========================================================
 
 ; Import base color pallete and bspwm module
-include-file = /home/$USER/.config/polybar/colors
-include-file = /home/$USER/.config/polybar/modules/bspwm
+include-file = $HOME/.config/polybar/colors
+include-file = $HOME/.config/polybar/modules/bspwm
 
 ; Import bar modules
-include-file = /home/$USER/.config/polybar/modules/cpu
-include-file = /home/$USER/.config/polybar/modules/date
-include-file = /home/$USER/.config/polybar/modules/memory
-include-file = /home/$USER/.config/polybar/modules/music
-include-file = /home/$USER/.config/polybar/modules/pulseaudio
-include-file = /home/$USER/.config/polybar/modules/session
-include-file = /home/$USER/.config/polybar/modules/spotify
+include-file = $HOME/.config/polybar/modules/cpu
+include-file = $HOME/.config/polybar/modules/date
+include-file = $HOME/.config/polybar/modules/memory
+include-file = $HOME/.config/polybar/modules/music
+include-file = $HOME/.config/polybar/modules/pulseaudio
+;; include-file = $HOME/.config/polybar/modules/spotify
+include-file = $HOME/.config/polybar/modules/redshift
+include-file = $HOME/.config/polybar/modules/weather
 
 [bar/main]
 enable-ipc = true
 
-background     = ${colors.vibrant-bg}
-background-alt = ${colors.vibrant-bg-alt}
-foreground     = ${colors.vibrant-fg}
-foreground-alt = ${colors.vibrant-fg-alt}
+background     = ${colors.bg}
+background-alt = ${colors.bg-alt}
+foreground     = ${colors.fg}
+foreground-alt = ${colors.fg-alt}
 
 
 ; size
@@ -45,17 +46,19 @@ bottom = false
 fixed-center = true
 
 ; fonts
-font-0 = "Hack Nerd Font:style=Medium:size=12;3"
-font-1 = "Hack Nerd Font:size=12;3"
-font-2 = "Hack Nerd Font:size=12;3"
-font-3 = "Hack Nerd Font:size=12;3"
+font-0 = "Hack Nerd Font:size=10;3"
+font-1 = "Hack Nerd Font:size=10;3"
+; font-2 = "Hack Nerd Font:size=10;3"
+font-2 = "Weather Icons:size=10;3"
+font-3 = "Hack Nerd Font:size=10;3"
 
 line-size = 3
 line-color = #f00
 
 ; modules
 modules-left = bspwm xwindow
-modules-right = spotify cpu memory pulseaudio date
+modules-center = weather
+modules-right = redshift cpu memory pulseaudio date
 module-margin = 0
 
 ; tray
@@ -72,12 +75,12 @@ wm-restack = bspwm
 type = internal/xwindow
 label = %title:0:30:...%
 
-[module/weather]
-type = custom/script
-exec = ~/.config/polybar/forecast/weather
-exec-if = ping openweathermap.org -c 1
-interval = 600
-label-font = 3
+; [module/weather]
+; type = custom/script
+; exec = ~/.config/polybar/forecast/weather
+; exec-if = ping openweathermap.org -c 1
+; interval = 600
+; label-font = 3
 
 
 [settings]

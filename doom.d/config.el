@@ -8,7 +8,7 @@
 ;; clients, file templates and snippets.
 
 (setq user-full-name "Ryan Faulhaber"
-      user-mail-address "ryan@sys9.net"
+      user-mail-address "ryf@sent.as"
       calendar-latitude 41.49
       calendar-longitude 81.69
       calendar-location-name "Cleveland, OH")
@@ -125,8 +125,10 @@
   mu4e-drafts-folder "/Drafts"
   mu4e-trash-folder  "/Trash"
   mu4e-refile-folder "/Archive"
-  smtpmail-default-smtp-server "mail.sys9.net"
-  smtpmail-smtp-server "mail.sys9.net"
+  smtpmail-default-smtp-server "smtp.fastmail.com"
+  smtpmail-smtp-server "smtp.fastmail.com"
+  smtpmail-smtp-user "ryf@sent.as"
+  smtpmail-local-domain "sent.as"
   smtpmail-smtp-service 587)
 
 ;; elfeed config

@@ -5,8 +5,9 @@ sxhkd &
 # Set the background wallpaper
 #$HOME/.config/scripts/random-wallpaper.sh &
  
+# Launch ntfd, which polybar depends on 
 # Launch polybar
-$HOME/.config/polybar/launch.sh &
+$HOME/.config/polybar/scripts/launch.sh &
  
 # Change X shaped default cursor
 xsetroot -cursor_name left_ptr
@@ -20,4 +21,8 @@ bspc config split_ratio          0.52
 bspc config borderless_monocle   true
 bspc config gapless_monocle      true
 
-bspc rule -a Emacs desktop='^2' state=tiled locked=on
+bspc rule -a firefoxdeveloperedition desktop='^1' state=tiled focus=on
+bspc rule -a Emacs                   desktop='^2' state=tiled locked=on focus=on
+bspc rule -a Alacritty               desktop='^3' state=tiled focus=on
+bspc rule -a discord                 desktop='^4' state=tiled
+bspc rule -a TelegramDesktop         desktop='^4' state=tiled

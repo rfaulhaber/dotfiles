@@ -12,6 +12,8 @@ type = internal/bspwm
 ; ws-icon-8 = IV;
 ; ws-icon-default = 
 
+; ws-icon-0 = I;
+; ws-icon-1 = II;
 ws-icon-0 = I;1
 ws-icon-1 = II;2
 ws-icon-2 = III;3
@@ -30,34 +32,34 @@ format-padding = 1
 ;label-monitor-foreground = ${colors.nord-blue-light}
 
 label-focused = %{T4}%icon%%{T-}
-label-focused-foreground = ${colors.vibrant-blue}
-label-focused-background = ${colors.vibrant-grey}
+label-focused-foreground = ${colors.blue}
+label-focused-background = ${colors.grey}
 label-focused-padding = 1
 
 label-occupied = %{T4}%icon%%{T-}
-label-occupied-foreground = ${colors.vibrant-orange}
+label-occupied-foreground = ${colors.magenta}
 label-occupied-padding = 1
 
 label-urgent = %{T4}%icon%%{T-}
-label-urgent-foreground = ${colors.vibrant-red}
+label-urgent-background = ${colors.red}
 label-urgent-padding = 1
 
 label-empty = %{T4}%icon%%{T-}
-label-empty-foreground = ${colors.vibrant-grey}
+label-empty-foreground = ${colors.grey}
 label-empty-padding = 1
 
 label-monocle = %{T3}喝 %{T-}
-label-monocle-foreground = ${colors.vibrant-cyan}
+label-monocle-foreground = ${colors.cyan}
 label-fullscreen = %{T4} %{T-}
-label-fullscreen-foreground = ${colors.vibrant-cyan}
+label-fullscreen-foreground = ${colors.cyan}
 label-locked = %{T3} %{T-}
-label-locked-foreground = ${colors.vibrant-yellow}
+label-locked-foreground = ${colors.yellow}
 label-sticky = %{T3}𢡊 %{T-}
-label-sticky-foreground = ${colors.vibrant-yellow}
+label-sticky-foreground = ${colors.yellow}
 label-private = %{T3}廬 %{T-}
-label-private-foreground = ${colors.vibrant-red}
+label-private-foreground = ${colors.red}
 label-marked = %{T3} %{T-}
-label-marked-foreground = ${colors.vibrant-green}
+label-marked-foreground = ${colors.green}
 
 ; Separator in between workspaces
 ; label-separator = |
