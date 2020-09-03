@@ -39,7 +39,6 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
-
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
 ;; - `load!' for loading external *.el files relative to this one
@@ -68,8 +67,8 @@
 (map! :leader "n r t" #'org-roam-buffer-toggle-display)
 (map! :leader "o w" #'self/eww-open-url-window-right)
 (map! :leader "e" #'elfeed)
-(map! :leader "c l l" #'link-hint-copy-link)
-(map! :leader "c l p" #'link-hint-copy-link-at-point)
+;(map! :mode org-mode :leader "c l l" #'link-hint-copy-link)
+;(map! :mode org-mode :leader "c l p" #'link-hint-copy-link-at-point)
 (map! :leader "." #'+ivy/switch-buffer)
 (map! :v "s-/" 'comment-or-uncomment-region)
 
