@@ -67,10 +67,11 @@
 (map! :leader "n r t" #'org-roam-buffer-toggle-display)
 (map! :leader "o w" #'self/eww-open-url-window-right)
 (map! :leader "e" #'elfeed)
-;(map! :mode org-mode :leader "c l l" #'link-hint-copy-link)
-;(map! :mode org-mode :leader "c l p" #'link-hint-copy-link-at-point)
+(map! :mode org-mode
+      :leader "c l" nil
+      :leader "c l l" #'link-hint-copy-link
+      :leader "c l p" #'link-hint-copy-link-at-point)
 (map! :leader "." #'+ivy/switch-buffer)
-(map! :v "s-/" 'comment-or-uncomment-region)
 
 ;; custom variable settings
 ;; Tramp shell prompt, to allow it to work with terminal colors
