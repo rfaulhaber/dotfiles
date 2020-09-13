@@ -34,7 +34,7 @@ super + e
 	  emacsclient -c
 
 super + b
-	  firefox-developer-edition
+	  firefox-devedition
 
 #
 # bspwm hotkeys

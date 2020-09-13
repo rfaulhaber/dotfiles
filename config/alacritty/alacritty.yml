@@ -1,49 +1,50 @@
-# scorcerer colors
+# custom doom-city-lights theme
 colors:
   primary:
-    background: '#222222'
-    foreground: '#c2c2b0'
+    background: '#1D252C'
+    foreground: '#A0B3C5'
 
   cursor:
-    text:   '#c2c2b0'
-    cursor: '#c2c2b0'
+    text:   '#41505E'
+    cursor: '#9CAABB'
 
   normal:
-    black:   '#111111'
-    red:     '#aa4450'
-    green:   '#719611'
-    yellow:  '#cc8800'
-    blue:    '#6688aa'
-    magenta: '#8f6f8f'
-    cyan:    '#528b8b'
+    black:   '#10151C'
+    red:     '#D95468'
+    green:   '#8BD49C'
+    yellow:  '#EBBF83'
+    blue:    '#5EC4FF'
+    magenta: '#E27E8D'
+    cyan:    '#70E1E8'
     white:   '#d3d3d3'
 
   bright:
-    black:   '#181818'
-    red:     '#ff6a6a'
-    green:   '#b1d631'
-    yellow:  '#ff9800'
-    blue:    '#90b0d1'
-    magenta: '#8181a6'
-    cyan:    '#87ceeb'
-    white:   '#c1cdc1'
+    black:   '#171D22'
+    red:     '#E27E8D'
+    green:   '#33CED8'
+    yellow:  '#EBBF83'
+    blue:    '#5EC4FF'
+    magenta: '#B62D65'
+    cyan:    '#70E1E8'
+    white:   '#728CA0'
+
 
 # Font configuration (changes require restart)
 font:
   # The normal (roman) font face to use.
   normal:
-    family: Hack
+    family: Hack Nerd Font
     # Style can be specified to pick a specific face.
     style: Regular
 
   # The bold font face
   bold:
-    family: Hack
+    family: Hack Nerd Font
     # Style can be specified to pick a specific face.
     # style: Bold
 
   # The italic font face
   italic:
-    family: Hack
+    family: Hack Nerd Font
     # Style can be specified to pick a specific face.
     # style: Italic

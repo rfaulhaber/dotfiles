@@ -1,5 +1,0 @@
-[module/weather]
-type = custom/script
-exec = busctl --user -j get-property io.ntfd /weather openweathermap.strings RenderedTemplate | jq -r .data
-interval = 60
-label-font = 3

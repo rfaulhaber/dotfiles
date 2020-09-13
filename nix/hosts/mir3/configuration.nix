@@ -54,15 +54,7 @@ in {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    bat
-    discord
-    firefox-devedition-bin
-    fzf
-    gnupg
-    jq
-    neovim
     oh-my-zsh
-    pandoc
     zsh
     zsh-autosuggestions
     zsh-completions
@@ -71,7 +63,11 @@ in {
     alacritty
     bspwm
     calibre
+    discord
+    firefox-devedition-bin
     gnome3.gnome-screenshot
+    keybase
+    keybase-gui
     keychain
     openvpn
     pass
@@ -84,26 +80,43 @@ in {
     sxhkd
     tdesktop
     xclip
+    unstable.ripcord
 
     #dev
+
+    #dev.util
     coreutils-full
+    unstable.gnumake
     docker
-    unstable.emacs
     git
     rsync
 
+    #dev.js
+    nodejs_latest
+
+    #dev.rust
+    rustup
+
+    #dev.tools
+    neovim
+    unstable.emacs
+
     #util
+    bat
     curl
     exa
     fd
+    fzf
+    gnupg
+    jq
     pandoc
-    unzip
-    wget
-    zip
-    unstable.zoxide
     unstable.kvm
     unstable.qemu
     unstable.qemu-utils
+    unstable.zoxide
+    unzip
+    wget
+    zip
 
     #unstable packages
 
@@ -112,6 +125,7 @@ in {
     aspellDicts.en
     aspellDicts.en-computers
     aspellDicts.en-science
+    cmake
     sqlite
     unstable.mu
     unstable.isync
@@ -149,9 +163,16 @@ in {
       l = "exa -lah";
       ll = "exa -lh";
     };
-    interactiveShellInit = ''
-      export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#A0B3C5"
-    '';
+  };
+
+  environment.variables = {
+    XDG_CONFIG_HOME = "$HOME/.config";
+    XDG_CACHE_HOME = "$HOME/.cache";
+    XDG_DATA_HOME = "$HOME/.local/share";
+    XDG_BIN_HOME = "$HOME/.local/bin";
+    RUSTUP_HOME = "$XDG_DATA_HOME/rustup";
+    CARGO_HOME = "$XDG_DATA_HOME/cargo";
+    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=#41505E";
   };
 
   nixpkgs.overlays = [ (import /etc/nerdfonts/default.nix) ];
