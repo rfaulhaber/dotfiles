@@ -199,52 +199,52 @@ in {
 
   # List services that you want to enable:
 
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services = {
+    printing.enable = true;
+    xserver = {
+      enable = true;
+      layout = "us";
+      xkbOptions = "eurosign:e";
+      windowManager = { bspwm = { enable = true; }; };
+      displayManager = {
+        lightdm.enable = true;
+        defaultSession = "none+bspwm";
+      };
+      videoDrivers = [ "nvidia" ];
+    };
+    gnome3 = { gnome-keyring.enable = true; };
+    dbus = { packages = [ pkgs.gnome3.gnome-keyring pkgs.gcr ]; };
+
+    # it is unclear to me how to automatically unlock gnome keyring upon login, so
+    # I'm taking the shotgun approach
+
+    emacs = {
+      enable = true;
+      install = true;
+      defaultEditor = true;
+      package = unstable.emacs;
+    };
+
+    redshift = {
+      enable = true;
+      brightness = {
+        day = "1";
+        night = "1";
+      };
+      temperature = {
+        day = 5700;
+        night = 2600;
+      };
+    };
+
+    keybase = { enable = true; };
+  };
+
+  security.pam.services.lightdm.enableGnomeKeyring = true;
 
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio.enable = true;
-
-  # Enable the X11 windowing system.
-
-  services.xserver = {
-    enable = true;
-    layout = "us";
-    xkbOptions = "eurosign:e";
-    windowManager = { bspwm = { enable = true; }; };
-    displayManager = {
-      lightdm.enable = true;
-      defaultSession = "none+bspwm";
-    };
-    videoDrivers = [ "nvidia" ];
-  };
-
-  # it is unclear to me how to automatically unlock gnome keyring upon login, so
-  # I'm taking the shotgun approach
-  services.gnome3 = { gnome-keyring.enable = true; };
-  security.pam.services.lightdm.enableGnomeKeyring = true;
-  security.pam.services.login.enableGnomeKeyring = true;
-  services.dbus.packages = [ pkgs.gnome3.gnome-keyring pkgs.gcr ];
-
-  services.emacs = {
-    enable = true;
-    install = true;
-    defaultEditor = true;
-    package = unstable.emacs;
-  };
-
-  services.redshift = {
-    enable = true;
-    brightness = {
-      day = "1";
-      night = "1";
-    };
-    temperature = {
-      day = 5700;
-      night = 2600;
-    };
-  };
 
   users.users.ryan = {
     isNormalUser = true;
