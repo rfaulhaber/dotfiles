@@ -28,7 +28,7 @@ include-file = $HOME/.config/polybar/modules/music
 include-file = $HOME/.config/polybar/modules/pulseaudio
 ;; include-file = $HOME/.config/polybar/modules/spotify
 include-file = $HOME/.config/polybar/modules/redshift
-include-file = $HOME/.config/polybar/modules/weather
+; include-file = $HOME/.config/polybar/modules/weather
 
 [bar/main]
 enable-ipc = true
@@ -49,7 +49,7 @@ fixed-center = true
 font-0 = "Hack Nerd Font:size=10;3"
 font-1 = "Hack Nerd Font:size=10;3"
 ; font-2 = "Hack Nerd Font:size=10;3"
-font-2 = "Weather Icons:size=10;3"
+font-2 = "Hack nerd Font:size=10;3"
 font-3 = "Hack Nerd Font:size=10;3"
 
 line-size = 3

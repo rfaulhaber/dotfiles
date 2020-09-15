@@ -73,6 +73,7 @@ in {
     pass
     pcloud
     polybarFull
+    pulsemixer
     pavucontrol
     redshift
     rofi
@@ -86,10 +87,10 @@ in {
 
     #dev.util
     coreutils-full
-    unstable.gnumake
     docker
     git
     rsync
+    unstable.gnumake
 
     #dev.js
     nodejs_latest
@@ -110,6 +111,7 @@ in {
     gnupg
     jq
     pandoc
+    unstable.ripgrep
     unstable.kvm
     unstable.qemu
     unstable.qemu-utils
