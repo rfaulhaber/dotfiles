@@ -73,7 +73,6 @@ in {
     keybase-gui
     keychain
     openvpn
-    nord-ovpn
     pass
     pcloud
     polybarFull
