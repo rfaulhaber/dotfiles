@@ -7,6 +7,7 @@
 let
   unstable = import <unstable> { config = config.nixpkgs.config; };
   pcloud = import ./pcloud.nix pkgs;
+  nord-ovpn = import ./nord-ovpn.nix pkgs;
 in {
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -61,15 +62,18 @@ in {
 
     #desktop
     alacritty
+    betterlockscreen
     bspwm
     calibre
     discord
+    evince
     firefox-devedition-bin
     gnome3.gnome-screenshot
     keybase
     keybase-gui
     keychain
     openvpn
+    nord-ovpn
     pass
     pcloud
     polybarFull
@@ -81,6 +85,7 @@ in {
     sxhkd
     tdesktop
     xclip
+    xscreensaver
     unstable.ripcord
 
     #dev
@@ -144,6 +149,8 @@ in {
     enableSSHSupport = true;
     pinentryFlavor = "gnome3";
   };
+
+  programs.evince.enable = true;
 
   programs.seahorse.enable = true;
 
@@ -215,7 +222,7 @@ in {
       videoDrivers = [ "nvidia" ];
     };
     gnome3 = { gnome-keyring.enable = true; };
-    dbus = { packages = [ pkgs.gnome3.gnome-keyring pkgs.gcr ]; };
+    dbus.packages = with pkgs; [ gnome3.gnome-keyring gcr gnome3.dconf ];
 
     # it is unclear to me how to automatically unlock gnome keyring upon login, so
     # I'm taking the shotgun approach

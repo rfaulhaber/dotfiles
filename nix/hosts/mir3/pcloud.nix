@@ -14,25 +14,27 @@
 #
 # ^1 https://github.com/NixOS/nixpkgs/issues/69338
 
-{
-# Build dependencies
-appimageTools, autoPatchelfHook, fetchzip, stdenv,
-
-# Runtime dependencies;
-# A few additional ones (e.g. Node) are already shipped together with the
-# AppImage, so we don't have to duplicate them here.
-alsaLib, dbus-glib, fuse, gnome3, libdbusmenu-gtk2, udev, nss, ... }:
+{ pkgs ? import <nixpkgs> { }, ... }:
 
 let
+  inherit (pkgs)
+  # Build dependencies
+    appimageTools autoPatchelfHook fetchzip stdenv
+
+    # Runtime dependencies;
+    # A few additional ones (e.g. Node) are already shipped together with the
+    # AppImage so we don't have to duplicate them here.
+    alsaLib dbus-glib fuse gnome3 libdbusmenu-gtk2 udev nss;
   pname = "pcloud";
-  version = "1.8.4";
+  version = "1.8.7";
+  key = "XZ8fiVXZlKjrxKXtTsh92UqC9Gm1R8s7dFsk";
   name = "${pname}-${version}";
 
   # Archive link's code thanks to: https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=pcloud-drive
   src = fetchzip {
-    url =
-      "https://api.pcloud.com/getpubzip?code=XZ01mtkZeKH0XXXIBqbuMUPajbwE6jrOUOHX&filename=${name}.zip";
-    sha256 = "0gw1nrki1q7mrhnxj0s02ym3g7qryq8r2fpqljimbq7cjdxkvxhb";
+    url = "https://api.pcloud.com/getpubzip?code=${key}&filename=${name}.zip";
+    sha256 = "1dlb4iymvx4dw2zqgqaxsmy98lknj0gri769nxppx31mrgdx4q1b";
+    stripRoot = true;
   };
 
   appimageContents = appimageTools.extractType2 {

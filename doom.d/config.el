@@ -100,7 +100,12 @@
 ;; org-journal
 (setq
  org-journal-dir "~/org/journal"
- org-journal-file-format "%Y%m%d.org")
+ org-journal-file-format "%Y%m%d.org"
+ org-journal-tag-alist '(("log" . ?l)
+                         ("daily" . ?d)
+                         ("therapy" . ?t)
+                         ("late" . ?L))
+ )
 
 ;;
 ;; org-ref
