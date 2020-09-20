@@ -90,7 +90,9 @@
 
 ;; org-agenda
 (setq org-agenda-files
-      (mapcar (lambda (str) (concat org-directory "/" str))
+      (mapcar
+       (lambda (str)
+        (concat org-directory "/" str))
       (list "todo.org" "habits.org" "projects.org" "blog.org")))
 
 ;; deft
