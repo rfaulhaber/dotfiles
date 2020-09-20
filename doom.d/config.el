@@ -75,6 +75,7 @@
 (map! :leader "d" #'dired)
 (map! :leader "r" nil
       :leader "r g" #'+ivy/project-search)
+(map! :nv "g s l" #'avy-goto-line)
 
 ;; custom variable settings
 ;; Tramp shell prompt, to allow it to work with terminal colors
