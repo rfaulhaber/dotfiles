@@ -69,8 +69,9 @@ in {
     evince
     firefox-devedition-bin
     gnome3.gnome-screenshot
-    keybase
-    keybase-gui
+    unstable.keybase
+    unstable.keybase-gui
+    unstable.kbfs
     keychain
     openvpn
     pass
@@ -246,7 +247,8 @@ in {
       };
     };
 
-    keybase = { enable = true; };
+    keybase.enable = true;
+    kbfs.enable = true;
   };
 
   security.pam.services.lightdm.enableGnomeKeyring = true;
