@@ -73,6 +73,8 @@
       :leader "c l p" #'link-hint-copy-link-at-point)
 (map! :leader "." #'+ivy/switch-buffer)
 (map! :leader "d" #'dired)
+(map! :leader "r" nil
+      :leader "r g" #'+ivy/project-search)
 
 ;; custom variable settings
 ;; Tramp shell prompt, to allow it to work with terminal colors

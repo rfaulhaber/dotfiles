@@ -108,6 +108,7 @@ in {
 
     #util
     bat
+    croc
     curl
     exa
     fd
