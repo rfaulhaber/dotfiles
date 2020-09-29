@@ -48,7 +48,7 @@
 
 ;; packages
 (package! fzf)
-(package! org-trello)
+(package! org-trello :disable t)
 (package! org-super-agenda)
 (package! dap-mode)
 (package! nov)

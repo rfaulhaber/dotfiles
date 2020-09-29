@@ -58,7 +58,7 @@ line-color = #f00
 ; modules
 modules-left = bspwm xwindow
 ;modules-center = weather
-modules-right = redshift cpu memory pulseaudio date
+modules-right = cpu memory pulseaudio date
 module-margin = 0
 
 ; tray

@@ -73,8 +73,6 @@
       :leader "c l p" #'link-hint-copy-link-at-point)
 (map! :leader "." #'+ivy/switch-buffer)
 (map! :leader "d" #'dired)
-(map! :leader "r" nil
-      :leader "r g" #'+ivy/project-search)
 (map! :nv "g s l" #'avy-goto-line)
 
 ;; custom variable settings
@@ -106,10 +104,10 @@
 (setq
  org-journal-dir "~/org/journal"
  org-journal-file-format "%Y%m%d.org"
- org-journal-tag-alist '(("log" . ?l)
-                         ("daily" . ?d)
-                         ("therapy" . ?t)
-                         ("late" . ?L))
+ ;; org-journal-tag-alist '(("log" . ?l)
+ ;;                         ("daily" . ?d)
+ ;;                         ("therapy" . ?t)
+ ;;                         ("late" . ?L))
  )
 
 ;;
@@ -152,7 +150,7 @@
 ;; hooks
 
 (add-hook 'after-init-hook 'org-roam-mode)
-(add-hook 'after-init-hook 'org-trello-mode)
+;(add-hook 'after-init-hook 'org-trello-mode)
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 (add-hook 'js2-mode-hook 'prettier-js-mode)
 (add-hook 'nov-mode-hook 'nov-setup)

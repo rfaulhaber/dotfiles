@@ -92,6 +92,7 @@ in {
 
     #dev.util
     coreutils-full
+    gcc
     docker
     git
     rsync
@@ -175,13 +176,13 @@ in {
     };
   };
 
-  environment.variables = {
+  environment.variables = rec {
     XDG_CONFIG_HOME = "$HOME/.config";
     XDG_CACHE_HOME = "$HOME/.cache";
     XDG_DATA_HOME = "$HOME/.local/share";
     XDG_BIN_HOME = "$HOME/.local/bin";
-    RUSTUP_HOME = "$XDG_DATA_HOME/rustup";
-    CARGO_HOME = "$XDG_DATA_HOME/cargo";
+    RUSTUP_HOME = "${XDG_DATA_HOME}/rustup";
+    CARGO_HOME = "${XDG_DATA_HOME}/cargo";
     ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=#41505E";
   };
 
