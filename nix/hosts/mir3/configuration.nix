@@ -92,10 +92,13 @@ in {
 
     #dev.util
     coreutils-full
-    gcc
     docker
+    gcc
     git
+    lldb_10
+    llvm_10
     rsync
+    unstable.gdb
     unstable.gnumake
 
     #dev.js
@@ -104,7 +107,7 @@ in {
     #dev.rust
     rustup
 
-    #dev.tools
+    #dev.editors
     neovim
     unstable.emacs
 
@@ -186,13 +189,14 @@ in {
     ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=#41505E";
   };
 
-  nixpkgs.overlays = [ (import /etc/nerdfonts/default.nix) ];
+  #nixpkgs.overlays = [ (import /etc/nerdfonts/default.nix) ];
 
   fonts = {
     enableFontDir = true;
     enableGhostscriptFonts = true;
     enableDefaultFonts = true;
     fonts = with pkgs; [
+      (unstable.nerdfonts.override { fonts = [ "Hack" ]; })
       ubuntu_font_family
       dejavu_fonts
       font-awesome-ttf
@@ -200,10 +204,16 @@ in {
       noto-fonts-cjk
       noto-fonts-emoji
       noto-fonts-extra
-      nerd-fonts.hack
+      fira-code
+      fira-code-symbols
+      hack-font
       ttf_bitstream_vera
       liberation_ttf
     ];
+    fontconfig.defaultFonts = {
+      sansSerif = [ "Ubuntu" ];
+      monospace = [ "Hack Nerd Font Mono" ];
+    };
   };
 
   i18n = { defaultLocale = "en_US.UTF-8"; };
