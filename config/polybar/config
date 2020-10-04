@@ -28,7 +28,7 @@ include-file = $HOME/.config/polybar/modules/music
 include-file = $HOME/.config/polybar/modules/pulseaudio
 ;; include-file = $HOME/.config/polybar/modules/spotify
 include-file = $HOME/.config/polybar/modules/redshift
-; include-file = $HOME/.config/polybar/modules/weather
+include-file = $HOME/.config/polybar/modules/wttr
 
 [bar/main]
 enable-ipc = true
@@ -48,8 +48,7 @@ fixed-center = true
 ; fonts
 font-0 = "Hack Nerd Font:size=10;3"
 font-1 = "Hack Nerd Font:size=10;3"
-; font-2 = "Hack Nerd Font:size=10;3"
-font-2 = "Hack nerd Font:size=10;3"
+font-2 = "Hack Nerd Font:size=10;3"
 font-3 = "Hack Nerd Font:size=10;3"
 
 line-size = 3
@@ -57,8 +56,7 @@ line-color = #f00
 
 ; modules
 modules-left = bspwm xwindow
-;modules-center = weather
-modules-right = cpu memory pulseaudio date
+modules-right = wttr cpu memory pulseaudio date
 module-margin = 0
 
 ; tray
@@ -74,14 +72,6 @@ wm-restack = bspwm
 [module/xwindow]
 type = internal/xwindow
 label = %title:0:30:...%
-
-; [module/weather]
-; type = custom/script
-; exec = ~/.config/polybar/forecast/weather
-; exec-if = ping openweathermap.org -c 1
-; interval = 600
-; label-font = 3
-
 
 [settings]
 screenchange-reload = true

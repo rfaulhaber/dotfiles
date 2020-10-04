@@ -1,0 +1,5 @@
+[module/wttr]
+type = custom/script
+exec = $HOME/.config/polybar/scripts/wttr.sh
+interval = 3600
+;label-foreground = ${colors.cyan}
