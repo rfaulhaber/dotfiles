@@ -16,6 +16,7 @@ in {
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.pulseaudio = true;
 
+  boot.tmpOnTmpfs = true;
   boot.loader = {
     systemd-boot.enable = true;
     grub = {
@@ -119,6 +120,7 @@ in {
     fd
     fzf
     gnupg
+    htop
     jq
     pandoc
     unstable.ripgrep
@@ -189,29 +191,24 @@ in {
     ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=#41505E";
   };
 
-  #nixpkgs.overlays = [ (import /etc/nerdfonts/default.nix) ];
-
   fonts = {
     enableFontDir = true;
     enableGhostscriptFonts = true;
     enableDefaultFonts = true;
     fonts = with pkgs; [
       (unstable.nerdfonts.override { fonts = [ "Hack" ]; })
-      ubuntu_font_family
-      dejavu_fonts
       font-awesome-ttf
+      hack-font
+      lato
       noto-fonts
       noto-fonts-cjk
       noto-fonts-emoji
       noto-fonts-extra
-      fira-code
-      fira-code-symbols
-      hack-font
-      ttf_bitstream_vera
-      liberation_ttf
+      roboto
+      ubuntu_font_family
     ];
     fontconfig.defaultFonts = {
-      sansSerif = [ "Ubuntu" ];
+      sansSerif = [ "Noto Sans" ];
       monospace = [ "Hack Nerd Font Mono" ];
     };
   };
