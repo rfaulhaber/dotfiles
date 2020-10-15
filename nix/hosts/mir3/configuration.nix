@@ -73,6 +73,7 @@ in {
     unstable.keybase
     unstable.keybase-gui
     unstable.kbfs
+    unstable.kitty
     keychain
     openvpn
     pass
