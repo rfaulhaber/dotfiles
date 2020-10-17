@@ -1,4 +1,0 @@
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#41505E";
-export PATH=$PATH:~/.emacs.d/bin
-source ./.zoxide.zsh
-

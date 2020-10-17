@@ -133,14 +133,13 @@ in {
     wget
     zip
 
-    #unstable packages
-
     #emacs
     aspell
     aspellDicts.en
     aspellDicts.en-computers
     aspellDicts.en-science
     cmake
+    libtool # vterm
     sqlite
     unstable.mu
     unstable.isync
