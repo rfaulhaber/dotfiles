@@ -7,7 +7,6 @@
 let
   unstable = import <unstable> { config = config.nixpkgs.config; };
   pcloud = import ./pcloud.nix pkgs;
-  nord-ovpn = import ./nord-ovpn.nix pkgs;
 in {
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -64,6 +63,7 @@ in {
     #desktop
     alacritty
     betterlockscreen
+    bookworm
     bspwm
     calibre
     discord
