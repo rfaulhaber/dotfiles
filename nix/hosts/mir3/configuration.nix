@@ -105,6 +105,9 @@ in {
 
     #dev.js
     nodejs_latest
+    unstable.nodePackages.typescript
+    unstable.nodePackages.typescript-language-server
+    nodePackages.yarn
 
     #dev.rust
     rustup
@@ -257,6 +260,11 @@ in {
 
     keybase.enable = true;
     kbfs.enable = true;
+    udev = {
+      extraRules = ''
+        SUBSYSTEM=="usb", ATTR{idVendor}=="3297", ATTR{idProduct}=="1969", GROUP="plugdev"
+      '';
+    };
   };
 
   security.pam.services.lightdm.enableGnomeKeyring = true;
@@ -265,9 +273,11 @@ in {
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
+  users.groups = { plugdev = { }; };
+
   users.users.ryan = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "audio" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "audio" "lp" "plugdev" ];
     shell = pkgs.zsh;
   };
 
@@ -277,6 +287,6 @@ in {
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "20.03"; # Did you read the comment?
+  system.stateVersion = "20.09"; # Did you read the comment?
 }
 
