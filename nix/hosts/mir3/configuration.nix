@@ -265,13 +265,24 @@ in {
         SUBSYSTEM=="usb", ATTR{idVendor}=="3297", ATTR{idProduct}=="1969", GROUP="plugdev"
       '';
     };
+
+    blueman.enable = true;
   };
 
   security.pam.services.lightdm.enableGnomeKeyring = true;
 
   # Enable sound.
   sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  hardware.pulseaudio = {
+    enable = true;
+    extraModules = [ pkgs.pulseaudio-modules-bt ];
+    package = pkgs.pulseaudioFull;
+  };
+
+  hardware.bluetooth = {
+    enable = true;
+    config = { General = { Enable = "Source,Sink,Media,Socket"; }; };
+  };
 
   users.groups = { plugdev = { }; };
 
