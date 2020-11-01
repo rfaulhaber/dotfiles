@@ -64,3 +64,4 @@
 (package! emojify)
 (package! prettier)
 (package! carbon-now-sh)
+(package! calibredb)

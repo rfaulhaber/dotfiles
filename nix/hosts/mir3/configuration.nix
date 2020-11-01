@@ -143,6 +143,7 @@ in {
     aspellDicts.en-science
     cmake
     libtool # vterm
+    libvterm
     sqlite
     unstable.mu
     unstable.isync

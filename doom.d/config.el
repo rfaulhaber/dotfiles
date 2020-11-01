@@ -129,6 +129,10 @@
 ;; auto-mode-alist config
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
+;; calibredb config
+(setq calibredb-root-dir "~/calibre")
+(setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
+
 ;; mu4e config
 (setq
   mail-user-agent 'mu4e-user-agent
