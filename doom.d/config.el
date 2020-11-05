@@ -137,6 +137,8 @@
 (setq
   mail-user-agent 'mu4e-user-agent
   mu4e-sent-messages-behavior 'sent
+  mu4e-main-mode-hook (lambda ()
+                        (setq mu4e-sent-messages-behavior 'sent))
   mu4e-sent-folder   "/Sent"
   mu4e-drafts-folder "/Drafts"
   mu4e-trash-folder  "/Trash"

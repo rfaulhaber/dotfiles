@@ -70,6 +70,7 @@ in {
     evince
     firefox-devedition-bin
     gnome3.gnome-screenshot
+    gnome3.gnome-bluetooth
     unstable.keybase
     unstable.keybase-gui
     unstable.kbfs

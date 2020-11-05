@@ -6,17 +6,13 @@
 super + Return
 	kitty
 
-# program launcher
-# super + @space
-# 	dmenu_run
-
-super + @space
+super + alt + d
 	rofi -show drun -modi drun,run -show-icons
 
-super + shift + @space
+super + alt + r
 	rofi -show run -show-icons
 
-super + d
+super + alt + w
 	rofi -show window
 
 super + alt + s
