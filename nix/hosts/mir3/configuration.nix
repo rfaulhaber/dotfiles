@@ -68,6 +68,7 @@ in {
     calibre
     discord
     evince
+    feh
     firefox-devedition-bin
     gnome3.gnome-screenshot
     gnome3.gnome-bluetooth
@@ -232,6 +233,9 @@ in {
       displayManager = {
         lightdm.enable = true;
         defaultSession = "none+bspwm";
+        sessionCommands = ''
+          feh --bg-fill ~/Projects/dotfiles/nix/hosts/mir3/wallpapers/1.jpg
+        '';
       };
       videoDrivers = [ "nvidia" ];
     };
