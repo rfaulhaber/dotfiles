@@ -55,3 +55,11 @@
           (buffer-string))))
           (org-roam-insert nil (list title) nil title))
           (insert new-buf)))))
+
+(defun self/org-paste-quote (page-number)
+  "Inserts latest element of kill ring into quote block."
+  (interactive "sPage number: ")
+  (insert (format "- %s\n" page-number))
+  (insert "\t#+begin_quote\n\t")
+  (yank)
+  (insert "\n\t#+end_quote"))
