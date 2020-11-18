@@ -102,6 +102,22 @@
 (setq org-roam-directory "~/org/roam")
 (setq org-roam-graph-exclude-matcher '("literature" "daily"))
 
+;; TODO change to add-to-list
+(setq org-roam-capture-templates
+      `(("d" "default" plain (function org-roam-capture--get-point)
+     "%?"
+     :file-name "%<%Y%m%d%H%M%S>-${slug}"
+     :head "#+title: ${title}\n"
+     :unnarrowed t)
+        ("p" "permanent" plain #'org-roam-capture--get-point
+     "- tags :: %?
+- source ::
+- relevant notes:
+  +"
+     :file-name "%<%Y%m%d%H%M%S>-${slug}"
+     :head "#+title: ${title}\n"
+     :unnarrowed t)))
+
 ;; org-journal
 (setq
  org-journal-dir "~/org/journal"
