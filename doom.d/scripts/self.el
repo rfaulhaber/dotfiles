@@ -63,3 +63,13 @@
   (insert "\t#+begin_quote\n\t")
   (yank)
   (insert "\n\t#+end_quote"))
+
+(defun self/unfill-region ()
+  "Unfills region by concatenating everything in the region to a single line separated by spaces."
+  (interactive)
+  (when (use-region-p)
+    (let ((contents (buffer-substring (mark) (point)))
+          (beg (region-beginning))
+          (end (region-end)))
+      (delete-region beg end)
+      (insert (concat (mapconcat 'identity (split-string contents) " ") "\n")))))

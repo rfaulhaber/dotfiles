@@ -65,3 +65,4 @@
 (package! prettier)
 (package! carbon-now-sh)
 (package! calibredb)
+(package! pollen-mode)

@@ -100,6 +100,7 @@
 
 ;; org-roam
 (setq org-roam-directory "~/org/roam")
+(setq org-roam-graph-exclude-matcher '("literature" "daily"))
 
 ;; org-journal
 (setq

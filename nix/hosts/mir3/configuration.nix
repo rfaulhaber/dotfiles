@@ -114,6 +114,9 @@ in {
     #dev.rust
     rustup
 
+    #dev.racket
+    unstable.racket
+
     #dev.editors
     neovim
     unstable.emacs
