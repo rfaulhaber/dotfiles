@@ -157,6 +157,13 @@ in {
     python3
   ];
 
+  environment.etc."xdg/mimeapps.list" = {
+    text = ''
+      [Default Applications]
+      application/pdf=evince.desktop;emacs.desktop
+    '';
+  };
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;

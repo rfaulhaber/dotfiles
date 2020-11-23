@@ -122,17 +122,23 @@
 (setq
  org-journal-dir "~/org/journal"
  org-journal-file-format "%Y%m%d.org"
- ;; org-journal-tag-alist '(("log" . ?l)
- ;;                         ("daily" . ?d)
- ;;                         ("therapy" . ?t)
- ;;                         ("late" . ?L))
  )
 
-;;
 ;; org-ref
 (setq org-ref-bibliography-notes "~/org/bibliography/notes.org"
       org-ref-default-bibliography '("~/org/bibliography/references.bib")
 )
+
+;; org-publish
+(setq org-publish-project-alist '(
+                                  ("roam"
+                                  :base-directory "~/org/roam"
+                                  :base-extension "org"
+                                  :publishing-directory "~/Projects/roam-notes-site"
+                                  :publishing-function org-html-publish-to-html
+                                  :recursive t)
+                                  ))
+
 ;; nov config
 (defun nov-setup ()
   (setq nov-text-width t)
