@@ -75,6 +75,10 @@
 (map! :leader "." #'+ivy/switch-buffer)
 (map! :leader "d" #'dired)
 (map! :nv "g s l" #'avy-goto-line)
+;; (map! :mode cfw:details-mode
+;;       "q" #'cfw:details-kill-buffer-command)
+;; (map! :mode cfw:calendar-mode
+;;       "RET" #'cfw:show-details-command)
 
 ;; custom variable settings
 ;; Tramp shell prompt, to allow it to work with terminal colors
@@ -117,6 +121,12 @@
      :file-name "%<%Y%m%d%H%M%S>-${slug}"
      :head "#+title: ${title}\n"
      :unnarrowed t)))
+
+(setq org-roam-dailies-capture-templates
+      '(("d" "daily" plain (function org-roam-capture--get-point) ""
+    :immediate-finish t
+    :file-name "daily/%<%Y-%m-%d>"
+    :head "#+title: %<%Y-%m-%d>")))
 
 ;; org-journal
 (setq
