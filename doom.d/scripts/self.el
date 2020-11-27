@@ -60,6 +60,7 @@
 
 (defun self/org-paste-quote (page-number)
   "Inserts latest element of kill ring into quote block."
+  ; TODO automatically insert into document
   (interactive "sPage number: ")
   (insert (format "- %s\n" page-number))
   (insert "\t#+begin_quote\n\t")

@@ -66,6 +66,7 @@ in {
     bookworm
     bspwm
     calibre
+    chromium
     discord
     evince
     feh
@@ -91,6 +92,7 @@ in {
     xclip
     xscreensaver
     unstable.ripcord
+    unstable.wally-cli
 
     #dev
 
@@ -121,6 +123,8 @@ in {
     neovim
     unstable.emacs
 
+    nixfmt
+
     #util
     bat
     croc
@@ -137,6 +141,7 @@ in {
     unstable.qemu
     unstable.qemu-utils
     unstable.zoxide
+    texlive.combined.scheme-medium
     unzip
     wget
     zip
@@ -156,6 +161,13 @@ in {
     #system deps
     python3
   ];
+
+  environment.etc."xdg/mimeapps.list" = {
+    text = ''
+      [Default Applications]
+      application/pdf=evince.desktop;emacs.desktop
+    '';
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -217,7 +229,7 @@ in {
       ubuntu_font_family
     ];
     fontconfig.defaultFonts = {
-      sansSerif = [ "Noto Sans" ];
+      sansSerif = [ "Ubuntu Font Family" ];
       monospace = [ "Hack Nerd Font Mono" ];
     };
   };
@@ -299,6 +311,12 @@ in {
     isNormalUser = true;
     extraGroups = [ "wheel" "audio" "lp" "plugdev" ];
     shell = pkgs.zsh;
+  };
+
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
   };
 
   # This value determines the NixOS release from which the default
