@@ -23,8 +23,7 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-(setq doom-font (font-spec :family "monospace" :size 14)
-      doom-variable-pitch-font (font-spec :family "sans" :size 14))
+(setq doom-font (font-spec :family "Hack Nerd Font" :size 14))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -76,6 +75,9 @@
 (map! :leader "d" #'dired)
 (map! :nv "g s l" #'avy-goto-line)
 
+;; custom ex commands for evil
+(evil-ex-define-cmd "wt[emp]" #'self/evil-write-temp)
+
 ;; custom variable settings
 ;; Tramp shell prompt, to allow it to work with terminal colors
 ;; thank you stackoverflow
@@ -86,6 +88,10 @@
 
 ;; use rust-analyzer for rust lsp server
 (setq rustic-lsp-server 'rust-analyzer)
+
+;; set aspell program specifically on mac
+(when (string= system-type "darwin")
+  (setq ispell-program-name "/usr/local/bin/aspell"))
 
 ;; org-agenda
 (setq org-agenda-files
