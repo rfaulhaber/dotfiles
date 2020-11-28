@@ -61,9 +61,7 @@ in {
     zsh-completions
 
     #desktop
-    alacritty
     betterlockscreen
-    bookworm
     bspwm
     calibre
     chromium
@@ -101,8 +99,8 @@ in {
     docker
     gcc
     git
-    lldb_10
-    llvm_10
+    lldb_11
+    llvm_11
     rsync
     unstable.gdb
     unstable.gnumake
