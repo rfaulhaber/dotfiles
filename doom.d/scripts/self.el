@@ -2,6 +2,8 @@
 
 ;; custom scripts for misc personal use
 
+(require 'evil)
+
 (defun self/eww-open-url-window-right (url)
   "Opens URL in eww-mode in a new window to the right."
   (interactive "sURL: ")
@@ -74,3 +76,29 @@
           (end (region-end)))
       (delete-region beg end)
       (insert (concat (mapconcat 'identity (split-string contents) " ") "\n")))))
+
+(evil-define-operator self/evil-write-temp (beg end &optional bang)
+  "Like evil-write, but creates a new temporary file and writes to that."
+  :motion nil
+  :move-point nil
+  :type line
+  :repeat nil
+  (interactive "<r><!>")
+  (let ((s (or beg (point-min)))
+        (f (or end (point-max)))
+        (bufname (buffer-file-name (buffer-base-buffer))))
+    (cond
+     ((null bufname) (let ((filename (self/mktemp)))
+                       (write-file filename)))
+     (t (self/write-temp s f)))))
+
+(defun self/write-temp (beg end)
+  "Writes BEG and END from current buffer into a temporary file."
+  (with-current-buffer (current-buffer)
+    (let ((temp-path (self/mktemp)))
+      (write-region beg end temp-path))))
+
+(defun self/mktemp (&optional prefix)
+  "Calls mktemp and passes PREFIX to -t flag, defaulting to 'emacs'. Returns result of `mktemp`."
+  (let ((pre (or prefix "emacs")))
+    (s-trim-right (shell-command-to-string (format "mktemp -t %s" pre)))))
