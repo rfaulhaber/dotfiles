@@ -10,6 +10,7 @@ let
 in {
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    # <home-manager/nixos>
   ];
 
   nixpkgs.config.allowUnfree = true;
@@ -227,7 +228,7 @@ in {
       ubuntu_font_family
     ];
     fontconfig.defaultFonts = {
-      sansSerif = [ "Ubuntu Font Family" ];
+      sansSerif = [ "Noto Sans" ];
       monospace = [ "Hack Nerd Font Mono" ];
     };
   };
@@ -311,10 +312,16 @@ in {
     shell = pkgs.zsh;
   };
 
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 30d";
+  nix = {
+    package = pkgs.nixFlakes;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
   };
 
   # This value determines the NixOS release from which the default
