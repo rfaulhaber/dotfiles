@@ -66,3 +66,5 @@
 (package! carbon-now-sh)
 (package! calibredb)
 (package! pollen-mode)
+(package! direnv)
+(package! nix-buffer)

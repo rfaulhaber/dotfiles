@@ -112,27 +112,37 @@
 (setq org-roam-directory "~/org/roam")
 (setq org-roam-graph-exclude-matcher '("literature" "daily"))
 
+;; personal helper variables
+(setq self/org-roam-default-file-name-template "%<%Y%m%d%H%M%S>-${slug}")
+(setq self/org-roam-default-file-head-template "#+title: ${title}\n")
+
 ;; TODO change to add-to-list
 (setq org-roam-capture-templates
-      `(("d" "default" plain (function org-roam-capture--get-point)
+      `(("d" "default" plain #'org-roam-capture--get-point
      "%?"
-     :file-name "%<%Y%m%d%H%M%S>-${slug}"
-     :head "#+title: ${title}\n"
+     :file-name ,self/org-roam-default-file-name-template
+     :head ,self/org-roam-default-file-head-template
      :unnarrowed t)
         ("p" "permanent" plain #'org-roam-capture--get-point
      "- tags :: %?
 - source ::
 - relevant notes:
   +"
-     :file-name "%<%Y%m%d%H%M%S>-${slug}"
-     :head "#+title: ${title}\n"
-     :unnarrowed t)))
+     :file-name ,self/org-roam-default-file-name-template
+     :head ,self/org-roam-default-file-head-template
+     :unnarrowed t)
+        ("l" "literature" plain #'org-roam-capture--get-point
+     "%?"
+     :file-name ,(format "literature/%s" self/org-roam-default-file-name-template)
+     :head ,self/org-roam-default-file-head-template
+     :unnarrowed t)
+        ))
 
 (setq org-roam-dailies-capture-templates
       '(("d" "daily" plain (function org-roam-capture--get-point) ""
     :immediate-finish t
-    :file-name "daily/%<%Y-%m-%d>"
-    :head "#+title: %<%Y-%m-%d>")))
+    :file-name "daily/%<%Y%m%d>"
+    :head "#+title: %<%Y%m%d>")))
 
 ;; org-journal
 (setq
