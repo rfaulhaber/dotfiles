@@ -41,15 +41,15 @@ foreground-alt = ${colors.fg-alt}
 
 ; size
 width = 100%
-height = 30
+height = 45
 bottom = false
 fixed-center = true
 
 ; fonts
-font-0 = "Hack Nerd Font:size=10;3"
-font-1 = "Hack Nerd Font:size=10;3"
-font-2 = "Hack Nerd Font:size=10;3"
-font-3 = "Hack Nerd Font:size=10;3"
+font-0 = "Hack Nerd Font:size=16;3"
+font-1 = "Hack Nerd Font:size=16;3"
+font-2 = "Hack Nerd Font:size=16;3"
+font-3 = "Hack Nerd Font:size=16;3"
 
 line-size = 3
 line-color = #f00

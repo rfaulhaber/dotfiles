@@ -123,6 +123,7 @@ in {
     unstable.emacs
 
     nixfmt
+    direnv
 
     #util
     bat

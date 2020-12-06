@@ -25,6 +25,6 @@ bspc config gapless_monocle      true
 
 bspc rule -a "Firefox Developer Edition" desktop='^1' state=tiled focus=on
 bspc rule -a Emacs                   desktop='^2' state=tiled locked=on focus=on
-bspc rule -a kitty 					 desktop='^3' state=tiled focus=on
+bspc rule -a kitty                   desktop='^3' state=tiled focus=on
 bspc rule -a discord                 desktop='^4' state=tiled
 bspc rule -a TelegramDesktop         desktop='^4' state=tiled
