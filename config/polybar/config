@@ -24,9 +24,7 @@ include-file = $HOME/.config/polybar/modules/bspwm
 include-file = $HOME/.config/polybar/modules/cpu
 include-file = $HOME/.config/polybar/modules/date
 include-file = $HOME/.config/polybar/modules/memory
-include-file = $HOME/.config/polybar/modules/music
 include-file = $HOME/.config/polybar/modules/pulseaudio
-;; include-file = $HOME/.config/polybar/modules/spotify
 include-file = $HOME/.config/polybar/modules/redshift
 include-file = $HOME/.config/polybar/modules/wttr
 
