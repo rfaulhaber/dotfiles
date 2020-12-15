@@ -68,3 +68,4 @@
 (package! pollen-mode)
 (package! direnv)
 (package! nix-buffer)
+(package! elpher)

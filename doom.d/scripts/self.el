@@ -67,15 +67,16 @@
   (yank)
   (insert "\n\t#+end_quote"))
 
-(defun self/unfill-region ()
-  "Unfills region by concatenating everything in the region to a single line separated by spaces."
-  (interactive)
-  (when (use-region-p)
-    (let ((contents (buffer-substring (mark) (point)))
-          (beg (region-beginning))
-          (end (region-end)))
-      (delete-region beg end)
-      (insert (concat (mapconcat 'identity (split-string contents) " ") "\n")))))
+; thank you xah
+(defun self/unfill-region (start end)
+  "Replace newline chars in region by single spaces.
+This command does the inverse of `fill-region'.
+
+URL `http://ergoemacs.org/emacs/emacs_unfill-paragraph.html'
+Version 2016-07-13"
+  (interactive "r")
+  (let ((fill-column most-positive-fixnum))
+    (fill-region start end)))
 
 (evil-define-operator self/evil-write-temp (beg end &optional bang)
   "Like evil-write, but creates a new temporary file and writes to that."

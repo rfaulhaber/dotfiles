@@ -76,6 +76,9 @@
 (map! :leader "." #'+ivy/switch-buffer)
 (map! :leader "d" #'dired)
 (map! :nv "g s l" #'avy-goto-line)
+(map! :leader "w w" #'ace-window)
+(map! :leader "s w" #'ace-swap-window)
+(map! :leader "n b" #'nix-buffer)
 ;; (map! :mode cfw:details-mode
 ;;       "q" #'cfw:details-kill-buffer-command)
 ;; (map! :mode cfw:calendar-mode

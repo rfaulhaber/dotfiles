@@ -79,6 +79,8 @@ in {
     keychain
     openvpn
     pass
+    # too out of date, will replace once stable
+    # unstable.pcloud
     pcloud
     polybarFull
     pulsemixer
@@ -105,6 +107,7 @@ in {
     rsync
     unstable.gdb
     unstable.gnumake
+    tokei
 
     #dev.js
     nodejs_latest
