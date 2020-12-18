@@ -19,14 +19,18 @@
 ;;              '("rib" "Insert book" entry (file+headline "~/org/reading.org" "Books")
 ;;               "** [ ] %(org-cliplink-capture)\n" :immediate-finish t))
 
+(setq self/reading-capture-list-item-template "** [ ] %(org-cliplink-capture)\n")
+
 ;; TODO add Roam capture templates
 (setq org-capture-templates
-      '(("r" "Reading")
+      `(("r" "Reading")
         ("ri" "Insert link")
         ("ria" "Insert article" entry (file+headline "~/org/reading.org" "Articles")
-         "** [ ] %(org-cliplink-capture)\n" :immediate-finish t)
+         ,self/reading-capture-list-item-template :immediate-finish t)
         ("rib" "Insert book" entry (file+headline "~/org/reading.org" "Books")
-         "** [ ] %(org-cliplink-capture)\n" :immediate-finish t)
+         ,self/reading-capture-list-item-template :immediate-finish t)
+        ("riv" "Insert video" entry (file+headline "~/org/reading.org" "Videos")
+         ,self/reading-capture-list-item-template :immediate-finish t)
         ("n" "Note")
         ("np" "With page number" item (file+headline "~/org/inbox.org" "Inbox")
          "- %U\n  source: \n  p. \n  %?" :prepend t)

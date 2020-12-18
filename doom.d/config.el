@@ -102,6 +102,13 @@
 (when (string= system-type "darwin")
   (setq ispell-program-name "/usr/local/bin/aspell"))
 
+;; org-md
+;; the default md exporter for source code blocks is bad, so we replace it
+(advice-add 'org-md-example-block :override 'self/org-md-src-block)
+
+;; the default md exporter should always unfold paragraphs
+(advice-add 'org-md-paragraph :filter-args #'self/org-md-paragraph-unfill)
+
 ;; org-agenda
 (setq org-agenda-files
       (mapcar
@@ -205,9 +212,6 @@
 
 ;; elfeed config
 (setq rmh-elfeed-org-files (list (concat org-directory "/elfeed.org")))
-
-;; ox-hugo config
-(advice-add 'org-md-paragraph :filter-args #'self/org-md-paragraph-unfill)
 
 ;; plugin config
 ;; hooks

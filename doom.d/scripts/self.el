@@ -7,12 +7,18 @@
 (defun self/eww-open-url-window-right (url)
   "Opens URL in eww-mode in a new window to the right."
   (interactive "sURL: ")
-  (let* ((new-buf-name "*article*")
-         (new-window (split-window-right)))
-    (with-selected-window new-window
-      (switch-to-buffer new-buf-name)
-      (eww-mode)
-      (eww url))))
+  (self/open-eww-window url))
+
+(defun self/eww-open-url-from-clipboard ()
+  "Opens URL from clipboard in eww-mode in a new window to the right."
+  (interactive)
+  (self/open-eww-window (current-kill 0)))
+
+(defun self/open-eww-window (url)
+  (with-selected-window (split-window-right)
+    (switch-to-buffer "*webpage*")
+    (eww-mode)
+    (eww url)))
 
 ;; thank you github.com/hrs for the inspiration
 (defun self/new-scratch-buffer ()
@@ -77,6 +83,18 @@ Version 2016-07-13"
   (interactive "r")
   (let ((fill-column most-positive-fixnum))
     (fill-region start end)))
+
+; thank you doom emacs discord user zzamboni
+; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
+(defun self/org-md-src-block (src-block _contents info)
+  "Transcode SRC-BLOCK element into Markdown format.
+CONTENTS is nil.  INFO is a plist used as a communication
+channel."
+  (let ((lang (or (org-element-property :language src-block) "")))
+    (format "```%s\n%s```\n"
+            lang
+            (org-remove-indentation
+             (org-export-format-code-default src-block info)))))
 
 (evil-define-operator self/evil-write-temp (beg end &optional bang)
   "Like evil-write, but creates a new temporary file and writes to that."
