@@ -257,11 +257,13 @@ in {
       };
       videoDrivers = [ "nvidia" ];
     };
-    gnome3 = { gnome-keyring.enable = true; };
-    dbus.packages = with pkgs; [ gnome3.gnome-keyring gcr gnome3.dconf ];
 
     # it is unclear to me how to automatically unlock gnome keyring upon login, so
     # I'm taking the shotgun approach
+
+    security.pam.services.lightdm.enableGnomeKeyring = true;
+    gnome3 = { gnome-keyring.enable = true; };
+    dbus.packages = with pkgs; [ gnome3.gnome-keyring gcr gnome3.dconf ];
 
     emacs = {
       enable = true;
@@ -292,8 +294,6 @@ in {
 
     blueman.enable = true;
   };
-
-  security.pam.services.lightdm.enableGnomeKeyring = true;
 
   # Enable sound.
   sound.enable = true;
