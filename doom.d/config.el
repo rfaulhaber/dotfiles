@@ -152,7 +152,6 @@
 
 (setq org-roam-dailies-capture-templates
       '(("d" "daily" plain (function org-roam-capture--get-point) ""
-    :immediate-finish t
     :file-name "daily/%<%Y%m%d>"
     :head "#+title: %<%Y%m%d>")))
 

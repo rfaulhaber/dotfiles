@@ -86,7 +86,7 @@ in {
     pulsemixer
     pavucontrol
     redshift
-    rofi
+    unstable.rofi
     spotify
     sxhkd
     tdesktop
