@@ -79,6 +79,12 @@
 (map! :leader "w w" #'ace-window)
 (map! :leader "s w" #'ace-swap-window)
 (map! :leader "n b" #'nix-buffer)
+(map! :leader "f b" #'calibredb-find-counsel)
+;; TODO get this to work
+;; (map! :mode calibredb-search-mode
+;;       "RET" #'calibredb-find-file)
+
+;; TODO get these to work!
 ;; (map! :mode cfw:details-mode
 ;;       "q" #'cfw:details-kill-buffer-command)
 ;; (map! :mode cfw:calendar-mode
@@ -122,7 +128,8 @@
 
 ;; org-roam
 (setq org-roam-directory "~/org/roam")
-(setq org-roam-graph-exclude-matcher '("literature" "daily"))
+;; (setq org-roam-graph-exclude-matcher '("literature" "daily"))
+(setq org-roam-graph-exclude-matcher '("daily"))
 
 ;; personal helper variables
 (setq self/org-roam-default-file-name-template "%<%Y%m%d%H%M%S>-${slug}")
@@ -155,6 +162,21 @@
     :file-name "daily/%<%Y%m%d>"
     :head "#+title: %<%Y%m%d>")))
 
+;; org-roam-server-mode
+
+(setq
+  org-roam-server-host                          "127.0.0.1"
+  org-roam-server-port                          8080
+  org-roam-server-authenticate                  nil
+  org-roam-server-export-inline-images          t
+  org-roam-server-serve-files                   nil
+  org-roam-server-served-file-extensions        '("pdf" "mp4" "ogv")
+  org-roam-server-network-poll                  t
+  org-roam-server-network-arrows                nil
+  org-roam-server-network-label-truncate        t
+  org-roam-server-network-label-truncate-length 60
+  org-roam-server-network-label-wrap-length     20)
+
 ;; org-journal
 (setq
  org-journal-dir "~/org/journal"
@@ -180,7 +202,7 @@
 (defun nov-setup ()
   (setq nov-text-width t)
   (setq visual-fill-column-center-text t)
-  (face-remap-add-relative 'variable-pitch :family "Georgia" :height 1.5))
+  (face-remap-add-relative 'variable-pitch :family "Lato" :height 1.5))
 
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
@@ -192,6 +214,8 @@
 ;; calibredb config
 (setq calibredb-root-dir "~/calibre")
 (setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
+
+; TODO bind calibredb-find-file
 
 ;; mu4e config
 (setq

@@ -169,7 +169,7 @@ in {
   environment.etc."xdg/mimeapps.list" = {
     text = ''
       [Default Applications]
-      application/pdf=evince.desktop;emacs.desktop
+      application/pdf=org.gnome.Evince.desktop;emacs.desktop
     '';
   };
 
