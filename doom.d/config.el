@@ -80,6 +80,7 @@
 (map! :leader "s w" #'ace-swap-window)
 (map! :leader "n b" #'nix-buffer)
 (map! :leader "f b" #'calibredb-find-counsel)
+(map! :leader "s R" #'counsel-evil-marks)
 ;; TODO get this to work
 ;; (map! :mode calibredb-search-mode
 ;;       "RET" #'calibredb-find-file)
