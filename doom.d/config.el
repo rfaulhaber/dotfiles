@@ -61,7 +61,6 @@
 ;; emcas config
 
 ;; custom scripts
-(load! "./scripts/buffer-move.el")
 (load! "./scripts/self.el")
 
 ;; custom bindings
@@ -81,6 +80,8 @@
 (map! :leader "n b" #'nix-buffer)
 (map! :leader "f b" #'calibredb-find-counsel)
 (map! :leader "s R" #'counsel-evil-marks)
+(map! :mode woman-mode
+      :n "RET" #'woman-follow)
 ;; TODO get this to work
 ;; (map! :mode calibredb-search-mode
 ;;       "RET" #'calibredb-find-file)
