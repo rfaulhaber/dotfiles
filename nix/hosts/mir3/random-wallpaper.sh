@@ -2,7 +2,7 @@
 set -euo pipefail
 
 KEY=$(pass wallpaper)
-API="https://api.unsplash.com/photos/random/?client_id=$KEY&orientation=landscape&collections=wallpapers,nature,architecture,experimental,film,technology,travel,textures-patterns,history"
+API="https://api.unsplash.com/photos/random/?client_id=$KEY&orientation=landscape&collections=wallpapers,nature,architecture,experimental,film,technology,travel,history"
 
 dir=$(mktemp -d)
 
