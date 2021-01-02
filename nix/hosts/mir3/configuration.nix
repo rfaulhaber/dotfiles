@@ -253,7 +253,7 @@ in {
         lightdm.enable = true;
         defaultSession = "none+bspwm";
         sessionCommands = ''
-          feh --bg-fill ~/Projects/dotfiles/nix/hosts/mir3/wallpapers/1.jpg
+          ~/Projects/dotfiles/nix/hosts/mir3/random-wallpaper.sh
         '';
       };
       videoDrivers = [ "nvidia" ];
@@ -292,6 +292,13 @@ in {
     };
 
     blueman.enable = true;
+
+    cron = {
+      enable = true;
+      systemCronJobs = [
+        "*/30 * * * * ryan ~/Projects/dotfiles/nix/hosts/mir3/random-wallpaper.sh"
+      ];
+    };
   };
 
   security.pam.services.lightdm.enableGnomeKeyring = true;
