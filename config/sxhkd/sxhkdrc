@@ -141,3 +141,12 @@ super + {Left,Down,Up,Right}
 # lockscreen
 alt + shift + x
 	betterlockscreen -l dim
+
+
+#
+# misc
+#
+
+# change wallpaper
+super + alt + b
+	  ~/Projects/dotfiles/nix/hosts/mir3/random-wallpaper.sh

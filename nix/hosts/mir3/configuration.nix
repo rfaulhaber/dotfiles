@@ -295,9 +295,9 @@ in {
 
     cron = {
       enable = true;
-      systemCronJobs = [
-        "*/30 * * * * ryan ~/Projects/dotfiles/nix/hosts/mir3/random-wallpaper.sh"
-      ];
+      # systemCronJobs = [
+      #   "*/30 * * * * ryan DISPLAY=:0 /bin/bash ~/Projects/dotfiles/nix/hosts/mir3/random-wallpaper.sh >> /tmp/wallpaper.log"
+      # ];
     };
   };
 
