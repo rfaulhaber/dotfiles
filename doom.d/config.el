@@ -82,6 +82,7 @@
 (map! :leader "s R" #'counsel-evil-marks)
 (map! :mode woman-mode
       :n "RET" #'woman-follow)
+(map! :leader "TAB c" #'+workspace/cycle)
 ;; TODO get this to work
 ;; (map! :mode calibredb-search-mode
 ;;       "RET" #'calibredb-find-file)
@@ -137,33 +138,6 @@
 (setq self/org-roam-default-file-name-template "%<%Y%m%d%H%M%S>-${slug}")
 (setq self/org-roam-default-file-head-template "#+title: ${title}\n")
 
-;; TODO change to add-to-list
-(setq org-roam-capture-templates
-      `(("d" "default" plain #'org-roam-capture--get-point
-     "%?"
-     :file-name ,self/org-roam-default-file-name-template
-     :head ,self/org-roam-default-file-head-template
-     :unnarrowed t)
-        ("p" "permanent" plain #'org-roam-capture--get-point
-     "- tags :: %?
-- source ::
-- relevant notes:
-  +"
-     :file-name ,self/org-roam-default-file-name-template
-     :head ,self/org-roam-default-file-head-template
-     :unnarrowed t)
-        ("l" "literature" plain #'org-roam-capture--get-point
-     "%?"
-     :file-name ,(format "literature/%s" self/org-roam-default-file-name-template)
-     :head ,self/org-roam-default-file-head-template
-     :unnarrowed t)
-        ))
-
-(setq org-roam-dailies-capture-templates
-      '(("d" "daily" plain (function org-roam-capture--get-point) ""
-    :file-name "daily/%<%Y%m%d>"
-    :head "#+title: %<%Y%m%d>")))
-
 ;; org-roam-server-mode
 
 (setq
@@ -182,15 +156,14 @@
 ;; org-journal
 (setq
  org-journal-dir "~/org/journal"
- org-journal-file-format "%Y%m%d.org"
- )
+ org-journal-file-format "%Y%m%d.org")
 
 ;; org-ref
 (setq org-ref-bibliography-notes "~/org/bibliography/notes.org"
-      org-ref-default-bibliography '("~/org/bibliography/references.bib")
-)
+      org-ref-default-bibliography '("~/org/bibliography/references.bib"))
 
 ;; org-publish
+;; TODO add hooks for publishing roam files
 (setq org-publish-project-alist '(
                                   ("roam"
                                   :base-directory "~/org/roam"

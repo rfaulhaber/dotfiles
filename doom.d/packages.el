@@ -69,3 +69,4 @@
 (package! direnv)
 (package! nix-buffer)
 (package! elpher)
+(package! vimgolf)
