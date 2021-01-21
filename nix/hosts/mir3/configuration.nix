@@ -100,6 +100,8 @@ in {
     #dev.util
     coreutils-full
     docker
+    docker-compose
+    docker-machine
     gcc
     git
     lldb_11
@@ -301,6 +303,8 @@ in {
     };
   };
 
+  virtualisation.docker.enable = true;
+
   security.pam.services.lightdm.enableGnomeKeyring = true;
 
   # Enable sound.
@@ -320,7 +324,7 @@ in {
 
   users.users.ryan = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "audio" "lp" "plugdev" ];
+    extraGroups = [ "wheel" "audio" "lp" "plugdev" "docker" ];
     shell = pkgs.zsh;
   };
 
