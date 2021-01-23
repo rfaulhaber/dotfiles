@@ -84,6 +84,17 @@ Version 2016-07-13"
   (let ((fill-column most-positive-fixnum))
     (fill-region start end)))
 
+(defun self/insert-current-date-at-point ()
+  "Inserts date at point in the chosen format."
+  (interactive)
+  (let* ((options '(("MM/YYYY"    . "%m/%Y")
+                    ("MM/DD"      . "%m/%d")
+                    ("MM/DD/YYYY" . "%m/%d/Y")))
+         (option (completing-read "Select a format: " (mapcar 'car options)))
+         (output (format-time-string (cdr (assoc option options)))))
+    (with-current-buffer (current-buffer)
+      (insert output))))
+
 ; thank you doom emacs discord user zzamboni
 ; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
 (defun self/org-md-src-block (src-block _contents info)
