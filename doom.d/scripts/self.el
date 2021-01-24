@@ -132,3 +132,17 @@ channel."
   "Calls mktemp and passes PREFIX to -t flag, defaulting to 'emacs'. Returns result of `mktemp`."
   (let ((pre (or prefix "emacs")))
     (s-trim-right (shell-command-to-string (format "mktemp -t %s" pre)))))
+
+(defun self/org-export-preprocessor (backend)
+  "For org-roam files, this will append all backlinks to a file to the end."
+  (when (org-roam--org-roam-file-p)
+    (let ((links (mapcar
+                  (lambda (el)
+                    ; TODO fix, probably not super performant
+                    (format " - [[%s][%s]]\n" (first el) (org-roam-db--get-title (first el))))
+                  (org-roam--get-backlinks (buffer-file-name)))))
+      (unless (eq (length links) 0)
+        (save-excursion
+          (goto-char (point-max))
+          (message "links %s" links)
+          (insert (concat "\n* Backlinks\n") (apply 'concat links)))))))
