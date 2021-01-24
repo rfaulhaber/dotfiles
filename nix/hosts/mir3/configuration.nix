@@ -160,6 +160,7 @@ in {
     libtool # vterm
     libvterm
     sqlite
+    wordnet
     unstable.mu
     unstable.isync
 
