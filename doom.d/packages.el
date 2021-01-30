@@ -70,3 +70,5 @@
 (package! nix-buffer)
 (package! elpher)
 (package! vimgolf)
+(package! ob-mermaid)
+(package! mermaid-mode)

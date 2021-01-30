@@ -83,6 +83,7 @@
 (map! :mode woman-mode
       :n "RET" #'woman-follow)
 (map! :leader "TAB c" #'+workspace/cycle)
+(map! :leader "n j t" #'org-journal-open-current-journal-file)
 ;; TODO get this to work
 ;; (map! :mode calibredb-search-mode
 ;;       "RET" #'calibredb-find-file)
