@@ -72,3 +72,4 @@
 (package! vimgolf)
 (package! ob-mermaid)
 (package! mermaid-mode)
+(package! emacs-everywhere :recipe (:host github :repo "tecosaur/emacs-everywhere"))

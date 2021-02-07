@@ -95,17 +95,11 @@ Version 2016-07-13"
     (with-current-buffer (current-buffer)
       (insert output))))
 
-; thank you doom emacs discord user zzamboni
-; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
-(defun self/org-md-src-block (src-block _contents info)
-  "Transcode SRC-BLOCK element into Markdown format.
-CONTENTS is nil.  INFO is a plist used as a communication
-channel."
-  (let ((lang (or (org-element-property :language src-block) "")))
-    (format "```%s\n%s```\n"
-            lang
-            (org-remove-indentation
-             (org-export-format-code-default src-block info)))))
+(defun self/capture-insert-file-link ()
+  "Imitation of org-insert-link but for use in org-capture template"
+  (let* ((file-path (read-file-name "File: "))
+         (file-name (read-from-minibuffer "Description: ")))
+    (format "[[%s][%s]]" file-path file-name)))
 
 (evil-define-operator self/evil-write-temp (beg end &optional bang)
   "Like evil-write, but creates a new temporary file and writes to that."
@@ -121,6 +115,18 @@ channel."
      ((null bufname) (let ((filename (self/mktemp)))
                        (write-file filename)))
      (t (self/write-temp s f)))))
+
+; thank you doom emacs discord user zzamboni
+; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
+(defun self/org-md-src-block (src-block _contents info)
+  "Transcode SRC-BLOCK element into Markdown format.
+CONTENTS is nil.  INFO is a plist used as a communication
+channel."
+  (let ((lang (or (org-element-property :language src-block) "")))
+    (format "```%s\n%s```\n"
+            lang
+            (org-remove-indentation
+             (org-export-format-code-default src-block info)))))
 
 (defun self/write-temp (beg end)
   "Writes BEG and END from current buffer into a temporary file."
