@@ -161,8 +161,11 @@ in {
     libvterm
     sqlite
     wordnet
+    graphviz
+    xdotool
     unstable.mu
     unstable.isync
+    unstable.nodePackages.mermaid-cli
 
     #system deps
     python3
@@ -197,6 +200,7 @@ in {
       theme = "agnoster";
     };
     autosuggestions.enable = true;
+    autosuggestions.highlightStyle = "fg=#41505E";
     syntaxHighlighting.enable = true;
     shellAliases = {
       pbcopy = "xclip -selection clipboard";
