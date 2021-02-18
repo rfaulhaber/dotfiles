@@ -29,6 +29,9 @@ super + Escape
 super + e
 	  emacsclient -c
 
+super + alt + e
+	  emacsclient -e "(emacs-everywhere)"
+
 super + b
 	  firefox-devedition
 

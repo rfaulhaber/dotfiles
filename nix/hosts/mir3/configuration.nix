@@ -92,6 +92,7 @@ in {
     tdesktop
     xclip
     xscreensaver
+    xtitle
     unstable.ripcord
     unstable.wally-cli
 
@@ -163,6 +164,7 @@ in {
     wordnet
     graphviz
     xdotool
+    xorg.xwininfo
     unstable.mu
     unstable.isync
     unstable.nodePackages.mermaid-cli
