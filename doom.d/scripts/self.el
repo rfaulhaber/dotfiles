@@ -116,6 +116,13 @@ Version 2016-07-13"
                        (write-file filename)))
      (t (self/write-temp s f)))))
 
+(defun self/org-insert-modified-timestamp ()
+  "Inserts inactive timestamp to bottom of file."
+  (when (org-roam--org-roam-file-p)
+    (goto-char (point-max))
+    (insert "Updated: ")
+    (org-time-stamp '(16) 'inactive)))
+
 ; thank you doom emacs discord user zzamboni
 ; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
 (defun self/org-md-src-block (src-block _contents info)
@@ -150,5 +157,4 @@ channel."
       (unless (eq (length links) 0)
         (save-excursion
           (goto-char (point-max))
-          (message "links %s" links)
           (insert (concat "\n* Backlinks\n") (apply 'concat links)))))))
