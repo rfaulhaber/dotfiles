@@ -61,7 +61,6 @@
 (package! org-roam-server)
 (package! indium)
 (package! md4rd)
-(package! emojify)
 (package! prettier)
 (package! carbon-now-sh)
 (package! calibredb)
