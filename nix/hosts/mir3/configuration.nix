@@ -133,6 +133,7 @@ in {
 
     #util
     bat
+    cifs-utils
     croc
     curl
     exa
@@ -142,12 +143,13 @@ in {
     htop
     jq
     pandoc
-    unstable.ripgrep
+    smbclient
+    texlive.combined.scheme-medium
     unstable.kvm
     unstable.qemu
     unstable.qemu-utils
+    unstable.ripgrep
     unstable.zoxide
-    texlive.combined.scheme-medium
     unzip
     wget
     zip
@@ -329,6 +331,7 @@ in {
 
   users.groups = { plugdev = { }; };
 
+  # TODO if doing a fresh install, set UID and GID
   users.users.ryan = {
     isNormalUser = true;
     extraGroups = [ "wheel" "audio" "lp" "plugdev" "docker" ];
@@ -346,7 +349,21 @@ in {
       dates = "weekly";
       options = "--delete-older-than 30d";
     };
+
   };
+
+  # fileSystems."/mnt/shares/calibre" = {
+  #   device = "//192.168.86.31/calibre";
+  #   fsType = "cifs";
+  #   options = let
+  #     # this line prevents hanging on network split
+  #     automount_opts =
+  #       "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+
+  #   in [
+  #     "${automount_opts},credentials=/etc/nixos/smb-secrets,uid=1000,gid=100"
+  #   ];
+  # };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
