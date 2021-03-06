@@ -71,3 +71,4 @@
 (package! vimgolf)
 (package! ob-mermaid)
 (package! mermaid-mode)
+;(package! djvu)
