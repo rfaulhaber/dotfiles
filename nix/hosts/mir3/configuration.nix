@@ -160,16 +160,17 @@ in {
     aspellDicts.en-computers
     aspellDicts.en-science
     cmake
+    djvulibre
+    graphviz
     libtool # vterm
     libvterm
     sqlite
+    unstable.isync
+    unstable.mu
+    unstable.nodePackages.mermaid-cli
     wordnet
-    graphviz
     xdotool
     xorg.xwininfo
-    unstable.mu
-    unstable.isync
-    unstable.nodePackages.mermaid-cli
 
     #system deps
     python3
@@ -352,18 +353,18 @@ in {
 
   };
 
-  # fileSystems."/mnt/shares/calibre" = {
-  #   device = "//192.168.86.31/calibre";
-  #   fsType = "cifs";
-  #   options = let
-  #     # this line prevents hanging on network split
-  #     automount_opts =
-  #       "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+  fileSystems."/home/ryan/calibre" = {
+    device = "//192.168.86.31/calibre";
+    fsType = "cifs";
+    options = let
+      # this line prevents hanging on network split
+      automount_opts =
+        "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
 
-  #   in [
-  #     "${automount_opts},credentials=/etc/nixos/smb-secrets,uid=1000,gid=100"
-  #   ];
-  # };
+    in [
+      "${automount_opts},credentials=/etc/nixos/smb-secrets,uid=1000,gid=100"
+    ];
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
