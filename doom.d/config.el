@@ -142,8 +142,9 @@
 ; for adding backlinks to exported org-roam files
 (add-hook 'org-export-before-processing-hook 'self/org-export-preprocessor)
 
-;; org-roam-server-mode
+; emacs-everywhere
 
+;; org-roam-server-mode
 (setq
   org-roam-server-host                          "127.0.0.1"
   org-roam-server-port                          8080
@@ -185,7 +186,6 @@
 
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
-(add-hook 'nov-mode-hook 'visual-fill-column-mode)
 
 ;; auto-mode-alist config
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
