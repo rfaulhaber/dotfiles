@@ -107,9 +107,11 @@ in {
     git
     lldb_11
     llvm_11
+    llvmPackages.bintools
     rsync
     unstable.gdb
     unstable.gnumake
+    unstable.just
     tokei
 
     #dev.js
