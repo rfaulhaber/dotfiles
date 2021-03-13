@@ -84,12 +84,25 @@ Version 2016-07-13"
   (let ((fill-column most-positive-fixnum))
     (fill-region start end)))
 
+; TODO use org-read-date?
+(defun calendar-insert-date ()
+  "Capture the date at point, exit the Calendar, insert the date."
+  (interactive)
+  (seq-let (month day year) (save-match-data (calendar-cursor-to-date))
+    (calendar-exit)
+    (let* ((date (encode-time 0 0 0 day month year))
+           (options '(("MM/DD"      . "%m/%d")
+                      ("MM/DD/YYYY" . "%m/%d/%Y")))
+            (option (completing-read "Select a format: " (mapcar 'car options)))
+            (output (format-time-string (cdr (assoc option options)) date)))
+    (insert output))))
+
 (defun self/insert-current-date-at-point ()
   "Inserts date at point in the chosen format."
   (interactive)
   (let* ((options '(("MM/YYYY"    . "%m/%Y")
                     ("MM/DD"      . "%m/%d")
-                    ("MM/DD/YYYY" . "%m/%d/Y")))
+                    ("MM/DD/YYYY" . "%m/%d/%Y")))
          (option (completing-read "Select a format: " (mapcar 'car options)))
          (output (format-time-string (cdr (assoc option options)))))
     (with-current-buffer (current-buffer)
