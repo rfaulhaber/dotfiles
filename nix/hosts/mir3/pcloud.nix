@@ -26,14 +26,14 @@ let
     # AppImage so we don't have to duplicate them here.
     alsaLib dbus-glib fuse gnome3 libdbusmenu-gtk2 udev nss;
   pname = "pcloud";
-  version = "1.8.9";
-  key = "XZjfKzXZ6h3uGRFId48VRNHHkuqajhRvMlPV";
+  version = "1.9.1";
+  key = "XZXB3fXZgXyQbnTkTm5XOJH9i6NsKX9lL21V";
   name = "${pname}-${version}";
 
   # Archive link's code thanks to: https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=pcloud-drive
   src = fetchzip {
     url = "https://api.pcloud.com/getpubzip?code=${key}&filename=${name}.zip";
-    sha256 = "1bwdwfwgy3wwzlggi8qhf5q2bq2kqiqi3mgvsr9w0mxyaxxv13r8";
+    sha256 = "vUrz4thp9tcU9T8d52DJUAbt6Jnv+E3pbUytzMR8d/E=";
     stripRoot = true;
   };
 
