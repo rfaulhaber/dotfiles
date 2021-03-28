@@ -146,6 +146,7 @@ in {
     jq
     pandoc
     smbclient
+    stow
     texlive.combined.scheme-medium
     unstable.kvm
     unstable.qemu
