@@ -64,7 +64,6 @@
 (load! "./scripts/self.el")
 
 ;; custom bindings
-(map! :leader "f t" #'treemacs)
 (map! :leader "n r t" #'org-roam-buffer-toggle-display)
 (map! :leader "o w" #'self/eww-open-url-window-right)
 (map! :leader "e" #'elfeed)
