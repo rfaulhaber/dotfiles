@@ -2,6 +2,8 @@
 
 ;; custom scripts for misc personal use
 
+(defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
+
 (require 'evil)
 
 (defun self/eww-open-url-window-right (url)
@@ -136,6 +138,21 @@ Version 2016-07-13"
     (insert "Updated: ")
     (org-time-stamp '(16) 'inactive)))
 
+(defun self/pick-random-word (word-count)
+  "Picks WORD-COUNT number of random words from the system dictionary."
+  (if (and
+       (boundp 'self/dict)
+       (file-exists-p self/dict)
+       (not (eq self/dict nil)))
+      (let* ((lines (s-split "\n" (self/slurp self/dict) t))
+             (line-len (length lines))
+             (words '()))
+        (dotimes (i word-count)
+          (let ((num (random (- line-len 1))))
+            (push (nth num lines) words)))
+        words)
+    (user-error "self/dict is not defined")))
+
 ; thank you doom emacs discord user zzamboni
 ; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
 (defun self/org-md-src-block (src-block _contents info)
@@ -171,3 +188,12 @@ channel."
         (save-excursion
           (goto-char (point-max))
           (insert (concat "\n* Backlinks\n") (apply 'concat links)))))))
+;
+; thank you stackoverflow
+(defun self/slurp (f)
+  "Like Clojure's slurp, reads a file to a value."
+  (with-temp-buffer
+    (insert-file-contents f)
+    (buffer-substring-no-properties
+       (point-min)
+       (point-max))))
