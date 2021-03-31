@@ -6,6 +6,10 @@
 
 (require 'evil)
 
+; TODO break this up into separate files!
+
+; -------------------- interactive functions ----------------------------------
+
 (defun self/eww-open-url-window-right (url)
   "Opens URL in eww-mode in a new window to the right."
   (interactive "sURL: ")
@@ -29,19 +33,6 @@
   (let ((new-window (split-window-below)))
     (with-selected-window new-window
       (switch-to-buffer (format "*%s*" (make-temp-name "scratch-"))))))
-
-;; this comes from reddit. thank you r/emacs!
-(defun self/org-md-paragraph-unfill (&rest args)
-  "Unfill CONTENTS, the `cadr' in ARGS."
-  (let* ((actual-args (car args))
-         (org-el (nth 0 actual-args))
-         (contents (nth 1 actual-args))
-         (info (nth 2 actual-args)))
-    ;; Unfill contents
-    (unless (eq (car org-el) 'src-block)
-        (setq contents (concat (mapconcat 'identity (split-string contents) " ") "\n")))
-    (list org-el contents info)))
-
 
 (defun self/org-roam-subtree-to-new-file ()
   "Moves current Org subtree to new org-roam file. Kind of hacky!"
@@ -110,33 +101,26 @@ Version 2016-07-13"
     (with-current-buffer (current-buffer)
       (insert output))))
 
+; -------------------- utility functions ---------------------------------------
+
+;; this comes from reddit. thank you r/emacs!
+(defun self/org-md-paragraph-unfill (&rest args)
+  "Unfill CONTENTS, the `cadr' in ARGS."
+  (let* ((actual-args (car args))
+         (org-el (nth 0 actual-args))
+         (contents (nth 1 actual-args))
+         (info (nth 2 actual-args)))
+    ;; Unfill contents
+    (unless (eq (car org-el) 'src-block)
+        (setq contents (concat (mapconcat 'identity (split-string contents) " ") "\n")))
+    (list org-el contents info)))
+
 (defun self/capture-insert-file-link ()
   "Imitation of org-insert-link but for use in org-capture template"
   (let* ((file-path (read-file-name "File: "))
          (file-name (read-from-minibuffer "Description: ")))
     (format "[[%s][%s]]" file-path file-name)))
 
-(evil-define-operator self/evil-write-temp (beg end &optional bang)
-  "Like evil-write, but creates a new temporary file and writes to that."
-  :motion nil
-  :move-point nil
-  :type line
-  :repeat nil
-  (interactive "<r><!>")
-  (let ((s (or beg (point-min)))
-        (f (or end (point-max)))
-        (bufname (buffer-file-name (buffer-base-buffer))))
-    (cond
-     ((null bufname) (let ((filename (self/mktemp)))
-                       (write-file filename)))
-     (t (self/write-temp s f)))))
-
-(defun self/org-insert-modified-timestamp ()
-  "Inserts inactive timestamp to bottom of file."
-  (when (org-roam--org-roam-file-p)
-    (goto-char (point-max))
-    (insert "Updated: ")
-    (org-time-stamp '(16) 'inactive)))
 
 (defun self/pick-random-word (word-count)
   "Picks WORD-COUNT number of random words from the system dictionary."
@@ -152,6 +136,17 @@ Version 2016-07-13"
             (push (nth num lines) words)))
         words)
     (user-error "self/dict is not defined")))
+
+; thank you github: https://github.com/bcbcarl/emacs-wttrin/issues/16#issuecomment-658987903
+(defun self/wttrin-fetch-raw-string (query)
+  "Get the weather information based on your QUERY."
+  (let ((url-user-agent "curl"))
+    (add-to-list 'url-request-extra-headers wttrin-default-accept-language)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         (concat "http://wttr.in/" query "?A")
+         (lambda (status) (switch-to-buffer (current-buffer))))
+      (decode-coding-string (buffer-string) 'utf-8))))
 
 ; thank you doom emacs discord user zzamboni
 ; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
@@ -197,3 +192,27 @@ channel."
     (buffer-substring-no-properties
        (point-min)
        (point-max))))
+
+; ------------------ custom evil operators ------------------------------------
+
+(evil-define-operator self/evil-write-temp (beg end &optional bang)
+  "Like evil-write, but creates a new temporary file and writes to that."
+  :motion nil
+  :move-point nil
+  :type line
+  :repeat nil
+  (interactive "<r><!>")
+  (let ((s (or beg (point-min)))
+        (f (or end (point-max)))
+        (bufname (buffer-file-name (buffer-base-buffer))))
+    (cond
+     ((null bufname) (let ((filename (self/mktemp)))
+                       (write-file filename)))
+     (t (self/write-temp s f)))))
+
+(defun self/org-insert-modified-timestamp ()
+  "Inserts inactive timestamp to bottom of file."
+  (when (org-roam--org-roam-file-p)
+    (goto-char (point-max))
+    (insert "Updated: ")
+    (org-time-stamp '(16) 'inactive)))

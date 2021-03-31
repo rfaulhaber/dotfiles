@@ -249,3 +249,8 @@
           (lambda ()
             (setenv "TERM" "xterm-256color")))
 (add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
+
+; wttrin
+; replace wttrin-fetch-raw-string with my own function
+(advice-add 'wttrin-fetch-raw-string :override 'self/wttrin-fetch-raw-string)
+(setq wttrin-default-cities '("Cleveland"))
