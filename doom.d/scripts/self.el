@@ -101,6 +101,11 @@ Version 2016-07-13"
     (with-current-buffer (current-buffer)
       (insert output))))
 
+(defun self/find-org-file ()
+  "Search for a file in `org-directory`."
+  (interactive)
+  (counsel-file-jump nil org-directory))
+
 ; -------------------- utility functions ---------------------------------------
 
 ;; this comes from reddit. thank you r/emacs!
