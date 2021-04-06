@@ -43,7 +43,6 @@
         ("nu" "Without page number" item (file+headline "~/org/inbox.org" "Inbox")
          "- %U\n  source: \n  %?" :prepend t)))
 
-;; TODO change to add-to-list
 (setq org-roam-capture-templates
       `(("d" "default" plain #'org-roam-capture--get-point
      "%?"
@@ -52,14 +51,14 @@
      :unnarrowed t)
         ("p" "permanent" plain #'org-roam-capture--get-point
      "- tags :: %?
-- source ::
-- relevant notes:
   +"
      :file-name ,self/org-roam-default-file-name-template
      :head ,self/org-roam-default-file-head-template
      :unnarrowed t)
         ("l" "literature" plain #'org-roam-capture--get-point
-     "%?"
+     "- source ::
+* Notes
+%?"
      :file-name ,(format "literature/%s" self/org-roam-default-file-name-template)
      :head ,self/org-roam-default-file-head-template
      :unnarrowed t)
