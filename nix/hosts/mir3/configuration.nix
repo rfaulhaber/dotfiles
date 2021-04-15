@@ -218,6 +218,8 @@ in {
       ls = "exa";
       l = "exa -lah";
       ll = "exa -lh";
+      ec = "emacsclient";
+      eo = "emacsclient -n"; # "emacs open"
     };
   };
 

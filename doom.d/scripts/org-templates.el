@@ -50,8 +50,7 @@
      :head ,self/org-roam-default-file-head-template
      :unnarrowed t)
         ("p" "permanent" plain #'org-roam-capture--get-point
-     "- tags :: %?
-  +"
+     "- tags :: %?"
      :file-name ,self/org-roam-default-file-name-template
      :head ,self/org-roam-default-file-head-template
      :unnarrowed t)

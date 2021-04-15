@@ -65,25 +65,25 @@
 
 ;; custom bindings
 (map! :leader "n r t" #'org-roam-buffer-toggle-display)
-(map! :leader "o w" #'self/eww-open-url-window-right)
-(map! :leader "e" #'elfeed)
+(map! :leader "o w"   #'self/eww-open-url-window-right)
+(map! :leader "e"     #'elfeed)
 (map! :mode org-mode
       :leader "c l" nil
       :leader "c l l" #'link-hint-copy-link
       :leader "c l p" #'link-hint-copy-link-at-point)
-(map! :leader "." #'+ivy/switch-buffer)
-(map! :leader "d" #'dired)
-(map! :nv "g s l" #'avy-goto-line)
-(map! :leader "w w" #'ace-window)
-(map! :leader "s w" #'ace-swap-window)
-(map! :leader "n b" #'nix-buffer)
-(map! :leader "f b" #'calibredb-find-counsel)
-(map! :leader "s R" #'counsel-evil-marks)
+(map! :leader "."     #'+ivy/switch-buffer)
+(map! :leader "d"     #'dired)
+(map! :nv "g s l"     #'avy-goto-line)
+(map! :leader "w w"   #'ace-window)
+(map! :leader "s w"   #'ace-swap-window)
+(map! :leader "n b"   #'nix-buffer)
+(map! :leader "f b"   #'calibredb-find-counsel)
+(map! :leader "s R"   #'counsel-evil-marks)
 (map! :mode woman-mode
-      :n "RET" #'woman-follow)
+      :n "RET"        #'woman-follow)
 (map! :leader "TAB c" #'+workspace/cycle)
 (map! :leader "n j t" #'org-journal-open-current-journal-file)
-(map! :leader "f o" #'self/find-org-file)
+(map! :leader "f o"   #'self/find-org-file)
 ;; TODO get this to work
 ;; (map! :mode calibredb-search-mode
 ;;       "RET" #'calibredb-find-file)
@@ -101,6 +101,8 @@
 ;; Tramp shell prompt, to allow it to work with terminal colors
 ;; thank you stackoverflow
 (setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
+
+(add-to-list 'yas-snippet-dirs "./snippets")
 
 ;; GPG key used by org-crypt
 (setq org-crypt-key "A2205925F3B6C5B96F26C3CB544650C5A306061B")
