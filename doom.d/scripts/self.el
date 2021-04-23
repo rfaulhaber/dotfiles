@@ -77,8 +77,9 @@ Version 2016-07-13"
   (let ((fill-column most-positive-fixnum))
     (fill-region start end)))
 
-; TODO use org-read-date?
-(defun calendar-insert-date ()
+; TODO check if in calendar-mode first
+; TODO refactor next two functions
+(defun self/calendar-insert-date ()
   "Capture the date at point, exit the Calendar, insert the date."
   (interactive)
   (seq-let (month day year) (save-match-data (calendar-cursor-to-date))
@@ -105,6 +106,24 @@ Version 2016-07-13"
   "Search for a file in `org-directory`."
   (interactive)
   (counsel-file-jump nil org-directory))
+
+; TODO refactor next two functions
+(defun self/org-roam-find-files-created-today ()
+  "Returns a list of files under the org roam directory that were created today."
+  (interactive)
+  (let* ((today-date-format (format-time-string "%Y%m%d"))
+         (org-files (org-roam--directory-files-recursively org-roam-directory (format "%s.*" today-date-format)))
+         (input-choice (completing-read "Select file: " org-files)))
+    (find-file input-choice)))
+
+(defun self/org-roam-find-files-for-date ()
+  "Returns a list of files under the org roam directory for selected date."
+  (interactive)
+  (when (string= major-mode "calendar-mode")
+    (let* ((date (format-time-string "%Y%m%d" (self/get-date-from-calendar)))
+           (org-files (org-roam--directory-files-recursively org-roam-directory (format "%s.*" date)))
+           (input-choice (completing-read "Select file: " org-files)))
+      (find-file input-choice))))
 
 ; -------------------- utility functions ---------------------------------------
 
@@ -188,15 +207,22 @@ channel."
         (save-excursion
           (goto-char (point-max))
           (insert (concat "\n* Backlinks\n") (apply 'concat links)))))))
-;
+
 ; thank you stackoverflow
 (defun self/slurp (f)
-  "Like Clojure's slurp, reads a file to a value."
+  "Like Clojure's slurp; reads a file to a value."
   (with-temp-buffer
     (insert-file-contents f)
     (buffer-substring-no-properties
        (point-min)
        (point-max))))
+
+(defun self/get-date-from-calendar ()
+  "Returns encoded time of date under point in calendar-mode."
+  (when (string= major-mode "calendar-mode")
+    (seq-let (month day year) (save-match-data (calendar-cursor-to-date))
+      (calendar-exit)
+      (encode-time 0 0 0 day month year))))
 
 ; ------------------ custom evil operators ------------------------------------
 
