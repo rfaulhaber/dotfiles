@@ -106,13 +106,15 @@ in {
     gcc
     git
     lldb_11
-    llvm_11
     llvmPackages.bintools
+    llvm_11
     rsync
+    shellcheck
+    shfmt
+    tokei
     unstable.gdb
     unstable.gnumake
     unstable.just
-    tokei
 
     #dev.js
     nodejs_latest
