@@ -137,10 +137,6 @@
 ;; (setq org-roam-graph-exclude-matcher '("literature" "daily"))
 (setq org-roam-graph-exclude-matcher '("daily"))
 
-;; personal helper variables
-(setq self/org-roam-default-file-name-template "%<%Y%m%d%H%M%S>-${slug}")
-(setq self/org-roam-default-file-head-template "#+title: ${title}\n")
-
 ; for adding backlinks to exported org-roam files
 (add-hook 'org-export-before-processing-hook 'self/org-export-preprocessor)
 
