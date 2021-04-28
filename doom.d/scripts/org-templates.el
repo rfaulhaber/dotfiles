@@ -2,23 +2,6 @@
 ;; read about org capture templates here:
 ;; https://orgmode.org/manual/Capture-templates.html
 
-(setq original-capture-templates org-capture-templates)
-
-;; for debugging capture templates...
-(defun reset-capture-templates ()
-  (setq org-capture-templates original-capture-templates))
-
-;; (add-to-list 'org-capture-templates
-;;               '("r" "Reading"))
-;; (add-to-list 'org-capture-templates
-;;               '("ri" "Insert link"))
-;; (add-to-list 'org-capture-templates
-;;              '("ria" "Insert article" entry (file+headline "~/org/reading.org" "Articles")
-;;               "** [ ] %(org-cliplink-capture)\n" :immediate-finish t))
-;; (add-to-list 'org-capture-templates
-;;              '("rib" "Insert book" entry (file+headline "~/org/reading.org" "Books")
-;;               "** [ ] %(org-cliplink-capture)\n" :immediate-finish t))
-
 (setq self/reading-capture-list-item-template "** [ ] %(org-cliplink-capture)\n")
 (setq self/reading-capture-find-file-template "** [ ] %(self/capture-insert-file-link)")
 
@@ -35,6 +18,8 @@
          ,self/reading-capture-list-item-template :immediate-finish t)
         ("riv" "Insert video" entry (file+headline "~/org/reading.org" "Videos")
          ,self/reading-capture-list-item-template :immediate-finish t)
+        ("rir" "Insert recipe" item (file+headline "~/org/recipes.org" "Recipes")
+         "%(org-cliplink-capture)\n" :immediate-finish t)
         ("rf" "Insert file")
         ("rfa" "Insert article" entry (file+headline "~/org/reading.org" "Articles")
          ,self/reading-capture-find-file-template :immediate-finish t)
@@ -68,12 +53,13 @@
 
         ; literature from link
         ("L" "literature from link" plain #'org-roam-capture--get-point
-         "- source :: %(org-cliplink-capture)
+         "#+roam_key: %(car kill-ring-yank-pointer)
+- source :: %(org-cliplink-capture)
 
 * Notes
 %?"
          :file-name ,(format "literature/%s" self/org-roam-default-file-name-template)
-         :head ,(concat self/org-roam-default-file-head-template (format "#+roam_key: %s\n" (org-cliplink-clipboard-content)))
+         :head ,self/org-roam-default-file-head-template
          :unnarrowed t)
 
         ; category notes. like default notes, but by default immediately finish
