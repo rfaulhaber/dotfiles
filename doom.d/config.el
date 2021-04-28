@@ -257,3 +257,12 @@
 ; replace wttrin-fetch-raw-string with my own function
 (advice-add 'wttrin-fetch-raw-string :override 'self/wttrin-fetch-raw-string)
 (setq wttrin-default-cities '("Cleveland"))
+
+;; quickrun config
+;; TODO put somewhere else?
+;; TODO make it so that this will automatically open in output buffer
+;; (quickrun-add-command "mermaid"
+;;   '((:command . "mmdc")
+;;     (:exec    . ("%c -i %s -o %s.svg" "cat %s.svg"))
+;;     (:outputter . "browser"))
+;;   :mode 'mermaid-mode)
