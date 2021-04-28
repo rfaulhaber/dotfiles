@@ -19,7 +19,7 @@ filename="$dir/$id.jpg"
 curl -o $filename $url
 
 tmp_log=$(mktemp)
-jq --arg id "$id" --arg description "$desc" --arg timestamp "$timestamp" --arg url "$url" '. += [{id: $id, description: $description, timestamp: $timestamp, url: $url}]' $LOG_FILE > $tmp_log
+jq --arg id "$id" --arg description "$desc" --arg timestamp "$timestamp" --arg url "$url" '. += [{id: $id, description: $description, timestamp: $timestamp, url: $url}]' $LOG_FILE >$tmp_log
 mv $tmp_log $LOG_FILE
 
 feh --bg-fill $filename
