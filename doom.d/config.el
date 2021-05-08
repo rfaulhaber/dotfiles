@@ -72,15 +72,15 @@
       :leader "c l l" #'link-hint-copy-link
       :leader "c l p" #'link-hint-copy-link-at-point)
 (map! :leader "."     #'+ivy/switch-buffer)
-(map! :leader "d"     #'dired)
+(map! :leader "f H"   #'self/dired-here)
 (map! :nv "g s l"     #'avy-goto-line)
 (map! :leader "w w"   #'ace-window)
 (map! :leader "s w"   #'ace-swap-window)
 (map! :leader "n b"   #'nix-buffer)
 (map! :leader "f b"   #'calibredb-find-counsel)
 (map! :leader "s R"   #'counsel-evil-marks)
-(map! :mode woman-mode
-      :n "RET"        #'woman-follow)
+(map! :mode Man-mode
+      :n "TAB"        #'man-follow)
 (map! :leader "TAB c" #'+workspace/cycle)
 (map! :leader "n j t" #'org-journal-open-current-journal-file)
 (map! :leader "f o"   #'self/find-org-file)
