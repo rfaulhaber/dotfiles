@@ -4,8 +4,6 @@
 
 (defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
 
-(require 'evil)
-
 ; TODO break this up into separate files!
 
 ; -------------------- interactive functions ----------------------------------
@@ -124,6 +122,18 @@ Version 2016-07-13"
            (org-files (org-roam--directory-files-recursively org-roam-directory (format "%s.*" date)))
            (input-choice (completing-read "Select file: " org-files)))
       (find-file input-choice))))
+
+(defun self/dired-here ()
+  "Opens a dired buffer in the current directory."
+  (interactive)
+  (dired "."))
+
+(defun self/mu4e-load-path-fix ()
+  "This is a workaround for when Doom / Emacs does not add mu4e to the load path."
+  (interactive)
+  (let ((path (string-trim (shell-command-to-string "fd --type d 'mu4e' /nix/store"))))
+    (unless (member path load-path)
+      (add-to-list 'load-path path))))
 
 ; -------------------- utility functions ---------------------------------------
 
