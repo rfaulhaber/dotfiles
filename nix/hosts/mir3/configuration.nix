@@ -17,6 +17,7 @@ in {
   nixpkgs.config.pulseaudio = true;
 
   boot.tmpOnTmpfs = true;
+  boot.cleanTmpDir = true;
   boot.loader = {
     systemd-boot.enable = true;
     grub = {
@@ -355,7 +356,7 @@ in {
     gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than 30d";
+      options = "--delete-older-than 7d";
     };
 
   };

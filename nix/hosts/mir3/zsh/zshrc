@@ -1,6 +1,8 @@
 export PATH=$PATH:~/.emacs.d/bin
 source ./.zoxide.zsh
 
+eval "$(direnv hook zsh)"
+
 function pdf {
          evince "$1" &
          disown
