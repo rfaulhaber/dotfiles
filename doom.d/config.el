@@ -1,8 +1,14 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
+;; load machine-specific and type-specific configs
+(load! (format "./hosts/%s" (system-name)) nil t)
+(load! (format "./hosts/%s"
+               (case system-type
+                 ('gnu/linux "linux")
+                 ('darwin "darwin"))) nil t)
 
+;; load custom code
+(load! "./scripts/self.el")
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -24,13 +30,11 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 
-(setq self/font-size (if (string= (system-name) "mir3") 24 14))
-(setq doom-font (font-spec :family "Hack Nerd Font" :size self/font-size))
+(setq doom-font (font-spec :family "Hack Nerd Font" :size config/font-size))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-;;(setq doom-theme 'doom-moonlight)
 (setq doom-theme 'doom-city-lights)
 
 ;; If you use `org' and don't want your org files in the default location below,
@@ -59,9 +63,6 @@
 ;; they are implemented.
 
 ;; emcas config
-
-;; custom scripts
-(load! "./scripts/self.el")
 
 ;; custom bindings
 (map! :leader "n r t" #'org-roam-buffer-toggle-display)
@@ -102,6 +103,7 @@
 ;; thank you stackoverflow
 (setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
 
+; yas-snippet
 (add-to-list 'yas-snippet-dirs "./snippets")
 
 ;; GPG key used by org-crypt
@@ -109,10 +111,6 @@
 
 ;; use rust-analyzer for rust lsp server
 (setq rustic-lsp-server 'rust-analyzer)
-
-;; set aspell program specifically on mac
-(when (string= system-type "darwin")
-  (setq ispell-program-name "/usr/local/bin/aspell"))
 
 ;; org-md
 ;; the default md exporter for source code blocks is bad, so we replace it
@@ -134,7 +132,6 @@
 
 ;; org-roam
 (setq org-roam-directory "~/org/roam")
-;; (setq org-roam-graph-exclude-matcher '("literature" "daily"))
 (setq org-roam-graph-exclude-matcher '("daily"))
 
 ; for adding backlinks to exported org-roam files

@@ -101,7 +101,7 @@ Version 2016-07-13"
       (insert output))))
 
 (defun self/find-org-file ()
-  "Search for a file in `org-directory`."
+  "Search for a file in `org-directory'."
   (interactive)
   (counsel-file-jump nil org-directory))
 
