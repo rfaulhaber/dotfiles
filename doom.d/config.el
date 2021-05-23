@@ -85,6 +85,7 @@
 (map! :leader "TAB c" #'+workspace/cycle)
 (map! :leader "n j t" #'org-journal-open-current-journal-file)
 (map! :leader "f o"   #'self/find-org-file)
+(map! :leader "d"     #'dired)
 ;; TODO get this to work
 ;; (map! :mode calibredb-search-mode
 ;;       "RET" #'calibredb-find-file)

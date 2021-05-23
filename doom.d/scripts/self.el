@@ -4,9 +4,9 @@
 
 (defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
 
-; TODO break this up into separate files!
+;; TODO break this up into separate files!
 
-; -------------------- interactive functions ----------------------------------
+;; -------------------- interactive functions ----------------------------------
 
 (defun self/eww-open-url-window-right (url)
   "Opens URL in eww-mode in a new window to the right."
@@ -57,14 +57,14 @@
 
 (defun self/org-paste-quote (page-number)
   "Inserts latest element of kill ring into quote block."
-  ; TODO automatically insert into document
+  ;; TODO automatically insert into document
   (interactive "sPage number: ")
   (insert (format "- %s\n" page-number))
   (insert "\t#+begin_quote\n\t")
   (yank)
   (insert "\n\t#+end_quote"))
 
-; thank you xah
+;; thank you xah
 (defun self/unfill-region (start end)
   "Replace newline chars in region by single spaces.
 This command does the inverse of `fill-region'.
@@ -75,8 +75,8 @@ Version 2016-07-13"
   (let ((fill-column most-positive-fixnum))
     (fill-region start end)))
 
-; TODO check if in calendar-mode first
-; TODO refactor next two functions
+;; TODO check if in calendar-mode first
+;; TODO refactor next two functions
 (defun self/calendar-insert-date ()
   "Capture the date at point, exit the Calendar, insert the date."
   (interactive)
@@ -135,7 +135,7 @@ Version 2016-07-13"
     (unless (member path load-path)
       (add-to-list 'load-path path))))
 
-; -------------------- utility functions ---------------------------------------
+;; -------------------- utility functions ---------------------------------------
 
 ;; this comes from reddit. thank you r/emacs!
 (defun self/org-md-paragraph-unfill (&rest args)
@@ -171,7 +171,7 @@ Version 2016-07-13"
         words)
     (user-error "self/dict is not defined")))
 
-; thank you github: https://github.com/bcbcarl/emacs-wttrin/issues/16#issuecomment-658987903
+;; thank you github: https://github.com/bcbcarl/emacs-wttrin/issues/16#issuecomment-658987903
 (defun self/wttrin-fetch-raw-string (query)
   "Get the weather information based on your QUERY."
   (let ((url-user-agent "curl"))
@@ -182,8 +182,8 @@ Version 2016-07-13"
          (lambda (status) (switch-to-buffer (current-buffer))))
       (decode-coding-string (buffer-string) 'utf-8))))
 
-; thank you doom emacs discord user zzamboni
-; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
+;; thank you doom emacs discord user zzamboni
+;; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
 (defun self/org-md-src-block (src-block _contents info)
   "Transcode SRC-BLOCK element into Markdown format.
 CONTENTS is nil.  INFO is a plist used as a communication
@@ -218,7 +218,7 @@ channel."
           (goto-char (point-max))
           (insert (concat "\n* Backlinks\n") (apply 'concat links)))))))
 
-; thank you stackoverflow
+;; thank you stackoverflow
 (defun self/slurp (f)
   "Like Clojure's slurp; reads a file to a value."
   (with-temp-buffer
@@ -234,7 +234,7 @@ channel."
       (calendar-exit)
       (encode-time 0 0 0 day month year))))
 
-; ------------------ custom evil operators ------------------------------------
+;; ------------------ custom evil operators ------------------------------------
 
 (evil-define-operator self/evil-write-temp (beg end &optional bang)
   "Like evil-write, but creates a new temporary file and writes to that."
