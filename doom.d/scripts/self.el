@@ -135,6 +135,13 @@ Version 2016-07-13"
     (unless (member path load-path)
       (add-to-list 'load-path path))))
 
+(defun self/copy-line-number-reference (arg)
+  (interactive "p")
+  (when-let ((file-name (buffer-file-name)))
+    (pcase arg
+      (1 (kill-new (format "%s:%s" file-name (line-number-at-pos))))
+      (4 (kill-new (format "%s:%s:%s" file-name (line-number-at-pos) (current-column)))))))
+
 ;; -------------------- utility functions ---------------------------------------
 
 ;; this comes from reddit. thank you r/emacs!
