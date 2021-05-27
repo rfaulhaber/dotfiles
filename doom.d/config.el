@@ -71,7 +71,8 @@
 (map! :mode org-mode
       :leader "c l" nil
       :leader "c l l" #'link-hint-copy-link
-      :leader "c l p" #'link-hint-copy-link-at-point)
+      :leader "c l p" #'link-hint-copy-link-at-point
+      :leader "m s s" #'org-insert-subheading)
 (map! :leader "."     #'+ivy/switch-buffer)
 (map! :leader "f H"   #'self/dired-here)
 (map! :nv "g s l"     #'avy-goto-line)
@@ -86,15 +87,6 @@
 (map! :leader "n j t" #'org-journal-open-current-journal-file)
 (map! :leader "f o"   #'self/find-org-file)
 (map! :leader "d"     #'dired)
-;; TODO get this to work
-;; (map! :mode calibredb-search-mode
-;;       "RET" #'calibredb-find-file)
-
-;; TODO get these to work!
-;; (map! :mode cfw:details-mode
-;;       "q" #'cfw:details-kill-buffer-command)
-;; (map! :mode cfw:calendar-mode
-;;       "RET" #'cfw:show-details-command)
 
 ;; custom ex commands for evil
 (evil-ex-define-cmd "wt[emp]" #'self/evil-write-temp)
@@ -103,6 +95,10 @@
 ;; Tramp shell prompt, to allow it to work with terminal colors
 ;; thank you stackoverflow
 (setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
+
+;; wdired
+;; allow me to edit permissions in wdired
+(setq wdired-allow-to-change-permissions t)
 
 ; yas-snippet
 (add-to-list 'yas-snippet-dirs "./snippets")
