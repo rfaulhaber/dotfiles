@@ -56,6 +56,7 @@ in {
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
+  # TODO clean up!
   environment.systemPackages = with pkgs; [
     oh-my-zsh
     zsh
@@ -67,7 +68,7 @@ in {
     bspwm
     calibre
     chromium
-    discord
+    unstable.discord
     evince
     feh
     firefox-devedition-bin

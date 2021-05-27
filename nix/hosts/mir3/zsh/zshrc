@@ -1,5 +1,6 @@
-export PATH=$PATH:~/.emacs.d/bin
+export PATH=$PATH:~/.emacs.d/bin:~/.local/share/cargo/bin
 source ./.zoxide.zsh
+export _JAVA_AWT_WM_NONREPARENTING=1
 
 eval "$(direnv hook zsh)"
 
