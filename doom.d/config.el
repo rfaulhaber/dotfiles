@@ -1,11 +1,17 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
+(setq self/system-name (string-trim-right (system-name) "\.lan"))
+(setq self/system-type (pcase system-type
+                          ('gnu/linux "linux")
+                          ('darwin "darwin")))
+
+(message "loading configuration for %s on system %s"
+         self/system-name
+         self/system-type)
+
 ;; load machine-specific and type-specific configs
-(load! (format "./hosts/%s" (system-name)) nil t)
-(load! (format "./hosts/%s"
-               (case system-type
-                 ('gnu/linux "linux")
-                 ('darwin "darwin"))) nil t)
+(load! (format "./hosts/%s" self/system-name) nil t)
+(load! (format "./hosts/%s" self/system-type) nil t)
 
 ;; load custom code
 (load! "./scripts/self.el")
@@ -29,7 +35,6 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-
 (setq doom-font (font-spec :family "Hack Nerd Font" :size config/font-size))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
@@ -100,7 +105,7 @@
 ;; allow me to edit permissions in wdired
 (setq wdired-allow-to-change-permissions t)
 
-; yas-snippet
+                                        ; yas-snippet
 (add-to-list 'yas-snippet-dirs "./snippets")
 
 ;; GPG key used by org-crypt
@@ -120,8 +125,8 @@
 (setq org-agenda-files
       (mapcar
        (lambda (str)
-        (concat org-directory "/" str))
-      (list "todo.org" "habits.org" "projects.org" "blog.org")))
+         (concat org-directory "/" str))
+       (list "todo.org" "habits.org" "projects.org" "blog.org")))
 
 ;; deft
 (setq deft-directory "~/org")
@@ -131,24 +136,24 @@
 (setq org-roam-directory "~/org/roam")
 (setq org-roam-graph-exclude-matcher '("daily"))
 
-; for adding backlinks to exported org-roam files
+                                        ; for adding backlinks to exported org-roam files
 (add-hook 'org-export-before-processing-hook 'self/org-export-preprocessor)
 
-; emacs-everywhere
+                                        ; emacs-everywhere
 
 ;; org-roam-server-mode
 (setq
-  org-roam-server-host                          "127.0.0.1"
-  org-roam-server-port                          8080
-  org-roam-server-authenticate                  nil
-  org-roam-server-export-inline-images          t
-  org-roam-server-serve-files                   nil
-  org-roam-server-served-file-extensions        '("pdf" "mp4" "ogv")
-  org-roam-server-network-poll                  t
-  org-roam-server-network-arrows                nil
-  org-roam-server-network-label-truncate        t
-  org-roam-server-network-label-truncate-length 60
-  org-roam-server-network-label-wrap-length     20)
+ org-roam-server-host                          "127.0.0.1"
+ org-roam-server-port                          8080
+ org-roam-server-authenticate                  nil
+ org-roam-server-export-inline-images          t
+ org-roam-server-serve-files                   nil
+ org-roam-server-served-file-extensions        '("pdf" "mp4" "ogv")
+ org-roam-server-network-poll                  t
+ org-roam-server-network-arrows                nil
+ org-roam-server-network-label-truncate        t
+ org-roam-server-network-label-truncate-length 60
+ org-roam-server-network-label-wrap-length     20)
 
 ;; org-journal
 (setq
@@ -163,11 +168,11 @@
 ;; TODO add hooks for publishing roam files
 (setq org-publish-project-alist '(
                                   ("roam"
-                                  :base-directory "~/org/roam"
-                                  :base-extension "org"
-                                  :publishing-directory "~/Projects/roam-notes-site"
-                                  :publishing-function org-html-publish-to-html
-                                  :recursive t)
+                                   :base-directory "~/org/roam"
+                                   :base-extension "org"
+                                   :publishing-directory "~/Projects/roam-notes-site"
+                                   :publishing-function org-html-publish-to-html
+                                   :recursive t)
                                   ))
 
 ;; nov config
@@ -186,23 +191,23 @@
 (setq calibredb-root-dir "~/calibre")
 (setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
 
-; TODO bind calibredb-find-file
+                                        ; TODO bind calibredb-find-file
 
 ;; mu4e config
 (setq
-  mail-user-agent 'mu4e-user-agent
-  mu4e-sent-messages-behavior 'sent
-  mu4e-main-mode-hook (lambda ()
-                        (setq mu4e-sent-messages-behavior 'sent))
-  mu4e-sent-folder   "/Sent"
-  mu4e-drafts-folder "/Drafts"
-  mu4e-trash-folder  "/Trash"
-  mu4e-refile-folder "/Archive"
-  smtpmail-default-smtp-server "smtp.fastmail.com"
-  smtpmail-smtp-server "smtp.fastmail.com"
-  smtpmail-smtp-user "ryf@sent.as"
-  smtpmail-local-domain "sent.as"
-  smtpmail-smtp-service 587)
+ mail-user-agent 'mu4e-user-agent
+ mu4e-sent-messages-behavior 'sent
+ mu4e-main-mode-hook (lambda ()
+                       (setq mu4e-sent-messages-behavior 'sent))
+ mu4e-sent-folder   "/Sent"
+ mu4e-drafts-folder "/Drafts"
+ mu4e-trash-folder  "/Trash"
+ mu4e-refile-folder "/Archive"
+ smtpmail-default-smtp-server "smtp.fastmail.com"
+ smtpmail-smtp-server "smtp.fastmail.com"
+ smtpmail-smtp-user "ryf@sent.as"
+ smtpmail-local-domain "sent.as"
+ smtpmail-smtp-service 587)
 
 ;; elfeed config
 (setq rmh-elfeed-org-files (list (concat org-directory "/elfeed.org")))
@@ -211,7 +216,7 @@
 ;; hooks
 
 (add-hook 'after-init-hook 'org-roam-mode)
-;(add-hook 'after-init-hook 'org-trello-mode)
+                                        ;(add-hook 'after-init-hook 'org-trello-mode)
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 (add-hook 'js2-mode-hook 'prettier-js-mode)
 (add-hook 'nov-mode-hook 'nov-setup)
@@ -227,7 +232,7 @@
 ;; after hooks
 (after! org
   (load! "./scripts/org-templates.el")
-)
+  )
 
 ;; load languages for org-babel
 (org-babel-do-load-languages
@@ -243,8 +248,8 @@
             (setenv "TERM" "xterm-256color")))
 (add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
 
-; wttrin
-; replace wttrin-fetch-raw-string with my own function
+                                        ; wttrin
+                                        ; replace wttrin-fetch-raw-string with my own function
 (advice-add 'wttrin-fetch-raw-string :override 'self/wttrin-fetch-raw-string)
 (setq wttrin-default-cities '("Cleveland"))
 
