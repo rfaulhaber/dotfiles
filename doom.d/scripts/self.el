@@ -48,12 +48,12 @@
         (goto-char header-start)
         (kill-line)
         (let ((new-buf (with-temp-buffer
-          (org-mode)
-          (insert "\n")
-          (insert (car (cdr kill-ring)))
-          (buffer-string))))
+                         (org-mode)
+                         (insert "\n")
+                         (insert (car (cdr kill-ring)))
+                         (buffer-string))))
           (org-roam-insert nil (list title) nil title))
-          (insert new-buf)))))
+        (insert new-buf)))))
 
 (defun self/org-paste-quote (page-number)
   "Inserts latest element of kill ring into quote block."
@@ -85,9 +85,9 @@ Version 2016-07-13"
     (let* ((date (encode-time 0 0 0 day month year))
            (options '(("MM/DD"      . "%m/%d")
                       ("MM/DD/YYYY" . "%m/%d/%Y")))
-            (option (completing-read "Select a format: " (mapcar 'car options)))
-            (output (format-time-string (cdr (assoc option options)) date)))
-    (insert output))))
+           (option (completing-read "Select a format: " (mapcar 'car options)))
+           (output (format-time-string (cdr (assoc option options)) date)))
+      (insert output))))
 
 (defun self/insert-current-date-at-point ()
   "Inserts date at point in the chosen format."
@@ -103,9 +103,11 @@ Version 2016-07-13"
 (defun self/find-org-file ()
   "Search for a file in `org-directory'."
   (interactive)
-  (counsel-file-jump nil org-directory))
+  (self/find-file-non-recursive "~/org" :exclude-directories t :filter-fn (lambda (file)
+                                                                            (not
+                                                                             (string-match-p (rx (seq any "_archive")) file)))))
 
-; TODO refactor next two functions
+;; TODO refactor next two functions
 (defun self/org-roam-find-files-created-today ()
   "Returns a list of files under the org roam directory that were created today."
   (interactive)
@@ -153,7 +155,7 @@ Version 2016-07-13"
          (info (nth 2 actual-args)))
     ;; Unfill contents
     (unless (eq (car org-el) 'src-block)
-        (setq contents (concat (mapconcat 'identity (split-string contents) " ") "\n")))
+      (setq contents (concat (mapconcat 'identity (split-string contents) " ") "\n")))
     (list org-el contents info)))
 
 (defun self/capture-insert-file-link ()
@@ -217,7 +219,7 @@ channel."
   (when (org-roam--org-roam-file-p)
     (let ((links (mapcar
                   (lambda (el)
-                    ; TODO fix, probably not super performant
+                                        ; TODO fix, probably not super performant
                     (format " - [[%s][%s]]\n" (first el) (org-roam-db--get-title (first el))))
                   (org-roam--get-backlinks (buffer-file-name)))))
       (unless (eq (length links) 0)
@@ -231,8 +233,8 @@ channel."
   (with-temp-buffer
     (insert-file-contents f)
     (buffer-substring-no-properties
-       (point-min)
-       (point-max))))
+     (point-min)
+     (point-max))))
 
 (defun self/get-date-from-calendar ()
   "Returns encoded time of date under point in calendar-mode."
@@ -241,6 +243,23 @@ channel."
       (calendar-exit)
       (encode-time 0 0 0 day month year))))
 
+(cl-defun self/find-file-non-recursive (dir &key prompt filter-fn exclude-directories show-hidden)
+  "Like `counsel-find-file' for DIR, but excludes directories and their children.
+PROMPT sets the `ivy-read' prompt.
+FILTER-FN is a function to filter the list of retrieved files from the directory.
+EXCLUDE-DIRECTORIES, if non-nil, will remove any directories from the list.
+If SHOW-HIDDEN is non-nil, will include any files that begin with ."
+  (let* ((dir (string-trim-right dir "/"))
+         (filter (rx line-start (not ".") (zero-or-more any) eol)) ; ^[^.].*$
+         (files (directory-files dir nil (if show-hidden nil filter)))
+         (filtered-files (if filter-fn (seq-filter filter-fn files) files))
+         (non-dir-files (if exclude-directories (seq-filter (lambda (file)
+                                                              (not
+                                                               (file-directory-p (concat dir "/" file))))
+                                                            filtered-files)))
+         (selection (ivy-read (or prompt "Find file: ") non-dir-files))
+         (file-name (concat dir selection)))
+    (find-file file-name)))
 ;; ------------------ custom evil operators ------------------------------------
 
 (evil-define-operator self/evil-write-temp (beg end &optional bang)
