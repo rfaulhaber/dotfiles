@@ -120,8 +120,9 @@ in {
 
     #dev.js
     nodejs_latest
-    unstable.nodePackages.typescript
-    unstable.nodePackages.typescript-language-server
+    nodePackages_latest.typescript
+    nodePackages_latest.typescript-language-server
+    nodePackages_latest.prettier
     nodePackages.yarn
 
     #dev.rust
