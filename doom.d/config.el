@@ -2,8 +2,8 @@
 
 (setq self/system-name (string-trim-right (system-name) "\.lan"))
 (setq self/system-type (pcase system-type
-                          ('gnu/linux "linux")
-                          ('darwin "darwin")))
+                         ('gnu/linux "linux")
+                         ('darwin "darwin")))
 
 (message "loading configuration for %s on system %s"
          self/system-name
