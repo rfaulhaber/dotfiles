@@ -103,9 +103,11 @@ Version 2016-07-13"
 (defun self/find-org-file ()
   "Search for a file in `org-directory'."
   (interactive)
-  (self/find-file-non-recursive "~/org" :exclude-directories t :filter-fn (lambda (file)
-                                                                            (not
-                                                                             (string-match-p (rx (seq any "_archive")) file)))))
+  (self/find-file-non-recursive "~/org"
+                                :exclude-directories t
+                                :filter-fn (lambda (file)
+                                             (not
+                                              (string-match-p (rx (seq any "_archive")) file)))))
 
 ;; TODO refactor next two functions
 (defun self/org-roam-find-files-created-today ()
@@ -249,7 +251,7 @@ PROMPT sets the `ivy-read' prompt.
 FILTER-FN is a function to filter the list of retrieved files from the directory.
 EXCLUDE-DIRECTORIES, if non-nil, will remove any directories from the list.
 If SHOW-HIDDEN is non-nil, will include any files that begin with ."
-  (let* ((dir (string-trim-right dir "/"))
+  (let* ((dir (concat (string-trim-right dir "/") "/"))
          (filter (rx line-start (not ".") (zero-or-more any) eol)) ; ^[^.].*$
          (files (directory-files dir nil (if show-hidden nil filter)))
          (filtered-files (if filter-fn (seq-filter filter-fn files) files))
