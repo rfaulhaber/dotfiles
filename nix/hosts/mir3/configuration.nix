@@ -280,11 +280,11 @@ in {
       };
       videoDrivers = [ "nvidia" ];
     };
-    gnome3 = { gnome-keyring.enable = true; };
-    dbus.packages = with pkgs; [ gnome3.gnome-keyring gcr gnome3.dconf ];
 
     # it is unclear to me how to automatically unlock gnome keyring upon login, so
     # I'm taking the shotgun approach
+    gnome3 = { gnome-keyring.enable = true; };
+    dbus.packages = with pkgs; [ gnome3.gnome-keyring gcr gnome3.dconf ];
 
     emacs = {
       enable = true;
@@ -313,21 +313,21 @@ in {
       '';
     };
 
-    blueman.enable = true;
-
     cron = {
       enable = true;
       # systemCronJobs = [
       #   "*/30 * * * * ryan DISPLAY=:0 /bin/bash ~/Projects/dotfiles/nix/hosts/mir3/random-wallpaper.sh >> /tmp/wallpaper.log"
       # ];
     };
+
+    blueman.enable = true;
   };
 
   virtualisation.docker.enable = true;
-
   security.pam.services.lightdm.enableGnomeKeyring = true;
 
   # Enable sound.
+
   sound.enable = true;
   hardware.pulseaudio = {
     enable = true;
@@ -337,7 +337,7 @@ in {
 
   hardware.bluetooth = {
     enable = true;
-    config = { General = { Enable = "Source,Sink,Media,Socket"; }; };
+    config.General.Enable = "Source,Sink,Media,Socket";
   };
 
   users.groups = { plugdev = { }; };
@@ -363,6 +363,13 @@ in {
 
   };
 
+  system = {
+    autoUpgrade = {
+      enable = true;
+      allowReboot = true;
+    };
+  };
+
   fileSystems."/home/ryan/calibre" = {
     device = "//192.168.86.31/calibre";
     fsType = "cifs";
@@ -382,6 +389,6 @@ in {
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "20.09"; # Did you read the comment?
+  system.stateVersion = "21.05"; # Did you read the comment?
 }
 
