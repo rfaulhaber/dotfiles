@@ -121,9 +121,9 @@ in {
     #dev.js
     nodejs_latest
     nodePackages_latest.typescript
-    nodePackages_latest.typescript-language-server
+    nodePackages_latest.javascript-typescript-langserver
     nodePackages_latest.prettier
-    nodePackages.yarn
+    nodePackages_latest.yarn
 
     #dev.rust
     rustup
