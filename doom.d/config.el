@@ -92,6 +92,7 @@
 (map! :leader "n j t" #'org-journal-open-current-journal-file)
 (map! :leader "f o"   #'self/find-org-file)
 (map! :leader "d"     #'dired)
+(map! :leader "TAB i" #'+ibuffer/open-for-current-workspace)
 
 ;; custom ex commands for evil
 (evil-ex-define-cmd "wt[emp]" #'self/evil-write-temp)
@@ -136,10 +137,9 @@
 (setq org-roam-directory "~/org/roam")
 (setq org-roam-graph-exclude-matcher '("daily"))
 
-                                        ; for adding backlinks to exported org-roam files
+;; for adding backlinks to exported org-roam files
 (add-hook 'org-export-before-processing-hook 'self/org-export-preprocessor)
 
-                                        ; emacs-everywhere
 
 ;; org-roam-server-mode
 (setq
@@ -166,14 +166,12 @@
 
 ;; org-publish
 ;; TODO add hooks for publishing roam files
-(setq org-publish-project-alist '(
-                                  ("roam"
+(setq org-publish-project-alist '(("roam"
                                    :base-directory "~/org/roam"
                                    :base-extension "org"
                                    :publishing-directory "~/Projects/roam-notes-site"
                                    :publishing-function org-html-publish-to-html
-                                   :recursive t)
-                                  ))
+                                   :recursive t)))
 
 ;; nov config
 (defun nov-setup ()
@@ -190,8 +188,6 @@
 ;; calibredb config
 (setq calibredb-root-dir "~/calibre")
 (setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
-
-                                        ; TODO bind calibredb-find-file
 
 ;; mu4e config
 (setq
