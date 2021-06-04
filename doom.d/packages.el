@@ -73,4 +73,5 @@
 (package! mermaid-mode)
 (package! wttrin)
 (package! screenshot :recipe (:host github :repo "tecosaur/screenshot"))
+(package! ix)
 ;(package! djvu)

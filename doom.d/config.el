@@ -216,7 +216,6 @@
 ;; hooks
 
 (add-hook 'after-init-hook 'org-roam-mode)
-                                        ;(add-hook 'after-init-hook 'org-trello-mode)
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 (add-hook 'js2-mode-hook 'prettier-js-mode)
 (add-hook 'nov-mode-hook 'nov-setup)
@@ -229,12 +228,14 @@
                                 (lsp-format-buffer))))
 
 
+;; fixes issue where undo mode is unavailable in fundamental-mode
+(add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
+
 ;; after hooks
-(after! org
-  (load! "./scripts/org-templates.el")
-  )
+(after! org (load! "./scripts/org-templates.el"))
 
 ;; load languages for org-babel
+;; these are mostly for use in reveal
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
@@ -251,6 +252,8 @@
                                         ; wttrin
                                         ; replace wttrin-fetch-raw-string with my own function
 (advice-add 'wttrin-fetch-raw-string :override 'self/wttrin-fetch-raw-string)
+
+;; wttrin
 (setq wttrin-default-cities '("Cleveland"))
 
 ;; quickrun config
@@ -263,7 +266,6 @@
 ;;   :mode 'mermaid-mode)
 
 ;; see: https://github.com/hlissner/doom-emacs/issues/3185
-
 (defadvice! self/+org-inline-image-data-fn (_protocol link _description)
   :override #'+org-inline-image-data-fn
   "Interpret LINK as base64-encoded image data. Ignore all errors."
