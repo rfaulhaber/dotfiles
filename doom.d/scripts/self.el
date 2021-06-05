@@ -4,6 +4,11 @@
 
 (defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
 
+(defconst self/date-format-options '(("MM/YYYY"    . "%m/%Y")
+                                     ("MM/DD"      . "%m/%d")
+                                     ("MM/DD/YYYY" . "%m/%d/%Y"))
+  "Various date formats used in interactive functions.")
+
 ;; TODO break this up into separate files!
 
 ;; -------------------- interactive functions ----------------------------------
@@ -92,11 +97,7 @@ Version 2016-07-13"
 (defun self/insert-current-date-at-point ()
   "Inserts date at point in the chosen format."
   (interactive)
-  (let* ((options '(("MM/YYYY"    . "%m/%Y")
-                    ("MM/DD"      . "%m/%d")
-                    ("MM/DD/YYYY" . "%m/%d/%Y")))
-         (option (completing-read "Select a format: " (mapcar 'car options)))
-         (output (format-time-string (cdr (assoc option options)))))
+  (let* ((output (self/format-date-from-option (self/choose-date-format))))
     (with-current-buffer (current-buffer)
       (insert output))))
 
@@ -270,6 +271,14 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
     (goto-char (point-max))
     (insert "Updated: ")
     (org-time-stamp '(16) 'inactive)))
+
+(defun self/choose-date-format ()
+  "Provides user with options from `self/date-format-options'."
+  (completing-read "Select a format: " (mapcar 'car self/date-format-options)))
+
+(defun self/format-date-from-option (option)
+  "Formats current date according to selected date option."
+  (format-time-string (cdr (assoc option self/date-format-options))))
 
 ;; custom evil operators ------------------------------------
 

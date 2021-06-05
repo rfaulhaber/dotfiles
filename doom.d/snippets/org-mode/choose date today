@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: choose date today
+# key: @d
+# --
+
+`(self/format-date-from-option (self/choose-date-format))`
