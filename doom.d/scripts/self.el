@@ -216,12 +216,13 @@ channel."
   (let ((pre (or prefix "emacs")))
     (s-trim-right (shell-command-to-string (format "mktemp -t %s" pre)))))
 
+;; TODO write more generic roam exporter that extends org publishing
 (defun self/org-export-preprocessor (backend)
   "For org-roam files, this will append all backlinks to a file to the end."
   (when (org-roam--org-roam-file-p)
     (let ((links (mapcar
                   (lambda (el)
-                                        ; TODO fix, probably not super performant
+                    ;; TODO fix, probably not super performant
                     (format " - [[%s][%s]]\n" (first el) (org-roam-db--get-title (first el))))
                   (org-roam--get-backlinks (buffer-file-name)))))
       (unless (eq (length links) 0)
@@ -262,7 +263,15 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
          (selection (ivy-read (or prompt "Find file: ") non-dir-files))
          (file-name (concat dir selection)))
     (find-file file-name)))
-;; ------------------ custom evil operators ------------------------------------
+
+(defun self/org-insert-modified-timestamp ()
+  "Inserts inactive timestamp to bottom of file."
+  (when (org-roam--org-roam-file-p)
+    (goto-char (point-max))
+    (insert "Updated: ")
+    (org-time-stamp '(16) 'inactive)))
+
+;; custom evil operators ------------------------------------
 
 (evil-define-operator self/evil-write-temp (beg end &optional bang)
   "Like evil-write, but creates a new temporary file and writes to that."
@@ -278,10 +287,3 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
      ((null bufname) (let ((filename (self/mktemp)))
                        (write-file filename)))
      (t (self/write-temp s f)))))
-
-(defun self/org-insert-modified-timestamp ()
-  "Inserts inactive timestamp to bottom of file."
-  (when (org-roam--org-roam-file-p)
-    (goto-char (point-max))
-    (insert "Updated: ")
-    (org-time-stamp '(16) 'inactive)))
