@@ -16,15 +16,9 @@
 
 { pkgs ? import <nixpkgs> { }, ... }:
 
-let
-  inherit (pkgs)
-  # Build dependencies
-    appimageTools autoPatchelfHook fetchzip stdenv
+with pkgs;
 
-    # Runtime dependencies;
-    # A few additional ones (e.g. Node) are already shipped together with the
-    # AppImage so we don't have to duplicate them here.
-    alsaLib dbus-glib fuse gnome3 libdbusmenu-gtk2 udev nss;
+let
   pname = "pcloud";
   version = "1.9.2";
   key = "XZCBKnXZdbHEAu1ec7bMDQCb1oCztBc169Py";
@@ -43,7 +37,7 @@ let
   };
 
 in stdenv.mkDerivation {
-  inherit name;
+  inherit pname version;
 
   src = appimageContents;
 
@@ -52,7 +46,8 @@ in stdenv.mkDerivation {
 
   nativeBuildInputs = [ autoPatchelfHook ];
 
-  buildInputs = [ alsaLib dbus-glib fuse gnome3.gtk libdbusmenu-gtk2 nss udev ];
+  buildInputs =
+    [ alsaLib dbus-glib fuse gtk3 libdbusmenu-gtk2 xorg.libXdamage nss udev ];
 
   installPhase = ''
     mkdir "$out"
@@ -71,19 +66,18 @@ in stdenv.mkDerivation {
     substitute \
       app/pcloud.desktop \
       share/applications/pcloud.desktop \
-      --replace "Name=pcloud" "Name=pCloud" \
-      --replace "Exec=AppRun" "Exec=$out/bin/pcloud"
+      --replace 'Name=pcloud' 'Name=pCloud' \
+      --replace 'Exec=AppRun' 'Exec=${pname}'
     # Build the main executable
     cat > bin/pcloud <<EOF
     #! $SHELL -e
     # This is required for the file picker dialog - otherwise pcloud just
     # crashes
-    export XDG_DATA_DIRS="${gnome3.gsettings-desktop-schemas}/share/gsettings-schemas/${gnome3.gsettings-desktop-schemas.name}:${gnome3.gtk}/share/gsettings-schemas/${gnome3.gtk.name}:$XDG_DATA_DIRS"
+    export XDG_DATA_DIRS="${gnome.gsettings-desktop-schemas}/share/gsettings-schemas/${gnome.gsettings-desktop-schemas.name}:${gtk3}/share/gsettings-schemas/${gtk3.name}:$XDG_DATA_DIRS"
     exec "$out/app/pcloud"
     EOF
     chmod +x bin/pcloud
   '';
-
   meta = with stdenv.lib; {
     description =
       "Secure and simple to use cloud storage for your files; pCloud Drive, Electron Edition";

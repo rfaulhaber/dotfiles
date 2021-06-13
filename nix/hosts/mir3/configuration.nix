@@ -118,12 +118,12 @@ in {
     unstable.gnumake
     unstable.just
 
-    #dev.js
-    nodejs_latest
-    nodePackages_latest.typescript
-    nodePackages_latest.javascript-typescript-langserver
-    nodePackages_latest.prettier
-    nodePackages_latest.yarn
+    # #dev.js
+    # nodejs_latest
+    # nodePackages_latest.typescript
+    # nodePackages_latest.javascript-typescript-langserver
+    # nodePackages_latest.prettier
+    # nodePackages_latest.yarn
 
     #dev.rust
     rustup
