@@ -78,12 +78,4 @@ in stdenv.mkDerivation {
     EOF
     chmod +x bin/pcloud
   '';
-  meta = with stdenv.lib; {
-    description =
-      "Secure and simple to use cloud storage for your files; pCloud Drive, Electron Edition";
-    homepage = "https://www.pcloud.com/";
-    license = licenses.unfree;
-    maintainers = with maintainers; [ patryk27 ];
-    platforms = [ "x86_64-linux" ];
-  };
 }
