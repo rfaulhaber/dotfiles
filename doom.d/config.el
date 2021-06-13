@@ -171,6 +171,7 @@
                                    :base-extension "org"
                                    :publishing-directory "~/Projects/roam-notes-site"
                                    :publishing-function org-html-publish-to-html
+                                   :with-author nil
                                    :recursive t)))
 
 ;; nov config
