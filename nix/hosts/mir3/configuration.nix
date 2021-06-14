@@ -66,7 +66,6 @@ in {
     #desktop
     betterlockscreen
     bspwm
-    calibre
     chromium
     unstable.discord
     evince
@@ -105,25 +104,13 @@ in {
     docker
     docker-compose
     docker-machine
-    gcc
     git
-    lldb_11
-    llvmPackages.bintools
-    llvm_11
     rsync
     shellcheck
     shfmt
     tokei
-    unstable.gdb
     unstable.gnumake
     unstable.just
-
-    # #dev.js
-    # nodejs_latest
-    # nodePackages_latest.typescript
-    # nodePackages_latest.javascript-typescript-langserver
-    # nodePackages_latest.prettier
-    # nodePackages_latest.yarn
 
     #dev.rust
     rustup
@@ -239,23 +226,17 @@ in {
   };
 
   fonts = {
-    enableFontDir = true;
+    fontDir.enable = true;
     enableGhostscriptFonts = true;
     enableDefaultFonts = true;
     fonts = with pkgs; [
       (unstable.nerdfonts.override { fonts = [ "Hack" ]; })
-      font-awesome-ttf
-      hack-font
       lato
-      noto-fonts
-      noto-fonts-cjk
-      noto-fonts-emoji
-      noto-fonts-extra
-      roboto
-      ubuntu_font_family
+      merriweather
     ];
     fontconfig.defaultFonts = {
-      sansSerif = [ "Noto Sans" ];
+      serif = [ "Merriweather" ];
+      sansSerif = [ "Lato" ];
       monospace = [ "Hack Nerd Font Mono" ];
     };
   };
@@ -283,8 +264,8 @@ in {
 
     # it is unclear to me how to automatically unlock gnome keyring upon login, so
     # I'm taking the shotgun approach
-    gnome3 = { gnome-keyring.enable = true; };
-    dbus.packages = with pkgs; [ gnome3.gnome-keyring gcr gnome3.dconf ];
+    gnome = { gnome-keyring.enable = true; };
+    dbus.packages = with pkgs; [ gnome.gnome-keyring gcr gnome3.dconf ];
 
     emacs = {
       enable = true;
@@ -313,13 +294,6 @@ in {
       '';
     };
 
-    cron = {
-      enable = true;
-      # systemCronJobs = [
-      #   "*/30 * * * * ryan DISPLAY=:0 /bin/bash ~/Projects/dotfiles/nix/hosts/mir3/random-wallpaper.sh >> /tmp/wallpaper.log"
-      # ];
-    };
-
     blueman.enable = true;
   };
 
@@ -337,7 +311,7 @@ in {
 
   hardware.bluetooth = {
     enable = true;
-    config.General.Enable = "Source,Sink,Media,Socket";
+    settings.General.Enable = "Source,Sink,Media,Socket";
   };
 
   users.groups = { plugdev = { }; };

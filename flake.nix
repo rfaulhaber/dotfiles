@@ -1,10 +1,7 @@
 {
   description = "My Nix system configurations.";
 
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-  };
+  inputs = { nixpkgs.url = "github:nixos/nixpkgs"; };
 
   outputs = inputs@{ self, nixpkgs, ... }: {
     nixosConfigurations = {
