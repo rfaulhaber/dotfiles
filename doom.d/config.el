@@ -214,11 +214,9 @@
 
 (add-hook 'after-init-hook 'org-roam-mode)
 (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
-(add-hook 'js2-mode-hook 'prettier-js-mode)
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
 (add-hook 'nov-mode-hook 'visual-fill-column-mode)
-(add-hook 'web-mode-hook 'prettier-js-mode)
 
 (add-hook 'before-save-hook (lambda ()
                               (when (or (eq 'rust-mode major-mode) (eq 'rustic-mode major-mode))

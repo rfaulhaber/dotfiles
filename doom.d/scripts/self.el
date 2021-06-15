@@ -259,7 +259,8 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
          (filtered-files (if filter-fn (seq-filter filter-fn files) files))
          (non-dir-files (if exclude-directories (seq-filter (lambda (file)
                                                               (not
-                                                               (file-directory-p (concat dir "/" file))))
+                                                               (file-directory-p
+                                                                (concat dir "/" file))))
                                                             filtered-files)))
          (selection (ivy-read (or prompt "Find file: ") non-dir-files))
          (file-name (concat dir selection)))
