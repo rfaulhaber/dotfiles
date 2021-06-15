@@ -1,1 +1,1 @@
-{ imports = [ ./programs ./services ]; }
+{ require = [ ./desktop ]; }

@@ -21,7 +21,16 @@
       nixosConfigurations = {
         mir3 = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          modules = [ ./nix/hosts/mir3/configuration.nix ];
+          modules = [
+            inputs.home-manager.nixosModules.home-manager
+            (import ./nix)
+            {
+              desktop = {
+                bspwm.enable = true;
+                polybar.enable = true;
+              };
+            }
+          ];
         };
       };
       darwinConfigurations.orange = darwin.lib.darwinSystem {
