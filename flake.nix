@@ -10,6 +10,15 @@
 
   outputs = inputs@{ self, nixpkgs, darwin, ... }:
     let
+      inherit (lib.my) mapModules mapModulesRec mapHosts;
+
+      mkPkgs = pkgs: extraOverlays:
+        import pkgs {
+          config.allowUnfree = true;
+          overlays = extraOverlays ++ (lib.attrValues self.overlays);
+        };
+      pkgs = mkPkgs nixpkgs [ self.overlay ];
+
       lib = nixpkgs.lib.extend (self: super: {
         my = import ./nix/lib {
           inherit pkgs inputs;
