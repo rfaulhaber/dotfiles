@@ -12,7 +12,7 @@
     let
       lib = nixpkgs.lib.extend (self: super: {
         my = import ./nix/lib {
-          inherit inputs;
+          inherit pkgs inputs;
           lib = self;
         };
       });
