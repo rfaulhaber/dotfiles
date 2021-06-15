@@ -157,6 +157,7 @@ in {
     cmake
     djvulibre
     graphviz
+    imagemagick
     libtool # vterm
     libvterm
     sqlite
