@@ -1,8 +1,41 @@
 {
   "nodes": {
-    "home-manager": {
+    "darwin": {
       "inputs": {
         "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1622060422,
+        "narHash": "sha256-hPVlvrAyf6zL7tTx0lpK+tMxEfZeMiIZ/A2xaJ41WOY=",
+        "owner": "lnl7",
+        "repo": "nix-darwin",
+        "rev": "007d700e644ac588ad6668e6439950a5b6e2ff64",
+        "type": "github"
+      },
+      "original": {
+        "owner": "lnl7",
+        "repo": "nix-darwin",
+        "type": "github"
+      }
+    },
+    "emacs-overlay": {
+      "locked": {
+        "lastModified": 1623665353,
+        "narHash": "sha256-QLQNdYKjAzkSWOZR/uLJ9mFlbuLCRw6hE3GHPNyacgE=",
+        "owner": "nix-community",
+        "repo": "emacs-overlay",
+        "rev": "ab78bd1edc2d37a085921186010944b78a460a08",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "emacs-overlay",
+        "type": "github"
+      }
+    },
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
       },
       "locked": {
         "lastModified": 1623705021,
@@ -20,6 +53,20 @@
     },
     "nixpkgs": {
       "locked": {
+        "lastModified": 1602411953,
+        "narHash": "sha256-gbupmxRpoQZqL5NBQCJN2GI5G7XDEHHHYKhVwEj5+Ps=",
+        "owner": "LnL7",
+        "repo": "nixpkgs",
+        "rev": "f780534ea2d0c12e62607ff254b6b45f46653f7a",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
         "lastModified": 1623718870,
         "narHash": "sha256-+ExEb0xbq78ZCmrFjfg9OROTc/2fX81por1E5pMfTa0=",
         "owner": "NixOS",
@@ -32,7 +79,7 @@
         "type": "indirect"
       }
     },
-    "nixpkgs_2": {
+    "nixpkgs_3": {
       "locked": {
         "lastModified": 1623610139,
         "narHash": "sha256-I/L3UuPYKm6caJ9NM0KESRZn0rXsPbhCUprMk11xiV0=",
@@ -49,8 +96,10 @@
     },
     "root": {
       "inputs": {
+        "darwin": "darwin",
+        "emacs-overlay": "emacs-overlay",
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_3"
       }
     }
   },

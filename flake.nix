@@ -4,9 +4,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
+    darwin.url = "github:lnl7/nix-darwin";
   };
 
-  outputs = inputs@{ self, nixpkgs, ... }:
+  outputs = inputs@{ self, nixpkgs, darwin, ... }:
     let
       lib = nixpkgs.lib.extend (self: super: {
         my = import ./nix/lib {
@@ -21,6 +23,9 @@
           system = "x86_64-linux";
           modules = [ ./nix/hosts/mir3/configuration.nix ];
         };
+      };
+      darwinConfigurations.orange = darwin.lib.darwinSystem {
+        modules = [ ./nix/hosts/orange/configuration.nix ];
       };
     };
 }
