@@ -9,9 +9,12 @@ let
   pcloud = import ./pcloud.nix pkgs;
 in {
   imports = [ # Include the results of the hardware scan.
+    ../../modules
     ./hardware-configuration.nix
     # <home-manager/nixos>
   ];
+
+  modules.programs.zsh.enable = true;
 
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.pulseaudio = true;
@@ -58,10 +61,6 @@ in {
   # $ nix search wget
   # TODO clean up!
   environment.systemPackages = with pkgs; [
-    oh-my-zsh
-    zsh
-    zsh-autosuggestions
-    zsh-completions
 
     #desktop
     betterlockscreen
@@ -193,29 +192,6 @@ in {
 
   programs.seahorse.enable = true;
 
-  programs.zsh = {
-    enable = true;
-    ohMyZsh = {
-      enable = true;
-      plugins = [ "git" "colored-man-pages" ];
-      theme = "agnoster";
-    };
-    autosuggestions.enable = true;
-    autosuggestions.highlightStyle = "fg=#41505E";
-    syntaxHighlighting.enable = true;
-    shellAliases = {
-      pbcopy = "xclip -selection clipboard";
-      pbpaste = "xclip -selection clipboard -o";
-      vi = "nvim";
-      vim = "nvim";
-      ls = "exa";
-      l = "exa -lah";
-      ll = "exa -lh";
-      ec = "emacsclient";
-      eo = "emacsclient -n"; # "emacs open"
-    };
-  };
-
   environment.variables = rec {
     XDG_CONFIG_HOME = "$HOME/.config";
     XDG_CACHE_HOME = "$HOME/.cache";
@@ -223,7 +199,6 @@ in {
     XDG_BIN_HOME = "$HOME/.local/bin";
     RUSTUP_HOME = "${XDG_DATA_HOME}/rustup";
     CARGO_HOME = "${XDG_DATA_HOME}/cargo";
-    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=#41505E";
   };
 
   fonts = {
