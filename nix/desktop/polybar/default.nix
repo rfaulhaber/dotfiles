@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, home-manager, ... }:
 
 with lib;
 
@@ -7,9 +7,16 @@ let
   colors = import ./colors.nix;
   modules = import ./modules;
 in {
-  options.modules.desktop.polybar = { enable = mkBoolOpt false; };
+  options.modules.desktop.polybar = {
+    enable = mkOption {
+      default = false;
+      description = "Enable polybar";
+      type = types.bool;
+      example = true;
+    };
+  };
   config = mkIf cfg.enable {
-    home.services.polybar = {
+    home-manager.services.polybar = {
       enable = true;
       config = {
         "bar/main" = {

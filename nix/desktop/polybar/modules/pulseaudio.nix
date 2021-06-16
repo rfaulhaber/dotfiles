@@ -17,8 +17,8 @@ in {
   bar-volume-fill = "";
   bar-volume-indicator = "";
   bar-volume-width = "10";
-  bar-volume-empty-foreground = "${colors.polar-night-4}";
-  bar-volume-indicator-foreground = "${colors.snow-storm-1}";
+  # bar-volume-empty-foreground = "${colors.polar-night-4}";
+  # bar-volume-indicator-foreground = "${colors.snow-storm-1}";
   bar-volume-foreground-0 = "${colors.dark-cyan}";
   bar-volume-foreground-1 = "${colors.cyan}";
   bar-volume-foreground-2 = "${colors.cyan}";

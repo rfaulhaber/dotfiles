@@ -1,5 +1,1 @@
-{ config, lib, pkgs, ... }:
-
-{
-  require = [ ./bspwm ./polybar ];
-}
+{ require = [ ./bspwm ./polybar ]; }

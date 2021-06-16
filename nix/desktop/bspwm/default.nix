@@ -1,12 +1,18 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, home-manager, ... }:
 
 with lib;
 
 let cfg = config.modules.desktop.bspwm;
 in {
-  options.modules.desktop.bspwm = { enable = mkBoolOpt false; };
+  options.modules.desktop.bspwm = {
+    enable = mkOption {
+      default = false;
+      type = types.bool;
+      description = "Enable bspwm";
+    };
+  };
   config = mkIf cfg.enable {
-    home.xsession.windowManager.bspwm = {
+    home-manager.xsession.windowManager.bspwm = {
       enable = true;
       monitors = {
         HDMI-0 = [ "I" "II" "III" "IV" "V" "VI" "VII" "VIII" "IX" "X" ];
@@ -43,7 +49,7 @@ in {
         };
         "TelegramDesktop" = {
           desktop = "^4";
-          state = tiled;
+          state = "tiled";
         };
       };
     };
