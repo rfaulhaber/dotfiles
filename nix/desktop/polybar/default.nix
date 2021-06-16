@@ -1,4 +1,4 @@
-{ config, lib, pkgs, home-manager, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
@@ -16,7 +16,7 @@ in {
     };
   };
   config = mkIf cfg.enable {
-    home-manager.services.polybar = {
+    services.polybar = {
       enable = true;
       config = {
         "bar/main" = {

@@ -7,21 +7,21 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixpkgs.url = "nixpkgs/nixos-unstable";
-    nixpkgs-unstable.url = "nixpkgs/master";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-21.05";
+    nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
     emacs-overlay.url = "github:nix-community/emacs-overlay";
     darwin.url = "github:lnl7/nix-darwin";
   };
 
-  outputs = inputs@{ self, nixpkgs, darwin, home-manager, ... }: {
+  outputs = inputs@{ self, nixpkgs, darwin, ... }: {
     nixosConfigurations = {
       mir3 = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
-          home-manager.nixosModules.home-manager
+          inputs.home-manager.nixosModules.home-manager
           (import ./nix)
           {
-            modules.desktop = {
+            config.modules.desktop = {
               bspwm.enable = true;
               polybar.enable = true;
             };

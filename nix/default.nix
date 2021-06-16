@@ -1,1 +1,1 @@
-{ require = [ ./desktop ]; }
+{ imports = [ ./desktop ./options.nix ]; }

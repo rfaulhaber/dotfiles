@@ -12,7 +12,21 @@ in {
     };
   };
   config = mkIf cfg.enable {
-    home-manager.xsession.windowManager.bspwm = {
+    xserver = {
+      enable = true;
+      layout = "us";
+      xkbOptions = "eurosign:e";
+      windowManager = { bspwm = { enable = true; }; };
+      displayManager = {
+        lightdm.enable = true;
+        defaultSession = "none+bspwm";
+        sessionCommands = ''
+          ~/Projects/dotfiles/nix/hosts/mir3/random-wallpaper.sh
+        '';
+      };
+      videoDrivers = [ "nvidia" ];
+    };
+    xsession.windowManager.bspwm = {
       enable = true;
       monitors = {
         HDMI-0 = [ "I" "II" "III" "IV" "V" "VI" "VII" "VIII" "IX" "X" ];
