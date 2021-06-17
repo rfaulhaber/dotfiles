@@ -2,11 +2,9 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
-let
-  unstable = import <unstable> { config = config.nixpkgs.config; };
-  pcloud = import ./pcloud.nix pkgs;
+let pcloud = import ./pcloud.nix pkgs;
 in {
   imports = [ # Include the results of the hardware scan.
     ../../modules
@@ -14,7 +12,12 @@ in {
     # <home-manager/nixos>
   ];
 
-  modules.programs.zsh.enable = true;
+  modules = {
+    programs = {
+      zsh.enable = true;
+      emacs.enable = true;
+    };
+  };
 
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.pulseaudio = true;
@@ -66,35 +69,35 @@ in {
     betterlockscreen
     bspwm
     chromium
-    unstable.discord
+    discord
     evince
     feh
     firefox-devedition-bin
     gnome3.gnome-screenshot
     gnome3.gnome-bluetooth
-    unstable.keybase
-    unstable.keybase-gui
-    unstable.kbfs
-    unstable.kitty
+    keybase
+    keybase-gui
+    kbfs
+    kitty
     keychain
     openvpn
     pass
     # too out of date, will replace once stable
-    # unstable.pcloud
+    # pcloud
     pcloud
     polybarFull
     pulsemixer
     pavucontrol
     redshift
-    unstable.rofi
+    rofi
     spotify
     sxhkd
     tdesktop
     xclip
     xscreensaver
     xtitle
-    unstable.ripcord
-    unstable.wally-cli
+    ripcord
+    wally-cli
 
     #dev
 
@@ -108,21 +111,17 @@ in {
     shellcheck
     shfmt
     tokei
-    unstable.gnumake
-    unstable.just
+    gnumake
+    just
 
     #dev.rust
     rustup
 
     #dev.racket
-    unstable.racket
+    racket
 
     #dev.editors
     neovim
-    unstable.emacs
-
-    nixfmt
-    direnv
 
     #util
     bat
@@ -139,45 +138,19 @@ in {
     smbclient
     stow
     texlive.combined.scheme-medium
-    unstable.kvm
-    unstable.qemu
-    unstable.qemu-utils
-    unstable.ripgrep
-    unstable.zoxide
+    kvm
+    qemu
+    qemu-utils
+    ripgrep
+    zoxide
     unzip
     wget
     zip
-
-    #emacs
-    aspell
-    aspellDicts.en
-    aspellDicts.en-computers
-    aspellDicts.en-science
-    cmake
-    djvulibre
-    graphviz
-    imagemagick
-    libtool # vterm
-    libvterm
-    sqlite
-    unstable.isync
-    unstable.mu
-    unstable.nodePackages.mermaid-cli
-    wordnet
-    xdotool
-    xorg.xwininfo
 
     #system deps
     python3
     libsecret
   ];
-
-  environment.etc."xdg/mimeapps.list" = {
-    text = ''
-      [Default Applications]
-      application/pdf=org.gnome.Evince.desktop;emacs.desktop
-    '';
-  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -206,7 +179,7 @@ in {
     enableGhostscriptFonts = true;
     enableDefaultFonts = true;
     fonts = with pkgs; [
-      (unstable.nerdfonts.override { fonts = [ "Hack" ]; })
+      (nerdfonts.override { fonts = [ "Hack" ]; })
       lato
       merriweather
     ];
@@ -242,13 +215,6 @@ in {
     # I'm taking the shotgun approach
     gnome = { gnome-keyring.enable = true; };
     dbus.packages = with pkgs; [ gnome.gnome-keyring gcr gnome3.dconf ];
-
-    emacs = {
-      enable = true;
-      install = true;
-      defaultEditor = true;
-      package = unstable.emacs;
-    };
 
     redshift = {
       enable = true;

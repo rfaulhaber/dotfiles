@@ -1,23 +1,73 @@
 {
   "nodes": {
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1623942490,
+        "narHash": "sha256-e5xGI0byxDXDgwFBfuifgOdNutrN3F9s1WOtq7bXRX4=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "6d9bff77eda4426b7b9a5e8f0e9b94fe47798582",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1623610139,
-        "narHash": "sha256-I/L3UuPYKm6caJ9NM0KESRZn0rXsPbhCUprMk11xiV0=",
+        "lastModified": 1623947341,
+        "narHash": "sha256-v0nwHOW+ztLTAu0QeKSSZVM5FwmxfcU8YQRIg/SRSCs=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "6e7e956751485523e15a09f898609461d667001e",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1623949938,
+        "narHash": "sha256-XMQ5bArqwjjPArzTRcO+aw1lf/MOBg/xArpkSu4rMGI=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b26545db7e07e26f2ebacf449400f5aa04ee7f29",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "master",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1623580589,
+        "narHash": "sha256-Ayp1cjXpwFCkAiWUE46rj9APTltsiEBdIs2+cj+U7+c=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "dab87a5bac0459886d1ab68fa52f71bcc42c396a",
+        "rev": "fa0326ce5233f7d592271df52c9d0812bec47b84",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "home-manager": "home-manager",
+        "nixpkgs": "nixpkgs_2",
+        "nixpkgs-unstable": "nixpkgs-unstable"
       }
     }
   },

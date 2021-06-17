@@ -1,0 +1,4 @@
+#+TITLE: Shells
+
+These are for doing ad-hoc development. Often I don't want to install these
+permanently onto my system, so having a pre-configured ad-hoc shell is nice.

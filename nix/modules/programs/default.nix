@@ -1,1 +1,1 @@
-{ require = [ ./zsh ]; }
+{ require = [ ./zsh ./emacs ]; }
