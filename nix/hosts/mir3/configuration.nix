@@ -17,6 +17,7 @@ in {
       zsh.enable = true;
       emacs.enable = true;
     };
+    services = { docker.enable = true; };
   };
 
   nixpkgs.config.allowUnfree = true;
@@ -103,9 +104,6 @@ in {
 
     #dev.util
     coreutils-full
-    docker
-    docker-compose
-    docker-machine
     git
     rsync
     shellcheck
@@ -239,7 +237,6 @@ in {
     blueman.enable = true;
   };
 
-  virtualisation.docker.enable = true;
   security.pam.services.lightdm.enableGnomeKeyring = true;
 
   # Enable sound.
@@ -261,7 +258,7 @@ in {
   # TODO if doing a fresh install, set UID and GID
   users.users.ryan = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "audio" "lp" "plugdev" "docker" ];
+    extraGroups = [ "wheel" "audio" "lp" "plugdev" ];
     shell = pkgs.zsh;
   };
 

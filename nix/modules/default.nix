@@ -1,1 +1,1 @@
-{ require = [ ./programs ]; }
+{ require = [ ./programs ./services ]; }
