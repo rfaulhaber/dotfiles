@@ -1,0 +1,18 @@
+# -*- mode: snippet -*-
+# name: module
+# key: mod
+# condition: '(eq major-mode "nix-mode")
+# --
+
+{ config, lib, pkgs, ... }:
+
+with lib;
+
+let cfg = config.modules.${1:type}.${2:name};
+in {
+  options.modules.$1.$2 = { enable = mkEnableOption false; };
+
+  config = mkIf cfg.enable {
+    # TODO fill me out! $0
+  };
+}
