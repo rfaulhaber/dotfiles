@@ -4,8 +4,7 @@
 
 { config, pkgs, lib, inputs, ... }:
 
-let pcloud = import ./pcloud.nix pkgs;
-in {
+{
   imports = [ # Include the results of the hardware scan.
     ../../modules
     ./hardware-configuration.nix
@@ -16,6 +15,7 @@ in {
     programs = {
       zsh.enable = true;
       emacs.enable = true;
+      pcloud.enable = true;
     };
     services = {
       docker.enable = true;
@@ -23,11 +23,12 @@ in {
         enable = true;
         mountPoint = "/home/ryan/calibre";
       };
+      keybase.enable = true;
     };
+    hardware = { bluetooth.enable = true; };
   };
 
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.pulseaudio = true;
 
   boot.tmpOnTmpfs = true;
   boot.cleanTmpDir = true;
@@ -59,12 +60,6 @@ in {
     networkmanager.enable = true;
   };
 
-  # Set your time zone.
-  time = {
-    timeZone = "America/New_York";
-    hardwareClockInLocalTime = true;
-  };
-
   location.provider = "geoclue2";
 
   # List packages installed in system profile. To search, run:
@@ -81,20 +76,11 @@ in {
     feh
     firefox-devedition-bin
     gnome3.gnome-screenshot
-    gnome3.gnome-bluetooth
-    keybase
-    keybase-gui
-    kbfs
     kitty
     keychain
     openvpn
     pass
-    # too out of date, will replace once stable
-    # pcloud
-    pcloud
     polybarFull
-    pulsemixer
-    pavucontrol
     redshift
     rofi
     spotify
@@ -103,7 +89,6 @@ in {
     xclip
     xscreensaver
     xtitle
-    ripcord
     wally-cli
 
     #dev
@@ -168,33 +153,6 @@ in {
 
   programs.seahorse.enable = true;
 
-  environment.variables = rec {
-    XDG_CONFIG_HOME = "$HOME/.config";
-    XDG_CACHE_HOME = "$HOME/.cache";
-    XDG_DATA_HOME = "$HOME/.local/share";
-    XDG_BIN_HOME = "$HOME/.local/bin";
-    RUSTUP_HOME = "${XDG_DATA_HOME}/rustup";
-    CARGO_HOME = "${XDG_DATA_HOME}/cargo";
-  };
-
-  fonts = {
-    fontDir.enable = true;
-    enableGhostscriptFonts = true;
-    enableDefaultFonts = true;
-    fonts = with pkgs; [
-      (nerdfonts.override { fonts = [ "Hack" ]; })
-      lato
-      merriweather
-    ];
-    fontconfig.defaultFonts = {
-      serif = [ "Merriweather" ];
-      sansSerif = [ "Lato" ];
-      monospace = [ "Hack Nerd Font Mono" ];
-    };
-  };
-
-  i18n = { defaultLocale = "en_US.UTF-8"; };
-
   # List services that you want to enable:
 
   services = {
@@ -231,40 +189,24 @@ in {
       };
     };
 
-    keybase.enable = true;
-    kbfs.enable = true;
     udev = {
       extraRules = ''
         SUBSYSTEM=="usb", ATTR{idVendor}=="3297", ATTR{idProduct}=="1969", GROUP="plugdev"
       '';
     };
-
-    blueman.enable = true;
   };
 
   security.pam.services.lightdm.enableGnomeKeyring = true;
 
-  # Enable sound.
-
-  sound.enable = true;
-  hardware.pulseaudio = {
-    enable = true;
-    extraModules = [ pkgs.pulseaudio-modules-bt ];
-    package = pkgs.pulseaudioFull;
-  };
-
-  hardware.bluetooth = {
-    enable = true;
-    settings.General.Enable = "Source,Sink,Media,Socket";
-  };
-
   users.groups = { plugdev = { }; };
 
-  # TODO if doing a fresh install, set UID and GID
   users.users.ryan = {
     isNormalUser = true;
     extraGroups = [ "wheel" "audio" "lp" "plugdev" ];
     shell = pkgs.zsh;
+    # TODO if doing a fresh install, set UID and GID
+    # uid = 1000;
+    # gid = 1000;
   };
 
   nix = {

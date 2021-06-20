@@ -1,1 +1,1 @@
-{ require = [ ./docker ./calibre-mount ]; }
+{ require = [ ./docker ./calibre-mount ./keybase ]; }
