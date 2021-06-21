@@ -4,17 +4,10 @@ These are my somewhat poorly structured dotfiles, containing everything I would
 need for my Mac or Linux environments, with my Mac dotfiles only being a subset
 of my Linux dotfiles.
 
-My Linux desktop uses NixOS, and the goal of this repo in general is to create a
-reproducible setup environment for my Linux and Mac computers.
+This repo is currently undergoing a massive restructuring. I'm attempting to
+rewrite all my config files using Nix. In the ideal world, my config should be
+as simple as flipping a few switches per host.
 
-My dotfiles. Contains configurations for:
-- [[file:nix/hosts/mir3/][NixOS]] (for my Linux desktop. I don't have nix-darwin functional yet)
-- [[file:config/bspwm/][bspwm]], [[file:config/sxhkd/][sxhkd]], and [[file:config/polybar/][Polybar]] (the rest of my Linux desktop config)
-- [[file:config/kitty/][kitty]]
-- [[file:doom.d/][Emacs]] (which I use on both Linux and Mac. I use [[https://github.com/hlissner/doom-emacs][Doom Emacs]])
-- [[file:config/hammerspoon/][Hammerspoon]] (for Mac)
-
-This repo is structured such that it's easy to set up links from the home
-directory to here with minimal renaming or guesswork. The [[file:Makefile][Makefile]] (a work in
-progress) should automatically set up these dotfiles depending on the host
-(=linux= or =mac=).
+I would like to tell you how to use Nix better, but as Newton said, "If I have
+seen further it is by standing on the shoulders of giants." Much of my config is
+very heavily based on [[https://github.com/hlissner/dotfiles][these]] [[https://git.sr.ht/~dunklecat/nixos-config/tree][configs]].
