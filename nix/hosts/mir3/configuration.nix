@@ -13,7 +13,10 @@
 
   modules = {
     programs = {
-      zsh.enable = true;
+      zsh = {
+        enable = true;
+        setDefault = true;
+      };
       emacs.enable = true;
       pcloud.enable = true;
     };
@@ -26,6 +29,10 @@
       keybase.enable = true;
     };
     hardware = { bluetooth.enable = true; };
+    desktop = {
+      bspwm.enable = true;
+      polybar.enable = true;
+    };
   };
 
   nixpkgs.config.allowUnfree = true;
@@ -69,7 +76,6 @@
 
     #desktop
     betterlockscreen
-    bspwm
     chromium
     discord
     evince
@@ -80,11 +86,9 @@
     keychain
     openvpn
     pass
-    polybarFull
     redshift
     rofi
     spotify
-    sxhkd
     tdesktop
     xclip
     xscreensaver
@@ -157,20 +161,6 @@
 
   services = {
     printing.enable = true;
-    xserver = {
-      enable = true;
-      layout = "us";
-      xkbOptions = "eurosign:e";
-      windowManager = { bspwm = { enable = true; }; };
-      displayManager = {
-        lightdm.enable = true;
-        defaultSession = "none+bspwm";
-        sessionCommands = ''
-          ~/Projects/dotfiles/nix/hosts/mir3/random-wallpaper.sh
-        '';
-      };
-      videoDrivers = [ "nvidia" ];
-    };
 
     # it is unclear to me how to automatically unlock gnome keyring upon login, so
     # I'm taking the shotgun approach
@@ -197,17 +187,6 @@
   };
 
   security.pam.services.lightdm.enableGnomeKeyring = true;
-
-  users.groups = { plugdev = { }; };
-
-  users.users.ryan = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "audio" "lp" "plugdev" ];
-    shell = pkgs.zsh;
-    # TODO if doing a fresh install, set UID and GID
-    # uid = 1000;
-    # gid = 1000;
-  };
 
   nix = {
     autoOptimiseStore = true;

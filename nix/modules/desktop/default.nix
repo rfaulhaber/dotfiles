@@ -4,6 +4,7 @@ with lib;
 
 let cfg = config.modules.desktop;
 in {
+  imports = [ ./bspwm ./polybar ];
   config = mkIf config.services.xserver.enable {
     i18n = { defaultLocale = "en_US.UTF-8"; };
     environment.variables = rec {

@@ -4,7 +4,14 @@ with lib;
 
 let cfg = config.modules.programs.zsh;
 in {
-  options.modules.programs.zsh = { enable = mkEnableOption false; };
+  options.modules.programs.zsh = {
+    enable = mkEnableOption false;
+    setDefault = mkOption {
+      description = "Sets ZSH to be default shell for system user.";
+      default = false;
+      type = types.bool;
+    };
+  };
   config = mkIf cfg.enable {
     environment = {
       systemPackages = with pkgs; [
@@ -39,5 +46,7 @@ in {
         eo = "emacsclient -n"; # "emacs open"
       };
     };
+
+    user.shell = mkIf cfg.setDefault pkgs.zsh;
   };
 }
