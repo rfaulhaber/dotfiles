@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, platform, ... }:
 
 with lib;
 
@@ -19,6 +19,8 @@ in {
         zsh
         zsh-autosuggestions
         zsh-completions
+        xclip
+        nix-zsh-completions
       ];
 
       variables = { ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=#41505E"; };

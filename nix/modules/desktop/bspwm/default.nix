@@ -13,6 +13,11 @@ in {
       type = types.bool;
       description = "Enable bspwm";
     };
+    extraStartupPrograms = mkOption {
+      default = [ ];
+      type = types.listOf types.str;
+      description = "Extra programs to start upon launch.";
+    };
   };
   config = mkIf cfg.enable {
     services.xserver = {
@@ -38,7 +43,8 @@ in {
 
     home.bspwm = {
       enable = true;
-      inherit (bspwmConfig) monitors startupPrograms settings rules;
+      inherit (bspwmConfig) monitors settings rules;
+      startupPrograms = bspwmConfig.startupPrograms ++ cfg.extraStartupPrograms;
     };
 
     home.services.sxhkd = {

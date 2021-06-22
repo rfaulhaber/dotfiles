@@ -19,7 +19,7 @@
     in {
       lib = lib.my;
       nixosConfigurations = {
-        mir3 = nixpkgs.lib.nixosSystem {
+        mir3 = nixpkgs.lib.nixosSystem rec {
           system = "x86_64-linux";
           modules = [
             home-manager.nixosModules.home-manager
@@ -30,7 +30,10 @@
             ./nix/hosts/mir3/configuration.nix
           ];
           extraArgs = { inherit inputs home-manager; };
-          specialArgs = { inherit lib inputs; };
+          specialArgs = {
+            inherit lib inputs;
+            platform = system;
+          };
         };
       };
     };

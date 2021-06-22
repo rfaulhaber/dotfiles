@@ -30,7 +30,11 @@
     };
     hardware = { bluetooth.enable = true; };
     desktop = {
-      bspwm.enable = true;
+      bspwm = {
+        enable = true;
+        extraStartupPrograms =
+          [ "keybase-gui" "pcloud" "discord" "telegram-desktop" ];
+      };
       polybar.enable = true;
     };
   };
@@ -90,7 +94,6 @@
     rofi
     spotify
     tdesktop
-    xclip
     xscreensaver
     xtitle
     wally-cli
@@ -98,12 +101,9 @@
     #dev
 
     #dev.util
-    coreutils-full
     git
-    rsync
     shellcheck
     shfmt
-    tokei
     gnumake
     just
 
@@ -117,27 +117,11 @@
     neovim
 
     #util
-    bat
     cifs-utils
-    croc
-    curl
-    exa
-    fd
-    fzf
-    gnupg
-    htop
-    jq
-    pandoc
-    stow
     texlive.combined.scheme-medium
     kvm
     qemu
     qemu-utils
-    ripgrep
-    zoxide
-    unzip
-    wget
-    zip
 
     #system deps
     python3
