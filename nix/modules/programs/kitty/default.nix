@@ -7,7 +7,7 @@ let
   colors = config.modules.themes.colors;
 in {
   options.modules.programs.kitty = { enable = mkEnableOption false; };
-  config = {
+  config = mkIf cfg.enable {
     home.programs.kitty = {
       enable = true;
       settings = {
