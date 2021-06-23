@@ -2,7 +2,9 @@
 
 with lib;
 
-let cfg = config.modules.programs.zsh;
+let
+  cfg = config.modules.programs.zsh;
+  colors = config.modules.themes.colors;
 in {
   options.modules.programs.zsh = {
     enable = mkEnableOption false;
@@ -23,7 +25,8 @@ in {
         nix-zsh-completions
       ];
 
-      variables = { ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=#41505E"; };
+      # sometimes zsh from nixpkgs doesn't respect highlightStyle value
+      variables = { ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=${colors.grey}"; };
     };
 
     programs.zsh = {
@@ -34,7 +37,7 @@ in {
         theme = "agnoster";
       };
       autosuggestions.enable = true;
-      autosuggestions.highlightStyle = "fg=#41505E";
+      autosuggestions.highlightStyle = "fg=${colors.grey}";
       syntaxHighlighting.enable = true;
       shellAliases = {
         pbcopy = "xclip -selection clipboard";
