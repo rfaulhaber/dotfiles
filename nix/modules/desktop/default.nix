@@ -8,6 +8,7 @@ in {
   config = mkIf config.services.xserver.enable {
     i18n = { defaultLocale = "en_US.UTF-8"; };
     environment.variables = rec {
+      # TODO move elsewhere
       XDG_CONFIG_HOME = "$HOME/.config";
       XDG_CACHE_HOME = "$HOME/.cache";
       XDG_DATA_HOME = "$HOME/.local/share";

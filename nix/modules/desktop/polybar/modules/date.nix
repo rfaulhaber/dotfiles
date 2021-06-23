@@ -1,5 +1,6 @@
-let colors = import ../colors.nix;
-in {
+{ colors }:
+
+{
   type = "internal/date";
   interval = "1";
 

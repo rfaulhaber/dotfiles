@@ -1,5 +1,6 @@
-let colors = import ../colors.nix;
-in {
+{ colors }:
+
+{
   type = "internal/bspwm";
 
   ws-icon-0 = "I;1";

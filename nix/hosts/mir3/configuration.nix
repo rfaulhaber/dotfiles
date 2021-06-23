@@ -37,6 +37,7 @@
       };
       polybar.enable = true;
     };
+    themes.active = "city-lights";
   };
 
   nixpkgs.config.allowUnfree = true;

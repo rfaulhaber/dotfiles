@@ -32,6 +32,17 @@ with lib.my;
       default = { };
       description = "";
     };
+
+    # thank you again hlissner
+    dotfiles = let t = either str path;
+    in {
+      dir = mkOpt t (findFirst pathExists (toString ../.)
+        [ "${config.user.home}/.config/dotfiles" ]);
+      binDir = mkOpt t "${config.dotfiles.dir}/bin";
+      configDir = mkOpt t "${config.dotfiles.dir}/config";
+      modulesDir = mkOpt t "${config.dotfiles.dir}/modules";
+      themesDir = mkOpt t "${config.dotfiles.modulesDir}/themes";
+    };
   };
   config = {
     user = rec {

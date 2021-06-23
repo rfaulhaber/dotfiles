@@ -1,4 +1,11 @@
 {
-  require =
-    [ ./desktop ./hardware ./programs ./services ./options.nix ./xdg.nix ];
+  require = [
+    ./desktop
+    ./hardware
+    ./programs
+    ./services
+    ./themes
+    ./options.nix
+    ./xdg.nix
+  ];
 }

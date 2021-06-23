@@ -4,8 +4,8 @@ with lib;
 
 let
   cfg = config.modules.desktop.polybar;
-  colors = import ./colors.nix;
-  modules = import ./modules;
+  colors = config.modules.themes.colors;
+  modules = (import ./modules) { inherit colors; };
 in {
   options.modules.desktop.polybar = {
     enable = mkOption {

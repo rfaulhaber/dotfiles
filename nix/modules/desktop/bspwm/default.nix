@@ -28,10 +28,9 @@ in {
       displayManager = {
         lightdm.enable = true;
         defaultSession = "none+bspwm";
-        # TODO move somewhere else!
-        # sessionCommands = ''
-        #   ~/Projects/dotfiles/nix/hosts/mir3/random-wallpaper.sh
-        # '';
+        sessionCommands = ''
+          ${config.dotfiles.binDir}/random-wallpaper
+        '';
       };
       # TODO modularize!
       videoDrivers = [ "nvidia" ];

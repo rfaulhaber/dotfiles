@@ -1,5 +1,4 @@
-let colors = import ../colors.nix;
-in {
+{ colors }: {
   type = "internal/memory";
   interval = "1";
 
