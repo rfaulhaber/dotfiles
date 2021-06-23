@@ -19,6 +19,7 @@
       };
       emacs.enable = true;
       pcloud.enable = true;
+      kitty.enable = true;
     };
     services = {
       docker.enable = true;
@@ -87,7 +88,6 @@
     feh
     firefox-devedition-bin
     gnome3.gnome-screenshot
-    kitty
     keychain
     openvpn
     pass

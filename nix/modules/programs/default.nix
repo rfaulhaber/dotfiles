@@ -1,1 +1,1 @@
-{ require = [ ./zsh ./emacs ./pcloud ]; }
+{ require = [ ./zsh ./emacs ./pcloud ./kitty ]; }
