@@ -12,15 +12,16 @@ in {
       defaultEditor = true;
     };
 
+    # dependencies for my very specific configuration of doom
+    # see doom.d/init.el for more
     environment.systemPackages = with pkgs; [
-      #emacs
       aspell
       aspellDicts.en
       aspellDicts.en-computers
       aspellDicts.en-science
-      cmake
       direnv
       djvulibre
+      epdfview
       graphviz
       imagemagick
       isync
@@ -33,6 +34,7 @@ in {
       wordnet
       xdotool
       xorg.xwininfo
+      texlive.combined.scheme-medium
     ];
 
     environment.etc."xdg/mimeapps.list" = {

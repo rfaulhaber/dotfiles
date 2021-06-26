@@ -119,7 +119,6 @@
 
     #util
     cifs-utils
-    texlive.combined.scheme-medium
     kvm
     qemu
     qemu-utils
