@@ -38,6 +38,10 @@
       };
       polybar.enable = true;
     };
+    langs = {
+      js.enable = true;
+      rust.enable = true;
+    };
     themes.active = "city-lights";
   };
 
