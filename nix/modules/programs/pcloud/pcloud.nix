@@ -20,7 +20,7 @@ with pkgs;
 
 let
   pname = "pcloud";
-  version = "1.9.2";
+  version = "1.9.4";
   key = "XZCBKnXZdbHEAu1ec7bMDQCb1oCztBc169Py";
   name = "${pname}-${version}";
 

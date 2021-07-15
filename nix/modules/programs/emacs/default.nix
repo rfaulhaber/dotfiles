@@ -19,6 +19,7 @@ in {
       aspellDicts.en
       aspellDicts.en-computers
       aspellDicts.en-science
+      cmake # dependency for vterm
       direnv
       djvulibre
       epdfview
@@ -31,10 +32,10 @@ in {
       nixfmt
       nodePackages.mermaid-cli
       sqlite
+      texlive.combined.scheme-medium
       wordnet
       xdotool
       xorg.xwininfo
-      texlive.combined.scheme-medium
     ];
 
     environment.etc."xdg/mimeapps.list" = {

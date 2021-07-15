@@ -20,6 +20,7 @@
       emacs.enable = true;
       pcloud.enable = true;
       kitty.enable = true;
+      _1password.enable = true;
     };
     services = {
       docker.enable = true;
