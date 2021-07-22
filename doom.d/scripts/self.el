@@ -281,6 +281,22 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
   "Formats current date according to selected date option."
   (format-time-string (cdr (assoc option self/date-format-options))))
 
+(defun self/org-filter-headings (filter-func)
+  (let ((headings nil))
+    (org-map-entries
+     (lambda ()
+       (when (funcall filter-func (org-heading-components))
+         (push (org-heading-components) headings))))
+    headings))
+
+(defun self/org-property-filter (data types pred)
+  "Like `org-element-map', but a filter function. Applies DATA, TYPES, and PRED to `org-element-map'"
+  (let ((col nil))
+    (org-element-map seq types (lambda (el)
+                                 (when (funcall pred el)
+                                   (push el col))))
+    col))
+
 ;; custom evil operators ------------------------------------
 
 (evil-define-operator self/evil-write-temp (beg end &optional bang)

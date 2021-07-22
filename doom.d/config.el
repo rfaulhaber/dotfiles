@@ -172,6 +172,12 @@
                                    :publishing-directory "~/Projects/roam-notes-site"
                                    :publishing-function org-html-publish-to-html
                                    :with-author nil
+                                   :recursive t)
+                                  ("agora"
+                                   :base-directory "~/org/roam"
+                                   :base-extension "org"
+                                   :publishing-directory "~/Projects/roam"
+                                   :publishing-function org-org-publish-to-org
                                    :recursive t)))
 
 ;; nov config
