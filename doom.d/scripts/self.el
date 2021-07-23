@@ -253,7 +253,7 @@ PROMPT sets the `ivy-read' prompt.
 FILTER-FN is a function to filter the list of retrieved files from the directory.
 EXCLUDE-DIRECTORIES, if non-nil, will remove any directories from the list.
 If SHOW-HIDDEN is non-nil, will include any files that begin with ."
-  (let* ((dir (concat (string-trim-right dir "/") "/"))
+  (let* ((dir (concat (string-trim-right dir (rx (one-or-more "/"))) "/"))
          (filter (rx line-start (not ".") (zero-or-more any) eol)) ; ^[^.].*$
          (files (directory-files dir nil (if show-hidden nil filter)))
          (filtered-files (if filter-fn (seq-filter filter-fn files) files))
