@@ -70,7 +70,6 @@
 ;; emcas config
 
 ;; custom bindings
-(map! :leader "n r t" #'org-roam-buffer-toggle-display)
 (map! :leader "o w"   #'self/eww-open-url-window-right)
 (map! :leader "e"     #'elfeed)
 (map! :mode org-mode
@@ -117,7 +116,7 @@
 
 ;; org-md
 ;; the default md exporter for source code blocks is bad, so we replace it
-(advice-add 'org-md-example-block :override 'self/org-md-src-block)
+(advice-add 'org-md-example-block :override #'self/org-md-src-block)
 
 ;; the default md exporter should always unfold paragraphs
 (advice-add 'org-md-paragraph :filter-args #'self/org-md-paragraph-unfill)
@@ -138,7 +137,7 @@
 (setq org-roam-graph-exclude-matcher '("daily"))
 
 ;; for adding backlinks to exported org-roam files
-(add-hook 'org-export-before-processing-hook 'self/org-export-preprocessor)
+(add-hook 'org-export-before-processing-hook #'self/org-export-preprocessor)
 
 
 ;; org-roam-server-mode
@@ -218,15 +217,11 @@
 ;; plugin config
 ;; hooks
 
-(add-hook 'after-init-hook 'org-roam-mode)
-(add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
 (add-hook 'nov-mode-hook 'visual-fill-column-mode)
 
-(add-hook 'before-save-hook (lambda ()
-                              (when (or (eq 'rust-mode major-mode) (eq 'rustic-mode major-mode))
-                                (lsp-format-buffer))))
+(add-hook 'before-save-hook #'+format/buffer)
 
 
 ;; fixes issue where undo mode is unavailable in fundamental-mode
@@ -265,6 +260,10 @@
 ;;     (:exec    . ("%c -i %s -o %s.svg" "cat %s.svg"))
 ;;     (:outputter . "browser"))
 ;;   :mode 'mermaid-mode)
+
+(quickrun-add-command "idris"
+  '((:command . "idris")
+    (:exec . ("%c %S"))))
 
 ;; see: https://github.com/hlissner/doom-emacs/issues/3185
 (defadvice! self/+org-inline-image-data-fn (_protocol link _description)

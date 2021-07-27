@@ -72,7 +72,7 @@
 
        :term
        eshell            ; the elisp shell that works everywhere
-       ;shell             ; simple shell REPL for Emacs
+                                        ;shell             ; simple shell REPL for Emacs
        term              ; basic terminal emulator for Emacs
        vterm             ; the best terminal emulation in Emacs
 
@@ -139,7 +139,7 @@
        ;;nim               ; python + lisp at the speed of c
        nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org +hugo +journal +pandoc +present +roam +noter +dragndrop +pretty)               ; organize your plain life in plain text
+       (org +hugo +journal +pandoc +present +roam2 +noter +dragndrop +pretty)               ; organize your plain life in plain text
        ;;perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
