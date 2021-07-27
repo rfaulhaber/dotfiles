@@ -27,46 +27,35 @@
          ,self/reading-capture-find-file-template :immediate-finish t)))
 
 (setq org-roam-capture-templates
-      ; default
-      `(("d" "default" plain #'org-roam-capture--get-point
-         "%?"
-         :file-name ,self/org-roam-default-file-name-template
-         :head ,self/org-roam-default-file-head-template
+      ;; permanent
+      `(("p" "permanent" plain "%?"
+         :if-new (file+head ,self/org-roam-default-file-name-template ,self/org-roam-default-file-head-template)
          :unnarrowed t)
 
-        ; permanent
-        ("p" "permanent" plain #'org-roam-capture--get-point
-         "- tags :: %?"
-         :file-name ,self/org-roam-default-file-name-template
-         :head ,self/org-roam-default-file-head-template
-         :unnarrowed t)
-
-        ; literature
+        ;; literature
         ("l" "literature" plain #'org-roam-capture--get-point
          "- source ::
 
 * Notes
 %?"
-         :file-name ,(format "literature/%s" self/org-roam-default-file-name-template)
-         :head ,self/org-roam-default-file-head-template
+         :if-new (file+head ,(format "literature/%s" self/org-roam-default-file-name-template)
+                            ,self/org-roam-default-file-head-template)
          :unnarrowed t)
 
-        ; literature from link
+                                        ; literature from link
         ("L" "literature from link" plain #'org-roam-capture--get-point
          "#+roam_key: %(car kill-ring-yank-pointer)
 - source :: %(org-cliplink-capture)
 
 * Notes
 %?"
-         :file-name ,(format "literature/%s" self/org-roam-default-file-name-template)
-         :head ,self/org-roam-default-file-head-template
+         :if-new (file+head ,(format "literature/%s" self/org-roam-default-file-name-template) ,self/org-roam-default-file-head-template)
          :unnarrowed t)
 
-        ; category notes. like default notes, but by default immediately finish
+                                        ; category notes. like default notes, but by default immediately finish
         ("c" "category" plain #'org-roam-capture--get-point
          "%?"
-         :file-name ,self/org-roam-default-file-name-template
-         :head ,self/org-roam-default-file-head-template
+         :if-new (file+head ,self/org-roam-default-file-name-template ,self/org-roam-default-file-head-template)
          :unnarrowed t
          :immediate-finish t)
         ))
