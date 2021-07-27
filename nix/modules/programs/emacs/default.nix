@@ -19,23 +19,31 @@ in {
       aspellDicts.en
       aspellDicts.en-computers
       aspellDicts.en-science
+      clang # unfortunately we need a C compiler for various dependencies
       cmake # dependency for vterm
       direnv
       djvulibre
+      editorconfig-core-c
       epdfview
+      fd
+      git
+      gnutls
       graphviz
       imagemagick
       isync
+      languagetool
       libtool # vterm
       libvterm
       mu
       nixfmt
       nodePackages.mermaid-cli
+      ripgrep
       sqlite
       texlive.combined.scheme-medium
       wordnet
       xdotool
       xorg.xwininfo
+      zstd
     ];
 
     environment.etc."xdg/mimeapps.list" = {
