@@ -93,6 +93,9 @@
 (map! :leader "d"     #'dired)
 (map! :leader "TAB i" #'+ibuffer/open-for-current-workspace)
 
+;; editor: if line is entirely whitespace when backspace is hit, delete whole line
+(setq backward-delete-char-untabify-method 'all)
+
 ;; custom ex commands for evil
 (evil-ex-define-cmd "wt[emp]" #'self/evil-write-temp)
 
@@ -263,7 +266,13 @@
 
 (quickrun-add-command "idris"
   '((:command . "idris")
-    (:exec . ("%c %S"))))
+    (:exec . ("%c %o -o %e %s" "%e %a"))
+    (:remove . ("%e"))))
+
+(quickrun-add-command "idris2"
+  '((:command . "idris")
+    (:exec . ("%c %o -o %e %s" "%e %a"))
+    (:remove . ("%e"))))
 
 ;; see: https://github.com/hlissner/doom-emacs/issues/3185
 (defadvice! self/+org-inline-image-data-fn (_protocol link _description)
