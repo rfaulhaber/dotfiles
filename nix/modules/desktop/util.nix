@@ -6,6 +6,7 @@
     environment.systemPackages = with pkgs; [
       bat
       coreutils-full
+      binutils
       croc
       curl
       exa

@@ -29,6 +29,8 @@
         mountPoint = "/home/ryan/calibre";
       };
       keybase.enable = true;
+      gpg.enable = true;
+      redshift.enable = true;
     };
     hardware = { bluetooth.enable = true; };
     desktop = {
@@ -86,23 +88,6 @@
   environment.systemPackages = with pkgs; [
 
     #desktop
-    betterlockscreen
-    chromium
-    discord
-    evince
-    feh
-    firefox-devedition-bin
-    gnome3.gnome-screenshot
-    keychain
-    openvpn
-    pass
-    redshift
-    rofi
-    spotify
-    tdesktop
-    xscreensaver
-    xtitle
-    wally-cli
 
     #dev
 
@@ -129,44 +114,16 @@
     qemu-utils
 
     #system deps
-    python3
-    libsecret
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;
-  programs.gnupg.agent = {
-    enable = true;
-    enableSSHSupport = true;
-    pinentryFlavor = "gnome3";
-  };
-
-  programs.evince.enable = true;
-
-  programs.seahorse.enable = true;
 
   # List services that you want to enable:
 
   services = {
     printing.enable = true;
-
-    # it is unclear to me how to automatically unlock gnome keyring upon login, so
-    # I'm taking the shotgun approach
-    gnome = { gnome-keyring.enable = true; };
-    dbus.packages = with pkgs; [ gnome.gnome-keyring gcr gnome3.dconf ];
-
-    redshift = {
-      enable = true;
-      brightness = {
-        day = "1";
-        night = "1";
-      };
-      temperature = {
-        day = 5700;
-        night = 2600;
-      };
-    };
 
     udev = {
       extraRules = ''
@@ -174,8 +131,6 @@
       '';
     };
   };
-
-  security.pam.services.lightdm.enableGnomeKeyring = true;
 
   nix = {
     autoOptimiseStore = true;

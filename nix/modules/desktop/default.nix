@@ -37,5 +37,33 @@ in {
       timeZone = "America/New_York";
       hardwareClockInLocalTime = true;
     };
+
+    programs.evince.enable = true;
+    programs.seahorse.enable = true;
+
+    security.pam.services.lightdm.enableGnomeKeyring = true;
+
+    # TODO put these somewhere better
+    # necessary utilities for desktop
+    environment.systemPackages = with pkgs; [
+      betterlockscreen
+      chromium
+      discord
+      evince
+      feh
+      firefox-devedition-bin
+      gnome3.gnome-screenshot
+      keychain
+      libsecret
+      openvpn
+      pass
+      python3
+      rofi
+      spotify
+      tdesktop
+      wally-cli
+      xscreensaver
+      xtitle
+    ];
   };
 }
