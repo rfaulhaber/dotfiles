@@ -69,9 +69,15 @@
 (package! wttrin)
 (package! screenshot
   :recipe
-  (:host github :repo "tecosaur/screenshot"))
+  (:host github
+   :repo "tecosaur/screenshot"))
 (package! ix)
 (package! idris-mode)
 (package! idris2-mode
   :recipe
-  (:host github :repo "redfish64/idris2-mode"))
+  (:host github
+   :repo "redfish64/idris2-mode"))
+(package! ox-agora
+  :recipe
+  (:host gitlab
+   :repo "ngm/ox-agora"))
