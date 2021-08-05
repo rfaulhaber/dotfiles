@@ -43,7 +43,7 @@
          :unnarrowed t)
 
                                         ; literature from link
-        ("L" "literature from link" plain #'org-roam-capture--get-point
+        ("L" "literature from link" plain
          "#+roam_key: %(car kill-ring-yank-pointer)
 - source :: %(org-cliplink-capture)
 
@@ -53,7 +53,7 @@
          :unnarrowed t)
 
                                         ; category notes. like default notes, but by default immediately finish
-        ("c" "category" plain #'org-roam-capture--get-point
+        ("c" "category" plain
          "%?"
          :if-new (file+head ,self/org-roam-default-file-name-template ,self/org-roam-default-file-head-template)
          :unnarrowed t

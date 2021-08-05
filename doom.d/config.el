@@ -138,6 +138,7 @@
 ;; org-roam
 (setq org-roam-directory "~/org/roam")
 (setq org-roam-graph-exclude-matcher '("daily"))
+(add-hook 'after-init-hook #'org-roam-setup)
 
 ;; for adding backlinks to exported org-roam files
 (add-hook 'org-export-before-processing-hook #'self/org-export-preprocessor)
