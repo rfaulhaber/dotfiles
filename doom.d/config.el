@@ -256,25 +256,6 @@
 ;; wttrin
 (setq wttrin-default-cities '("Cleveland"))
 
-;; quickrun config
-;; TODO put somewhere else?
-;; TODO make it so that this will automatically open in output buffer
-;; (quickrun-add-command "mermaid"
-;;   '((:command . "mmdc")
-;;     (:exec    . ("%c -i %s -o %s.svg" "cat %s.svg"))
-;;     (:outputter . "browser"))
-;;   :mode 'mermaid-mode)
-
-(quickrun-add-command "idris"
-  '((:command . "idris")
-    (:exec . ("%c %o -o %e %s" "%e %a"))
-    (:remove . ("%e"))))
-
-(quickrun-add-command "idris2"
-  '((:command . "idris")
-    (:exec . ("%c %o -o %e %s" "%e %a"))
-    (:remove . ("%e"))))
-
 ;; see: https://github.com/hlissner/doom-emacs/issues/3185
 (defadvice! self/+org-inline-image-data-fn (_protocol link _description)
   :override #'+org-inline-image-data-fn
