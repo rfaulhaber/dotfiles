@@ -18,6 +18,7 @@
         setDefault = true;
       };
       emacs.enable = true;
+      neovim.enable = true;
       pcloud.enable = true;
       kitty.enable = true;
       _1password.enable = true;
@@ -103,9 +104,6 @@
 
     #dev.racket
     racket
-
-    #dev.editors
-    neovim
 
     #util
     cifs-utils

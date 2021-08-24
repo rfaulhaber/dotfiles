@@ -10,10 +10,5 @@
       XDG_DATA_HOME = "$HOME/.local/share";
       XDG_BIN_HOME = "$HOME/.local/bin";
     };
-
-    #extraInit = ''
-    #  export XAUTHORITY=/tmp/Xauthority
-    #  [ -e ~/.Xauthority ] && mv -f ~/.Xauthority "$XAUTHORITY"
-    #'';
   };
 }

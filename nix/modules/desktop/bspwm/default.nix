@@ -20,6 +20,7 @@ in {
     };
   };
   config = mkIf cfg.enable {
+    # TODO put this configuration elsewhere
     services.xserver = {
       enable = true;
       layout = "us";
