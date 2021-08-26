@@ -81,26 +81,16 @@
     networkmanager.enable = true;
   };
 
-  location.provider = "geoclue2";
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   # TODO clean up!
   environment.systemPackages = with pkgs; [
-
-    #desktop
-
-    #dev
-
     #dev.util
     git
     shellcheck
     shfmt
     gnumake
     just
-
-    #dev.rust
-    rustup
 
     #dev.racket
     racket

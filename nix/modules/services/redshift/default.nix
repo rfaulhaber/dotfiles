@@ -7,7 +7,11 @@ in {
   options.modules.services.redshift = { enable = mkEnableOption false; };
 
   config = mkIf cfg.enable {
-    location.provider = "geoclue2";
+    location = {
+      provider = "manual";
+      latitude = 41.45866;
+      longitude = -81.787132;
+    };
 
     environment.systemPackages = with pkgs; [ redshift ];
 
