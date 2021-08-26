@@ -12,18 +12,24 @@ in {
       coc = { enable = true; };
 
       plugins = with pkgs.vimPlugins; [
-        syntastic
-        (mkIf (config.modules.langs.rust.enable) rust-vim)
-        (mkIf (config.modules.langs.rust.enable) coc-rust-analyzer)
+        coc-fzf
         editorconfig-vim
-        vim-surround
+        fzf-vim
+        syntastic
         vim-airline
         vim-airline-themes
-        coc-fzf
-        fzf-vim
+        vim-easymotion
         vim-gitgutter
+        vim-surround
         vim-vinegar
+        (mkIf (config.modules.langs.rust.enable) coc-rust-analyzer)
+        (mkIf (config.modules.langs.rust.enable) rust-vim)
       ];
+
+      extraConfig = ''
+        nnoremap <SPACE> <Nop>
+        let mapleader=" "
+      '';
 
       vimAlias = true;
       viAlias = true;
