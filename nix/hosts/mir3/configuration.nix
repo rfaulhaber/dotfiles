@@ -41,6 +41,7 @@
           [ "keybase-gui" "pcloud" "discord" "telegram-desktop" ];
       };
       polybar.enable = true;
+      rofi.enable = true;
     };
     langs = {
       js.enable = true;
