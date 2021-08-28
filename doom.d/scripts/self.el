@@ -147,6 +147,18 @@ Version 2016-07-13"
       (1 (kill-new (format "%s:%s" file-name (line-number-at-pos))))
       (4 (kill-new (format "%s:%s:%s" file-name (line-number-at-pos) (current-column)))))))
 
+;; thank you EmacsWiki
+(defun self/sort-words-in-region (reverse beg end)
+  "Sort words in region alphabetically, in REVERSE if negative.
+    Prefixed with negative \\[universal-argument], sorts in reverse.
+
+    The variable `sort-fold-case' determines whether alphabetic case
+    affects the sort order.
+
+    See `sort-regexp-fields'."
+  (interactive "*P\nr")
+  (sort-regexp-fields reverse "\\w+" "\\&" beg end))
+
 ;; -------------------- utility functions ---------------------------------------
 
 ;; this comes from reddit. thank you r/emacs!
