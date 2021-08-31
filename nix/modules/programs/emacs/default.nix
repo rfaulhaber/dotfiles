@@ -32,8 +32,8 @@ in {
       imagemagick
       isync
       languagetool
-      libtool # vterm
-      libvterm
+      libtool # needed by vterm
+      libvterm # vterm
       mu
       nixfmt
       nodePackages.mermaid-cli

@@ -13,16 +13,21 @@ in {
       default = false;
       type = types.bool;
     };
+    theme = mkOption {
+      description = "ZSH theme from oh-my-zsh.";
+      default = "agnoster";
+      type = types.str;
+    };
   };
   config = mkIf cfg.enable {
     environment = {
       systemPackages = with pkgs; [
+        nix-zsh-completions
         oh-my-zsh
+        xclip # required for pbcopy and pbpaste
         zsh
         zsh-autosuggestions
         zsh-completions
-        xclip
-        nix-zsh-completions
       ];
 
       # sometimes zsh from nixpkgs doesn't respect highlightStyle value
@@ -34,7 +39,7 @@ in {
       ohMyZsh = {
         enable = true;
         plugins = [ "git" "colored-man-pages" ];
-        theme = "agnoster";
+        theme = cfg.theme;
       };
       autosuggestions.enable = true;
       autosuggestions.highlightStyle = "fg=${colors.grey}";
@@ -42,8 +47,6 @@ in {
       shellAliases = {
         pbcopy = "xclip -selection clipboard";
         pbpaste = "xclip -selection clipboard -o";
-        vi = "nvim";
-        vim = "nvim";
         ls = "exa";
         l = "exa -lah";
         ll = "exa -lh";
