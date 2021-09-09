@@ -1,0 +1,24 @@
+# -*- mode: snippet -*-
+# name: context (solid)
+# --
+
+import { createContext, useContext } from 'solid-js';
+
+const $1Context = createContext();
+
+export function $1Provider(props) {
+      return <$1Context.Provider
+        value={{}}>
+            {props.children}
+        </$1Context.Provider>
+}
+
+export default function use$1Context() {
+       const ctx = useContext($1Context);
+
+       if (!ctx) {
+          throw new Error('$1Context must be called within $1Provider');
+       }
+
+       return ctx;
+}

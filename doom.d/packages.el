@@ -72,7 +72,6 @@
   (:host github
    :repo "tecosaur/screenshot"))
 (package! ix)
-(package! idris-mode)
 (package! idris2-mode
   :recipe
   (:host github
@@ -81,3 +80,7 @@
   :recipe
   (:host gitlab
    :repo "ngm/ox-agora"))
+(package! caseconv
+  :recipe
+  (:host github
+   :repo "rfaulhaber/caseconv.el"))

@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: JSX functional component
+# --
+
+function $1(props) {
+    return (
+        <div>placeholder</div>
+    );
+}
+
+export default $1;

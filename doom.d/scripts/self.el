@@ -3,6 +3,7 @@
 ;; custom scripts for misc personal use
 
 (defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
+(defvar self/common-directories '() "A list of common directories, used by self/visit-common-directories")
 
 (defconst self/date-format-options '(("MM/YYYY"    . "%m/%Y")
                                      ("MM/DD"      . "%m/%d")

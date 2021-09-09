@@ -70,7 +70,7 @@
 ;; emcas config
 
 ;; custom bindings
-(map! :leader "o w"   #'self/eww-open-url-window-right)
+(map! :leader :desc "Opens EWW url to the right" "o w" #'self/eww-open-url-window-right )
 (map! :leader "e"     #'elfeed)
 (map! :mode org-mode
       :leader "c l" nil
@@ -138,7 +138,7 @@
 ;; org-roam
 (setq org-roam-directory "~/org/roam")
 (setq org-roam-graph-exclude-matcher '("daily"))
-;(add-hook 'after-init-hook #'org-roam-setup)
+                                        ;(add-hook 'after-init-hook #'org-roam-setup)
 
 ;; for adding backlinks to exported org-roam files
 (add-hook 'org-export-before-processing-hook #'self/org-export-preprocessor)
@@ -252,6 +252,9 @@
 
 ;; wttrin
 (setq wttrin-default-cities '("Cleveland"))
+
+;; gnus
+(setq gnus-select-method '(nntp "us.newsdemon.com"))
 
 ;; see: https://github.com/hlissner/doom-emacs/issues/3185
 (defadvice! self/+org-inline-image-data-fn (_protocol link _description)
