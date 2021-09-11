@@ -47,40 +47,32 @@
 ;;(package! builtin-package :recipe (:branch "develop"))
 
 ;; packages
-(package! fzf)
+(package! calibredb)
+(package! carbon-now-sh)
 (package! dap-mode)
+(package! deadgrep)
+(package! elpher)
+(package! fzf)
+(package! indium)
+(package! ix)
+(package! mermaid-mode)
+(package! nix-buffer)
 (package! nov)
+(package! ob-mermaid)
+(package! ob-typescript)
 (package! org-cliplink)
 (package! org-ref)
-(package! ob-typescript)
-(package! ox-jekyll-md)
 (package! org-roam-bibtex)
 (package! org-roam-server)
-(package! indium)
-(package! prettier)
-(package! carbon-now-sh)
-(package! calibredb)
+(package! ox-jekyll-md)
 (package! pollen-mode)
-(package! nix-buffer)
-(package! elpher)
+(package! prettier)
 (package! vimgolf)
-(package! ob-mermaid)
-(package! mermaid-mode)
 (package! wttrin)
-(package! screenshot
-  :recipe
-  (:host github
-   :repo "tecosaur/screenshot"))
-(package! ix)
-(package! idris2-mode
-  :recipe
-  (:host github
-   :repo "redfish64/idris2-mode"))
-(package! ox-agora
-  :recipe
-  (:host gitlab
-   :repo "ngm/ox-agora"))
-(package! caseconv
-  :recipe
-  (:host github
-   :repo "rfaulhaber/caseconv.el"))
+
+;; non-*elpa packages
+
+(package! caseconv :recipe (:host github :repo "rfaulhaber/caseconv.el"))
+(package! idris2-mode :recipe (:host github :repo "redfish64/idris2-mode"))
+(package! ox-agora :recipe (:host gitlab :repo "ngm/ox-agora"))
+(package! screenshot :recipe (:host github :repo "tecosaur/screenshot"))
