@@ -52,6 +52,7 @@
 
   nixpkgs.config.allowUnfree = true;
 
+  # TODO if doing fresh install, use ZFS
   boot.tmpOnTmpfs = true;
   boot.cleanTmpDir = true;
   boot.loader = {
