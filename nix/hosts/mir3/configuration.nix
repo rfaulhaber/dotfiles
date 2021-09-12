@@ -32,6 +32,7 @@
       keybase.enable = true;
       gpg.enable = true;
       redshift.enable = true;
+      systemd.modules = [ "updatedb" ];
     };
     hardware = { bluetooth.enable = true; };
     desktop = {

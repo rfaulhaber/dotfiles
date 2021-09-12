@@ -1,0 +1,22 @@
+{ config, lib, pkgs, ... }:
+
+with lib;
+
+let cfg = config.modules.services.systemd;
+in {
+  # TODO refactor as constant
+  config = mkIf (builtins.elem "updatedb" cfg.modules) {
+    systemd.services.updatedb = {
+      description = "Periodically runs updatedb.";
+      after = [ "multi-user.target" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        User = config.user.name;
+        # since updatedb will most likely report a failure (since it can't read
+        # most of the root directory), we'll ignore the status code
+        ExecStart = "-${pkgs.findutils}/bin/updatedb";
+      };
+    };
+  };
+}

@@ -1,1 +1,1 @@
-{ require = [ ./docker ./calibre-mount ./keybase ./gpg ./redshift ]; }
+{ require = [ ./docker ./calibre-mount ./keybase ./gpg ./redshift ./systemd ]; }
