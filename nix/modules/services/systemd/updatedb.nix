@@ -12,9 +12,10 @@ in {
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         Type = "oneshot";
-        User = config.user.name;
-        # since updatedb will most likely report a failure (since it can't read
-        # most of the root directory), we'll ignore the status code
+        User = "root";
+        # since updatedb will most likely exit with a non-zero status code
+        # (since it can't read most of the root directory), we'll ignore the
+        # status code
         ExecStart = "-${pkgs.findutils}/bin/updatedb";
       };
     };
