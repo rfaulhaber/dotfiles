@@ -49,7 +49,6 @@
 ;; packages
 (package! calibredb)
 (package! carbon-now-sh)
-(package! dap-mode)
 (package! deadgrep)
 (package! elpher)
 (package! fzf)
