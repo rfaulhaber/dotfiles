@@ -3,7 +3,7 @@
 ;; custom scripts for misc personal use
 
 (defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
-(defvar self/common-directories '() "A list of common directories, used by self/visit-common-directories")
+(defvar self/common-directories '() "Alist (Name . Path) of common directories, used by self/visit-common-directories")
 
 (defconst self/date-format-options '(("MM/YYYY"    . "%m/%Y")
                                      ("MM/DD"      . "%m/%d")
@@ -159,6 +159,15 @@ Version 2016-07-13"
     See `sort-regexp-fields'."
   (interactive "*P\nr")
   (sort-regexp-fields reverse "\\w+" "\\&" beg end))
+
+(defun self/visit-common-directories ()
+  "Open a common directory in Dired."
+  (interactive)
+  (let* ((names (mapcar 'car self/common-directories)))
+    (if (eq names nil)
+        (user-error "variable self/common-directories is not set")
+      (let ((selection (ivy-read "Select a directory: " names)))
+        (dired (cdr (assoc selection self/common-directories)))))))
 
 ;; -------------------- utility functions ---------------------------------------
 

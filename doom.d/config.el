@@ -93,6 +93,11 @@
 (map! :leader "d"     #'dired)
 (map! :leader "TAB i" #'+ibuffer/open-for-current-workspace)
 
+;; common directories
+(setq self/common-directories '(("Downloads" . "~/Downloads")
+                                ("Projects" . "~/Projects")
+                                ("Screenshots" . "~/Pictures/screenshots")))
+
 ;; editor: if line is entirely whitespace when backspace is hit, delete whole line
 (setq backward-delete-char-untabify-method 'all)
 
