@@ -33,7 +33,7 @@
          :unnarrowed t)
 
         ;; literature
-        ("l" "literature" plain #'org-roam-capture--get-point
+        ("l" "literature" plain
          "- source ::
 
 * Notes
@@ -57,8 +57,7 @@
          "%?"
          :if-new (file+head ,self/org-roam-default-file-name-template ,self/org-roam-default-file-head-template)
          :unnarrowed t
-         :immediate-finish t)
-        ))
+         :immediate-finish t)))
 
 (setq org-roam-dailies-capture-templates
       '(("d" "daily" plain (function org-roam-capture--get-point) ""
