@@ -143,7 +143,6 @@
 ;; org-roam
 (setq org-roam-directory "~/org/roam")
 (setq org-roam-graph-exclude-matcher '("daily"))
-                                        ;(add-hook 'after-init-hook #'org-roam-setup)
 
 ;; for adding backlinks to exported org-roam files
 (add-hook 'org-export-before-processing-hook #'self/org-export-preprocessor)
@@ -185,7 +184,7 @@
                                    :base-directory "~/org/roam"
                                    :base-extension "org"
                                    :publishing-directory "~/Projects/roam"
-                                   :publishing-function org-org-publish-to-org
+                                   :publishing-function org-agora-publish-to-agora
                                    :recursive t)))
 
 ;; nov config
@@ -229,12 +228,14 @@
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
 (add-hook 'nov-mode-hook 'visual-fill-column-mode)
-
 (add-hook 'before-save-hook #'+format/buffer)
 
 
 ;; after hooks
 (after! org (load! "./scripts/org-templates.el"))
+
+(after! undo-tree
+  (setq undo-tree-auto-save-history nil))
 
 ;; load languages for org-babel
 ;; these are mostly for use in reveal

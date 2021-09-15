@@ -242,12 +242,14 @@ channel."
 ;; TODO write more generic roam exporter that extends org publishing
 (defun self/org-export-preprocessor (backend)
   "For org-roam files, this will append all backlinks to a file to the end."
-  (when (org-roam--org-roam-file-p)
+  (when (org-roam-file-p)
     (let ((links (mapcar
-                  (lambda (el)
-                    ;; TODO fix, probably not super performant
-                    (format " - [[%s][%s]]\n" (first el) (org-roam-db--get-title (first el))))
-                  (org-roam--get-backlinks (buffer-file-name)))))
+                  (lambda (backlink)
+                    (let* ((source-node (org-roam-backlink-source-node backlink))
+                           (source-title (org-roam-node-title source-node))
+                           (source-id (org-roam-node-id source-node)))
+                      (format " - [[id:%s][%s]]\n" source-id source-title)))
+                  (org-roam-backlinks-get (org-roam-node-at-point)))))
       (unless (eq (length links) 0)
         (save-excursion
           (goto-char (point-max))
