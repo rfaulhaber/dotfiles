@@ -5,7 +5,7 @@
 (setq self/reading-capture-list-item-template "** [ ] %(org-cliplink-capture)\n")
 (setq self/reading-capture-find-file-template "** [ ] %(self/capture-insert-file-link)")
 
-(setq self/org-roam-default-file-name-template "%<%Y%m%d%H%M%S>-${slug}")
+(setq self/org-roam-default-file-name-template "%<%Y%m%d%H%M%S>-${slug}.org")
 (setq self/org-roam-default-file-head-template "#+title: ${title}\n")
 
 ;; TODO add Roam capture templates
