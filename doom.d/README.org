@@ -1,0 +1,29 @@
+#+TITLE: Emacs config
+
+This is my Emacs configuration. This directory is symlinked to =~/.doom.d= on
+every computer I use.
+
+Emacs, for me, is my:
+
+- IDE
+- Text editor
+- Mail client
+- Notebook
+- Terminal emulator
+- REPL environment
+- Spreadsheet application
+- File explorer
+
+In short, for any task that requires editing text, I use Emacs for that.
+
+Further, this configuration uses the wonderful [[https://github.com/hlissner/doom-emacs][Doom Emacs]] framework.
+
+* Files
+- =init.el=: boilerplate configuration for Doom Emacs. Enables a series of
+  packages by default with default config
+- =config.el=: my own personal config on top of Doom Emacs
+- =packages.el=: additional packages beyond what Doom provides
+- =scripts/self.el=: my own personal Emacs code, stuff that's too short to be
+  its own module proper
+  + TODO make =self= module
+- =scripts/org-templates.el=: my Org / org-roam capture templates
