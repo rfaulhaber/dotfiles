@@ -42,6 +42,7 @@ with lib.my;
       configDir = mkOpt t "${config.dotfiles.dir}/config";
       modulesDir = mkOpt t "${config.dotfiles.dir}/modules";
       themesDir = mkOpt t "${config.dotfiles.modulesDir}/themes";
+      emacsDir = mkOpt t "${config.dotfiles.dir}/doom.d";
     };
   };
   config = {
