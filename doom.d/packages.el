@@ -46,7 +46,10 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;;(package! builtin-package :recipe (:branch "develop"))
 
-;; packages
+;; unpinned packages
+(unpin! org-roam)
+
+;; *elpa packages
 (package! calibredb)
 (package! carbon-now-sh)
 (package! deadgrep)
@@ -62,7 +65,6 @@
 (package! org-cliplink)
 (package! org-ref)
 (package! org-roam-bibtex)
-(package! org-roam-server)
 (package! ox-jekyll-md)
 (package! pollen-mode)
 (package! prettier)
@@ -70,8 +72,11 @@
 (package! wttrin)
 
 ;; non-*elpa packages
+(package! caseconv :recipe (:host github :repo "rfaulhaber/caseconv.el" :build t))
+(package! idris2-mode :recipe (:host github :repo "redfish64/idris2-mode" :build t))
+(package! ox-agora :recipe (:host gitlab :repo "ngm/ox-agora" :build t))
+(package! screenshot :recipe (:host github :repo "tecosaur/screenshot" :build t))
 
-(package! caseconv :recipe (:host github :repo "rfaulhaber/caseconv.el"))
-(package! idris2-mode :recipe (:host github :repo "redfish64/idris2-mode"))
-(package! ox-agora :recipe (:host gitlab :repo "ngm/ox-agora"))
-(package! screenshot :recipe (:host github :repo "tecosaur/screenshot"))
+;; org roam ui
+(package! websocket)
+(package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :build t :files ("*.el" "out")))
