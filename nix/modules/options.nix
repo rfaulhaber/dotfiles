@@ -10,6 +10,11 @@ with lib.my;
       default = { };
       type = attrs;
     };
+    userInfo = mkOption {
+      description = "Additional user info associated with the user.";
+      default = { };
+      type = attrs;
+    };
     home = {
       configFile = mkOptDesc attrs { } "Files to place in $XDG_CONFIG_HOME";
       dataFile = mkOptDesc attrs { } "Files to place in $XDG_DATA_HOME";
@@ -59,6 +64,11 @@ with lib.my;
       # gid = 1000;
     };
 
+    userInfo = {
+      fullName = "Ryan Faulhaber";
+      primaryEmail = "ryf@sent.as";
+    };
+
     users.groups = { plugdev = { }; };
 
     home-manager = {
@@ -67,7 +77,7 @@ with lib.my;
       users.${config.user.name} = {
         home = {
           file = mkAliasDefinitions options.home.file;
-          stateVersion = "21.05";
+          stateVersion = config.system.stateVersion;
         };
 
         home.packages = mkAliasDefinitions options.home.packages;

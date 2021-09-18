@@ -22,6 +22,7 @@
       pcloud.enable = true;
       kitty.enable = true;
       _1password.enable = true;
+      git.enable = true;
     };
     services = {
       docker.enable = true;
@@ -33,8 +34,12 @@
       gpg.enable = true;
       redshift.enable = true;
       systemd.modules = [ "updatedb" ];
+      virt.enable = true;
     };
-    hardware = { bluetooth.enable = true; };
+    hardware = {
+      bluetooth.enable = true;
+      zsa.enable = true;
+    };
     desktop = {
       bspwm = {
         enable = true;
@@ -44,9 +49,12 @@
       polybar.enable = true;
       rofi.enable = true;
     };
+    # TODO change to list?
     langs = {
       js.enable = true;
       rust.enable = true;
+      shell.enable = true;
+      racket.enable = true;
     };
     themes.active = "city-lights";
   };
@@ -89,22 +97,11 @@
   # TODO clean up!
   environment.systemPackages = with pkgs; [
     #dev.util
-    git
-    shellcheck
-    shfmt
     gnumake
     just
 
-    #dev.racket
-    racket
-
     #util
     cifs-utils
-    kvm
-    qemu
-    qemu-utils
-
-    #system deps
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -113,15 +110,7 @@
 
   # List services that you want to enable:
 
-  services = {
-    printing.enable = true;
-
-    udev = {
-      extraRules = ''
-        SUBSYSTEM=="usb", ATTR{idVendor}=="3297", ATTR{idProduct}=="1969", GROUP="plugdev"
-      '';
-    };
-  };
+  services = { printing.enable = true; };
 
   nix = {
     autoOptimiseStore = true;
