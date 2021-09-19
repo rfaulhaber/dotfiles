@@ -1,12 +1,26 @@
 #+TITLE: dotfiles
 
-These are my somewhat poorly structured dotfiles, containing everything I would
-need for my Mac or Linux environments, with my Mac dotfiles only being a subset
-of my Linux dotfiles.
+These are all the configuration files I use across every computer I use for
+development. For all development I use either Linux or Mac explicitly, and these
+configuration files assume such.
 
-This repo is currently undergoing a massive restructuring. I'm attempting to
-rewrite all my config files using Nix. In the ideal world, my config should be
-as simple as flipping a few switches per host.
+My configuration is broken down into mostly two parts: System (mostly Linux)
+configuration and Emacs configuration.
+
+I publish this here in the hopes that someone might find it useful. If you find
+this configuration useful, or have any questions, please let me know.
+
+* Emacs
+[[https://ryanfaulhaber.com/posts/try-emacs/][I use Emacs]] as my default editor. I use Emacs for any task that involves text.
+* Nix
+My Linux distro of choice (after going through about a dozen distros in my time
+with Linux) is NixOS.
+
+The =nix= directory contains modules, which are pre-configured "switches" that
+are flipped on and off in configurations under the =nix/hosts= directory. This
+allows for a completely reproducible system. The idea with structuring my Nix
+configuration in this manner is that I could theoretically use it to more easily
+build configurations for other computers that run NixOS.
 
 I would like to tell you how to use Nix better, but as Newton said, "If I have
 seen further it is by standing on the shoulders of giants." Much of my config is
