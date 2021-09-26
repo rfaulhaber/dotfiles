@@ -13,6 +13,11 @@
 # fixes.
 #
 # ^1 https://github.com/NixOS/nixpkgs/issues/69338
+#
+# Update checklist:
+# - Update version
+# - Update key from PKGBUILD
+# - Update sha256 value
 
 { pkgs ? import <nixpkgs> { }, ... }:
 
@@ -20,14 +25,14 @@ with pkgs;
 
 let
   pname = "pcloud";
-  version = "1.9.5";
-  key = "XZy4VwXZjkvoMGM3x6kCTkIGLFYVKjqKbefX";
+  version = "1.9.6";
+  key = "XZ810dXZL9AAYLb3UfkFuveSeEr6xXveIyU7";
   name = "${pname}-${version}";
 
   # Archive link's code thanks to: https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=pcloud-drive
   src = fetchzip {
     url = "https://api.pcloud.com/getpubzip?code=${key}&filename=${name}.zip";
-    sha256 = "sha256-GuO4wsSRT6WMlqYs2X+5oA7CykHb/NmhZ7UGA1FA6y4=";
+    sha256 = "sha256-z1SLRpR/EYP3lI9A8Bh/seWNwJpycl08xVHZXqKhjEY=";
     stripRoot = true;
   };
 
