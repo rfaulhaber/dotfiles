@@ -60,6 +60,5 @@
          :immediate-finish t)))
 
 (setq org-roam-dailies-capture-templates
-      '(("d" "daily" plain (function org-roam-capture--get-point) ""
-         :file-name "daily/%<%Y%m%d>"
-         :head "#+title: %<%Y%m%d>")))
+      '(("d" "daily" plain ""
+         :if-new (file+head "%<%Y%m%d>.org" "#+title: %<%Y%m%d>"))))

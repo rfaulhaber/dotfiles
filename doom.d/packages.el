@@ -75,7 +75,7 @@
 (package! caseconv :recipe (:host github :repo "rfaulhaber/caseconv.el" :build t))
 (package! idris2-mode :recipe (:host github :repo "redfish64/idris2-mode" :build t))
 (package! ox-agora :recipe (:host gitlab :repo "ngm/ox-agora" :build t))
-(package! screenshot :recipe (:host github :repo "tecosaur/screenshot" :build t))
+(package! screenshot :recipe (:host github :repo "tecosaur/screenshot"))
 
 ;; org roam ui
 (package! websocket)
