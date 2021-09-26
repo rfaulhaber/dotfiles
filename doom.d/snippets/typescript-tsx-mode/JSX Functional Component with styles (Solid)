@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: JSX Functional Component with styles (Solid)
+# --
+import withStyles, { PropsWithClasses } from '../withStyles';
+
+const styles = {};
+
+function $1(props: PropsWithClasses) {
+    return (
+        <div>placeholder</div>
+    );
+}
+
+export default withStyles(styles)($1);
