@@ -169,6 +169,14 @@ Version 2016-07-13"
       (let ((selection (ivy-read "Select a directory: " names)))
         (dired (cdr (assoc selection self/common-directories)))))))
 
+(defun self/suspend-save ()
+  "A stupid hack to allow for things like saving without formatting."
+  (interactive)
+  (major-mode-suspend)
+  (text-mode)
+  (save-buffer)
+  (major-mode-restore))
+
 ;; -------------------- utility functions ---------------------------------------
 
 ;; this comes from reddit. thank you r/emacs!
@@ -337,3 +345,16 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
      ((null bufname) (let ((filename (self/mktemp)))
                        (write-file filename)))
      (t (self/write-temp s f)))))
+
+(evil-define-operator self/evil-write-suspend (beg end type file-or-append &optional bang)
+  "Like evil-write, but quickly changes the buffer to `text-mode' first.
+This is meant to skip any kind of automatic formatting."
+  :motion nil
+  :move-point nil
+  :type line
+  :repeat nil
+  (interactive "<r><fsh><!>")
+  (major-mode-suspend)
+  (text-mode)
+  (evil-write beg end type file-or-append bang)
+  (major-mode-restore))

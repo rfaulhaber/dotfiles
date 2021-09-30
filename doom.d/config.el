@@ -103,6 +103,7 @@
 
 ;; custom ex commands for evil
 (evil-ex-define-cmd "wt[emp]" #'self/evil-write-temp)
+(evil-ex-define-cmd "ws[uspend]" #'self/evil-write-suspend)
 
 ;; custom variable settings
 ;; Tramp shell prompt, to allow it to work with terminal colors
