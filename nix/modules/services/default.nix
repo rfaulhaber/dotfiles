@@ -1,4 +1,12 @@
 {
-  require =
-    [ ./docker ./calibre-mount ./keybase ./gpg ./redshift ./systemd ./virt ];
+  require = [
+    ./calibre-mount
+    ./docker
+    ./gpg
+    ./keybase
+    ./mail
+    ./redshift
+    ./systemd
+    ./virt
+  ];
 }

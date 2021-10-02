@@ -34,7 +34,7 @@ in {
 
       signing = {
         signByDefault = true;
-        key = "A2205925F3B6C5B96F26C3CB544650C5A306061B";
+        key = config.userInfo.primaryGPGKey;
       };
 
       extraConfig = { init.defaultBranch = "main"; };

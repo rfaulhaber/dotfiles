@@ -22,7 +22,10 @@
       pcloud.enable = true;
       kitty.enable = true;
       _1password.enable = true;
-      git.enable = true;
+      git = {
+        enable = true;
+        useDelta = true;
+      };
     };
     services = {
       docker.enable = true;
@@ -32,6 +35,7 @@
       };
       keybase.enable = true;
       gpg.enable = true;
+      mail.enable = true;
       redshift.enable = true;
       systemd.modules = [ "updatedb" ];
       virt.enable = true;

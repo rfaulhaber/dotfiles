@@ -30,11 +30,10 @@ in {
       gnutls
       graphviz
       imagemagick
-      isync
       languagetool
       libtool # needed by vterm
       libvterm # vterm
-      mu
+      (mkIf (config.modules.services.mail.enable) mu)
       nixfmt
       nodePackages.mermaid-cli
       ripgrep

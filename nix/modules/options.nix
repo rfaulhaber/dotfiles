@@ -16,6 +16,8 @@ with lib.my;
       type = attrs;
     };
     home = {
+      accounts = mkOptDesc attrs { }
+        "Accounts managed by home-manager. Used primarily for email";
       configFile = mkOptDesc attrs { } "Files to place in $XDG_CONFIG_HOME";
       dataFile = mkOptDesc attrs { } "Files to place in $XDG_DATA_HOME";
       file = mkOptDesc attrs { } "Files to place directly in $HOME";
@@ -64,9 +66,11 @@ with lib.my;
       # gid = 1000;
     };
 
+    # supplementary user info used throughout config
     userInfo = {
       fullName = "Ryan Faulhaber";
       primaryEmail = "ryf@sent.as";
+      primaryGPGKey = "A2205925F3B6C5B96F26C3CB544650C5A306061B";
     };
 
     users.groups = { plugdev = { }; };
@@ -80,6 +84,7 @@ with lib.my;
           stateVersion = config.system.stateVersion;
         };
 
+        accounts = mkAliasDefinitions options.home.accounts;
         home.packages = mkAliasDefinitions options.home.packages;
         programs = mkAliasDefinitions options.home.programs;
         services = mkAliasDefinitions options.home.services;
