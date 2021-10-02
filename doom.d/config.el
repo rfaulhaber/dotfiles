@@ -213,6 +213,11 @@
  smtpmail-local-domain "sent.as"
  smtpmail-smtp-service 587)
 
+(add-to-list 'mu4e-bookmarks
+             '(:name "Inbox"
+               :query "maildir:/Inbox"
+               :key ?i))
+
 ;; elfeed config
 (setq rmh-elfeed-org-files (list (concat org-directory "/elfeed.org")))
 
