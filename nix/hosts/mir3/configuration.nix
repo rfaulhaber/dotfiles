@@ -52,6 +52,7 @@
       };
       polybar.enable = true;
       rofi.enable = true;
+      random-wallpaper.enable = true;
     };
     # TODO change to list?
     langs = {

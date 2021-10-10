@@ -1,6 +1,8 @@
-{
+{ config, pkgs, ... }:
+let kittyExec = "${pkgs.kitty}/bin/kitty";
+in {
   # terminal
-  "super + Return" = "kitty";
+  "super + Return" = kittyExec;
   #rofu apps
   "super + alt + d" = "rofi -show drun -modi drun,run -show-icons";
   # rofi run

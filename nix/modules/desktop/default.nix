@@ -4,7 +4,7 @@ with lib;
 
 let cfg = config.modules.desktop;
 in {
-  imports = [ ./bspwm ./polybar ./rofi ./util.nix ];
+  imports = [ ./bspwm ./polybar ./rofi ./util.nix ./random-wallpaper.nix ];
   config = mkIf config.services.xserver.enable {
     i18n = { defaultLocale = "en_US.UTF-8"; };
     environment.variables = rec {

@@ -43,7 +43,7 @@ with lib.my;
     # thank you again hlissner
     dotfiles = let t = either str path;
     in {
-      dir = mkOpt t (findFirst pathExists (toString ../.)
+      dir = mkOpt t (findFirst pathExists (toString ../../.)
         [ "${config.user.home}/.config/dotfiles" ]);
       binDir = mkOpt t "${config.dotfiles.dir}/bin";
       configDir = mkOpt t "${config.dotfiles.dir}/config";

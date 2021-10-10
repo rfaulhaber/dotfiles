@@ -4,7 +4,7 @@ with lib;
 
 let
   cfg = config.modules.desktop.bspwm;
-  sxhkdKeybindings = import ./sxhkd.nix;
+  sxhkdKeybindings = import ./sxhkd.nix { inherit pkgs config; };
   bspwmConfig = import ./bspwm.nix;
 in {
   options.modules.desktop.bspwm = {
