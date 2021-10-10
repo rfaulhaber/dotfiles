@@ -213,10 +213,12 @@
  smtpmail-local-domain "sent.as"
  smtpmail-smtp-service 587)
 
-(add-to-list 'mu4e-bookmarks
-             '(:name "Inbox"
-               :query "maildir:/Inbox"
-               :key ?i))
+(after! mu4e
+  (add-to-list 'mu4e-bookmarks
+               '(:name "Inbox"
+                 :query "maildir:/Inbox"
+                 :key ?i)))
+
 
 ;; elfeed config
 (setq rmh-elfeed-org-files (list (concat org-directory "/elfeed.org")))
@@ -229,9 +231,11 @@
 (add-hook 'nov-mode-hook 'visual-fill-column-mode)
 (add-hook 'before-save-hook #'+format/buffer)
 
+(after! org
+  (load! "./scripts/org-templates.el"))
+
 
 ;; after hooks
-(after! org (load! "./scripts/org-templates.el"))
 
 (after! undo-tree
   (setq undo-tree-auto-save-history nil))

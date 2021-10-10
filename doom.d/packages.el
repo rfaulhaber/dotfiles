@@ -72,11 +72,40 @@
 (package! wttrin)
 
 ;; non-*elpa packages
-(package! caseconv :recipe (:host github :repo "rfaulhaber/caseconv.el" :build t))
-(package! idris2-mode :recipe (:host github :repo "redfish64/idris2-mode" :build t))
-(package! ox-agora :recipe (:host gitlab :repo "ngm/ox-agora" :build t))
-(package! screenshot :recipe (:host github :repo "tecosaur/screenshot"))
+(package! caseconv
+  :recipe (:host github
+           :repo "rfaulhaber/caseconv.el"
+           :build t))
+
+(package! idris2-mode
+  :recipe (:host github
+           :repo "redfish64/idris2-mode"
+           :build t))
+
+(package! ox-agora
+  :recipe (:host gitlab
+           :repo "ngm/ox-agora"
+           :build t))
+
+(package! screenshot
+  :recipe (:host github
+           :repo "tecosaur/screenshot"))
+
+(package! org-pandoc-import
+  :recipe (:host github
+           :repo "tecosaur/org-pandoc-import"
+           :files ("*.el" "filters" "preprocessors")))
 
 ;; org roam ui
 (package! websocket)
-(package! org-roam-ui :recipe (:host github :repo "org-roam/org-roam-ui" :build t :files ("*.el" "out")))
+(package! org-roam-ui
+  :recipe (:host github
+           :repo "org-roam/org-roam-ui"
+           :build t
+           :files ("*.el" "out")))
+
+;; this is to get around the fact that the package version of this file is
+;; hosted on a server that sometimes goes down
+(package! json-process-client
+  :recipe (:host github
+           :repo "emacsmirror/json-process-client"))
