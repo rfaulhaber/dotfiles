@@ -19,6 +19,12 @@ in {
       description = "Interval used for systemd unit.";
       default = "30m";
     };
+
+    query = mkOption {
+      type = types.str;
+      description = "Optional query to pass to random wallpaper endpoint";
+      default = "";
+    };
   };
 
   config = mkIf cfg.enable (mkMerge ([
@@ -35,7 +41,7 @@ in {
         wantedBy = [ "graphical-session.target" ];
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${config.dotfiles.binDir}/random-wallpaper wallpaper";
+          ExecStart = "${config.dotfiles.binDir}/random-wallpaper ${cfg.query}";
           IOSchedulingClass = "idle";
         };
       };
