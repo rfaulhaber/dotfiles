@@ -27,18 +27,15 @@ in {
         assertion = config.services.xserver.enable;
         message = "Cannot use random-wallpaper without xserver.";
       }];
-      # TODO can I do this without installing these system-wide?
-      environment.systemPackages = with pkgs; [ jq pass feh ];
       systemd.user.services.random-wallpaper = {
         description = description;
-        path = with pkgs; [ bash jq pass feh ];
+        path = with pkgs; [ bash jq pass feh curl ];
         after = [ "graphical-session-pre.target" ];
         partOf = [ "graphical-session.target" ];
         wantedBy = [ "graphical-session.target" ];
         serviceConfig = {
           Type = "oneshot";
-          ExecStart =
-            "${pkgs.bash} ${config.dotfiles.binDir}/random-wallpaper wallpaper";
+          ExecStart = "${config.dotfiles.binDir}/random-wallpaper wallpaper";
           IOSchedulingClass = "idle";
         };
       };
