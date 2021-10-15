@@ -265,6 +265,11 @@
 ;; gnus
 (setq gnus-select-method '(nntp "us.newsdemon.com"))
 
+;; ix
+(setq
+ ix-user "sys9"
+ ix-token (string-trim (shell-command-to-string "pass ix")))
+
 ;; see: https://github.com/hlissner/doom-emacs/issues/3185
 (defadvice! self/+org-inline-image-data-fn (_protocol link _description)
   :override #'+org-inline-image-data-fn
