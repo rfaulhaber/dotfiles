@@ -1,16 +1,18 @@
 { config, pkgs, ... }:
-let kittyExec = "${pkgs.kitty}/bin/kitty";
+let
+  kittyExec = "${pkgs.kitty}/bin/kitty";
+  rofiExec = "${pkgs.rofi}/bin/rofi";
 in {
   # terminal
   "super + Return" = kittyExec;
   #rofu apps
-  "super + alt + d" = "rofi -show drun -modi drun,run -show-icons";
+  "super + alt + d" = "${rofiExec} -show drun -modi drun,run -show-icons";
   # rofi run
-  "super + alt + r" = "rofi -show run -show-icons";
+  "super + alt + r" = "${rofiExec} -show run -show-icons";
   # rofi window
-  "super + alt + w" = "rofi -show window";
+  "super + alt + w" = "${rofiExec} -show window";
   # screenshot
-  "super + alt + s" = "gnome-screenshot -i";
+  "super + alt + s" = "${pkgs.gnome3.gnome-screenshot}/bin/gnome-screenshot -i";
   # restart polybar
   "super + alt + p" = "polybar-msg cmd restart";
 
@@ -99,5 +101,6 @@ in {
   #
 
   # change wallpaper
-  "super + alt + b" = "~/Projects/dotfiles/bin/random-wallpaper";
+  #"super + alt + b" = "~/Projects/dotfiles/bin/random-wallpaper";
+  "super + alt + b" = "${config.dotfiles.binDir}/random-wallpaper";
 }

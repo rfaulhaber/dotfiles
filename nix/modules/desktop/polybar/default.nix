@@ -5,7 +5,7 @@ with lib;
 let
   cfg = config.modules.desktop.polybar;
   colors = config.modules.themes.colors;
-  modules = (import ./modules) { inherit colors; };
+  modules = (import ./modules) { inherit colors config; };
 in {
   options.modules.desktop.polybar = {
     enable = mkOption {

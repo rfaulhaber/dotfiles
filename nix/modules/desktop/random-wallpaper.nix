@@ -34,7 +34,7 @@ in {
         message = "Cannot use random-wallpaper without xserver.";
       }];
       systemd.user.services.random-wallpaper = {
-        description = description;
+        inherit description;
         path = with pkgs; [ bash jq pass feh curl ];
         after = [ "graphical-session-pre.target" ];
         partOf = [ "graphical-session.target" ];

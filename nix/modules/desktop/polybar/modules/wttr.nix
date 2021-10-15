@@ -1,5 +1,5 @@
-{ colors }: {
+{ config, colors }: {
   type = "custom/script";
-  exec = "$HOME/.config/bin/polybar/wttr";
+  exec = "${config.dotfiles.binDir}/polybar/wttr";
   interval = "900";
 }

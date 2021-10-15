@@ -40,16 +40,16 @@ with lib.my;
       description = "";
     };
 
-    # thank you again hlissner
-    dotfiles = let t = either str path;
-    in {
-      dir = mkOpt t (findFirst pathExists (toString ../../.)
-        [ "${config.user.home}/.config/dotfiles" ]);
-      binDir = mkOpt t "${config.dotfiles.dir}/bin";
-      configDir = mkOpt t "${config.dotfiles.dir}/config";
-      modulesDir = mkOpt t "${config.dotfiles.dir}/modules";
-      themesDir = mkOpt t "${config.dotfiles.modulesDir}/themes";
-      emacsDir = mkOpt t "${config.dotfiles.dir}/doom.d";
+    dotfiles = {
+      dir = mkOpt path (findFirst pathExists (toString ../../.) [
+        "${config.user.home}/.config/dotfiles"
+        "/etc/dotfiles"
+      ]);
+      binDir = mkOpt path "${config.dotfiles.dir}/bin";
+      configDir = mkOpt path "${config.dotfiles.dir}/config";
+      modulesDir = mkOpt path "${config.dotfiles.dir}/modules";
+      themesDir = mkOpt path "${config.dotfiles.dir}/themes";
+      emacsDir = mkOpt path "${config.dotfiles.dir}/doom.d";
     };
   };
   config = {

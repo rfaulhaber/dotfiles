@@ -1,6 +1,7 @@
 {
   require = [
     ./desktop
+    ./dotfiles.nix
     ./hardware
     ./programs
     ./services
