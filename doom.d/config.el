@@ -123,6 +123,10 @@
 ;; use rust-analyzer for rust lsp server
 (setq rustic-lsp-server 'rust-analyzer)
 
+;; org
+(after! org
+  (load! "./scripts/org-templates.el"))
+
 ;; org-md
 ;; the default md exporter for source code blocks is bad, so we replace it
 (advice-add 'org-md-example-block :override #'self/org-md-src-block)
@@ -181,7 +185,7 @@
                                    :publishing-function org-agora-publish-to-agora
                                    :recursive t)))
 
-;; nov config
+;; nov
 (defun nov-setup ()
   (setq nov-text-width t)
   (setq visual-fill-column-center-text t)
@@ -190,14 +194,14 @@
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
 
-;; auto-mode-alist config
+;; auto-mode-alist
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
-;; calibredb config
+;; calibredb
 (setq calibredb-root-dir "~/calibre")
 (setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
 
-;; mu4e config
+;; mu4e
 (setq
  mail-user-agent 'mu4e-user-agent
  mu4e-sent-messages-behavior 'sent
@@ -220,22 +224,44 @@
                  :key ?i)))
 
 
-;; elfeed config
+;; elfeed
 (setq rmh-elfeed-org-files (list (concat org-directory "/elfeed.org")))
 
-;; plugin config
-;; hooks
+;; wttrin
+(setq wttrin-default-cities '("Cleveland"))
 
+;; replace wttrin-fetch-raw-string with my own function
+(advice-add 'wttrin-fetch-raw-string :override 'self/wttrin-fetch-raw-string)
+
+;; gnus
+(setq gnus-select-method '(nntp "us.newsdemon.com"))
+
+;; ix
+(setq
+ ix-user "sys9"
+ ix-token (string-trim (shell-command-to-string "pass ix")))
+
+;; eshell
+(add-hook 'eshell-preoutput-filter-functions 'xterm-color-filter)
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (setenv "TERM" "xterm-256color")))
+(add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
+
+;; projectile
+(setq projectile-switch-project-action 'projectile-dired)
+
+;; counsel-projectile
+;; this changes the behavior of `counsel-projectile-switch-project' to open the
+;; root of the project in Dired. most of the time this is what I want
+;; see the documentation for this variable for more info
+(setcar counsel-projectile-switch-project-action 5)
+
+;; hooks
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
 (add-hook 'nov-mode-hook 'visual-fill-column-mode)
 (add-hook 'before-save-hook #'+format/buffer)
-
-(after! org
-  (load! "./scripts/org-templates.el"))
-
-
-;; after hooks
 
 (after! undo-tree
   (setq undo-tree-auto-save-history nil))
@@ -248,27 +274,6 @@
    (typescript . t)
    (js . t)))
 
-;; eshell config
-(add-hook 'eshell-preoutput-filter-functions 'xterm-color-filter)
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (setenv "TERM" "xterm-256color")))
-(add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
-
-                                        ; wttrin
-                                        ; replace wttrin-fetch-raw-string with my own function
-(advice-add 'wttrin-fetch-raw-string :override 'self/wttrin-fetch-raw-string)
-
-;; wttrin
-(setq wttrin-default-cities '("Cleveland"))
-
-;; gnus
-(setq gnus-select-method '(nntp "us.newsdemon.com"))
-
-;; ix
-(setq
- ix-user "sys9"
- ix-token (string-trim (shell-command-to-string "pass ix")))
 
 ;; see: https://github.com/hlissner/doom-emacs/issues/3185
 (defadvice! self/+org-inline-image-data-fn (_protocol link _description)
