@@ -4,8 +4,8 @@ with lib;
 
 let
   cfg = config.modules.desktop.bspwm;
-  sxhkdKeybindings = import ./sxhkd.nix { inherit pkgs config; };
-  bspwmConfig = import ./bspwm.nix;
+  keybindings = import ./sxhkd.nix { inherit pkgs config; };
+  bspwmConfig = import ./bspwm.nix { inherit config; };
 in {
   options.modules.desktop.bspwm = {
     enable = mkOption {
@@ -29,11 +29,8 @@ in {
       displayManager = {
         lightdm.enable = true;
         defaultSession = "none+bspwm";
-        sessionCommands = ''
-          ${config.dotfiles.binDir}/random-wallpaper
-        '';
       };
-      # TODO modularize!
+      # TODO modularize! not every comptuer will have an nvidia video card!
       videoDrivers = [ "nvidia" ];
     };
     # NB: IN ORDER FOR ANY OF THIS TO WORK YOU NEED THIS SET!!
@@ -42,15 +39,14 @@ in {
     home-manager.users.${config.user.name}.xsession.enable = true;
 
     home.bspwm = {
-      enable = true;
       inherit (bspwmConfig) monitors settings rules;
+      enable = true;
       startupPrograms = bspwmConfig.startupPrograms ++ cfg.extraStartupPrograms;
     };
 
     home.services.sxhkd = {
+      inherit keybindings;
       enable = true;
-
-      keybindings = sxhkdKeybindings;
     };
   };
 }

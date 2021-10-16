@@ -71,6 +71,11 @@ with lib.my;
       fullName = "Ryan Faulhaber";
       primaryEmail = "ryf@sent.as";
       primaryGPGKey = "A2205925F3B6C5B96F26C3CB544650C5A306061B";
+      location = {
+        city = "Cleveland";
+        state = "Ohio";
+        country = "United States";
+      };
     };
 
     users.groups = { plugdev = { }; };

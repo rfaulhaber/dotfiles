@@ -2,5 +2,12 @@
 set -euo pipefail
 
 format="%C %t"
-weather=$(curl -sG wttr.in/Cleveland --data-urlencode "format=$format")
+
+# I live in Cleveland. it is my default location
+location="Cleveland"
+if [ "$#" -ge 1 ] && [ -n $1 ]; then
+    location=$1
+fi
+
+weather=$(curl -sG wttr.in/$location --data-urlencode "format=$format")
 echo -n $weather

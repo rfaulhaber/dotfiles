@@ -1,4 +1,4 @@
-{ colors, config, ... }:
+{ colors, config, pkgs, ... }:
 
 {
   bspwm = import ./bspwm.nix { inherit colors; };
@@ -6,5 +6,5 @@
   date = import ./date.nix { inherit colors; };
   memory = import ./memory.nix { inherit colors; };
   pulseaudio = import ./pulseaudio.nix { inherit colors; };
-  wttr = import ./wttr.nix { inherit colors config; };
+  wttr = import ./wttr.nix { inherit colors config pkgs; };
 }

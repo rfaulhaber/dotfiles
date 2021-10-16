@@ -13,6 +13,7 @@ in {
     home.file.dotfiles = {
       source = config.dotfiles.binDir;
       target = "${config.user.home}/.config/dotfiles/bin";
+      recursive = true;
     };
   };
 }

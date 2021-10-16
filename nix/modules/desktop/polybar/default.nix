@@ -1,16 +1,16 @@
-{ config, lib, pkgs, home-manager, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.modules.desktop.polybar;
   colors = config.modules.themes.colors;
-  modules = (import ./modules) { inherit colors config; };
+  modules = (import ./modules) { inherit colors config pkgs; };
 in {
   options.modules.desktop.polybar = {
     enable = mkOption {
       default = false;
-      description = "Enable polybar";
+      description = "Enable Polybar";
       type = types.bool;
       example = true;
     };
@@ -19,16 +19,8 @@ in {
     home.services.polybar = {
       enable = true;
       package = pkgs.polybarFull;
-      script = ''
-        # Terminate already running bar instances
-        killall polybar
-
-        # Wait until the processes have been shut down
-        while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
-
-        # Launch polybar
-        polybar main &
-      '';
+      # Polybar will be started by bspwm
+      script = "";
       config = {
         "bar/main" = {
           enable-ipc = true;
