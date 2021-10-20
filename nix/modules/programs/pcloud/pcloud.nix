@@ -25,14 +25,14 @@ with pkgs;
 
 let
   pname = "pcloud";
-  version = "1.9.6";
-  key = "XZ810dXZL9AAYLb3UfkFuveSeEr6xXveIyU7";
+  version = "1.9.8";
+  key = "XZhAHEXZosQwxLsipo4qKkX7Enggrk1UNqFk";
   name = "${pname}-${version}";
 
   # Archive link's code thanks to: https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=pcloud-drive
   src = fetchzip {
     url = "https://api.pcloud.com/getpubzip?code=${key}&filename=${name}.zip";
-    sha256 = "sha256-z1SLRpR/EYP3lI9A8Bh/seWNwJpycl08xVHZXqKhjEY=";
+    sha256 = "sha256-XmrzoYnl8RN5SMYw1vkVwWbtOzHBY2BB0yA19nYVycA=";
     stripRoot = true;
   };
 
