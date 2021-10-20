@@ -166,8 +166,8 @@
  org-journal-file-format "%Y%m%d.org")
 
 ;; org-ref
-(setq org-ref-bibliography-notes "~/org/bibliography/notes.org"
-      org-ref-default-bibliography '("~/org/bibliography/references.bib"))
+(setq bibtex-completion-notes-path "~/org/bibliography/notes.org"
+      bibtex-completion-bibliography '("~/org/bibliography/references.bib"))
 
 ;; org-publish
 ;; TODO add hooks for publishing roam files
@@ -253,9 +253,12 @@
 
 ;; counsel-projectile
 ;; this changes the behavior of `counsel-projectile-switch-project' to open the
-;; root of the project in Dired. most of the time this is what I want
-;; see the documentation for this variable for more info
-(setcar counsel-projectile-switch-project-action 5)
+;; root of the project in Dired. most of the time this is what I want. see the
+;; documentation for this variable for more info. we also have to load this
+;; variable after `counsel-projectile' loads, because `counsel-projectile'
+;; defines this variable.
+(after! counsel-projectile
+  (setcar counsel-projectile-switch-project-action 5))
 
 ;; hooks
 (add-hook 'nov-mode-hook 'nov-setup)
