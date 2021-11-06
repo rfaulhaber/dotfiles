@@ -115,9 +115,6 @@
 ;; allow me to edit permissions in wdired
 (setq wdired-allow-to-change-permissions t)
 
-;; yas-snippet
-(add-to-list 'yas-snippet-dirs "./snippets")
-
 ;; GPG key used by org-crypt
 (setq org-crypt-key "A2205925F3B6C5B96F26C3CB544650C5A306061B")
 
