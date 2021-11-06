@@ -90,6 +90,7 @@
 (map! :leader "TAB c" #'+workspace/cycle)
 (map! :leader "n j t" #'org-journal-open-current-journal-file)
 (map! :leader "f o"   #'self/find-org-file)
+(map! :leader "f O"   #'self/visit-common-directories)
 (map! :leader "d"     #'dired)
 (map! :leader "TAB i" #'+ibuffer/open-for-current-workspace)
 

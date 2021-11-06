@@ -88,6 +88,7 @@
            :build t))
 
 (package! screenshot
+  :pin "f8204e82dc0c1158c401735d36a143e6f6d24cf5"
   :recipe (:host github
            :repo "tecosaur/screenshot"))
 
