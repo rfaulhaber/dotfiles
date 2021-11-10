@@ -177,6 +177,12 @@ Version 2016-07-13"
   (save-buffer)
   (major-mode-restore))
 
+(defun self/org-journal-open-last-entry ()
+  "Opens last org-journal entry"
+  (interactive)
+  (let ((last-file (car (reverse (org-journal--list-files)))))
+    (find-file last-file)))
+
 ;; -------------------- utility functions ---------------------------------------
 
 ;; this comes from reddit. thank you r/emacs!
