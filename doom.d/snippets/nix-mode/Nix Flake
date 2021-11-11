@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: Nix Flake
+# key: flk
+# --
+
+{
+  description = "$1";
+
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs";
+  };
+
+  outputs = inputs@{self, nixpkgs, ...}: {
+    packages.x86_64-linux.$2 = $0
+  };
+}
