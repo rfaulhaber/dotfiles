@@ -31,42 +31,39 @@ in {
       systemPackages = with pkgs; [
         nix-zsh-completions
         xclip # required for pbcopy and pbpaste
+        (mkIf cfg.useZoxide zoxide)
       ];
 
       # sometimes zsh from nixpkgs doesn't respect highlightStyle value
       variables = { ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=${colors.grey}"; };
     };
 
-    home.programs = {
-      zsh = {
+    programs.zsh = {
+      enable = true;
+      ohMyZsh = {
         enable = true;
-        enableAutosuggestions = true;
-        enableCompletion = true;
-        enableSyntaxHighlighting = true;
-
-        oh-my-zsh = {
-          enable = true;
-          plugins = [ "git" "colored-man-pages" ];
-          theme = cfg.theme;
-        };
-
-        shellAliases = {
-          pbcopy = "xclip -selection clipboard";
-          pbpaste = "xclip -selection clipboard -o";
-          ls = "exa";
-          l = "exa -lah";
-          ll = "exa -lh";
-          ec = "emacsclient";
-          eo = "emacsclient -n"; # "emacs open"
-        };
+        plugins = [ "git" "colored-man-pages" ];
+        theme = cfg.theme;
       };
-
-      zoxide.enable = (mkIf cfg.useZoxide) true;
+      autosuggestions.enable = true;
+      autosuggestions.highlightStyle = "fg=${colors.grey}";
+      syntaxHighlighting.enable = true;
+      interactiveShellInit = mkIf cfg.useZoxide ''
+        eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
+      '';
+      shellAliases = {
+        pbcopy = "xclip -selection clipboard";
+        pbpaste = "xclip -selection clipboard -o";
+        ls = "exa";
+        l = "exa -lah";
+        ll = "exa -lh";
+        ec = "emacsclient";
+        eo = "emacsclient -n"; # "emacs open"
+      };
     };
 
     user.shell = mkIf cfg.setDefault pkgs.zsh;
 
-    # required by home-manager zsh
     environment.pathsToLink = [ "/share/zsh" ];
   };
 }
