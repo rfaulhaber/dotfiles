@@ -180,8 +180,7 @@ Version 2016-07-13"
 (defun self/org-journal-open-last-entry ()
   "Opens last org-journal entry"
   (interactive)
-  (let ((last-file (car (reverse (org-journal--list-files)))))
-    (find-file last-file)))
+  (find-file (car (reverse (org-journal--list-files)))))
 
 ;; -------------------- utility functions ---------------------------------------
 
