@@ -16,6 +16,7 @@ in {
         editorconfig-vim
         fzf-vim
         syntastic
+        vim-abolish
         vim-airline
         vim-airline-themes
         vim-easymotion
