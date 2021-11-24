@@ -67,6 +67,10 @@ in {
       in ''
         ${if cfg.useZoxide then zoxideInit else ""}
         ${if cfg.useDirenv then direnvInit else ""}
+        ${if config.modules.programs.emacs.enable then
+          "PATH=$PATH:~/.emacs.d/bin"
+        else
+          ""}
       '';
       shellAliases = {
         pbcopy = "xclip -selection clipboard";
