@@ -25,6 +25,12 @@ in {
       default = true;
       type = types.bool;
     };
+    useDirenv = mkOption {
+      description = "Use Zoxide with Zsh.";
+      # I use Direnv by default
+      default = true;
+      type = types.bool;
+    };
   };
   config = mkIf cfg.enable {
     environment = {
@@ -32,6 +38,7 @@ in {
         nix-zsh-completions
         xclip # required for pbcopy and pbpaste
         (mkIf cfg.useZoxide zoxide)
+        (mkIf cfg.useDirenv direnv)
       ];
 
       # sometimes zsh from nixpkgs doesn't respect highlightStyle value
@@ -48,8 +55,18 @@ in {
       autosuggestions.enable = true;
       autosuggestions.highlightStyle = "fg=${colors.grey}";
       syntaxHighlighting.enable = true;
-      interactiveShellInit = mkIf cfg.useZoxide ''
-        eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
+      interactiveShellInit = let
+        zoxideInit = ''
+          eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
+        '';
+        # we have to use the plain executable here because for some reason the
+        # pkgs.direnv version doesn't have permission to run
+        direnvInit = ''
+          eval "$(direnv hook zsh)"
+        '';
+      in ''
+        ${if cfg.useZoxide then zoxideInit else ""}
+        ${if cfg.useDirenv then direnvInit else ""}
       '';
       shellAliases = {
         pbcopy = "xclip -selection clipboard";
