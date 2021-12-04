@@ -15,11 +15,11 @@ in {
   };
 
   config = mkIf cfg.enable {
-    services.ssh = {
+    services.openssh = {
       enable = true;
       passwordAuthentication = false;
     };
 
-    config.user.openssh.authorizedKeys.keys = options.keys;
+    user.openssh.authorizedKeys.keys = cfg.keys;
   };
 }

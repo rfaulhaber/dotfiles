@@ -36,7 +36,7 @@
     in {
       lib = lib.my;
       nixosConfigurations = {
-        mir3 = mkHost ./nix/hosts/mir3/configruation.nix;
+        mir3 = mkHost ./nix/hosts/mir3/configuration.nix;
         nil = mkHost ./nix/hosts/nil/configuration.nix;
       };
     };
