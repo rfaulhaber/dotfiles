@@ -8,5 +8,6 @@
     ./redshift
     ./systemd
     ./virt
+    ./ssh.nix
   ];
 }

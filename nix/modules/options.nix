@@ -102,6 +102,13 @@ with lib.my;
       };
     };
 
+    # All my machines are in the same timezone
+    # TODO should this be here?
+    time = {
+      timeZone = "America/New_York";
+      hardwareClockInLocalTime = true;
+    };
+
     users.users.${config.user.name} = mkAliasDefinitions options.user;
 
     nix = let users = [ "root" config.user.name ];

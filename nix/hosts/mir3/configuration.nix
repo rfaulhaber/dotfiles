@@ -8,7 +8,6 @@
   imports = [ # Include the results of the hardware scan.
     ../../modules
     ./hardware-configuration.nix
-    # <home-manager/nixos>
   ];
 
   modules = {
@@ -66,7 +65,6 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  # TODO if doing fresh install, use ZFS
   boot.tmpOnTmpfs = true;
   boot.cleanTmpDir = true;
   boot.loader = {

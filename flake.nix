@@ -16,10 +16,8 @@
           pkgs = nixpkgs;
         };
       });
-    in {
-      lib = lib.my;
-      nixosConfigurations = {
-        mir3 = nixpkgs.lib.nixosSystem rec {
+      mkHost = cfgFile:
+        nixpkgs.lib.nixosSystem rec {
           system = "x86_64-linux";
           modules = [
             home-manager.nixosModules.home-manager
@@ -27,7 +25,7 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
             }
-            ./nix/hosts/mir3/configuration.nix
+            cfgFile
           ];
           extraArgs = { inherit inputs home-manager; };
           specialArgs = {
@@ -35,9 +33,11 @@
             platform = system;
           };
         };
-        # TODO
-        # nil = {}
-        # orange = {}
+    in {
+      lib = lib.my;
+      nixosConfigurations = {
+        mir3 = mkHost ./nix/hosts/mir3/configruation.nix;
+        nil = mkHost ./nix/hosts/nil/configuration.nix;
       };
     };
 }

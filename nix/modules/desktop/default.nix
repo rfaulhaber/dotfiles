@@ -33,11 +33,6 @@ in {
       };
     };
 
-    time = {
-      timeZone = "America/New_York";
-      hardwareClockInLocalTime = true;
-    };
-
     programs.evince.enable = true;
     programs.seahorse.enable = true;
 
