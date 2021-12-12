@@ -38,6 +38,10 @@
       redshift.enable = true;
       systemd.modules = [ "updatedb" ];
       virt.enable = true;
+      ssh = {
+        enable = true;
+        enableClient = true;
+      };
     };
     hardware = {
       bluetooth.enable = true;

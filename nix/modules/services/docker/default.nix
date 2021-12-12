@@ -9,11 +9,7 @@ in {
   config = mkIf cfg.enable {
     virtualisation.docker.enable = true;
 
-    environment.systemPackages = with pkgs; [
-      docker
-      docker-compose
-      docker-machine
-    ];
+    environment.systemPackages = with pkgs; [ docker docker-compose ];
 
     # TODO make more dynamic than this
     users.users.ryan.extraGroups = [ "docker" ];

@@ -37,6 +37,7 @@ in {
     programs.seahorse.enable = true;
 
     security.pam.services.lightdm.enableGnomeKeyring = true;
+    security.pam.services.sudo.sshAgentAuth = true;
 
     # TODO put these somewhere better
     # necessary utilities for desktop
