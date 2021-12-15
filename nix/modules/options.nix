@@ -53,6 +53,7 @@ with lib.my;
       emacsDir = mkOpt path "${config.dotfiles.dir}/doom.d";
     };
   };
+
   config = {
     user = rec {
       name = "ryan";
@@ -111,6 +112,13 @@ with lib.my;
     };
 
     users.users.${config.user.name} = mkAliasDefinitions options.user;
+
+    # TODO where should these live?
+    i18n.defaultLocale = "en_US.UTF-8";
+    console = {
+      font = "Lat2-Terminus16";
+      keyMap = "us";
+    };
 
     nix = let users = [ "root" config.user.name ];
     in {

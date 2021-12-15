@@ -6,7 +6,6 @@ let cfg = config.modules.desktop;
 in {
   imports = [ ./bspwm ./polybar ./rofi ./util.nix ./random-wallpaper.nix ];
   config = mkIf config.services.xserver.enable {
-    i18n = { defaultLocale = "en_US.UTF-8"; };
     environment.variables = rec {
       # TODO move elsewhere
       XDG_CONFIG_HOME = "$HOME/.config";

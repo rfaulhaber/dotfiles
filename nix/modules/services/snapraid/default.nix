@@ -22,6 +22,8 @@ in {
   };
 
   config = mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [ snapraid ];
+
     snapraid = {
       enable = true;
       dataDisks = cfg.dataDisks;

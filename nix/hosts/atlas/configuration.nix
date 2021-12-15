@@ -28,6 +28,9 @@
       ssh = {
         enable = true;
         enableServer = true;
+        keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJHGYKXsTAHFyfjUzynjFd1XcfnL3tO90v/2BzSBq3yK ryf@sent.as"
+        ];
       };
       snapraid = {
         enable = true;
@@ -71,8 +74,11 @@
     hostName = "atlas";
 
     useDHCP = false;
-    interfaces.eno1.useDHCP = true;
-    interfaces.eno2.useDHCP = true;
+
+    interfaces = {
+      eno1.useDHCP = true;
+      eno2.useDHCP = true;
+    };
 
     # TODO move
     firewall = {
@@ -80,45 +86,6 @@
       allowedTCPPorts = [ 32400 ];
     };
   };
-
-  # Set your time zone.
-  time.timeZone = "America/New_York";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-  console = {
-    font = "Lat2-Terminus16";
-    keyMap = "us";
-  };
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.ryan = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJHGYKXsTAHFyfjUzynjFd1XcfnL3tO90v/2BzSBq3yK ryf@sent.as"
-    ];
-  };
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [ snapraid mergerfs ];
-
-  programs.gnupg.agent = {
-    enable = true;
-    enableSSHSupport = true;
-  };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   nix = {
     autoOptimiseStore = true;

@@ -19,6 +19,8 @@ in {
   };
 
   config = mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [ mergerfs ];
+
     fileSystems."${cfg.target}" = {
       device = concatStringsSep ":" cfg.branches;
       fsType = "fuse.mergerfs";
