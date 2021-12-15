@@ -1,6 +1,7 @@
 {
   require = [
     ./calibre-mount
+    ./calibre-serve
     ./docker
     ./gpg
     ./keybase

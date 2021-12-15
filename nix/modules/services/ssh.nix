@@ -20,10 +20,16 @@ in {
       enable = true;
       passwordAuthentication = false;
       permitRootLogin = "no";
+      extraConfig = ''
+        PermitEmptyPasswords no
+      '';
+      ports = [ 10222 ];
     };
 
     # TODO support multiple users?
     user.openssh.authorizedKeys.keys = mkIf cfg.enableServer cfg.keys;
+
+    security.pam.enableSSHAgentAuth = mkIf cfg.enableServer true;
 
     home.programs.ssh = mkIf cfg.enableClient {
       enable = true;
@@ -38,6 +44,8 @@ in {
           hostname = "192.168.86.63";
           identityFile = "${sshPath}/id_nil2";
           user = config.user.name;
+          port = 10222;
+          extraOptions = { "AddKeysToAgent" = "yes"; };
         };
 
         "nil" = {
@@ -60,6 +68,5 @@ in {
       };
     };
 
-    security.pam.enableSSHAgentAuth = mkIf cfg.enableClient true;
   };
 }

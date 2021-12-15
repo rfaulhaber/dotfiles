@@ -26,7 +26,8 @@ with lib.my;
         mkOptDesc attrs { } "Programs managed directly from home-manager";
       services =
         mkOptDesc attrs { } "Services managed directly from home-manager";
-      bspwm = mkOptDesc attrs { } "bspwm config options";
+      xsession =
+        mkOptDesc attrs { } "Xsession settings managed from home-manager";
     };
 
     env = mkOption {
@@ -93,7 +94,7 @@ with lib.my;
         home.packages = mkAliasDefinitions options.home.packages;
         programs = mkAliasDefinitions options.home.programs;
         services = mkAliasDefinitions options.home.services;
-        xsession.windowManager.bspwm = mkAliasDefinitions options.home.bspwm;
+        xsession = mkAliasDefinitions options.home.xsession;
 
         xdg = {
           configFile = mkAliasDefinitions options.home.configFile;

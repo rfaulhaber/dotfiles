@@ -25,6 +25,10 @@
       gpg.enable = true;
       virt.enable = true;
       systemd.modules = [ "updatedb" ];
+      ssh = {
+        enable = true;
+        enableServer = true;
+      };
       snapraid = {
         enable = true;
         parityFiles = [ "/diskp/snapraid.parity" ];
@@ -41,6 +45,10 @@
         enable = true;
         branches = [ "/disk1" "/disk2" "/disk3" ];
         target = "/data";
+      };
+      calibre-serve = {
+        enable = true;
+        sharePoint = /data/calibre;
       };
     };
     themes.active = "city-lights";
@@ -65,6 +73,12 @@
     useDHCP = false;
     interfaces.eno1.useDHCP = true;
     interfaces.eno2.useDHCP = true;
+
+    # TODO move
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ 32400 ];
+    };
   };
 
   # Set your time zone.

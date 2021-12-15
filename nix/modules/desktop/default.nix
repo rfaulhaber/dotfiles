@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, home-manager, ... }:
 
 with lib;
 
@@ -38,6 +38,11 @@ in {
 
     security.pam.services.lightdm.enableGnomeKeyring = true;
     security.pam.services.sudo.sshAgentAuth = true;
+
+    home.xsession.profileExtra = ''
+      eval $(${pkgs.gnome.gnome-keyring}/bin/gnome-keyring --start --daemonize)
+      export SSH_AUTH_SOCK
+    '';
 
     # TODO put these somewhere better
     # necessary utilities for desktop

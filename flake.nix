@@ -5,10 +5,10 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "nixpkgs/master";
     home-manager.url = "github:nix-community/home-manager";
-    # deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.url = "github:serokell/deploy-rs";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, deploy-rs, ... }:
     let
       lib = nixpkgs.lib.extend (self: super: {
         my = import ./nix/lib/default.nix {
@@ -42,20 +42,20 @@
       };
 
       # TODO utilize once deploy-rs fixes its SSH bugs
-      # deploy.nodes.atlas = {
-      #   hostname = "atlas";
-      #   sshUser = "ryan";
-      #   sshOpts = [ "-t" ];
-      #   autoRollback = true;
-      #   profiles.system = {
-      #     user = "root";
-      #     path = deploy-rs.lib.x86_64-linux.activate.nixos
-      #       self.nixosConfigurations.atlas;
-      #   };
-      # };
+      deploy.nodes.atlas = {
+        hostname = "atlas";
+        sshUser = "ryan";
+        sshOpts = [ "-t" ];
+        autoRollback = true;
+        profiles.system = {
+          user = "root";
+          path = deploy-rs.lib.x86_64-linux.activate.nixos
+            self.nixosConfigurations.atlas;
+        };
+      };
 
       # # per the deploy-rs documentation
-      # checks = builtins.mapAttrs
-      #   (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+      checks = builtins.mapAttrs
+        (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     };
 }
