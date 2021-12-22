@@ -24,6 +24,7 @@
       docker.enable = true;
       gpg.enable = true;
       virt.enable = true;
+      # TODO this is required but it shouldn't be
       systemd.modules = [ "updatedb" ];
       ssh = {
         enable = true;
@@ -39,7 +40,6 @@
           disk1 = "/disk1/";
           disk2 = "/disk2/";
           disk3 = "/disk3/";
-          disk4 = "/disk4/";
         };
         contentFiles =
           [ "/var/snapraid/snapraid.content" "/diskp/snapraid.content" ];
