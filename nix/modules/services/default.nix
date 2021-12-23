@@ -7,10 +7,11 @@
     ./keybase
     ./mail
     ./mergerfs
+    ./passwords
     ./redshift
     ./snapraid
+    ./ssh.nix
     ./systemd
     ./virt
-    ./ssh.nix
   ];
 }

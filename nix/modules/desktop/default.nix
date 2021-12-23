@@ -33,15 +33,6 @@ in {
     };
 
     programs.evince.enable = true;
-    programs.seahorse.enable = true;
-
-    security.pam.services.lightdm.enableGnomeKeyring = true;
-    security.pam.services.sudo.sshAgentAuth = true;
-
-    home.xsession.profileExtra = ''
-      eval $(${pkgs.gnome.gnome-keyring}/bin/gnome-keyring --start --daemonize)
-      export SSH_AUTH_SOCK
-    '';
 
     # TODO put these somewhere better
     # necessary utilities for desktop
@@ -53,10 +44,7 @@ in {
       feh
       firefox-devedition-bin
       gnome3.gnome-screenshot
-      keychain
-      libsecret
       openvpn
-      pass
       python3
       spotify
       tdesktop

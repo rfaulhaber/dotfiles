@@ -42,6 +42,7 @@
         enable = true;
         enableClient = true;
       };
+      passwords.enable = true;
     };
     hardware = {
       bluetooth.enable = true;

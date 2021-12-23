@@ -1,1 +1,4 @@
-{ require = [ ./1password ./emacs ./git ./kitty ./neovim ./pcloud ./zsh ]; }
+{
+  require =
+    [ ./1password ./emacs ./git ./keychain ./kitty ./neovim ./pcloud ./zsh ];
+}

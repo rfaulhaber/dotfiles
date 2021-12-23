@@ -29,4 +29,6 @@ in {
     };
 
   mkPath = path: if path != null then toString path else "";
+
+  mkAssert = assertion: message: { inherit assertion message; };
 }

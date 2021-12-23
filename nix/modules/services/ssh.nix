@@ -27,6 +27,7 @@ in {
     };
 
     # TODO support multiple users?
+    # TODO make configurable from outside?
     user.openssh.authorizedKeys.keys = mkIf cfg.enableServer cfg.keys;
 
     security.pam.enableSSHAgentAuth = mkIf cfg.enableServer true;
