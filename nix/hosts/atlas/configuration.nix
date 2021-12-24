@@ -53,6 +53,11 @@
         enable = true;
         sharePoint = /data/calibre;
       };
+      # proxy = {
+      #   enable = true;
+      #   aliases = { "books.sys9.net" = 8089; };
+      #   whitelist = [ "192.168.86.34" ];
+      # };
     };
     themes.active = "city-lights";
   };

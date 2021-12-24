@@ -8,6 +8,7 @@
     ./mail
     ./mergerfs
     ./passwords
+    ./proxy
     ./redshift
     ./snapraid
     ./ssh.nix
