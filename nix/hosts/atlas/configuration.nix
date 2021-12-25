@@ -25,7 +25,11 @@
       gpg.enable = true;
       virt.enable = true;
       # TODO this is required but it shouldn't be
-      systemd.modules = [ "updatedb" ];
+      # TODO make these use constants of some kind, e.g. with systemdModules; [ docker-cleanup ]
+      systemd = {
+        enable = true;
+        modules = [ "updatedb" "docker-cleanup" ];
+      };
       ssh = {
         enable = true;
         enableServer = true;

@@ -36,7 +36,10 @@
       gpg.enable = true;
       mail.enable = true;
       redshift.enable = true;
-      systemd.modules = [ "updatedb" ];
+      systemd = {
+        enable = true;
+        modules = [ "updatedb" ];
+      };
       virt.enable = true;
       ssh = {
         enable = true;
