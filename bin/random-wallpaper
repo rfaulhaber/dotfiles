@@ -12,7 +12,17 @@ LOG_FILE=~/.wallpaper-log.txt
 
 dir=$(mktemp -d)
 
-req=$(curl $API)
+req=$(curl -s $API)
+
+errors=$(echo $req | jq -r '.errors')
+
+if [ -n errors ]; then
+	echo "unsplash reported the following errors. aborting"
+	err=$(echo $errors | jq -r '.[]')
+	echo "$err"
+	exit 1
+fi
+
 id=$(echo $req | jq -r '.id')
 img_url=$(echo $req | jq -r '.urls.full')
 desc=$(echo $req | jq -r '.description // .alt_description')
@@ -21,7 +31,7 @@ html_link=$(echo $req | jq -r '.links.html')
 timestamp=$(date '+%Y/%m/%d %H:%M:%S')
 filename="$dir/$id.jpg"
 
-curl -o $filename $img_url
+curl -s -o $filename $img_url
 
 tmp_log=$(mktemp)
 jq --arg id "$id" \
