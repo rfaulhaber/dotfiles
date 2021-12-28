@@ -5,8 +5,8 @@
     # bare minimum required packages
     environment.systemPackages = with pkgs; [
       bat
-      coreutils-full
       binutils
+      coreutils-full
       croc
       curl
       exa
@@ -15,6 +15,7 @@
       htop
       jq
       pandoc
+      pass
       ripgrep
       rsync
       tokei
