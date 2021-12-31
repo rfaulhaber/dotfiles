@@ -1,0 +1,5 @@
+#+TITLE: Self
+
+This directory contains a collection of small functions that I use for
+convenience throughout Emacs that aren't quite large enough to make into a
+module.

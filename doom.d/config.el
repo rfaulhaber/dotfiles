@@ -14,7 +14,7 @@
 (load! (format "./hosts/%s" self/system-type) nil t)
 
 ;; load custom code
-(load! "./scripts/self.el")
+(load! "./self/self.el")
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -123,7 +123,7 @@
 
 ;; org
 (after! org
-  (load! "./scripts/org-templates.el"))
+  (load! "./self/org-templates.el"))
 
 ;; org-md
 ;; the default md exporter for source code blocks is bad, so we replace it

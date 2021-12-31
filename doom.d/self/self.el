@@ -1,6 +1,8 @@
 ;;; ~/.doom.d/scripts/self.el -*- lexical-binding: t; -*-
 
-;; custom scripts for misc personal use
+;; this file is used for miscellaneous useful functions that I've written to
+;; make Emacs easier to use for myself. They are not quite large enough or
+;; coherent to make a module or package.
 
 (defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
 (defvar self/common-directories '() "Alist (Name . Path) of common directories, used by self/visit-common-directories")
