@@ -167,6 +167,10 @@
 (setq bibtex-completion-notes-path "~/org/bibliography/notes.org"
       bibtex-completion-bibliography '("~/org/bibliography/references.bib"))
 
+;; ox-agora
+;; thank you again Neil
+(advice-add 'org-export-output-file-name :filter-return #'self/slugify-export-output-file-name)
+
 ;; org-publish
 ;; TODO add hooks for publishing roam files
 (setq org-publish-project-alist '(("roam"
@@ -181,7 +185,9 @@
                                    :base-extension "org"
                                    :publishing-directory "~/Projects/roam"
                                    :publishing-function org-agora-publish-to-agora
-                                   :recursive t)))
+                                   :recursive t
+                                   :headline-levels 4
+                                   :with-toc nil)))
 
 ;; nov
 (defun nov-setup ()

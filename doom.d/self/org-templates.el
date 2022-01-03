@@ -44,8 +44,9 @@
 
                                         ; literature from link
         ("L" "literature from link" plain
-         "#+roam_key: %(car kill-ring-yank-pointer)
-- source :: %(org-cliplink-capture)
+         ;; TODO change to a roam ref property
+         ;; "#+roam_key: %(car kill-ring-yank-pointer)
+         "- source :: %(org-cliplink-capture)
 
 * Notes
 %?"

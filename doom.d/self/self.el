@@ -163,9 +163,9 @@ Version 2016-07-13"
   (sort-regexp-fields reverse "\\w+" "\\&" beg end))
 
 (defun self/visit-common-directories ()
-  "Open a common directory in Dired."
+  "Open a common directory in Dired. `self/common-directories' must be set first."
   (interactive)
-  (let* ((names (mapcar 'car self/common-directories)))
+  (let ((names (mapcar 'car self/common-directories)))
     (if (eq names nil)
         (user-error "variable self/common-directories is not set")
       (let ((selection (ivy-read "Select a directory: " names)))
@@ -183,6 +183,50 @@ Version 2016-07-13"
   "Opens last org-journal entry"
   (interactive)
   (find-file (car (reverse (org-journal--list-files)))))
+
+;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el
+;; thank you Neil
+(defun self/slugify-title (title)
+  "Convert TITLE to a filename-suitable slug.  Use hyphens rather than underscores."
+  (cl-flet* ((nonspacing-mark-p (char)
+                                (eq 'Mn (get-char-code-property char 'general-category)))
+             (strip-nonspacing-marks (s)
+                                     (apply #'string (seq-remove #'nonspacing-mark-p
+                                                                 (ucs-normalize-NFD-string s))))
+             (cl-replace (title pair)
+                         (replace-regexp-in-string (car pair) (cdr pair) title)))
+    (let* ((pairs `(("['\?,%]" . "")
+                    ("[^[:alnum:][:digit:]]" . "-")  ;; convert anything not alphanumeric
+                    ("--*" . "-")  ;; remove sequential underscores
+                    ("^-" . "")  ;; remove starting underscore
+                    ("-$" . "")))  ;; remove ending underscore
+           (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
+      (downcase slug))))
+
+
+;; stolen from https://gitlab.com/ngm/commonplace/-/blob/master/publish-agora.el
+;; thank you Neil
+(defun self/get-title (file)
+  "For a given file, get its TITLE keyword."
+  (with-current-buffer
+      (get-file-buffer file)
+    (cadar (org-collect-keywords '("TITLE")))))
+
+;; stolen from https://gitlab.com/ngm/commonplace/-/blob/master/publish-agora.el
+;; with one minor change
+;; thank you Neil
+;; TODO refactor into ox-agora fork
+(defun self/slugify-export-output-file-name (output-file)
+  "Gets the title of the org file and uses this (slugified) for the output
+filename. This is mainly to override org-roam's default filename convention of
+`timestamp-title_of_your_note` which doesn't work well with Agora."
+  (if (org-roam-file-p)
+      (let* ((title (self/get-title (buffer-file-name (buffer-base-buffer))))
+             (directory (file-name-directory output-file))
+             (slug (self/slugify-title title)))
+        (concat directory slug ".md"))
+    output-file))
+
 
 ;; -------------------- utility functions ---------------------------------------
 
