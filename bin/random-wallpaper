@@ -16,7 +16,7 @@ req=$(curl -s $API)
 
 errors=$(echo $req | jq -r '.errors')
 
-if [ -n errors ]; then
+if [ "$errors" != "null" ]; then
 	echo "unsplash reported the following errors. aborting"
 	err=$(echo $errors | jq -r '.[]')
 	echo "$err"
