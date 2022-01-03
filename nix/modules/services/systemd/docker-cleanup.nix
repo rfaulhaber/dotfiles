@@ -17,10 +17,9 @@ in {
         User = "root";
         ExecStart = let
           dockerExec = "${pkgs.docker}/bin/docker";
-          systemPruneCmd = "${dockerExec} system prune -a";
-          volumePruneCmd = "${dockerExec} volume prune";
+          systemPruneCmd = "${dockerExec} system prune --volumes -a";
           yesExec = "${pkgs.coreutils}/bin/yes";
-        in "${pkgs.bash}/bin/bash -c '(${yesExec} | ${systemPruneCmd}) && (${yesExec} | ${volumePruneCmd})'";
+        in "${pkgs.bash}/bin/bash -c '(${yesExec} | ${systemPruneCmd})'";
       };
     };
 
