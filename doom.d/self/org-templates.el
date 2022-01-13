@@ -42,15 +42,17 @@
                             ,self/org-roam-default-file-head-template)
          :unnarrowed t)
 
-                                        ; literature from link
+        ;; literature from link
         ("L" "literature from link" plain
-         ;; TODO change to a roam ref property
-         ;; "#+roam_key: %(car kill-ring-yank-pointer)
+         ;; source is preserved for publishing
          "- source :: %(org-cliplink-capture)
 
 * Notes
 %?"
-         :if-new (file+head ,(format "literature/%s" self/org-roam-default-file-name-template) ,self/org-roam-default-file-head-template)
+         :if-new (file+head ,(format "literature/%s" self/org-roam-default-file-name-template) ":PROPERTIES:
+:ROAM_REFS: %(car kill-ring-yank-pointer)
+:END:
+#+title: ${title}\n")
          :unnarrowed t)
 
                                         ; category notes. like default notes, but by default immediately finish
