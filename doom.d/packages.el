@@ -58,7 +58,6 @@
 (package! indium)
 (package! ix)
 (package! mermaid-mode)
-(package! nix-buffer)
 (package! nov)
 (package! ob-mermaid)
 (package! ob-typescript)

@@ -82,7 +82,6 @@
 (map! :nv "g s l"     #'avy-goto-line)
 (map! :leader "w w"   #'ace-window)
 (map! :leader "s w"   #'ace-swap-window)
-(map! :leader "n b"   #'nix-buffer)
 (map! :leader "f b"   #'calibredb-find-counsel)
 (map! :leader "s R"   #'counsel-evil-marks)
 (map! :mode Man-mode
