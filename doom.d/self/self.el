@@ -299,7 +299,7 @@ channel."
     (s-trim-right (shell-command-to-string (format "mktemp -t %s" pre)))))
 
 ;; TODO write more generic roam exporter that extends org publishing
-(defun self/org-export-preprocessor (backend)
+(defun self/org-export-preprocessor (_backend)
   "For org-roam files, this will append all backlinks to a file to the end."
   (when (org-roam-file-p)
     (let ((links (mapcar
@@ -313,6 +313,26 @@ channel."
         (save-excursion
           (goto-char (point-max))
           (insert (concat "\n* Backlinks\n") (apply 'concat links)))))))
+
+;; TODO see above todo
+(defun self/org-roam-export-refs (_backend)
+  "For org-roam files, exports the ROAM_REF property as a section at the bottom of the file as an unordered list."
+  (save-excursion
+    (goto-char (point-min))
+    (when (and
+           (org-roam-file-p)
+           (not (eq (assoc "ROAM_REFS" (org-entry-properties)) nil)))
+      (goto-char (point-min))
+      (let* ((file-refs (split-string (cdr (assoc "ROAM_REFS" (org-entry-properties))) " "))
+             (refs-as-bullet-links (mapcar
+                                    (lambda (link)
+                                      (format "- [[%s]]\n" link))
+                                    file-refs)))
+        (unless (or
+                 (eq refs-as-bullet-links nil)
+                 (eq (length refs-as-bullet-links) 0))
+          (goto-char (point-max))
+          (insert (concat "\n* Refs\n") (apply 'concat refs-as-bullet-links)))))))
 
 ;; thank you stackoverflow
 (defun self/slurp (f)

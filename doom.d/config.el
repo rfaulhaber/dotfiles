@@ -148,6 +148,7 @@
 
 ;; for adding backlinks to exported org-roam files
 ;; (add-hook 'org-export-before-processing-hook #'self/org-export-preprocessor)
+(add-hook 'org-export-before-processing-hook #'self/org-roam-export-refs)
 
 
 ;; org-roam-server-mode
