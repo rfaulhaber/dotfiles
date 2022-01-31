@@ -76,7 +76,7 @@
   boot.tmpOnTmpfs = true;
   boot.cleanTmpDir = true;
   boot.loader = {
-    systemd-boot.enable = true;
+    # systemd-boot.enable = true;
     grub = {
       enable = true;
       version = 2;
@@ -124,7 +124,6 @@
   # services = { printing.enable = true; };
 
   nix = {
-    autoOptimiseStore = true;
     package = pkgs.nixFlakes;
     extraOptions = ''
       experimental-features = nix-command flakes

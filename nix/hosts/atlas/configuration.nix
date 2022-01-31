@@ -59,8 +59,7 @@
       };
       # proxy = {
       #   enable = true;
-      #   aliases = { "books.sys9.net" = 8089; };
-      #   whitelist = [ "192.168.86.34" ];
+      #   aliases = { "books.3679.space" = 8089; };
       # };
     };
     themes.active = "city-lights";
@@ -97,7 +96,6 @@
   };
 
   nix = {
-    autoOptimiseStore = true;
     package = pkgs.nixFlakes;
     extraOptions = ''
       experimental-features = nix-command flakes

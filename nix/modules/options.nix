@@ -120,10 +120,11 @@ with lib.my;
       keyMap = "us";
     };
 
-    nix = let users = [ "root" config.user.name ];
+    nix.settings = let users = [ "root" config.user.name ];
     in {
-      trustedUsers = users;
-      allowedUsers = users;
+      trusted-users = users;
+      allowed-users = users;
+      auto-optimise-store = true;
     };
   };
 }
