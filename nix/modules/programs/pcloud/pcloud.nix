@@ -78,7 +78,7 @@ in stdenv.mkDerivation {
     #! $SHELL -e
     # This is required for the file picker dialog - otherwise pcloud just
     # crashes
-    export XDG_DATA_DIRS="${gnome.gsettings-desktop-schemas}/share/gsettings-schemas/${gnome.gsettings-desktop-schemas.name}:${gtk3}/share/gsettings-schemas/${gtk3.name}:$XDG_DATA_DIRS"
+    export XDG_DATA_DIRS="${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}:${gtk3}/share/gsettings-schemas/${gtk3.name}:$XDG_DATA_DIRS"
     exec "$out/app/pcloud"
     EOF
     chmod +x bin/pcloud
