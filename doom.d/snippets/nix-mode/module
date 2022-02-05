@@ -8,7 +8,7 @@
 
 with lib;
 
-let cfg = config.modules.${1:type}.${2:name};
+let cfg = config.modules.${1:`(self/get-file-hierarchy-names (buffer-file-name) 2)`}.${2:`(self/get-file-hierarchy-names (buffer-file-name) 1)`};
 in {
   options.modules.$1.$2 = { enable = mkEnableOption false; };
 
