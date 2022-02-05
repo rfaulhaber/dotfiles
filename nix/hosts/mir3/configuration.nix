@@ -28,9 +28,13 @@
     };
     services = {
       docker.enable = true;
-      calibre-mount = {
+      samba-mount = let atlasIP = "192.168.86.63";
+      in {
         enable = true;
-        mountPoint = "/home/ryan/calibre";
+        mounts."/home/ryan/calibre" = {
+          domain = atlasIP;
+          host = "calibre";
+        };
       };
       keybase.enable = true;
       gpg.enable = true;

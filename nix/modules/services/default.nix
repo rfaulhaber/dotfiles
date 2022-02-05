@@ -14,5 +14,6 @@
     ./ssh.nix
     ./systemd
     ./virt
+    ./samba-mount
   ];
 }
