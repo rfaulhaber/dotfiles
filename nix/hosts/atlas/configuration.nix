@@ -53,9 +53,12 @@
         branches = [ "/disk1" "/disk2" "/disk3" ];
         target = "/data";
       };
-      calibre-serve = {
+      samba-serve = {
         enable = true;
-        sharePoint = /data/calibre;
+        shares.calibre = {
+          path = /data/calibre;
+          comment = "Calibre share.";
+        };
       };
       # proxy = {
       #   enable = true;

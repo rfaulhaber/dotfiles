@@ -1,7 +1,5 @@
 {
   require = [
-    ./calibre-mount
-    ./calibre-serve
     ./docker
     ./gpg
     ./keybase
@@ -10,10 +8,11 @@
     ./passwords
     ./proxy
     ./redshift
+    ./samba-serve
+    ./samba-mount
     ./snapraid
     ./ssh.nix
     ./systemd
     ./virt
-    ./samba-mount
   ];
 }
