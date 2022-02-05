@@ -400,6 +400,18 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
                                    (push el col))))
     col))
 
+(defun self/get-file-hierarchy-names (path level)
+  "Given a PATH, gets the nth name up in the file hierarchy."
+  (if (or (eq path nil)
+          (not (file-name-absolute-p path)))
+      (user-error "%s is nil or not an absoltue path!" path)
+    (let* ((file-name-components (seq-filter
+                                  (lambda (str)
+                                    (not (string= "" str)))
+                                  (split-string (file-name-directory path) "/")))
+           (up (- (length file-name-components) level)))
+      (nth up file-name-components))))
+
 ;; custom evil operators ------------------------------------
 
 (evil-define-operator self/evil-write-temp (beg end &optional bang)
