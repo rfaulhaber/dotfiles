@@ -37,22 +37,18 @@ in {
       compression = true;
       hashKnownHosts = true;
 
-      matchBlocks = let sshPath = "${config.user.home}/.ssh";
+      matchBlocks = let
+        sshPath = "${config.user.home}/.ssh";
+        mkLocalHostname = n: "192.168.86.${n}";
       in {
         "*" = { identitiesOnly = true; };
 
         "atlas" = {
-          hostname = "192.168.86.63";
+          hostname = mkLocalHostname "63";
           identityFile = "${sshPath}/id_nil2";
           user = config.user.name;
           port = 10222;
           extraOptions = { "AddKeysToAgent" = "yes"; };
-        };
-
-        "nil" = {
-          hostname = "192.168.86.31";
-          identityFile = "${sshPath}/id_nil";
-          user = config.user.name;
         };
 
         "github.com" = {
@@ -65,6 +61,13 @@ in {
           hostname = "github.com";
           identityFile = "${sshPath}/id_gitlab";
           extraOptions = { "PreferredAuthentications" = "publickey"; };
+        };
+
+        "pi" = {
+          hostname = mkLocalHostname "79";
+          identityFile = "${sshPath}/id_pi";
+          user = "pi";
+          extraOptions = { "AddKeysToAgent" = "yes"; };
         };
       };
     };
