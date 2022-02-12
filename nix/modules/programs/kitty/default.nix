@@ -34,14 +34,22 @@ in {
         color7 = colors.white;
 
         # bright
-        color8 = colors.bg-alt;
-        color9 = colors.magenta;
-        color10 = colors.teal;
-        color11 = colors.yellow;
+        # black
+        color8 = colors.bright-black;
+        # red
+        color9 = colors.bright-red;
+        # green
+        color10 = colors.bright-green;
+        # yellow
+        color11 = colors.bright-yellow;
+        # blue
         color12 = colors.bright-blue;
-        color13 = colors.magenta;
-        color14 = colors.cyan;
-        color15 = colors.fg-alt;
+        # magenta
+        color13 = colors.bright-magenta;
+        # cyan
+        color14 = colors.bright-cyan;
+        # white
+        color15 = colors.bright-white;
 
         font_size = 20;
       };
