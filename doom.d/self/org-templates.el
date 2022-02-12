@@ -34,9 +34,7 @@
 
         ;; literature
         ("l" "literature" plain
-         "- source ::
-
-* Notes
+         "* Notes
 %?"
          :if-new (file+head ,(format "literature/%s" self/org-roam-default-file-name-template)
                             ,self/org-roam-default-file-head-template)
@@ -44,10 +42,7 @@
 
         ;; literature from link
         ("L" "literature from link" plain
-         ;; source is preserved for publishing
-         "- source :: %(org-cliplink-capture)
-
-* Notes
+         "* Notes
 %?"
          :if-new (file+head ,(format "literature/%s" self/org-roam-default-file-name-template) ":PROPERTIES:
 :ROAM_REFS: %(car kill-ring-yank-pointer)
