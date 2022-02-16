@@ -1,38 +1,31 @@
 # doom city lights theme
 {
-  black = "#41505e";
-  blue = "#539afc";
-  cyan = "#70e1e8";
-  dark-blue = "#718CA1";
-  dark-cyan = "#008B94";
-  green = "#8bd49c";
-  grey = "#41505E";
-  magenta = "#b62d65";
-  orange = "#D98E48";
-  red = "#d95468";
-  teal = "#33CED8";
-  violet = "#B62D65";
-  white = "#ffffff";
-  yellow = "#ebbf83";
-  bright-black = "#41505e";
-  bright-blue = "#539afc";
-  bright-cyan = "#70e1e8";
-  bright-green = "#8bd49c";
-  bright-magenta = "#b62d65";
-  bright-red = "#d95468";
-  bright-white = "#ffffff";
-  bright-yellow = "#ebbf83";
-
-  alert = "#bd2c40";
-  bg = "#1D252C";
-  bg-alt = "#181E24";
-  danger = "#BF616A";
-  fg = "#A0B3C5";
-  fg-alt = "#728CA0";
+  black = "#000";
+  white = "#DFDFDF";
+  trans = "#00000000";
+  semi-trans = "#55000000";
   primary = "#ffb52a";
   secondary = "#e60053";
-  semi-trans = "#55000000";
+  alert = "#bd2c40";
   success = "#A3BE8C";
-  trans = "#00000000";
   warning = "#EBCB8B";
+  danger = "#BF616A";
+
+  bg = "#1D252C";
+  bg-alt = "#181E24";
+  fg-alt = "#728CA0";
+  fg = "#A0B3C5";
+  grey = "#41505E";
+  red = "#D95468";
+  orange = "#D98E48";
+  green = "#8BD49C";
+  teal = "#33CED8";
+  yellow = "#EBBF83";
+  blue = "#5EC4FF";
+  bright-blue = "#539AFC";
+  dark-blue = "#718CA1";
+  magenta = "#E27E8D";
+  violet = "#B62D65";
+  cyan = "#70E1E8";
+  dark-cyan = "#008B94";
 }
