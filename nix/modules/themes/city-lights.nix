@@ -28,4 +28,12 @@
   violet = "#B62D65";
   cyan = "#70E1E8";
   dark-cyan = "#008B94";
+
+  bright-black = "#41505e";
+  bright-cyan = "#70e1e8";
+  bright-green = "#8bd49c";
+  bright-magenta = "#b62d65";
+  bright-red = "#d95468";
+  bright-white = "#ffffff";
+  bright-yellow = "#ebbf83";
 }
