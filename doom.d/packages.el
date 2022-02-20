@@ -76,11 +76,6 @@
            :repo "rfaulhaber/caseconv.el"
            :build t))
 
-(package! idris2-mode
-  :recipe (:host github
-           :repo "redfish64/idris2-mode"
-           :build t))
-
 (package! ox-agora
   :recipe (:host gitlab
            :repo "ngm/ox-agora"
