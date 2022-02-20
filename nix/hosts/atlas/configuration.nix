@@ -60,10 +60,12 @@
           comment = "Calibre share.";
         };
       };
-      # proxy = {
-      #   enable = true;
-      #   aliases = { "books.3679.space" = 8089; };
-      # };
+      proxy = {
+        enable = true;
+        # TODO modularize
+        defaultAcmeEmail = "admin+acme@3679.space";
+        aliases = { "library.3679.space" = 8089; };
+      };
     };
     themes.active = "city-lights";
   };
