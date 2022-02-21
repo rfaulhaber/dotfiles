@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-unstable.url = "nixpkgs/master";
+    # nixpkgs-unstable.url = "nixpkgs/master";
     home-manager.url = "github:nix-community/home-manager";
     deploy-rs.url = "github:serokell/deploy-rs";
   };
@@ -42,12 +42,13 @@
         atlas = mkHost ./nix/hosts/atlas/configuration.nix;
       };
 
-      # TODO utilize once deploy-rs fixes its SSH bugs
+      # run with: nix run github:serokell/deploy-rs '.#atlas'
       deploy.nodes.atlas = {
         hostname = "atlas";
         sshUser = "ryan";
         sshOpts = [ "-t" ];
         autoRollback = true;
+        magicRollback = false;
         profiles.system = {
           user = "root";
           path = deploy-rs.lib.x86_64-linux.activate.nixos
@@ -55,7 +56,7 @@
         };
       };
 
-      # # per the deploy-rs documentation
+      # per the deploy-rs documentation
       checks = builtins.mapAttrs
         (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     };
