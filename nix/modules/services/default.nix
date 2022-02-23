@@ -8,11 +8,12 @@
     ./passwords
     ./proxy
     ./redshift
-    ./samba-serve
     ./samba-mount
+    ./samba-serve
     ./snapraid
     ./ssh.nix
     ./systemd
     ./virt
+    ./zerotier
   ];
 }

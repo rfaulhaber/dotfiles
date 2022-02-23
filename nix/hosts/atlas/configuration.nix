@@ -66,6 +66,10 @@
         defaultAcmeEmail = "admin+acme@3679.space";
         aliases = { "library.3679.space" = 8089; };
       };
+      zerotier = {
+        enable = true;
+        networks = [ "12ac4a1e719ca283" ];
+      };
     };
     themes.active = "city-lights";
   };

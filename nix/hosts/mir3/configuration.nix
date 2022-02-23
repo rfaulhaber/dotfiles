@@ -50,6 +50,10 @@
         enableClient = true;
       };
       passwords.enable = true;
+      zerotier = {
+        enable = true;
+        networks = [ "12ac4a1e719ca283" ];
+      };
     };
     hardware = {
       bluetooth.enable = true;
