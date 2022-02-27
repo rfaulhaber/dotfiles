@@ -4,7 +4,8 @@
 
 { config, pkgs, ... }:
 
-{
+let homeDomain = "homelab.lan";
+in {
   imports = [
     ../../modules
     # Include the results of the hardware scan.
@@ -60,12 +61,13 @@
           comment = "Calibre share.";
         };
       };
-      proxy = {
-        enable = true;
-        # TODO modularize
-        defaultAcmeEmail = "admin+acme@3679.space";
-        aliases = { "library.3679.space" = 8089; };
-      };
+      # commented out until I can fix this mess
+      # proxy = {
+      #   enable = true;
+      #   # TODO modularize
+      #   # defaultAcmeEmail = "admin+acme@3679.space";
+      #   localAliases = { "library.homelab.lan" = 8089; };
+      # };
       zerotier = {
         enable = true;
         networks = [ "12ac4a1e719ca283" ];
