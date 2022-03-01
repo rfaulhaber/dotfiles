@@ -104,14 +104,14 @@ with lib.my;
       };
     };
 
+    users.users.${config.user.name} = mkAliasDefinitions options.user;
+
     # All my machines are in the same timezone
     # TODO should this be here?
     time = {
       timeZone = "America/New_York";
       hardwareClockInLocalTime = true;
     };
-
-    users.users.${config.user.name} = mkAliasDefinitions options.user;
 
     # TODO where should these live?
     i18n.defaultLocale = "en_US.UTF-8";
@@ -120,11 +120,26 @@ with lib.my;
       keyMap = "us";
     };
 
-    nix.settings = let users = [ "root" config.user.name ];
-    in {
-      trusted-users = users;
-      allowed-users = users;
-      auto-optimise-store = true;
+    # TODO make standard nix module?
+    nix = {
+      package = pkgs.nixFlakes;
+      extraOptions = ''
+        experimental-features = nix-command flakes
+      '';
+      gc = {
+        automatic = true;
+        dates = "weekly";
+        options = "--delete-older-than 7d";
+      };
+
+      settings = let users = [ "root" config.user.name ];
+      in {
+        trusted-users = users;
+        allowed-users = users;
+        auto-optimise-store = true;
+      };
     };
+
+    system.stateVersion = "21.11";
   };
 }

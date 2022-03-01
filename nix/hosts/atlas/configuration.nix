@@ -106,25 +106,8 @@ in {
     };
   };
 
-  nix = {
-    package = pkgs.nixFlakes;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
-    };
+  system.autoUpgrade = {
+    enable = true;
+    allowReboot = true;
   };
-
-  system = {
-    autoUpgrade = {
-      enable = true;
-      allowReboot = true;
-    };
-    stateVersion = "21.11";
-  };
-
 }
-
