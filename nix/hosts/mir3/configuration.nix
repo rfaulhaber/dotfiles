@@ -28,11 +28,10 @@
     };
     services = {
       docker.enable = true;
-      samba-mount = let atlasIP = "192.168.86.63";
-      in {
+      samba-mount = {
         enable = true;
         mounts."/home/ryan/calibre" = {
-          domain = atlasIP;
+          domain = "192.168.86.10";
           host = "calibre";
         };
       };

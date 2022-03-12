@@ -44,7 +44,7 @@ in {
         "*" = { identitiesOnly = true; };
 
         "atlas" = {
-          hostname = mkLocalHostname "63";
+          hostname = mkLocalHostname "10";
           identityFile = "${sshPath}/id_nil2";
           user = config.user.name;
           port = 10222;

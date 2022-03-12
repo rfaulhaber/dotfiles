@@ -7,6 +7,6 @@ in {
   options.modules.services.virt = { enable = mkEnableOption false; };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [ kvm qemu qemu-utils ];
+    environment.systemPackages = with pkgs; [ qemu_kvm qemu qemu-utils ];
   };
 }

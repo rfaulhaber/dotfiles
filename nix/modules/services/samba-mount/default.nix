@@ -67,7 +67,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [ smbclient ];
+    environment.systemPackages = with pkgs; [ samba ];
     fileSystems = mapAttrs mkMount cfg.mounts;
   };
 }
