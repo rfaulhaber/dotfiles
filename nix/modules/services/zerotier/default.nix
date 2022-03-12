@@ -16,6 +16,14 @@ in {
       type = types.int;
       default = 9993;
     };
+    # these are special as they require special iptables rules.
+    # if we were whitelisting local ports, we wouldn't require such complicated rules!
+    dockerWhitelist = mkOption {
+      description =
+        "Docker ports to allow access to on the ZeroTier network. All others are blocked.";
+      type = types.listOf types.int;
+      default = [ ];
+    };
   };
 
   config = mkIf cfg.enable {
@@ -24,5 +32,19 @@ in {
       joinNetworks = cfg.networks;
       port = cfg.port;
     };
+
+    networking.firewall.extraCommands = let
+      # a thousand thanks to this ServerFault answer:
+      # https://serverfault.com/questions/704643/steps-for-limiting-outside-connections-to-docker-container-with-iptables/933803
+      mkRule = port:
+        "iptables -I DOCKER-USER -i zt+ -p tcp -m conntrack --ctorigdstport ${
+          toString (port)
+        } --ctdir ORIGINAL -j ACCEPT";
+      whitelist = map mkRule cfg.dockerWhitelist;
+      blockAll = [
+        # "iptables -A INPUT -i zt+ -j DROP"
+        "iptables -I DOCKER-USER -i zt+ -j DROP"
+      ];
+    in concatStringsSep "\n" (blockAll ++ whitelist);
   };
 }

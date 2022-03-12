@@ -71,6 +71,7 @@ in {
       zerotier = {
         enable = true;
         networks = [ "12ac4a1e719ca283" ];
+        dockerWhitelist = [ 8089 ];
       };
     };
     themes.active = "city-lights";
@@ -102,7 +103,7 @@ in {
     # TODO move
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 32400 ];
+      allowedTCPPorts = [ 32400 80 ];
     };
   };
 
