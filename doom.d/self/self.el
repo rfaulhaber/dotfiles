@@ -184,6 +184,15 @@ Version 2016-07-13"
   (interactive)
   (find-file (car (reverse (org-journal--list-files)))))
 
+(defun self/rename-this-file (new-name)
+  "Renames the current file to NEW-NAME."
+  (interactive "sNew name: ")
+  (rename-file (file-name-nondirectory (buffer-file-name)) new-name)
+  (kill-buffer)
+  (switch-to-buffer (find-file-noselect new-name)))
+
+;; -------------------- utility functions ---------------------------------------
+
 ;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el
 ;; thank you Neil
 (defun self/slugify-title (title)
@@ -227,8 +236,6 @@ filename. This is mainly to override org-roam's default filename convention of
         (concat directory slug ".md"))
     output-file))
 
-
-;; -------------------- utility functions ---------------------------------------
 
 ;; this comes from reddit. thank you r/emacs!
 (defun self/org-md-paragraph-unfill (&rest args)

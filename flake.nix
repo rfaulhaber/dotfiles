@@ -38,7 +38,7 @@
       # these are the actual system configurations
       nixosConfigurations = {
         # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix
-        mir3 = mkHost ./nix/hosts/mir3/configuration.nix;
+        hyperion = mkHost ./nix/hosts/hyperion/configuration.nix;
         atlas = mkHost ./nix/hosts/atlas/configuration.nix;
       };
 

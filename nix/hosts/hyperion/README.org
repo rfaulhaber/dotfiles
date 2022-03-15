@@ -1,6 +1,6 @@
-#+TITLE: mir3
+#+TITLE: Hyperion
 
-mir3 is the Linux partition of my PC. It is my daily driver.
+Hyperion is the Linux partition of my PC. It is my daily driver.
 
 * Specs
 | CPU         | AMD Ryzen 9 3900X 3.8 GHz, 12-core processor         |

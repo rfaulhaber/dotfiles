@@ -61,17 +61,11 @@ in {
           comment = "Calibre share.";
         };
       };
-      # commented out until I can fix this mess
-      # proxy = {
-      #   enable = true;
-      #   # TODO modularize
-      #   # defaultAcmeEmail = "admin+acme@3679.space";
-      #   localAliases = { "library.homelab.lan" = 8089; };
-      # };
       zerotier = {
         enable = true;
         networks = [ "12ac4a1e719ca283" ];
         dockerWhitelist = [ 8089 ];
+        sharedNetworkInterface = "ztbto5nphs";
       };
     };
     themes.active = "city-lights";

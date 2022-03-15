@@ -99,28 +99,16 @@
   };
 
   networking = {
-    hostName = "mir3";
+    hostName = "hyperion";
     # The global useDHCP flag is deprecated, therefore explicitly set to false here.
     # Per-interface useDHCP will be mandatory in the future, so this generated config
     # replicates the default behaviour.
     useDHCP = false;
 
-    interfaces = { enp5s0 = { useDHCP = true; }; };
+    interfaces.enp5s0.useDHCP = true;
 
     networkmanager.enable = true;
   };
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  # TODO clean up!
-  environment.systemPackages = with pkgs; [
-    #dev.util
-    gnumake
-    just
-
-    #util
-    cifs-utils
-  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
