@@ -15,25 +15,23 @@ in {
     # dependencies for my very specific configuration of doom
     # see doom.d/init.el for more
     environment.systemPackages = with pkgs; [
+      (mkIf (config.modules.services.mail.enable) mu)
       aspell
       aspellDicts.en
       aspellDicts.en-computers
       aspellDicts.en-science
       clang # unfortunately we need a C compiler for various dependencies
-      cmake # dependency for vterm
       direnv
       djvulibre
       editorconfig-core-c
       epdfview
       fd
       git
+      gnumake
       gnutls
       graphviz
       imagemagick
       languagetool
-      libtool # needed by vterm
-      libvterm # vterm
-      (mkIf (config.modules.services.mail.enable) mu)
       nixfmt
       nodePackages.mermaid-cli
       ripgrep
