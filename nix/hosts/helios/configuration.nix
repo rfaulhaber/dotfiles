@@ -43,7 +43,6 @@
         enable = true;
         modules = [ "updatedb" ];
       };
-      virt.enable = true;
       ssh = {
         enable = true;
         enableClient = true;
@@ -59,7 +58,6 @@
       zsa.enable = true;
     };
     desktop = {
-      videoDrivers = [ "nvidia" ];
       bspwm = {
         enable = true;
         extraStartupPrograms =
@@ -69,8 +67,8 @@
       polybar.enable = true;
       rofi.enable = true;
       random-wallpaper.enable = true;
+      wifi.enable = true;
     };
-    # TODO change to list?
     langs = {
       js.enable = true;
       rust.enable = true;
@@ -82,43 +80,26 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  boot.tmpOnTmpfs = true;
-  boot.cleanTmpDir = true;
-  boot.loader = {
-    # systemd-boot.enable = true;
-    grub = {
-      enable = true;
-      version = 2;
-      useOSProber = true;
-      efiSupport = true;
-      device = "nodev";
-    };
+  boot = {
+    tmpOnTmpfs = true;
+    cleanTmpDir = true;
 
-    efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = "/boot";
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+      grub.device = "nodev";
     };
   };
 
   networking = {
-    hostName = "hyperion";
+    hostName = "helios";
     # The global useDHCP flag is deprecated, therefore explicitly set to false here.
     # Per-interface useDHCP will be mandatory in the future, so this generated config
     # replicates the default behaviour.
     useDHCP = false;
 
-    interfaces.enp5s0.useDHCP = true;
-
-    networkmanager.enable = true;
+    interfaces.wlp1s0.useDHCP = true;
   };
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  programs.mtr.enable = true;
-
-  # List services that you want to enable:
-
-  # services = { printing.enable = true; };
 
   system.autoUpgrade = {
     enable = true;

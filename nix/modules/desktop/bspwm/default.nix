@@ -31,7 +31,7 @@ in {
         lightdm.enable = true;
         defaultSession = "none+bspwm";
       };
-      inherit videoDrivers;
+      videoDrivers = mkIf ((length videoDrivers) > 0) videoDrivers;
     };
     # NB: IN ORDER FOR ANY OF THIS TO WORK YOU NEED THIS SET!!
     # I WASTED MOST OF A SUNDAY TRYING TO FIGURE THIS OUT!!!

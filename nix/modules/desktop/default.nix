@@ -4,7 +4,15 @@ with lib;
 
 let cfg = config.modules.desktop;
 in {
-  imports = [ ./bspwm ./polybar ./rofi ./util.nix ./random-wallpaper.nix ];
+  imports = [
+    ./bspwm
+    ./polybar
+    ./random-wallpaper.nix
+    ./rofi
+    ./sound
+    ./util.nix
+    ./wifi
+  ];
   options.modules.desktop = {
     videoDrivers = mkOption {
       description =

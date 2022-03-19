@@ -2,7 +2,8 @@
 
 {
   monitors = {
-    "DP-0" = [ "I" "II" "III" "IV" "V" "VI" "VII" "VIII" "IX" "X" ];
+    # "DP-0" = [ "I" "II" "III" "IV" "V" "VI" "VII" "VIII" "IX" "X" ];
+    "eDP" = [ "I" "II" "III" "IV" "V" "VI" "VII" "VIII" "IX" "X" ];
   };
   startupPrograms = [ "sxhkd" "${config.dotfiles.binDir}/polybar/launch" ];
   settings = {

@@ -6,9 +6,11 @@
     # nixpkgs-unstable.url = "nixpkgs/master";
     home-manager.url = "github:nix-community/home-manager";
     deploy-rs.url = "github:serokell/deploy-rs";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, deploy-rs, ... }:
+  outputs =
+    inputs@{ self, nixpkgs, home-manager, deploy-rs, nixos-hardware, ... }:
     let
       lib = nixpkgs.lib.extend (self: super: {
         my = import ./nix/lib/default.nix {
@@ -40,6 +42,24 @@
         # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix
         hyperion = mkHost ./nix/hosts/hyperion/configuration.nix;
         atlas = mkHost ./nix/hosts/atlas/configuration.nix;
+        # TODO modify function to accept hardware stuff
+        helios = nixpkgs.lib.nixosSystem rec {
+          system = "x86_64-linux";
+          modules = [
+            home-manager.nixosModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+            }
+            ./nix/hosts/helios/configuration.nix
+            nixos-hardware.nixosModules.lenovo-thinkpad-t495
+          ];
+          specialArgs = {
+            inherit lib inputs;
+            platform = system;
+          };
+        };
+
       };
 
       # run with: nix run github:serokell/deploy-rs '.#atlas'
