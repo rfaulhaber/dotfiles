@@ -4,6 +4,7 @@ with lib;
 
 let
   cfg = config.modules.desktop.bspwm;
+  videoDrivers = config.modules.desktop.videoDrivers;
   keybindings = import ./sxhkd.nix { inherit pkgs config; };
   bspwmConfig = import ./bspwm.nix { inherit config; };
 in {
@@ -30,8 +31,7 @@ in {
         lightdm.enable = true;
         defaultSession = "none+bspwm";
       };
-      # TODO modularize! not every comptuer will have an nvidia video card!
-      videoDrivers = [ "nvidia" ];
+      inherit videoDrivers;
     };
     # NB: IN ORDER FOR ANY OF THIS TO WORK YOU NEED THIS SET!!
     # I WASTED MOST OF A SUNDAY TRYING TO FIGURE THIS OUT!!!

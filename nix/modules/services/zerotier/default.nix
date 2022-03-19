@@ -29,6 +29,7 @@ in {
       description =
         "Name of the ZeroTier interface that requires firewall rules.";
       type = types.str;
+      # TODO for some reason this won't build without a default value
       default = "zt+";
     };
   };

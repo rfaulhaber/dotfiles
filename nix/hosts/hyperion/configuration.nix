@@ -59,6 +59,7 @@
       zsa.enable = true;
     };
     desktop = {
+      videoDrivers = [ "nvidia" ];
       bspwm = {
         enable = true;
         extraStartupPrograms =

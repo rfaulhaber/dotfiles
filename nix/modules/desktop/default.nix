@@ -5,6 +5,14 @@ with lib;
 let cfg = config.modules.desktop;
 in {
   imports = [ ./bspwm ./polybar ./rofi ./util.nix ./random-wallpaper.nix ];
+  options.modules.desktop = {
+    videoDrivers = mkOption {
+      description =
+        "Passthrough property for services.xserver.videoDrivers. All desktop configurations use xserver at the moment.";
+      type = types.listOf types.str;
+      default = [ ];
+    };
+  };
   config = mkIf config.services.xserver.enable {
     environment.variables = rec {
       # TODO move elsewhere

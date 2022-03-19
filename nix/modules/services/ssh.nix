@@ -11,7 +11,9 @@ in {
       default = [ ];
       type = types.listOf types.str;
     };
+    # TODO split into two separate modules
     enableClient = mkEnableOption false;
+    # TODO create hostnames on ZeroTier network for mobile devices
     enableServer = mkEnableOption false;
   };
 

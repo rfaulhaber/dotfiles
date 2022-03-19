@@ -53,7 +53,7 @@
 (package! calibredb)
 (package! carbon-now-sh)
 (package! deadgrep)
-(package! elpher)
+;; (package! elpher)
 (package! fzf)
 (package! indium)
 (package! ix)
