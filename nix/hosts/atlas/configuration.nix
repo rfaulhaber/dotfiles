@@ -64,7 +64,7 @@ in {
       };
       zerotier = {
         enable = true;
-        networks = [ "12ac4a1e719ca283" ];
+        networks = [ "12ac4a1e719ca283" "b6079f73c6986bc2" ];
         dockerWhitelist = [ 8089 ];
         sharedNetworkInterface = "ztbto5nphs";
       };

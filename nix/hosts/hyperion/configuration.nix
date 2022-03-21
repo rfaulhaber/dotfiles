@@ -51,7 +51,7 @@
       passwords.enable = true;
       zerotier = {
         enable = true;
-        networks = [ "12ac4a1e719ca283" ];
+        networks = [ "12ac4a1e719ca283" "b6079f73c6986bc2" ];
       };
     };
     hardware = {
@@ -62,8 +62,8 @@
       videoDrivers = [ "nvidia" ];
       bspwm = {
         enable = true;
-        extraStartupPrograms =
-          [ "keybase-gui" "pcloud" "discord" "telegram-desktop" ];
+        extraStartupPrograms = [ "keybase-gui" "pcloud" "discord" ];
+        monitors = [ "DP-0" ];
       };
       sound.enable = true;
       polybar.enable = true;

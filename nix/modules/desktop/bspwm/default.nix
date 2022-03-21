@@ -1,4 +1,6 @@
-{ config, lib, pkgs, home-manager, ... }:
+{ config, lib, pkgs, ... }:
+
+# NOTE: this module is a disaster and needs cleaned up
 
 with lib;
 
@@ -6,7 +8,6 @@ let
   cfg = config.modules.desktop.bspwm;
   videoDrivers = config.modules.desktop.videoDrivers;
   keybindings = import ./sxhkd.nix { inherit pkgs config; };
-  bspwmConfig = import ./bspwm.nix { inherit config; };
 in {
   options.modules.desktop.bspwm = {
     enable = mkOption {
@@ -19,9 +20,19 @@ in {
       type = types.listOf types.str;
       description = "Extra programs to start upon launch.";
     };
+    monitors = mkOption {
+      description = "Name of monitors for bspwm.";
+      type = types.listOf types.str;
+      default = null;
+    };
   };
   config = mkIf cfg.enable {
-    # TODO put this configuration elsewhere
+    assertions = [{
+      assertion = cfg.monitors != null;
+      meessage = "Property displayName cannot be null.";
+    }];
+
+    # TODO put most of this configuration elsewhere
     services.xserver = {
       enable = true;
       layout = "us";
@@ -38,7 +49,10 @@ in {
     # IT SURE WOULD HAVE BEEN GREAT TO KNOW THAT SOMEWHERE!!!!
     home.xsession.enable = true;
 
-    home.xsession.windowManager.bspwm = {
+    home.xsession.windowManager.bspwm = let
+      monitors = cfg.monitors;
+      bspwmConfig = import ./bspwm.nix { inherit config lib monitors; };
+    in {
       inherit (bspwmConfig) monitors settings rules;
       enable = true;
       startupPrograms = bspwmConfig.startupPrograms ++ cfg.extraStartupPrograms;

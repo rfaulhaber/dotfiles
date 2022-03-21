@@ -1,10 +1,13 @@
-{ config }:
+{ config, lib, monitors }:
 
-{
-  monitors = {
-    # "DP-0" = [ "I" "II" "III" "IV" "V" "VI" "VII" "VIII" "IX" "X" ];
-    "eDP" = [ "I" "II" "III" "IV" "V" "VI" "VII" "VIII" "IX" "X" ];
-  };
+with lib;
+
+let
+  defaultMonitorValue = [ "I" "II" "III" "IV" "V" "VI" "VII" "VIII" "IX" "X" ];
+  mkMonitor = monitor: { "${monitor}" = defaultMonitorValue; };
+  merge = foldr (n: a: n // a) { };
+in {
+  monitors = merge (map mkMonitor monitors);
   startupPrograms = [ "sxhkd" "${config.dotfiles.binDir}/polybar/launch" ];
   settings = {
     border_width = 0;
@@ -37,6 +40,10 @@
     };
     "TelegramDesktop" = {
       desktop = "^4";
+      state = "tiled";
+    };
+    "Spotify" = {
+      desktop = "^5";
       state = "tiled";
     };
   };
