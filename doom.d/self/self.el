@@ -191,6 +191,30 @@ Version 2016-07-13"
   (kill-buffer)
   (switch-to-buffer (find-file-noselect new-name)))
 
+(defun self/fill-line-length-with-character (char &optional direction)
+  "Inserts a line of CHAR of current line length above and below the current line. One prefix argument only adds the bottom line, and two prefix arguments only adds the top line."
+  (interactive "sChar: \np")
+  (when (> (length char) 1)
+    (user-error "This function only supports filling lines with one character at the moment!"))
+  (when (stringp char)
+    (setq char (string-to-char char)))
+  (let* ((line-length (- (line-end-position) (line-beginning-position)))
+         (new-text (make-string line-length char)))
+    (save-excursion
+      (pcase direction
+        ;; TODO should probably check to see if those lines are empty!
+        (4 (progn
+             (forward-line 1)
+             (insert new-text)))
+        (16 (progn
+              (forward-line -1)
+              (insert new-text)))
+        (_ (progn
+             (forward-line 1)
+             (insert new-text)
+             (forward-line -2)
+             (insert new-text)))))))
+
 ;; -------------------- utility functions ---------------------------------------
 
 ;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el
