@@ -67,7 +67,6 @@
       polybar.enable = true;
       rofi.enable = true;
       random-wallpaper.enable = true;
-      wifi.enable = true;
     };
     langs = {
       js.enable = true;
@@ -99,6 +98,8 @@
     useDHCP = false;
 
     interfaces.wlp1s0.useDHCP = true;
+
+    networkmanager.enable = true;
   };
 
   system.autoUpgrade = {
