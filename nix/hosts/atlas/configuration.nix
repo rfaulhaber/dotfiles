@@ -95,11 +95,7 @@ in {
       eno2.useDHCP = true;
     };
 
-    # TODO move
-    firewall = {
-      enable = true;
-      allowedTCPPorts = [ 32400 80 ];
-    };
+    firewall.enable = true;
   };
 
   system.autoUpgrade = {
