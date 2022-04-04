@@ -4,6 +4,7 @@ with lib;
 
 let
   cfg = config.modules.desktop.polybar;
+  desktopCfg = config.modules.desktop;
   colors = config.modules.themes.colors;
   modules = (import ./modules) { inherit colors config pkgs; };
 in {
@@ -76,6 +77,7 @@ in {
         "module/date" = modules.date;
         "module/wttr" = modules.wttr;
         "module/cpu" = modules.cpu;
+        "module/battery" = mkIf desktopCfg.useLaptopSettings modules.battery;
         "module/memory" = modules.memory;
         "module/pulseaudio" = modules.pulseaudio;
       };

@@ -13,6 +13,12 @@ in {
       type = types.listOf types.str;
       default = [ ];
     };
+    useLaptopSettings = mkOption {
+      description =
+        "If enabled, turns on various laptop settings, such as the battery module in Polybar.";
+      type = types.bool;
+      default = false;
+    };
   };
   config = mkIf config.services.xserver.enable {
     environment.variables = rec {

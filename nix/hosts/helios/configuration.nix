@@ -67,6 +67,7 @@
       polybar.enable = true;
       rofi.enable = true;
       random-wallpaper.enable = true;
+      useLaptopSettings = true;
     };
     langs = {
       js.enable = true;
