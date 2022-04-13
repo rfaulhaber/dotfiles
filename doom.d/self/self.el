@@ -326,8 +326,10 @@ channel."
 
 (defun self/mktemp (&optional prefix)
   "Calls mktemp and passes PREFIX to -t flag, defaulting to 'emacs'. Returns result of `mktemp`."
-  (let ((pre (or prefix "emacs")))
-    (s-trim-right (shell-command-to-string (format "mktemp -t %s" pre)))))
+  (let ((pre (or prefix "emacsXXX")))
+    (if (s-contains-p "XXX" prefix)
+        (s-trim-right (shell-command-to-string (format "mktemp %s" pre)))
+      (s-trim-right (shell-command-to-string (format "mktemp --suffix %s" pre))))))
 
 ;; TODO write more generic roam exporter that extends org publishing
 (defun self/org-export-preprocessor (_backend)
