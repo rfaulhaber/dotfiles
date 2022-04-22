@@ -318,18 +318,20 @@ channel."
             (org-remove-indentation
              (org-export-format-code-default src-block info)))))
 
-(defun self/write-temp (beg end)
+(defun self/write-temp (beg end &optional prefix)
   "Writes BEG and END from current buffer into a temporary file."
   (with-current-buffer (current-buffer)
-    (let ((temp-path (self/mktemp)))
+    (let ((temp-path (self/mktemp prefix)))
       (write-region beg end temp-path))))
 
 (defun self/mktemp (&optional prefix)
-  "Calls mktemp and passes PREFIX to -t flag, defaulting to 'emacs'. Returns result of `mktemp`."
-  (let ((pre (or prefix "emacsXXX")))
-    (if (s-contains-p "XXX" prefix)
-        (s-trim-right (shell-command-to-string (format "mktemp %s" pre)))
-      (s-trim-right (shell-command-to-string (format "mktemp --suffix %s" pre))))))
+  "Calls mktemp and passes PREFIX to the command, defaulting to 'emacs'. Returns result of `mktemp`."
+  (let ((pre
+         (cond
+          ((null prefix) "emacsXXX")
+          ((not (s-contains-p "XXX" prefix)) (format "%sXXX" prefix))
+          (t prefix))))
+    (s-trim-right (shell-command-to-string (format "mktemp -p /tmp %s" pre)))))
 
 ;; TODO write more generic roam exporter that extends org publishing
 (defun self/org-export-preprocessor (_backend)
@@ -447,20 +449,20 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
 
 ;; custom evil operators ------------------------------------
 
-(evil-define-operator self/evil-write-temp (beg end &optional bang)
+(evil-define-operator self/evil-write-temp (beg end &optional prefix)
   "Like evil-write, but creates a new temporary file and writes to that."
   :motion nil
   :move-point nil
   :type line
   :repeat nil
-  (interactive "<r><!>")
+  (interactive "<r><a>")
   (let ((s (or beg (point-min)))
         (f (or end (point-max)))
         (bufname (buffer-file-name (buffer-base-buffer))))
     (cond
-     ((null bufname) (let ((filename (self/mktemp)))
+     ((null bufname) (let ((filename (self/mktemp prefix)))
                        (write-file filename)))
-     (t (self/write-temp s f)))))
+     (t (self/write-temp s f prefix)))))
 
 (evil-define-operator self/evil-write-suspend (beg end type file-or-append &optional bang)
   "Like evil-write, but quickly changes the buffer to `text-mode' first.
