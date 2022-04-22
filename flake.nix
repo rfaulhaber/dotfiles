@@ -43,23 +43,7 @@
         hyperion = mkHost ./nix/hosts/hyperion/configuration.nix;
         atlas = mkHost ./nix/hosts/atlas/configuration.nix;
         # TODO modify function to accept hardware stuff
-        helios = nixpkgs.lib.nixosSystem rec {
-          system = "x86_64-linux";
-          modules = [
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-            }
-            ./nix/hosts/helios/configuration.nix
-            nixos-hardware.nixosModules.lenovo-thinkpad-t495
-          ];
-          specialArgs = {
-            inherit lib inputs;
-            platform = system;
-          };
-        };
-
+        helios = mkHost ./nix/hosts/helios/configuration.nix;
       };
 
       # run with: nix run github:serokell/deploy-rs '.#atlas'
