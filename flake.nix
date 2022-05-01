@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
-    deploy-rs.url = "github:serokell/deploy-rs/master";
+    deploy-rs.url = "github:serokell/deploy-rs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -60,10 +60,12 @@
     } // flake-utils.lib.eachDefaultSystem (system:
       let pkgs = nixpkgs.legacyPackages.${system};
       in {
+        # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
+        # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
+        apps.deploy-rs = deploy-rs.defaultApp."${system}";
+
         devShells.default = pkgs.mkShell {
           buildInputs = [ deploy-rs.defaultPackage."${system}" ];
         };
-
-        apps.deploy-rs = deploy-rs.defaultApp."${system}";
       });
 }
