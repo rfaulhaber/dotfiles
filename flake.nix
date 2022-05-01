@@ -3,14 +3,14 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    # nixpkgs-unstable.url = "nixpkgs/master";
     home-manager.url = "github:nix-community/home-manager";
-    deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.url = "github:serokell/deploy-rs/master";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs =
-    inputs@{ self, nixpkgs, home-manager, deploy-rs, nixos-hardware, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, deploy-rs, nixos-hardware
+    , flake-utils, ... }:
     let
       lib = nixpkgs.lib.extend (self: super: {
         my = import ./nix/lib/default.nix {
@@ -36,13 +36,11 @@
           };
         };
     in {
-      lib = lib.my;
       # these are the actual system configurations
       nixosConfigurations = {
         # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix
         hyperion = mkHost ./nix/hosts/hyperion/configuration.nix;
         atlas = mkHost ./nix/hosts/atlas/configuration.nix;
-        # TODO modify function to accept hardware stuff
         helios = mkHost ./nix/hosts/helios/configuration.nix;
       };
 
@@ -59,9 +57,13 @@
             self.nixosConfigurations.atlas;
         };
       };
+    } // flake-utils.lib.eachDefaultSystem (system:
+      let pkgs = nixpkgs.legacyPackages.${system};
+      in {
+        devShells.default = pkgs.mkShell {
+          buildInputs = [ deploy-rs.defaultPackage."${system}" ];
+        };
 
-      # per the deploy-rs documentation
-      checks = builtins.mapAttrs
-        (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
-    };
+        apps.deploy-rs = deploy-rs.defaultApp."${system}";
+      });
 }
