@@ -36,7 +36,7 @@ in rec {
   mkAssert = assertion: message: { inherit assertion message; };
 
   mkHost = path:
-    attrs@{ system, hardware }:
+    attrs@{ system }:
     nixpkgs.lib.nixosSystem rec {
       inherit system;
       modules = [
@@ -46,11 +46,11 @@ in rec {
           home-manager.useUserPackages = true;
         }
         {
+          nixpkgs.pkgs = pkgs;
           networking.hostName =
             mkDefault (removeSuffix ".nix" (baseNameOf path));
         }
         (import path)
-        hardware
       ];
       specialArgs = {
         inherit lib inputs system;
@@ -66,18 +66,21 @@ in rec {
   mapFilterAttrs = pred: f: attrs: filterAttrs pred (mapAttrs' f attrs);
 
   # thank you hlissner
-  mapModules = dir: fn:
-    mapFilterAttrs (n: v: v != null && !(hasPrefix "_" n)) (n: v:
-      let path = "${toString dir}/${n}";
-      in if v == "directory" && pathExists "${path}/default.nix" then
-        nameValuePair n (fn path)
-      else if v == "regular" && n != "default.nix" && hasSuffix ".nix" n then
-        nameValuePair (removeSuffix ".nix" n) (fn path)
-      else
-        nameValuePair "" null) (readDir dir);
+  # mapModules = dir: fn:
+  #   mapFilterAttrs (n: v: v != null && !(hasPrefix "_" n)) (n: v:
+  #     let path = "${toString dir}/${n}";
+  #     in if v == "directory" && pathExists "${path}/default.nix" then
+  #       nameValuePair n (fn path)
+  #     else if v == "regular" && n != "default.nix" && hasSuffix ".nix" n then
+  #       nameValuePair (removeSuffix ".nix" n) (fn path)
+  #     else
+  #       nameValuePair "" null) (readDir dir);
 
-  # thank you hlissner
-  mapHosts = dir:
-    attrs@{ system ? system, ... }:
-    mapModules dir (hostPath: mkHost hostPath attrs);
+  # # thank you hlissner
+  # mapHosts = dir:
+  #   attrs@{ system ? system, ... }:
+  #   mapModules dir (hostPath: mkHost hostPath attrs);
+
+  # mapHosts = dir:
+  #   attrs@{system ? system, ...}:
 }
