@@ -16,7 +16,6 @@
       },
       "original": {
         "owner": "serokell",
-        "ref": "master",
         "repo": "deploy-rs",
         "type": "github"
       }

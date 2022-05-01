@@ -47,7 +47,16 @@ in {
 
           # modules
           modules-left = "bspwm xwindow";
-          modules-right = "wttr cpu memory pulseaudio date";
+          modules-right = let
+            defaultRightModules = [
+              "wttr"
+              "cpu"
+              "memory"
+              "pulseaudio"
+              (if desktopCfg.useLaptopSettings then "battery" else "")
+              "date"
+            ];
+          in concatStringsSep " " defaultRightModules;
           module-margin = 0;
 
           # tray
@@ -77,7 +86,7 @@ in {
         "module/date" = modules.date;
         "module/wttr" = modules.wttr;
         "module/cpu" = modules.cpu;
-        "module/battery" = mkIf desktopCfg.useLaptopSettings modules.battery;
+        "module/battery" = modules.battery;
         "module/memory" = modules.memory;
         "module/pulseaudio" = modules.pulseaudio;
       };
