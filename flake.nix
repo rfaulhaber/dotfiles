@@ -44,7 +44,7 @@
         helios = mkHost ./nix/hosts/helios/configuration.nix;
       };
 
-      # run with: nix run github:serokell/deploy-rs '.#atlas'
+      # run with: nix run '.#deploy-rs' '.#atlas'
       deploy.nodes.atlas = {
         hostname = "atlas";
         sshUser = "ryan";
