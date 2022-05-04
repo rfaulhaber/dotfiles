@@ -3,11 +3,10 @@ set -euo pipefail
 
 format="%C %t"
 
-# I live in Cleveland. it is my default location
-location="Cleveland"
+location="$1"
 if [ "$#" -ge 1 ] && [ -n $1 ]; then
     location=$1
 fi
 
-weather=$(curl -sG wttr.in/$location --data-urlencode "format=$format")
+weather=$(curl --fail -sG wttr.in/$location --data-urlencode "format=$format")
 echo -n $weather
