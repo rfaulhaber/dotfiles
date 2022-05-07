@@ -47,7 +47,7 @@ in {
 
         "atlas" = {
           hostname = mkLocalHostname "64";
-          identityFile = "${sshPath}/id_nil2";
+          identityFile = "${sshPath}/id_atlas";
           user = config.user.name;
           port = 10222;
           extraOptions = { "AddKeysToAgent" = "yes"; };
