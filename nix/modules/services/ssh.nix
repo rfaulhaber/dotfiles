@@ -41,12 +41,12 @@ in {
 
       matchBlocks = let
         sshPath = "${config.user.home}/.ssh";
-        mkLocalHostname = n: "192.168.86.${n}";
+        mkLocalHostname = n: "192.168.1.${n}";
       in {
         "*" = { identitiesOnly = true; };
 
         "atlas" = {
-          hostname = mkLocalHostname "10";
+          hostname = mkLocalHostname "64";
           identityFile = "${sshPath}/id_nil2";
           user = config.user.name;
           port = 10222;
