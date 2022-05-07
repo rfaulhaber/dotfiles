@@ -1,9 +1,6 @@
-#+TITLE: Nil
+#+TITLE: Atlas
 
-(this document is a work in progress!)
-
-~nil~ (also called ~nil2~) is my home server. It runs a minimal installation of
-NixOS.
+~atlas~ is my home server. It runs a minimal installation of NixOS.
 
 My home server has three components:
 
@@ -11,4 +8,5 @@ My home server has three components:
 - MergerFS
 - Docker
 
-The services hosted by my server are essentially one big Docker Compose file.
+The services hosted by my server are essentially one big Docker Compose file
+(not hosted).
