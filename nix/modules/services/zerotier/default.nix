@@ -49,7 +49,7 @@ in {
       port = cfg.port;
     };
 
-    networking.firewall = mkIf (cfg.sharedNetworkInterface != null) {
+    networking.firewall = mkIf (cfg.sharedNetworkInterface != "") {
       extraCommands = let
         # a thousand thanks to this ServerFault answer:
         # https://serverfault.com/questions/704643/steps-for-limiting-outside-connections-to-docker-container-with-iptables/933803

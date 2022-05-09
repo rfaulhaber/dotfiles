@@ -95,7 +95,10 @@ in {
       eno2.useDHCP = true;
     };
 
-    firewall.enable = true;
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ 8085 ];
+    };
   };
 
   system.autoUpgrade = {
