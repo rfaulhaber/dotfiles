@@ -34,7 +34,7 @@
       samba-mount = {
         enable = true;
         mounts."/home/ryan/calibre" = {
-          domain = "192.168.86.10";
+          domain = "192.168.1.64";
           host = "calibre";
         };
       };

@@ -97,7 +97,13 @@ in {
 
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 8085 ];
+      # required for pihole
+      allowedTCPPorts = [ 8085 80 53 67 ];
+      allowedUDPPorts = [ 53 67 68 546 547 ];
+      extraCommands = ''
+        iptables -I INPUT 1 -p tcp -m tcp --dport 4711 -i lo -j ACCEPT
+        iptables -I INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+      '';
     };
   };
 
