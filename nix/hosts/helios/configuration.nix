@@ -18,12 +18,15 @@
         setDefault = true;
       };
       emacs = {
-      	enable = true;
-	useNativeComp = true;
+        enable = true;
+        useNativeComp = true;
       };
       neovim.enable = true;
       pcloud.enable = true;
-      kitty.enable = true;
+      kitty = {
+        enable = true;
+        fontSize = 16;
+      };
       _1password.enable = true;
       git = {
         enable = true;
@@ -68,10 +71,17 @@
         monitors = [ "eDP" ];
       };
       sound.enable = true;
-      polybar.enable = true;
+      polybar = {
+        enable = true;
+        fontSize = 12;
+      };
       rofi.enable = true;
       random-wallpaper.enable = true;
       useLaptopSettings = true;
+      firefox = {
+        enable = true;
+        setDefaultBrowser = true;
+      };
     };
     langs = {
       js.enable = true;

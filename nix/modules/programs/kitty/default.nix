@@ -6,7 +6,15 @@ let
   cfg = config.modules.programs.kitty;
   colors = config.modules.themes.colors;
 in {
-  options.modules.programs.kitty = { enable = mkEnableOption false; };
+  options.modules.programs.kitty = {
+    enable = mkEnableOption false;
+    fontSize = mkOption {
+      description = "Font size.";
+      default = 20;
+      type = types.int;
+      example = 20;
+    };
+  };
   config = mkIf cfg.enable {
     home.programs.kitty = {
       enable = true;
@@ -51,7 +59,7 @@ in {
         # white
         color15 = colors.bright-white;
 
-        font_size = 20;
+        font_size = cfg.fontSize;
       };
     };
   };

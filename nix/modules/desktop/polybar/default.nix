@@ -15,6 +15,12 @@ in {
       type = types.bool;
       example = true;
     };
+    fontSize = mkOption {
+      default = 16;
+      description = "Polybar font size.";
+      type = types.int;
+      example = 16;
+    };
   };
   config = mkIf cfg.enable {
     home.services.polybar = {
@@ -22,7 +28,8 @@ in {
       package = pkgs.polybarFull;
       # Polybar will be started by bspwm
       script = "";
-      config = {
+      config = let fontSizeStr = toString cfg.fontSize;
+      in {
         "bar/main" = {
           enable-ipc = true;
           background = "${colors.bg}";
@@ -37,10 +44,10 @@ in {
           fixed-center = true;
 
           # fonts
-          font-0 = "Hack Nerd Font:size=16;3";
-          font-1 = "Hack Nerd Font:size=16;3";
-          font-2 = "Hack Nerd Font:size=16;3";
-          font-3 = "Hack Nerd Font:size=16;3";
+          font-0 = "Hack Nerd Font:size=${fontSizeStr};3";
+          font-1 = "Hack Nerd Font:size=${fontSizeStr};3";
+          font-2 = "Hack Nerd Font:size=${fontSizeStr};3";
+          font-3 = "Hack Nerd Font:size=${fontSizeStr};3";
 
           line-size = 3;
           line-color = "#f00";

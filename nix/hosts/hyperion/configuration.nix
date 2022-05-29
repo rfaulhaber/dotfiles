@@ -72,6 +72,7 @@
       polybar.enable = true;
       rofi.enable = true;
       random-wallpaper.enable = true;
+      firefox.enable = true;
     };
     # TODO change to list?
     langs = {

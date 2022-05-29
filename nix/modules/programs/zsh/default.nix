@@ -72,7 +72,14 @@ in {
         else
           ""}
       '';
-      shellAliases = {
+      shellAliases = let
+        firefoxConfig = config.modules.desktop.firefox;
+        findFirefoxExecPath = pkg:
+          if (hasPrefix "firefox-devedition" pkg.pname) then
+            "firefox-devedition"
+          else
+            "firefox";
+      in {
         pbcopy = "xclip -selection clipboard";
         pbpaste = "xclip -selection clipboard -o";
         ls = "exa";
@@ -80,6 +87,10 @@ in {
         ll = "exa -lh";
         ec = "emacsclient";
         eo = "emacsclient -n"; # "emacs open"
+      } // mkIf firefoxConfig.enable {
+        firefox = "${firefoxConfig.package}/bin/${
+            findFirefoxExecPath firefoxConfig.package
+          }";
       };
     };
 
