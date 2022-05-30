@@ -1,0 +1,44 @@
+# -*- mode: snippet -*-
+# name: Nix theme
+# key: theme
+# --
+
+# $1
+{
+  black = "#$2";
+  white = "#$3";
+  trans = "#$4";
+  semi-trans = "#$5";
+  primary = "#$6";
+  secondary = "#$7";
+  alert = "#$7";
+  success = "#$8";
+  warning = "#$9";
+  danger = "#$10";
+
+  bg = "#$11";
+  bg-alt = "#$12";
+  fg-alt = "#$13";
+  fg = "#$14";
+  grey = "#$15";
+  red = "#$16";
+  orange = "#$17";
+  green = "#$18";
+  teal = "#$19";
+  yellow = "#$20";
+  blue = "#$21";
+  bright-blue = "#$22";
+  dark-blue = "#$23";
+  magenta = "#$24";
+  violet = "#$25";
+  cyan = "#$26";
+  dark-cyan = "#$27";
+
+  bright-black = "#$28";
+  bright-cyan = "#$29";
+  bright-green = "#$30";
+  bright-magenta = "#$31";
+  bright-red = "#$32";
+  bright-white = "#$33";
+  bright-yellow = "#$34";
+}
