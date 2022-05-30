@@ -20,6 +20,7 @@ in {
       };
       neovim.enable = true;
       git.enable = true;
+      exa.enable = true;
     };
     services = {
       docker.enable = true;

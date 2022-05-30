@@ -58,5 +58,10 @@ in {
         application/pdf=org.gnome.Evince.desktop;emacs.desktop
       '';
     };
+
+    programs.zsh.shellAliases = {
+      ec = "emacsclient";
+      eo = "emacsclient -n"; # "emacs open"
+    };
   };
 }

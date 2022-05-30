@@ -1,4 +1,13 @@
 {
-  require =
-    [ ./1password ./emacs ./git ./keychain ./kitty ./neovim ./pcloud ./zsh ];
+  imports = [
+    ./1password
+    ./emacs
+    ./exa
+    ./git
+    ./keychain
+    ./kitty
+    ./neovim
+    ./pcloud
+    ./zsh
+  ];
 }

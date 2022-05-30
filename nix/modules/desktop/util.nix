@@ -9,7 +9,6 @@
       coreutils-full
       croc
       curl
-      exa
       fd
       fzf
       htop
