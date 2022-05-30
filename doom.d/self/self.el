@@ -439,7 +439,7 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
   "Given a PATH, gets the nth name up in the file hierarchy."
   (if (or (eq path nil)
           (not (file-name-absolute-p path)))
-      (user-error "%s is nil or not an absoltue path!" path)
+      (user-error "%s is nil or not an absolute path!" path)
     (let* ((file-name-components (seq-filter
                                   (lambda (str)
                                     (not (string= "" str)))
@@ -476,3 +476,20 @@ This is meant to skip any kind of automatic formatting."
   (text-mode)
   (evil-write beg end type file-or-append bang)
   (major-mode-restore))
+
+;; (evil-define-operator self/evil-ex-uniq (beg end)
+;;   "Like :sort u, except it doesn't sort."
+;;   :motion mark-whole-buffer
+;;   :move-point nil
+;;   (interactive "<r>")
+;;   (let ((main-buf (current-buffer)))
+;;     (insert (with-temp-buffer
+;;               (insert-buffer-substring main-buf beg end)
+;;               (sort-lines nil (point-min) (point-max))
+;;               (while (and (< (point) (point-max)) (not eobp))
+;;                 (let ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+;;                   )
+;;                 )
+;;               ))
+;;     )
+;;   )

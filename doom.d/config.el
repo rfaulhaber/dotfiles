@@ -1,6 +1,6 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-(setq self/system-name (string-trim-right (system-name) "\.lan"))
+(setq self/system-name (string-trim-right (system-name) (rx (or "\.lan" "\.attlocal.net"))))
 (setq self/system-type (pcase system-type
                          ('gnu/linux "linux")
                          ('darwin "darwin")))
@@ -273,16 +273,22 @@
 (after! undo-tree
   (setq undo-tree-auto-save-history nil))
 
-;; load languages for org-babel
-;; these are mostly for use in reveal
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (typescript . t)
-   (js . t)))
-
+;; dynamically load languages for org-babel
+;; thank you r/emacs: https://www.reddit.com/r/emacs/comments/us7zae/comment/i9ceaco
+;; TODO refactor using advice-add
+(defadvice org-babel-execute-src-block (around load-language nil activate)
+  "Load ob-{language} only when needed."
+  (let ((lang (org-element-property :language (org-element-at-point))))
+    (when (or (string= lang "bash") (string= lang "sh"))
+      (setq lang "shell"))
+    (unless (cdr (assoc (intern lang) org-babel-load-languages))
+      (add-to-list 'org-babel-load-languages (cons (intern lang) t))
+      (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
+    ;; this is some special symbol provided by defadvice
+    ad-do-it))
 
 ;; see: https://github.com/hlissner/doom-emacs/issues/3185
+;; TODO refactor to advice-add
 (defadvice! self/+org-inline-image-data-fn (_protocol link _description)
   :override #'+org-inline-image-data-fn
   "Interpret LINK as base64-encoded image data. Ignore all errors."
