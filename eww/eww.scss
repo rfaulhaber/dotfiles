@@ -3,7 +3,9 @@
 }
 
 .top-bar {
+  // TODO change to theme background
   background-color: #c0ffee;
+  // TODO use theme
   color: black;
   font-family: "Hack Nerd Font Mono";
 }
@@ -11,4 +13,13 @@
 .right-widgets {
   padding-left: 10px;
   padding-right: 10px;
+}
+
+.bspwm-desktop {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.bspwm-desktop-active {
+  color: red;
 }

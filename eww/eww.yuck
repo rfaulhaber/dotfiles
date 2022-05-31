@@ -1,6 +1,7 @@
 ; -*- mode: Lisp -*-
 
 (include "./modules/clock.yuck")
+(include "./modules/bspwm.yuck")
 
 (defwindow top-bar
     :monitor 0
@@ -13,7 +14,13 @@
     :reserve (struts :distance "40px" :side "top")
     :windowtype "dock"
     :wm-ignore false
-  (right-widgets))
+    (box :orientation "h"
+         (left-widgets)
+         (right-widgets)))
+
+(defwidget left-widgets []
+  (box :orientation "h" :halign "start" :class "left-widgets"
+       (bspwm)))
 
 (defwidget right-widgets []
   (box :orientation "h" :halign "end" :class "right-widgets"

@@ -2,13 +2,8 @@
 
 (defwidget clock []
   (box :orientation "h"
-       clock-poll
-       (revealer (cal))))
+       clock-poll))
 
 (defpoll clock-poll
     :interval "1s"
     `date "+%a, %b %d %I:%M:%S %p"`)
-
-(defwidget cal []
-  (box :orientation "v"
-       (calendar)))

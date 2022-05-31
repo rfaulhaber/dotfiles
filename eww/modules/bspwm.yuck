@@ -1,0 +1,21 @@
+; -*- mode: Lisp -*-
+
+(deflisten active-workspace :initial "" `bspc query -D -d focused --names`)
+
+(defwidget bspwm []
+  (box :orientation "h"
+       ; TODO make dynamic!
+       (bspwm-desktop :number 1 :symbol "I")
+       (bspwm-desktop :number 2 :symbol "II")
+       (bspwm-desktop :number 3 :symbol "III")
+       (bspwm-desktop :number 4 :symbol "IV")
+       (bspwm-desktop :number 5 :symbol "V")
+       (bspwm-desktop :number 6 :symbol "VI")
+       (bspwm-desktop :number 7 :symbol "VII")
+       (bspwm-desktop :number 8 :symbol "VIII")
+       (bspwm-desktop :number 9 :symbol "IX")
+       (bspwm-desktop :number 10 :symbol "X")))
+
+(defwidget bspwm-desktop [number ?symbol]
+  (box :class `bspwm-desktop ${active-workspace == symbol ? "bspwm-desktop-active" : "bspwm-desktop-inactive"}` :orientation "h"
+       number))
