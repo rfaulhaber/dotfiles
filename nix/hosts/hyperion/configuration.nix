@@ -69,6 +69,7 @@
         extraStartupPrograms = [ "keybase-gui" "pcloud" "discord" ];
         monitors = [ "DP-0" ];
       };
+      eww.enable = true;
       sound.enable = true;
       polybar.enable = true;
       rofi.enable = true;

@@ -6,6 +6,7 @@ let cfg = config.modules.desktop;
 in {
   imports = [
     ./bspwm
+    ./eww
     ./firefox
     ./polybar
     ./random-wallpaper.nix

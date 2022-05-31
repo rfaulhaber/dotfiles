@@ -28,6 +28,8 @@ with lib.my;
         mkOptDesc attrs { } "Services managed directly from home-manager";
       xsession =
         mkOptDesc attrs { } "Xsession settings managed from home-manager";
+      xdg =
+        mkOptDesc attrs { } "XDG base directory management from home-manager.";
     };
 
     env = mkOption {
@@ -51,6 +53,7 @@ with lib.my;
       modulesDir = mkOpt path "${config.dotfiles.dir}/modules";
       themesDir = mkOpt path "${config.dotfiles.dir}/themes";
       emacsDir = mkOpt path "${config.dotfiles.dir}/doom.d";
+      ewwDir = mkOpt path "${config.dotfiles.dir}/eww";
     };
   };
 
@@ -98,6 +101,7 @@ with lib.my;
         xsession = mkAliasDefinitions options.home.xsession;
 
         xdg = {
+          enable = true;
           configFile = mkAliasDefinitions options.home.configFile;
           dataFile = mkAliasDefinitions options.home.dataFile;
         };
