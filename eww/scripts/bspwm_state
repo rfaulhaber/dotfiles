@@ -1,0 +1,10 @@
+#!/bin/sh
+
+make_state() {
+    local current_desktop=$(bspc query -D -d focused --names)
+    local occupied_desktops=$(bspc query -D -d .occupied --names)
+
+    # jq -n --arg current "$current_desktop" --arg occupied
+}
+
+bspc subscribe desktop node_transfer | while read -r _; do make_state; done
