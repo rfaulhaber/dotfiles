@@ -195,10 +195,9 @@
   (setq visual-fill-column-center-text t)
   (face-remap-add-relative 'variable-pitch :family "Lato" :height 1.5))
 
+(add-hook 'nov-mode-hook 'visual-fill-column-mode)
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
-
-;; auto-mode-alist
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
 ;; calibredb
@@ -264,10 +263,11 @@
 (after! counsel-projectile
   (setcar counsel-projectile-switch-project-action 5))
 
-;; hooks
-(add-hook 'nov-mode-hook 'nov-setup)
-(add-hook 'nov-mode-hook 'visual-line-mode)
-(add-hook 'nov-mode-hook 'visual-fill-column-mode)
+;; lisp mode
+(add-hook 'lisp-mode-hook #'rainbow-delimiters-mode)
+
+;; ---- misc ----
+
 (add-hook 'before-save-hook #'+format/buffer)
 
 (after! undo-tree
