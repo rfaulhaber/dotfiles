@@ -447,6 +447,24 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
            (up (- (length file-name-components) level)))
       (nth up file-name-components))))
 
+(defun self/swap-lines (left right)
+  "Swaps LEFT with RIGHT."
+  (let ((left-line-contents (self/get-line-contents left))
+        (right-line-contents (self/get-line-contents right)))
+    (self/goto-line-non-interactive left)
+    (kill-line)
+    (insert right-line-contents)
+    (self/goto-line-non-interactive right)
+    (kill-line)
+    (insert left-line-contents)))
+
+(defun self/get-line-contents (line-number)
+  (self/goto-line-non-interactive line-number)
+  (buffer-substring (line-beginning-position) (line-end-position)))
+
+(defun self/goto-line-non-interactive (line-number)
+  (forward-line (- line-number (line-number-at-pos))))
+
 ;; custom evil operators ------------------------------------
 
 (evil-define-operator self/evil-write-temp (beg end &optional prefix)
@@ -493,3 +511,18 @@ This is meant to skip any kind of automatic formatting."
 ;;               ))
 ;;     )
 ;;   )
+
+(evil-define-operator self/evil-ex-shuf (beg end)
+  "The opposite of :sort. Shuffles lines in range."
+  :motion mark-whole-buffer
+  :move-point nil
+  (interactive "<r>")
+  (let* ((start (line-number-at-pos beg))
+         (fin (line-number-at-pos end))
+         (i (- fin 1)))
+    (while (>= i 1)
+      (let ((rand (+ i (random fin))))
+        (unless (or (= i rand) (> rand fin))
+          (self/swap-lines i rand)
+          (self/goto-line-non-interactive i)
+          (setq i (- i 1)))))))

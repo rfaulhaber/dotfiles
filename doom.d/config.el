@@ -104,6 +104,7 @@
 ;; custom ex commands for evil
 (evil-ex-define-cmd "wt[emp]" #'self/evil-write-temp)
 (evil-ex-define-cmd "ws[uspend]" #'self/evil-write-suspend)
+(evil-ex-define-cmd "shuf" #'self/evil-ex-shuf)
 
 ;; custom variable settings
 ;; Tramp shell prompt, to allow it to work with terminal colors
@@ -265,6 +266,9 @@
 
 ;; lisp mode
 (add-hook 'lisp-mode-hook #'rainbow-delimiters-mode)
+
+;; fundamental mode
+(add-hook 'evil-local-mode-hook #'turn-on-undo-tree-mode)
 
 ;; ---- misc ----
 
