@@ -448,7 +448,7 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
       (nth up file-name-components))))
 
 (defun self/swap-lines (left right)
-  "Swaps LEFT with RIGHT."
+  "Swaps line at line number LEFT with RIGHT."
   (let ((left-line-contents (self/get-line-contents left))
         (right-line-contents (self/get-line-contents right)))
     (self/goto-line-non-interactive left)
@@ -459,11 +459,18 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
     (insert left-line-contents)))
 
 (defun self/get-line-contents (line-number)
+  "Returns the contents of a line on LINE-NUMBER."
   (self/goto-line-non-interactive line-number)
   (buffer-substring (line-beginning-position) (line-end-position)))
 
 (defun self/goto-line-non-interactive (line-number)
+  "Helper for going to a line at LINE-NUMBER without invoking `goto-line'."
   (forward-line (- line-number (line-number-at-pos))))
+
+;; thank you https://stackoverflow.com/questions/6158990/generating-randoms-numbers-in-a-certain-range-for-common-lisp
+(defun self/random-in-range (start end)
+  "Returns a random number n where START <= n <= END."
+  (+ start (random (+ 1 (- end start)))))
 
 ;; custom evil operators ------------------------------------
 
@@ -517,12 +524,10 @@ This is meant to skip any kind of automatic formatting."
   :motion mark-whole-buffer
   :move-point nil
   (interactive "<r>")
-  (let* ((start (line-number-at-pos beg))
-         (fin (line-number-at-pos end))
-         (i (- fin 1)))
-    (while (>= i 1)
-      (let ((rand (+ i (random fin))))
-        (unless (or (= i rand) (> rand fin))
+  (let ((f (line-number-at-pos end))
+        (i (line-number-at-pos beg)))
+    (while (< i f)
+      (let ((rand (self/random-in-range i f)))
+        (unless (= i rand)
           (self/swap-lines i rand)
-          (self/goto-line-non-interactive i)
-          (setq i (- i 1)))))))
+          (setq i (+ i 1)))))))
