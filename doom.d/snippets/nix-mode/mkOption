@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: mkOption
+# key: mkO
+# --
+
+mkOption {
+    description = "$1";
+    type = $2;
+    default = $3;
+    example = $4;
+};
