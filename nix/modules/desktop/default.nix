@@ -59,7 +59,6 @@ in {
     # TODO put these somewhere better
     # necessary utilities for desktop
     environment.systemPackages = with pkgs; [
-      betterlockscreen
       chromium
       discord
       evince

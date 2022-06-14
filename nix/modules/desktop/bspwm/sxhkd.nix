@@ -7,6 +7,7 @@ let
   polybarMsgExec = "${pkgs.polybar}/bin/polybar-msg";
   emacsclientExec = "${pkgs.emacs}/bin/emacsclient";
   firefoxExec = "${pkgs.firefox-devedition-bin}/bin/firefox-devedition";
+  lockExec = "${pkgs.lightdm}/bin/dm-tool lock";
 in {
   # terminal
   "super + Return" = kittyExec;
@@ -106,7 +107,7 @@ in {
     "${bspcExec} node -v {-20 0,0 20,0 -20,20 0}";
 
   # lockscreen
-  "alt + shift + x" = "${pkgs.betterlockscreen}/bin/betterlockscreen -l dim";
+  "alt + shift + x" = "${lockExec}";
 
   #
   # misc

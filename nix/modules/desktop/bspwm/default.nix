@@ -39,28 +39,36 @@ in {
       xkbOptions = "eurosign:e";
       windowManager.bspwm.enable = true;
       displayManager = {
-        lightdm.enable = true;
+        lightdm = {
+          enable = true;
+          background = pkgs.nixos-artwork.wallpapers.dracula.gnomeFilePath;
+        };
         defaultSession = "none+bspwm";
       };
       videoDrivers = mkIf ((length videoDrivers) > 0) videoDrivers;
     };
-    # NB: IN ORDER FOR ANY OF THIS TO WORK YOU NEED THIS SET!!
-    # I WASTED MOST OF A SUNDAY TRYING TO FIGURE THIS OUT!!!
-    # IT SURE WOULD HAVE BEEN GREAT TO KNOW THAT SOMEWHERE!!!!
-    home.xsession.enable = true;
 
-    home.xsession.windowManager.bspwm = let
-      monitors = cfg.monitors;
-      bspwmConfig = import ./bspwm.nix { inherit config lib monitors; };
-    in {
-      inherit (bspwmConfig) monitors settings rules;
+    home.xsession = {
+      # NB: IN ORDER FOR ANY OF THIS TO WORK YOU NEED THIS SET!!
+      # I WASTED MOST OF A SUNDAY TRYING TO FIGURE THIS OUT!!!
+      # IT SURE WOULD HAVE BEEN GREAT TO KNOW THAT SOMEWHERE!!!!
       enable = true;
-      startupPrograms = bspwmConfig.startupPrograms ++ cfg.extraStartupPrograms;
+      windowManager.bspwm = let
+        monitors = cfg.monitors;
+        bspwmConfig = import ./bspwm.nix { inherit config lib monitors; };
+      in {
+        inherit (bspwmConfig) monitors settings rules;
+        enable = true;
+        startupPrograms = bspwmConfig.startupPrograms
+          ++ cfg.extraStartupPrograms;
+      };
     };
 
     home.services.sxhkd = {
       inherit keybindings;
       enable = true;
     };
+
+    environment.systemPackages = with pkgs; [ lightlocker ];
   };
 }
