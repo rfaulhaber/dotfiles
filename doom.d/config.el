@@ -209,8 +209,9 @@
 (setq
  mail-user-agent 'mu4e-user-agent
  mu4e-sent-messages-behavior 'sent
- mu4e-main-mode-hook (lambda ()
-                       (setq mu4e-sent-messages-behavior 'sent))
+ mu4e-main-mode-hook (function
+                      (lambda ()
+                        (setq mu4e-sent-messages-behavior 'sent)))
  mu4e-sent-folder   "/Sent"
  mu4e-drafts-folder "/Drafts"
  mu4e-trash-folder  "/Trash"
@@ -253,16 +254,8 @@
 (add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
 
 ;; projectile
-(setq projectile-switch-project-action 'projectile-dired)
-
-;; counsel-projectile
-;; this changes the behavior of `counsel-projectile-switch-project' to open the
-;; root of the project in Dired. most of the time this is what I want. see the
-;; documentation for this variable for more info. we also have to load this
-;; variable after `counsel-projectile' loads, because `counsel-projectile'
-;; defines this variable.
-(after! counsel-projectile
-  (setcar counsel-projectile-switch-project-action 5))
+(after! projectile
+  (setq projectile-switch-project-action 'projectile-dired))
 
 ;; lisp mode
 (add-hook 'lisp-mode-hook #'rainbow-delimiters-mode)
@@ -270,12 +263,14 @@
 ;; fundamental mode
 (add-hook 'evil-local-mode-hook #'turn-on-undo-tree-mode)
 
-;; ---- misc ----
-
-(add-hook 'before-save-hook #'+format/buffer)
-
+;; undo-tree
 (after! undo-tree
   (setq undo-tree-auto-save-history nil))
+
+;; ---------------------------------misc-----------------------------------------
+
+;; general
+(add-hook 'before-save-hook #'+format/buffer)
 
 ;; dynamically load languages for org-babel
 ;; thank you r/emacs: https://www.reddit.com/r/emacs/comments/us7zae/comment/i9ceaco

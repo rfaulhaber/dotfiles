@@ -168,7 +168,7 @@ Version 2016-07-13"
   (let ((names (mapcar 'car self/common-directories)))
     (if (eq names nil)
         (user-error "variable self/common-directories is not set")
-      (let ((selection (ivy-read "Select a directory: " names)))
+      (let ((selection (completing-read "Select a directory: " names)))
         (dired (cdr (assoc selection self/common-directories)))))))
 
 (defun self/suspend-save ()
@@ -387,7 +387,7 @@ channel."
 
 (cl-defun self/find-file-non-recursive (dir &key prompt filter-fn exclude-directories show-hidden)
   "Like `counsel-find-file' for DIR, but excludes directories and their children.
-PROMPT sets the `ivy-read' prompt.
+PROMPT sets the `completing-read' prompt.
 FILTER-FN is a function to filter the list of retrieved files from the directory.
 EXCLUDE-DIRECTORIES, if non-nil, will remove any directories from the list.
 If SHOW-HIDDEN is non-nil, will include any files that begin with ."
@@ -400,7 +400,7 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
                                                                (file-directory-p
                                                                 (concat dir "/" file))))
                                                             filtered-files)))
-         (selection (ivy-read (or prompt "Find file: ") non-dir-files))
+         (selection (completing-read (or prompt "Find file: ") non-dir-files))
          (file-name (concat dir selection)))
     (find-file file-name)))
 
