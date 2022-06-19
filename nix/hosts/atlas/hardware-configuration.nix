@@ -50,6 +50,26 @@
     fsType = "ext4";
   };
 
+  fileSystems."/disk4" = {
+    device = "/dev/disk/by-uuid/90f2f6e1-f49d-4acf-bae8-394e1356959a";
+    fsType = "ext4";
+  };
+
+  fileSystems."/disk5" = {
+    device = "/dev/disk/by-uuid/a9df50f5-faa4-4093-8e80-24872f6463ce";
+    fsType = "ext4";
+  };
+
+  fileSystems."/disk6" = {
+    device = "/dev/disk/by-uuid/e325d871-5d0c-4291-8a62-a7f2e4d0ab6f";
+    fsType = "ext4";
+  };
+
+  fileSystems."/disk7" = {
+    device = "/dev/disk/by-uuid/2d010b24-0238-4740-a942-703a3c434461";
+    fsType = "ext4";
+  };
+
   fileSystems."/home" = {
     device = "/dev/disk/by-uuid/1d06ce0b-9c0c-4813-8272-f613efeb10b8";
     fsType = "ext4";

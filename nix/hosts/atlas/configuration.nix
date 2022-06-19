@@ -47,13 +47,18 @@ in {
           disk1 = "/disk1/";
           disk2 = "/disk2/";
           disk3 = "/disk3/";
+          disk4 = "/disk4/";
+          disk5 = "/disk5/";
+          disk6 = "/disk6/";
+          disk7 = "/disk7/";
         };
         contentFiles =
           [ "/var/snapraid/snapraid.content" "/diskp/snapraid.content" ];
       };
       mergerfs = {
         enable = true;
-        branches = [ "/disk1" "/disk2" "/disk3" ];
+        branches =
+          [ "/disk1" "/disk2" "/disk3" "/disk4" "/disk5" "/disk6" "/disk7" ];
         target = "/data";
       };
       samba-serve = {
