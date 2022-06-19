@@ -67,7 +67,7 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
-;; emcas config
+;; emacs config
 
 ;; custom bindings
 (map! :leader :desc "Opens EWW url to the right" "o w" #'self/eww-open-url-window-right )
@@ -77,7 +77,7 @@
       :leader "c l l" #'link-hint-copy-link
       :leader "c l p" #'link-hint-copy-link-at-point
       :leader "m s s" #'org-insert-subheading)
-(map! :leader "."     #'+ivy/switch-buffer)
+(map! :leader "."     #'consult-buffer)
 (map! :leader "f H"   #'self/dired-here)
 (map! :nv "g s l"     #'avy-goto-line)
 (map! :leader "w w"   #'ace-window)
