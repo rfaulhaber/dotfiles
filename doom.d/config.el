@@ -1,9 +1,13 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-(setq self/system-name (string-trim-right (system-name) (rx (or "\.lan" "\.attlocal.net"))))
-(setq self/system-type (pcase system-type
-                         ('gnu/linux "linux")
-                         ('darwin "darwin")))
+(defvar config/work-computer-p nil "If t, is a work computer.")
+(defvar config/font-size 16 "Font size. Should be specified by a host.")
+(defvar self/system-name (string-trim-right (system-name) (rx (or "\.lan" "\.attlocal.net")))
+  "System name. Used in loading init scripts.")
+(defvar self/system-type (pcase system-type
+                           ('gnu/linux "linux")
+                           ('darwin "darwin"))
+  "System type. Either 'linux' or 'darwin'.")
 
 (message "loading configuration for %s on system %s"
          self/system-name
@@ -15,6 +19,13 @@
 
 ;; load custom code
 (load! "./self/self.el")
+
+;; if a work computer, load additional config
+(when config/work-computer-p
+  (load! "./self/work.el")
+  (load! "./self/work-journal.el"))
+
+;; --------------------------------------------------------------------------------
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -163,6 +174,10 @@
 (setq
  org-journal-dir "~/org/journal"
  org-journal-file-format "%Y%m%d.org")
+
+(when config/work-computer-p
+  (setq org-journal-carryover-items "TODO=\"TODO\"|TODO=\"STRT\"|TODO=\"REVIEW\"")
+  (add-hook 'org-journal-after-header-create-hook #'facet/org-journal-after-header-create-hook))
 
 ;; org-ref
 (setq bibtex-completion-notes-path "~/org/bibliography/notes.org"

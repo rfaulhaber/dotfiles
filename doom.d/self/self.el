@@ -215,6 +215,17 @@ Version 2016-07-13"
              (forward-line -2)
              (insert new-text)))))))
 
+(defun self/insert-border-comment (msg width &optional char)
+  (interactive "sMessage: \nnWidth: \ncChar: ")
+  (let ((half-width (- (/ width 2) (+ 2 (length msg))))
+        (ch (if (null char) ?- char)))
+    (insert (make-string half-width ?-))
+    (insert " " msg " ")
+    (insert (make-string half-width ?-))))
+
+
+;; TODO function that creates comment like below
+
 ;; -------------------- utility functions ---------------------------------------
 
 ;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el
