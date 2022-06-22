@@ -215,16 +215,16 @@ Version 2016-07-13"
              (forward-line -2)
              (insert new-text)))))))
 
-(defun self/insert-border-comment (msg width &optional char)
-  (interactive "sMessage: \nnWidth: \ncChar: ")
+;; TODO add comment
+;; TODO add docscring
+;; TODO check math to make sure that it uses whole width
+(defun self/insert-border-comment (msg width)
+  (interactive "sMessage: \nnWidth: ")
   (let ((half-width (- (/ width 2) (+ 2 (length msg))))
         (ch (if (null char) ?- char)))
     (insert (make-string half-width ?-))
     (insert " " msg " ")
     (insert (make-string half-width ?-))))
-
-
-;; TODO function that creates comment like below
 
 ;; -------------------- utility functions ---------------------------------------
 
