@@ -7,7 +7,7 @@
 (defvar self/system-type (pcase system-type
                            ('gnu/linux "linux")
                            ('darwin "darwin"))
-  "System type. Either 'linux' or 'darwin'.")
+  "System type. Either 'linux' or 'darwin'. Used in loading config specific to those systems.")
 
 (message "loading configuration for %s on system %s"
          self/system-name
@@ -103,6 +103,7 @@
 (map! :leader "f O"   #'self/visit-common-directories)
 (map! :leader "d"     #'dired)
 (map! :leader "TAB i" #'+ibuffer/open-for-current-workspace)
+(map! :leader "k"      #'hkey-either)
 
 ;; common directories
 (setq self/common-directories '(("Downloads" . "~/Downloads")
@@ -281,6 +282,11 @@
 ;; undo-tree
 (after! undo-tree
   (setq undo-tree-auto-save-history nil))
+
+;; emacs-everywhere
+;; avoids https://github.com/tecosaur/emacs-everywhere/issues/49
+(after! emacs-everywhere
+  (setq emacs-everywhere-mode-initial-map nil))
 
 ;; ---------------------------------misc-----------------------------------------
 
