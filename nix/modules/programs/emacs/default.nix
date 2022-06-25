@@ -30,6 +30,7 @@ in {
       aspellDicts.en-computers
       aspellDicts.en-science
       clang # unfortunately we need a C compiler for various dependencies
+      cmake
       direnv
       djvulibre
       editorconfig-core-c
