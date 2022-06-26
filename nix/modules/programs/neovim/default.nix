@@ -23,8 +23,8 @@ in {
         vim-gitgutter
         vim-surround
         vim-vinegar
-        (mkIf (config.modules.langs.rust.enable) coc-rust-analyzer)
-        (mkIf (config.modules.langs.rust.enable) rust-vim)
+        coc-rust-analyzer
+        rust-vim
       ];
 
       extraConfig = ''

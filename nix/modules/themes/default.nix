@@ -13,6 +13,8 @@ in {
     colors = mkOption {
       type = types.attrs;
       description = "Active color set.";
+      # TODO this makes the color palette generally available, but is there a
+      # better way to do this?
       apply = v: import (./. + "/${cfg.active}.nix");
     };
   };

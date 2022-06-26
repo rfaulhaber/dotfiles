@@ -75,14 +75,7 @@
       random-wallpaper.enable = true;
       firefox.enable = true;
     };
-    # TODO change to list?
-    langs = {
-      js.enable = true;
-      rust.enable = true;
-      shell.enable = true;
-      racket.enable = true;
-    };
-    themes.active = "city-lights";
+    themes.active = "moonlight";
   };
 
   nixpkgs.config.allowUnfree = true;
