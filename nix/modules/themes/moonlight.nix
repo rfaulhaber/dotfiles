@@ -11,7 +11,7 @@
   grey = "#444a73";
   red = "#ff757f";
   orange = "#ff995e";
-  green = "#c3e88d";
+  green = "#2df4c0";
   teal = "#77e0c6";
   yellow = "#ffc777";
   blue = "#82aaff";
@@ -23,7 +23,7 @@
   bright-black = "#191a2a";
   bright-blue = "#50c4fa";
   bright-cyan = "#b4f9f8";
-  bright-green = "#77e0c6";
+  bright-green = "#4ff0c6";
   bright-magenta = "#baacff";
   bright-red = "#ff98a4";
   bright-white = "#c8d3f5";
