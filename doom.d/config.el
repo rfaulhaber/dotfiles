@@ -178,7 +178,7 @@
 
 (when config/work-computer-p
   (setq org-journal-carryover-items "TODO=\"TODO\"|TODO=\"STRT\"|TODO=\"REVIEW\"")
-  (add-hook 'org-journal-after-header-create-hook #'facet/org-journal-after-header-create-hook))
+  (add-hook 'org-journal-after-header-create-hook #'work/org-journal-after-header-create-hook))
 
 ;; org-ref
 (setq bibtex-completion-notes-path "~/org/bibliography/notes.org"
