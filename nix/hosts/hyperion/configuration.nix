@@ -78,8 +78,6 @@
     themes.active = "moonlight";
   };
 
-  nixpkgs.config.allowUnfree = true;
-
   boot.tmpOnTmpfs = true;
   boot.cleanTmpDir = true;
   boot.loader = {

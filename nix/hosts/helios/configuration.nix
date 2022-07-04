@@ -93,8 +93,6 @@
     themes.active = "city-lights";
   };
 
-  nixpkgs.config.allowUnfree = true;
-
   boot = {
     tmpOnTmpfs = true;
     cleanTmpDir = true;

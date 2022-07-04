@@ -140,6 +140,8 @@ with lib.my;
       };
     };
 
-    system.stateVersion = "21.11";
+    nixpkgs.config.allowUnfree = true;
+
+    system.stateVersion = "22.11";
   };
 }
