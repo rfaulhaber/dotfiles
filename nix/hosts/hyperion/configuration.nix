@@ -66,7 +66,7 @@
       videoDrivers = [ "nvidia" ];
       bspwm = {
         enable = true;
-        extraStartupPrograms = [ "keybase-gui" "pcloud" "discord" ];
+        extraStartupPrograms = [ "keybase-gui" "pcloud" "discord" "1password" ];
         monitors = [ "DP-0" ];
       };
       sound.enable = true;
@@ -81,7 +81,6 @@
   boot.tmpOnTmpfs = true;
   boot.cleanTmpDir = true;
   boot.loader = {
-    # systemd-boot.enable = true;
     grub = {
       enable = true;
       version = 2;
