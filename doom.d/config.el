@@ -78,7 +78,9 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
-;; emacs config
+;; --------------------------------------------------------------------------------
+;;                                      emacs config
+;; --------------------------------------------------------------------------------
 
 ;; custom bindings
 (map! :leader :desc "Opens EWW url to the right" "o w" #'self/eww-open-url-window-right )
@@ -187,6 +189,10 @@
 ;; ox-agora
 ;; thank you again Neil
 (advice-add 'org-export-output-file-name :filter-return #'self/slugify-export-output-file-name)
+
+;; sometimes org publish complains about not being able to resolve ids. This is
+;; a workaround for that
+(advice-add 'org-publish :before #'self/org-publish-before-advice)
 
 ;; org-publish
 ;; TODO add hooks for publishing roam files

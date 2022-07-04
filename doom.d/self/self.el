@@ -83,19 +83,13 @@ Version 2016-07-13"
   (let ((fill-column most-positive-fixnum))
     (fill-region start end)))
 
-;; TODO check if in calendar-mode first
-;; TODO refactor next two functions
 (defun self/calendar-insert-date ()
-  "Capture the date at point, exit the Calendar, insert the date."
+  "Using `org-read-date', insert the returned date."
   (interactive)
-  (seq-let (month day year) (save-match-data (calendar-cursor-to-date))
-    (calendar-exit)
-    (let* ((date (encode-time 0 0 0 day month year))
-           (options '(("MM/DD"      . "%m/%d")
-                      ("MM/DD/YYYY" . "%m/%d/%Y")))
-           (option (completing-read "Select a format: " (mapcar 'car options)))
-           (output (format-time-string (cdr (assoc option options)) date)))
-      (insert output))))
+  (let* ((date (org-read-date nil t))
+         (option (completing-read "Select a format: " (mapcar 'car self/date-format-options)))
+         (output (format-time-string (cdr (assoc option self/date-format-options)) date)))
+    (insert output)))
 
 (defun self/insert-current-date-at-point ()
   "Inserts date at point in the chosen format."
@@ -125,11 +119,10 @@ Version 2016-07-13"
 (defun self/org-roam-find-files-for-date ()
   "Returns a list of files under the org roam directory for selected date."
   (interactive)
-  (when (string= major-mode "calendar-mode")
-    (let* ((date (format-time-string "%Y%m%d" (self/get-date-from-calendar)))
-           (org-files (org-roam--directory-files-recursively org-roam-directory (format "%s.*" date)))
-           (input-choice (completing-read "Select file: " org-files)))
-      (find-file input-choice))))
+  (let* ((date (format-time-string "%Y%m%d" (org-read-date nil t)))
+         (org-files (org-roam--directory-files-recursively org-roam-directory (format "%s.*" date)))
+         (input-choice (completing-read "Select file: " org-files)))
+    (find-file input-choice)))
 
 (defun self/dired-here ()
   "Opens a dired buffer in the current directory."
@@ -389,13 +382,6 @@ channel."
      (point-min)
      (point-max))))
 
-(defun self/get-date-from-calendar ()
-  "Returns encoded time of date under point in calendar-mode."
-  (when (string= major-mode "calendar-mode")
-    (seq-let (month day year) (save-match-data (calendar-cursor-to-date))
-      (calendar-exit)
-      (encode-time 0 0 0 day month year))))
-
 (cl-defun self/find-file-non-recursive (dir &key prompt filter-fn exclude-directories show-hidden)
   "Like `counsel-find-file' for DIR, but excludes directories and their children.
 PROMPT sets the `completing-read' prompt.
@@ -482,6 +468,9 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
 (defun self/random-in-range (start end)
   "Returns a random number n where START <= n <= END."
   (+ start (random (+ 1 (- end start)))))
+
+(defun self/org-publish-before-advice (&rest args)
+  (org-roam-update-org-id-locations))
 
 ;; custom evil operators ------------------------------------
 
