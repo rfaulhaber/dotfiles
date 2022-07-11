@@ -84,12 +84,6 @@
         setDefaultBrowser = true;
       };
     };
-    langs = {
-      js.enable = true;
-      rust.enable = true;
-      shell.enable = true;
-      racket.enable = true;
-    };
     themes.active = "city-lights";
   };
 
