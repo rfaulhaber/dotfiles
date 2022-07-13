@@ -464,13 +464,48 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
   "Helper for going to a line at LINE-NUMBER without invoking `goto-line'."
   (forward-line (- line-number (line-number-at-pos))))
 
-;; thank you https://stackoverflow.com/questions/6158990/generating-randoms-numbers-in-a-certain-range-for-common-lisp
+;; thank you http://stackoverflow.com/questions/6158990/generating-randoms-numbers-in-a-certain-range-for-common-lisp
 (defun self/random-in-range (start end)
   "Returns a random number n where START <= n <= END."
   (+ start (random (+ 1 (- end start)))))
 
 (defun self/org-publish-before-advice (&rest args)
   (org-roam-update-org-id-locations))
+
+(defun self/lookup-open-link-like-object (lookup-fn &rest args)
+  (let ((identifier (nth 0 args)))
+    (message "identifier %s" identifier)
+    (cond
+     ((string-match-p (rx line-start (or "http://" "https://")) identifier) (browse-url identifier))
+     ((file-directory-p identifier) (dired identifier))
+     ((file-exists-p identifier) (switch-to-buffer (find-file-noselect identifier)))
+     (t (apply lookup-fn args)))))
+
+;; TODO
+;; (defun self/consult-evil-marks ()
+;;   (let ((all-markers (self/get-all-evil-marks-for-buffer)))
+
+;;     ))
+
+;; (defun self/get-all-evil-marks-for-buffer ()
+;;   "Stolen from evil-commands.el:3525"
+;;   (let ((all-markers (append (cl-remove-if (lambda (m)
+;;                                              (or (evil-global-marker-p (car m))
+;;                                                  (not (markerp (cdr m)))))
+;;                                            evil-markers-alist)
+;;                              (cl-remove-if (lambda (m)
+;;                                              (or (not (evil-global-marker-p (car m)))
+;;                                                  (not (markerp (cdr m)))))
+;;                                            (default-value 'evil-markers-alist)))))
+;;     (mapcar (lambda (m)
+;;               (with-current-buffer (marker-buffer (cdr m))
+;;                 (save-excursion
+;;                   (goto-char (cdr m))
+;;                   (list (car m)
+;;                         (line-number-at-pos (point))
+;;                         (current-column)
+;;                         (buffer-name)))))
+;;             all-markers)))
 
 ;; custom evil operators ------------------------------------
 

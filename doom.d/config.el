@@ -289,6 +289,9 @@
 (after! emacs-everywhere
   (setq emacs-everywhere-mode-initial-map nil))
 
+;; lookup/documentation advice
+(advice-add '+lookup/documentation :around #'self/lookup-open-link-like-object)
+
 ;; ---------------------------------misc-----------------------------------------
 
 ;; general
