@@ -84,7 +84,6 @@
 
 ;; custom bindings
 (map! :leader :desc "Opens EWW url to the right" "o w" #'self/eww-open-url-window-right )
-(map! :leader "e"     #'elfeed)
 (map! :mode org-mode
       :leader "c l" nil
       :leader "c l l" #'link-hint-copy-link
@@ -105,7 +104,6 @@
 (map! :leader "f O"   #'self/visit-common-directories)
 (map! :leader "d"     #'dired)
 (map! :leader "TAB i" #'+ibuffer/open-for-current-workspace)
-(map! :leader "k"      #'hkey-either)
 
 ;; common directories
 (setq self/common-directories '(("Downloads" . "~/Downloads")
@@ -250,9 +248,6 @@
                  :query "maildir:/Inbox"
                  :key ?i)))
 
-
-;; elfeed
-(setq rmh-elfeed-org-files (list (concat org-directory "/elfeed.org")))
 
 ;; wttrin
 (setq wttrin-default-cities '("Cleveland"))

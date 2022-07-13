@@ -51,20 +51,13 @@
 
 ;; *elpa packages
 (package! calibredb)
-(package! carbon-now-sh)
 (package! deadgrep)
-(package! fzf)
-(package! hyperbole)
-(package! indium)
-(package! ix)
+;; (package! fzf) ;; redundant with consult / vertico
 (package! mermaid-mode)
 (package! nov)
 (package! ob-mermaid)
 (package! ob-typescript)
 (package! org-cliplink)
-(package! org-ref)
-(package! org-roam-bibtex)
-(package! ox-jekyll-md)
 (package! pollen-mode)
 (package! prettier)
 (package! vimgolf)
