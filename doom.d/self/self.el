@@ -4,6 +4,8 @@
 ;; make Emacs easier to use for myself. They are not quite large enough or
 ;; coherent to make a module or package.
 
+;; --------------------------------- variables ---------------------------------
+
 (defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
 (defvar self/common-directories '() "Alist (Name . Path) of common directories, used by self/visit-common-directories")
 
@@ -12,9 +14,15 @@
                                      ("MM/DD/YYYY" . "%m/%d/%Y"))
   "Various date formats used in interactive functions.")
 
+;; ------------------------------ function aliases -----------------------------
+
+;; I can never remember the envrc functions
+(defalias 'direnv-allow 'envrc-allow)
+(defalias 'direnv-reload 'envrc-reload)
+
 ;; TODO break this up into separate files!
 
-;; -------------------- interactive functions ----------------------------------
+;; ---------------------------- interactive functions ----------------------------
 
 (defun self/eww-open-url-window-right (url)
   "Opens URL in eww-mode in a new window to the right."
@@ -208,18 +216,18 @@ Version 2016-07-13"
              (forward-line -2)
              (insert new-text)))))))
 
-;; TODO add comment
-;; TODO add docscring
-;; TODO check math to make sure that it uses whole width
-(defun self/insert-border-comment (msg width)
-  (interactive "sMessage: \nnWidth: ")
-  (let ((half-width (- (/ width 2) (+ 2 (length msg))))
-        (ch (if (null char) ?- char)))
-    (insert (make-string half-width ?-))
+(defun self/insert-border-comment (msg &optional width char)
+  "Inserts a comment intended to divide the file up by a character."
+  (interactive "sMessage: ")
+  (let* ((width (or width 80))
+         (char (or char ?-))
+         (half-width (/ (- width (length msg)) 2)))
+    (insert (make-string half-width char))
     (insert " " msg " ")
-    (insert (make-string half-width ?-))))
+    (insert (make-string half-width char))
+    (comment-region (line-beginning-position) (line-end-position))))
 
-;; -------------------- utility functions ---------------------------------------
+;; ----------------------------- utility functions -----------------------------
 
 ;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el
 ;; thank you Neil
