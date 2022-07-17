@@ -194,10 +194,10 @@
 
 ;; org-publish
 ;; TODO add hooks for publishing roam files
-(setq org-publish-project-alist '(("roam"
+(setq org-publish-project-alist '(("roam web"
                                    :base-directory "~/org/roam"
                                    :base-extension "org"
-                                   :publishing-directory "~/Projects/roam-notes-site"
+                                   :publishing-directory "~/Projects/roam-web"
                                    :publishing-function org-html-publish-to-html
                                    :with-author nil
                                    :recursive t)

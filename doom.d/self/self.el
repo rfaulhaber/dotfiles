@@ -241,10 +241,10 @@ Version 2016-07-13"
              (cl-replace (title pair)
                          (replace-regexp-in-string (car pair) (cdr pair) title)))
     (let* ((pairs `(("['\?,%]" . "")
-                    ("[^[:alnum:][:digit:]]" . "-")  ;; convert anything not alphanumeric
-                    ("--*" . "-")  ;; remove sequential underscores
-                    ("^-" . "")  ;; remove starting underscore
-                    ("-$" . "")))  ;; remove ending underscore
+                    ("[^[:alnum:][:digit:]]" . "-") ;; convert anything not alphanumeric
+                    ("--*" . "-")                   ;; remove sequential underscores
+                    ("^-" . "")                     ;; remove starting underscore
+                    ("-$" . "")))                   ;; remove ending underscore
            (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
       (downcase slug))))
 
@@ -268,8 +268,9 @@ filename. This is mainly to override org-roam's default filename convention of
   (if (org-roam-file-p)
       (let* ((title (self/get-title (buffer-file-name (buffer-base-buffer))))
              (directory (file-name-directory output-file))
-             (slug (self/slugify-title title)))
-        (concat directory slug ".md"))
+             (slug (self/slugify-title title))
+             (ext (url-file-extension output-file)))
+        (concat directory slug ext))
     output-file))
 
 
