@@ -232,7 +232,7 @@ Version 2016-07-13"
 ;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el
 ;; thank you Neil
 (defun self/slugify-title (title)
-  "Convert TITLE to a filename-suitable slug.  Use hyphens rather than underscores."
+  "Convert TITLE to a filename-suitable slug. Use hyphens rather than underscores."
   (cl-flet* ((nonspacing-mark-p (char)
                                 (eq 'Mn (get-char-code-property char 'general-category)))
              (strip-nonspacing-marks (s)
@@ -489,6 +489,14 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
      ((file-directory-p identifier) (dired identifier))
      ((file-exists-p identifier) (switch-to-buffer (find-file-noselect identifier)))
      (t (apply lookup-fn args)))))
+
+;; TODO
+;; (defun self/file-path-with-line-extension-p (path)
+;;   (let ((file-path-pattern-with-line-ext (rx line-start (one-or-more any) "/" (one-or-more (not "/")) line-end)))
+
+;;     ))
+
+;; ~/Projects/dotfiles/flake.nix:11
 
 ;; TODO
 ;; (defun self/consult-evil-marks ()

@@ -52,7 +52,6 @@
 ;; *elpa packages
 (package! calibredb)
 (package! deadgrep)
-;; (package! fzf) ;; redundant with consult / vertico
 (package! mermaid-mode)
 (package! nov)
 (package! ob-mermaid)
@@ -62,6 +61,8 @@
 (package! prettier)
 (package! vimgolf)
 (package! wttrin)
+;; (package! fzf) ;; redundant with consult / vertico
+;; (package! hyperbole)
 
 ;; non-*elpa packages
 (package! caseconv

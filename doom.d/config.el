@@ -277,13 +277,6 @@
 ;; lisp mode
 (add-hook 'lisp-mode-hook #'rainbow-delimiters-mode)
 
-;; fundamental mode
-(add-hook 'evil-local-mode-hook #'turn-on-undo-tree-mode)
-
-;; undo-tree
-(after! undo-tree
-  (setq undo-tree-auto-save-history nil))
-
 ;; emacs-everywhere
 ;; avoids https://github.com/tecosaur/emacs-everywhere/issues/49
 (after! emacs-everywhere
