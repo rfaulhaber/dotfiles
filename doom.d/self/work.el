@@ -207,8 +207,8 @@
     (insert "#+options: toc:nil author:nil\n\n")))
 
 (defun work/journal-add-default-headers ()
-  (when (null (work/journal-contains-task-header-p))
-    (work/insert-task-header))
+  ;; (when (null (work/journal-contains-task-header-p))
+  ;;   (work/insert-task-header))
   (save-excursion
     (goto-char (point-max))
     (insert "\n** Notes\n")))
