@@ -24,22 +24,6 @@
 
 ;; ---------------------------- interactive functions ----------------------------
 
-(defun self/eww-open-url-window-right (url)
-  "Opens URL in eww-mode in a new window to the right."
-  (interactive "sURL: ")
-  (self/open-eww-window url))
-
-(defun self/eww-open-url-from-clipboard ()
-  "Opens URL from clipboard in eww-mode in a new window to the right."
-  (interactive)
-  (self/open-eww-window (current-kill 0)))
-
-(defun self/open-eww-window (url)
-  (with-selected-window (split-window-right)
-    (switch-to-buffer "*webpage*")
-    (eww-mode)
-    (eww url)))
-
 ;; thank you github.com/hrs for the inspiration
 (defun self/new-scratch-buffer ()
   "Creates and opens a new scratch buffer with a random name"
@@ -226,6 +210,15 @@ Version 2016-07-13"
     (insert " " msg " ")
     (insert (make-string half-width char))
     (comment-region (line-beginning-position) (line-end-position))))
+
+(defun self/eww-open-here (url)
+  "Opens a new EWW buffer with URL here in the current window."
+  (interactive "sURL: ")
+  (let ((new-buf (get-buffer-create "*webpage*")))
+    (with-current-buffer new-buf
+      (eww-mode)
+      (eww url current-prefix-arg))
+    (switch-to-buffer new-buf)))
 
 ;; ----------------------------- utility functions -----------------------------
 
