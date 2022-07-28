@@ -69,6 +69,6 @@ in {
       enable = true;
     };
 
-    environment.systemPackages = with pkgs; [ lightlocker ];
+    environment.systemPackages = with pkgs; [ lightlocker xtitle xscreensaver ];
   };
 }

@@ -63,15 +63,12 @@ in {
       discord
       evince
       feh
-      firefox-devedition-bin
       gnome3.gnome-screenshot
       openvpn
       python3
       spotify
       tdesktop
       wally-cli
-      xscreensaver
-      xtitle
     ];
   };
 }
