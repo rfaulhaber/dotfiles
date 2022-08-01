@@ -220,6 +220,10 @@ Version 2016-07-13"
       (eww url current-prefix-arg))
     (switch-to-buffer new-buf)))
 
+(defun self/roam-ref-add-from-clipboard ()
+  (interactive)
+  (org-roam-ref-add (car kill-ring)))
+
 ;; ----------------------------- utility functions -----------------------------
 
 ;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el
