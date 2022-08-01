@@ -479,10 +479,15 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
   (org-roam-update-org-id-locations))
 
 (defun self/lookup-open-link-like-object (lookup-fn &rest args)
-  (let ((identifier (nth 0 args)))
-    (message "identifier %s" identifier)
+  "Advice for LOOKUP-FN. Opens a link-like object: a file, URL, etc."
+  (let ((identifier (nth 0 args))
+        (url-pattern (rx line-start (or "http://" "https://")))
+        (file-path-pattern (rx line-start (group (one-or-more any)) "/" (group (one-or-more (not "/"))) line-end)))
     (cond
-     ((string-match-p (rx line-start (or "http://" "https://")) identifier) (browse-url identifier))
+     ((string-match-p url-pattern identifier) (browse-url identifier))
+     ((and (string-match-p file-path-pattern identifier) (string-match-p ":" identifier)) (seq-let (file-name line-number) (split-string identifier ":")
+                                                                                            (switch-to-buffer (find-file-noselect file-name))
+                                                                                            (forward-line (- (string-to-number line-number) 1))))
      ((file-directory-p identifier) (dired identifier))
      ((file-exists-p identifier) (switch-to-buffer (find-file-noselect identifier)))
      (t (apply lookup-fn args)))))
