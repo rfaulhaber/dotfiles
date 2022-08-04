@@ -15,13 +15,16 @@
   outputs = inputs@{ self, nixpkgs, home-manager, deploy-rs, nixos-hardware
     , flake-utils, ... }:
     let
+      # inherit (lib.my) mkHost;
+
       lib = nixpkgs.lib.extend (self: super: {
-        my = import ./nix/lib/default.nix {
+        my = import ./nix/lib {
           inherit inputs;
-          lib = self;
           pkgs = nixpkgs;
+          lib = self;
         };
       });
+
       mkHost = cfgFile:
         nixpkgs.lib.nixosSystem rec {
           # TODO account for darwin
@@ -42,11 +45,13 @@
     in {
       # these are the actual system configurations
       nixosConfigurations = {
-        # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix
         hyperion = mkHost ./nix/hosts/hyperion/configuration.nix;
         atlas = mkHost ./nix/hosts/atlas/configuration.nix;
         helios = mkHost ./nix/hosts/helios/configuration.nix;
       };
+
+      # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix
+      # nixosConfigurations = mapHosts ./nix/hosts { };
 
       # run with: nix run '.#deploy-rs' '.#atlas'
       deploy.nodes.atlas = {
