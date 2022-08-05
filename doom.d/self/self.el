@@ -470,6 +470,10 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
   "Helper for going to a line at LINE-NUMBER without invoking `goto-line'."
   (forward-line (- line-number (line-number-at-pos))))
 
+(defun self/goto-col-non-interactive (col-number)
+  "Helper for going to a col at COL-NUMBER without invoking `goto-char' or `move-to-column'."
+  (forward-char (- col-number (current-column))))
+
 ;; thank you http://stackoverflow.com/questions/6158990/generating-randoms-numbers-in-a-certain-range-for-common-lisp
 (defun self/random-in-range (start end)
   "Returns a random number n where START <= n <= END."
@@ -485,12 +489,28 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
         (file-path-pattern (rx line-start (group (one-or-more any)) "/" (group (one-or-more (not "/"))) line-end)))
     (cond
      ((string-match-p url-pattern identifier) (browse-url identifier))
-     ((and (string-match-p file-path-pattern identifier) (string-match-p ":" identifier)) (seq-let (file-name line-number) (split-string identifier ":")
-                                                                                            (switch-to-buffer (find-file-noselect file-name))
-                                                                                            (forward-line (- (string-to-number line-number) 1))))
+     ((and (string-match-p file-path-pattern identifier) (string-match-p ":" identifier)) (self/open-path-with-line-and-col identifier))
      ((file-directory-p identifier) (dired identifier))
      ((file-exists-p identifier) (switch-to-buffer (find-file-noselect identifier)))
      (t (apply lookup-fn args)))))
+
+;; note to self:
+;; you could split windows by doing something like this:
+;; (select-window (split-window (selected-window) nil 'right))
+
+(defun self/open-path-with-line-and-col (path)
+  (seq-let (file-name line col) (split-string path ":")
+    (self/open-file-at-line-number file-name (string-to-number line) (string-to-number col))))
+
+(defun self/open-file-at-line-number (path line &optional col)
+  "Opens file at PATH at line number LINE, and optionally COL. If COL > length
+of line, moves cursor to the end of LINE."
+  (switch-to-buffer (find-file-noselect path))
+  (self/goto-line-non-interactive line)
+  (when col
+    (if (< (- (line-end-position) (point)) col)
+        (end-of-line)
+      (self/goto-col-non-interactive col))))
 
 ;; TODO
 ;; (defun self/file-path-with-line-extension-p (path)
