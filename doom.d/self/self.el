@@ -494,10 +494,6 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
      ((file-exists-p identifier) (switch-to-buffer (find-file-noselect identifier)))
      (t (apply lookup-fn args)))))
 
-;; note to self:
-;; you could split windows by doing something like this:
-;; (select-window (split-window (selected-window) nil 'right))
-
 (defun self/open-path-with-line-and-col (path)
   (seq-let (file-name line col) (split-string path ":")
     (self/open-file-at-line-number file-name (string-to-number line) (string-to-number col))))
@@ -505,6 +501,12 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
 (defun self/open-file-at-line-number (path line &optional col)
   "Opens file at PATH at line number LINE, and optionally COL. If COL > length
 of line, moves cursor to the end of LINE."
+  (when current-prefix-arg
+    (select-window (split-window (selected-window) nil (pcase current-prefix-arg
+                                                         ((or '(4) 4) 'right)
+                                                         (1 'down)
+                                                         (2 'up)
+                                                         (3 'left)))))
   (switch-to-buffer (find-file-noselect path))
   (self/goto-line-non-interactive line)
   (when col
@@ -517,8 +519,6 @@ of line, moves cursor to the end of LINE."
 ;;   (let ((file-path-pattern-with-line-ext (rx line-start (one-or-more any) "/" (one-or-more (not "/")) line-end)))
 
 ;;     ))
-
-;; ~/Projects/dotfiles/flake.nix:11
 
 ;; TODO
 ;; (defun self/consult-evil-marks ()
