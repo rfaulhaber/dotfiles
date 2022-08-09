@@ -9,7 +9,7 @@
   imports = [ ../../modules ../../platforms/darwin.nix ];
 
   modules = {
-    emacs = true;
+    # emacs = true;
     zsh = {
       enable = true;
       setDefault = true;
@@ -29,21 +29,4 @@
     nixfmt
     ripgrep
   ];
-
-  services.nix-daemon.enable = true;
-
-  nix = {
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-    gc = {
-      automatic = true;
-      options = "--delete-older-than 7d";
-    };
-  };
-
-  users.users.ryan = {
-    name = "ryan";
-    home = "/Users/ryan";
-  };
 }
