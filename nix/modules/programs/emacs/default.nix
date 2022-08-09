@@ -4,21 +4,13 @@ with lib;
 
 let cfg = config.modules.programs.emacs;
 in {
-  options.modules.programs.emacs = {
-    enable = mkEnableOption false;
-    useNativeComp = mkOption {
-      description = "Uses emacs28NativeComp package instead of default Emacs.";
-      type = types.bool;
-      default = false;
-    };
-  };
+  options.modules.programs.emacs = { enable = mkEnableOption false; };
   config = mkIf cfg.enable {
     services.emacs = {
       enable = true;
       install = true;
       defaultEditor = true;
-      package = with pkgs;
-        if cfg.useNativeComp then emacs28NativeComp else emacs;
+      package = pkgs.emacs28NativeComp;
     };
 
     # dependencies for my very specific configuration of doom

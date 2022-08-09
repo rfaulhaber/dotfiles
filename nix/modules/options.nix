@@ -55,19 +55,6 @@ with lib.my;
   };
 
   config = {
-    user = rec {
-      name = "ryan";
-      description = "ryan";
-      # TODO do better
-      extraGroups = [ "wheel" "audio" "lp" "plugdev" ];
-      isNormalUser = true;
-      home = "/home/${name}";
-      group = "users";
-      uid = 1000;
-      # TODO if doing a fresh install, set UID and GID
-      # gid = 1000;
-    };
-
     # supplementary user info used throughout config
     userInfo = {
       fullName = "Ryan Faulhaber";
@@ -79,8 +66,6 @@ with lib.my;
         country = "United States";
       };
     };
-
-    users.groups = { plugdev = { }; };
 
     home-manager = {
       useUserPackages = true;
@@ -115,10 +100,6 @@ with lib.my;
 
     # TODO where should these live?
     i18n.defaultLocale = "en_US.UTF-8";
-    console = {
-      font = "Lat2-Terminus16";
-      keyMap = "us";
-    };
 
     # TODO make standard nix module?
     nix = {

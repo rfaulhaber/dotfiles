@@ -7,6 +7,7 @@
 {
   imports = [ # Include the results of the hardware scan.
     ../../modules
+    ../../platforms/linux.nix
     ./hardware-configuration.nix
   ];
 

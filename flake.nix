@@ -10,10 +10,12 @@
     deploy-rs.url = "github:serokell/deploy-rs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     flake-utils.url = "github:numtide/flake-utils";
+    darwin.url = "github:lnl7/nix-darwin/master";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs@{ self, nixpkgs, home-manager, deploy-rs, nixos-hardware
-    , flake-utils, ... }:
+    , flake-utils, darwin, ... }:
     let
       # inherit (lib.my) mkHost;
 
@@ -42,6 +44,23 @@
             platform = system;
           };
         };
+
+      mkDarwinHost = cfgFile:
+        darwin.lib.darwinSystem rec {
+          system = "aarch64-darwin";
+          modules = [
+            home-manager.darwinModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+            }
+            cfgFile
+          ];
+          specialArgs = {
+            inherit lib inputs;
+            platform = system;
+          };
+        };
     in {
       # these are the actual system configurations
       nixosConfigurations = {
@@ -49,6 +68,8 @@
         atlas = mkHost ./nix/hosts/atlas/configuration.nix;
         helios = mkHost ./nix/hosts/helios/configuration.nix;
       };
+
+      darwinConfigurations.eos = mkDarwinHost ./nix/hosts/eos/configuration.nix;
 
       # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix
       # nixosConfigurations = mapHosts ./nix/hosts { };
