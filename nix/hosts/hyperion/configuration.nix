@@ -21,7 +21,6 @@
         useNativeComp = true;
       };
       neovim.enable = true;
-      pcloud.enable = true;
       kitty.enable = true;
       _1password.enable = true;
       git = {
@@ -57,10 +56,7 @@
         enable = true;
         networks = [ "b6079f73c6986bc2" ];
       };
-      syncthing = {
-        enable = true;
-        useTray = true;
-      };
+      syncthing.enable = true;
     };
     hardware = {
       bluetooth.enable = true;
@@ -70,7 +66,7 @@
       videoDrivers = [ "nvidia" ];
       bspwm = {
         enable = true;
-        extraStartupPrograms = [ "keybase-gui" "pcloud" "discord" "1password" ];
+        extraStartupPrograms = [ "keybase-gui" "discord" "1password" ];
         monitors = [ "DP-0" ];
       };
       sound.enable = true;
