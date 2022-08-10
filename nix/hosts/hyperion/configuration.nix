@@ -57,6 +57,10 @@
         enable = true;
         networks = [ "b6079f73c6986bc2" ];
       };
+      syncthing = {
+        enable = true;
+        useTray = true;
+      };
     };
     hardware = {
       bluetooth.enable = true;

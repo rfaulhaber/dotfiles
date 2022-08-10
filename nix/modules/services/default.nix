@@ -1,5 +1,5 @@
 {
-  require = [
+  imports = [
     ./docker
     ./gpg
     ./keybase
@@ -11,6 +11,7 @@
     ./samba-mount
     ./samba-serve
     ./snapraid
+    ./syncthing
     ./ssh.nix
     ./systemd
     ./virt
