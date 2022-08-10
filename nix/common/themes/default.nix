@@ -2,9 +2,9 @@
 
 with lib;
 
-let cfg = config.modules.themes;
+let cfg = config.common.themes;
 in {
-  options.modules.themes = {
+  options.common.themes = {
     active = mkOption {
       type = types.str;
       description = "The active theme.";

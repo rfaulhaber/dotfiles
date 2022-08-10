@@ -73,7 +73,7 @@ with lib.my;
       users.${config.user.name} = {
         home = {
           file = mkAliasDefinitions options.home.file;
-          stateVersion = config.system.stateVersion;
+          stateVersion = "22.11";
         };
 
         accounts = mkAliasDefinitions options.home.accounts;
@@ -91,17 +91,6 @@ with lib.my;
 
     users.users.${config.user.name} = mkAliasDefinitions options.user;
 
-    # All my machines are in the same timezone
-    # TODO should this be here?
-    time = {
-      timeZone = "America/New_York";
-      hardwareClockInLocalTime = true;
-    };
-
-    # TODO where should these live?
-    i18n.defaultLocale = "en_US.UTF-8";
-
-    # TODO make standard nix module?
     nix = {
       package = pkgs.nixFlakes;
       extraOptions = ''
@@ -109,20 +98,8 @@ with lib.my;
       '';
       gc = {
         automatic = true;
-        dates = "weekly";
         options = "--delete-older-than 7d";
       };
-
-      settings = let users = [ "root" config.user.name ];
-      in {
-        trusted-users = users;
-        allowed-users = users;
-        auto-optimise-store = true;
-      };
     };
-
-    nixpkgs.config.allowUnfree = true;
-
-    system.stateVersion = "22.11";
   };
 }

@@ -3,10 +3,10 @@
 with lib;
 
 let
-  cfg = config.modules.programs.zsh;
-  colors = config.modules.themes.colors;
+  cfg = config.common.programs.zsh;
+  colors = config.common.themes.colors;
 in {
-  options.modules.programs.zsh = {
+  options.common.programs.zsh = {
     enable = mkEnableOption false;
     setDefault = mkOption {
       description = "Sets Zsh to be default shell for system user.";
@@ -36,7 +36,7 @@ in {
     environment = {
       systemPackages = with pkgs; [
         nix-zsh-completions
-        xclip # required for pbcopy and pbpaste
+        (mkIf pkgs.stdenv.isLinux xclip) # required for pbcopy and pbpaste
         (mkIf cfg.useZoxide zoxide)
         (mkIf cfg.useDirenv direnv)
       ];
@@ -45,17 +45,19 @@ in {
       variables = { ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=${colors.grey}"; };
     };
 
-    programs.zsh = {
+    programs.zsh.enable = mkIf pkgs.stdenv.isDarwin true;
+
+    home.programs.zsh = {
       enable = true;
-      ohMyZsh = {
+      oh-my-zsh = {
         enable = true;
         plugins = [ "git" "colored-man-pages" ];
         theme = cfg.theme;
       };
-      autosuggestions.enable = true;
-      autosuggestions.highlightStyle = "fg=${colors.grey}";
-      syntaxHighlighting.enable = true;
-      interactiveShellInit = let
+      enableAutosuggestions = true;
+      enableCompletion = true;
+      enableSyntaxHighlighting = true;
+      initExtraFirst = let
         zoxideInit = ''
           eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
         '';
@@ -67,14 +69,14 @@ in {
       in ''
         ${if cfg.useZoxide then zoxideInit else ""}
         ${if cfg.useDirenv then direnvInit else ""}
-        ${if config.modules.programs.emacs.enable then
+        ${if config.common.programs.emacs.enable then
           "PATH=$PATH:~/.emacs.d/bin"
         else
           ""}
       '';
       shellAliases = {
-        pbcopy = "xclip -selection clipboard";
-        pbpaste = "xclip -selection clipboard -o";
+        pbcopy = mkIf pkgs.stdenv.isLinux "xclip -selection clipboard";
+        pbpaste = mkIf pkgs.stdenv.isLinux "xclip -selection clipboard -o";
       };
     };
 

@@ -1,5 +1,5 @@
 {
-  imports = [
+  require = [
     ./desktop
     ./dotfiles.nix
     ./hardware
@@ -7,5 +7,6 @@
     ./services
     ./themes
     ./options.nix
+    ./xdg.nix
   ];
 }

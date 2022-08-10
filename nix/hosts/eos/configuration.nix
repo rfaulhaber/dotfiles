@@ -6,14 +6,23 @@
 { config, pkgs, lib, inputs, home-manager, ... }:
 
 {
-  imports = [ ../../modules ../../platforms/darwin.nix ];
+  imports = [ ../../darwin ../../common ];
 
-  modules = {
-    # emacs = true;
-    zsh = {
-      enable = true;
-      setDefault = true;
+  # darwin = {
+  #   # emacs = true;
+  #   zsh = {
+  #     enable = true;
+  #     setDefault = true;
+  #   };
+  # };
+  common = {
+    programs = {
+      zsh = {
+        enable = true;
+        setDefault = true;
+      };
     };
+    themes.active = "moonlight";
   };
 
   environment.systemPackages = with pkgs; [
@@ -21,7 +30,6 @@
     bat
     croc
     curl
-    emacs28NativeComp
     exa
     fd
     gnupg
@@ -29,4 +37,6 @@
     nixfmt
     ripgrep
   ];
+
+  services.nix-daemon.enable = true;
 }

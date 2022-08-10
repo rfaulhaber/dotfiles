@@ -2,11 +2,11 @@
 
 with lib;
 
-let cfg = config.modules.programs.emacs;
+let cfg = config.common.programs.emacs;
 in {
-  options.modules.programs.emacs = { enable = mkEnableOption false; };
+  options.common.programs.emacs.enable = mkEnableOption false;
   config = mkIf cfg.enable {
-    services.emacs = {
+    home.services.emacs = {
       enable = true;
       install = true;
       defaultEditor = true;
@@ -16,7 +16,7 @@ in {
     # dependencies for my very specific configuration of doom
     # see doom.d/init.el for more
     environment.systemPackages = with pkgs; [
-      (mkIf (config.modules.services.mail.enable) mu)
+      # (mkIf (config.common.services.mail.enable) mu)
       aspell
       aspellDicts.en
       aspellDicts.en-computers
@@ -52,7 +52,7 @@ in {
       '';
     };
 
-    programs.zsh.shellAliases = {
+    home.programs.zsh.shellAliases = {
       ec = "emacsclient";
       eo = "emacsclient -n"; # "emacs open"
     };
