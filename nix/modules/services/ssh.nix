@@ -2,7 +2,9 @@
 
 with lib;
 
-let cfg = config.modules.services.ssh;
+let
+  cfg = config.modules.services.ssh;
+  _1passwordEnable = config.modules.programs._1password.enable;
 in {
   options.modules.services.ssh = {
     enable = mkEnableOption false;
@@ -43,7 +45,7 @@ in {
         sshPath = "${config.user.home}/.ssh";
         mkLocalHostname = n: "192.168.1.${n}";
       in {
-        "*" = { identitiesOnly = true; };
+        "*".identitiesOnly = true;
 
         "atlas" = {
           hostname = mkLocalHostname "64";
