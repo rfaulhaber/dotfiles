@@ -93,7 +93,6 @@
        ;;gist              ; interacting with github gists
        (lookup +dictionary +offline +docsets)              ; navigate your code and its documentation
        lsp
-       (:if IS-MAC macos)             ; MacOS-specific commands
        magit             ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        pass              ; password manager for nerds
@@ -173,6 +172,9 @@
        ;;irc               ; how neckbeards socialize
        ;; (rss +org)        ; emacs as an RSS reader
        ;;twitter           ; twitter client https://twitter.com/vnought
+
+       :os
+       (:if IS-MAC macos)             ; MacOS-specific commands
 
        :config
        ;;literate
