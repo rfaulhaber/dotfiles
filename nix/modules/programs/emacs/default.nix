@@ -4,14 +4,7 @@ with lib;
 
 let cfg = config.modules.programs.emacs;
 in {
-  options.modules.programs.emacs = {
-    enable = mkEnableOption false;
-    useNativeComp = mkOption {
-      description = "Uses emacs28NativeComp package instead of default Emacs.";
-      type = types.bool;
-      default = false;
-    };
-  };
+  options.modules.programs.emacs.enable = mkEnableOption false;
   config = mkIf cfg.enable {
     services.emacs = {
       enable = true;
@@ -23,6 +16,7 @@ in {
 
     # dependencies for my very specific configuration of doom
     # see doom.d/init.el for more
+    # we need to include every program either directly or indirectly referenced in config
     environment.systemPackages = with pkgs; [
       (mkIf (config.modules.services.mail.enable) mu)
       aspell
@@ -44,6 +38,7 @@ in {
       languagetool
       nixfmt
       nodePackages.mermaid-cli
+      pass
       ripgrep
       sqlite
       texlive.combined.scheme-medium

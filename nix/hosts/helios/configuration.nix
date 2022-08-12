@@ -17,10 +17,7 @@
         enable = true;
         setDefault = true;
       };
-      emacs = {
-        enable = true;
-        useNativeComp = true;
-      };
+      emacs.enable = true;
       neovim.enable = true;
       pcloud.enable = true;
       kitty = {
