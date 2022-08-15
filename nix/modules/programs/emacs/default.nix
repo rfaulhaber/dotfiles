@@ -10,8 +10,7 @@ in {
       enable = true;
       install = true;
       defaultEditor = true;
-      package = with pkgs;
-        if cfg.useNativeComp then emacs28NativeComp else emacs;
+      package = pkgs.emacs28NativeComp;
     };
 
     # dependencies for my very specific configuration of doom
