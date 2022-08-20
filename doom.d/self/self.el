@@ -485,7 +485,7 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
 (defun self/lookup-open-link-like-object (lookup-fn &rest args)
   "Advice for LOOKUP-FN. Opens a link-like object: a file, URL, etc."
   (let ((identifier (nth 0 args))
-        (url-pattern (rx line-start (or "http://" "https://")))
+        (url-pattern (rx line-start (seq "http" (? "s") "://")))
         (file-path-pattern (rx line-start (group (one-or-more any)) "/" (group (one-or-more (not "/"))) line-end)))
     (cond
      ((string-match-p url-pattern identifier) (browse-url identifier))
