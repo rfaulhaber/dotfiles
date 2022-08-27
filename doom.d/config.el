@@ -33,7 +33,7 @@
 (setq user-full-name "Ryan Faulhaber"
       user-mail-address "ryf@sent.as"
       calendar-latitude 41.49
-      calendar-longitude 81.69
+      calendar-longitude -81.69
       calendar-location-name "Cleveland, OH")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
@@ -253,7 +253,7 @@
 (setq wttrin-default-cities '("Cleveland"))
 
 ;; replace wttrin-fetch-raw-string with my own function
-(advice-add 'wttrin-fetch-raw-string :override 'self/wttrin-fetch-raw-string)
+(advice-add 'wttrin-fetch-raw-string :override #'self/wttrin-fetch-raw-string)
 
 ;; gnus
 (setq gnus-select-method '(nntp "us.newsdemon.com"))
