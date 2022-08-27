@@ -12,6 +12,6 @@ in {
     environment.systemPackages = with pkgs; [ docker docker-compose ];
 
     # TODO make more dynamic than this
-    users.users.ryan.extraGroups = [ "docker" ];
+    user.extraGroups = [ "docker" ];
   };
 }
