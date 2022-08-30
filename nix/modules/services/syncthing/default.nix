@@ -9,10 +9,5 @@ let cfg = config.modules.services.syncthing;
 in {
   options.modules.services.syncthing = { enable = mkEnableOption false; };
 
-  config = mkIf cfg.enable {
-    home.services.syncthing = {
-      enable = true;
-      tray.enable = true;
-    };
-  };
+  config = mkIf cfg.enable { home.services.syncthing.enable = true; };
 }
