@@ -100,6 +100,9 @@
       :n "TAB"        #'man-follow)
 (map! :leader "TAB c" #'+workspace/cycle)
 (map! :leader "n j t" #'org-journal-open-current-journal-file)
+(map! :mode org-journal-mode
+      :leader "n j e" #'self/org-journal-make-entry-encrypted
+      :leader "n j d" #'self/org-journal-make-entry-unencrypted)
 (map! :leader "f o"   #'self/find-org-file)
 (map! :leader "f O"   #'self/visit-common-directories)
 (map! :leader "d"     #'dired)
