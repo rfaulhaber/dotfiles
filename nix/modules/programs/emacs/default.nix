@@ -10,7 +10,10 @@ in {
       enable = true;
       install = true;
       defaultEditor = true;
-      package = pkgs.emacs28NativeComp;
+      package = (pkgs.emacs.override {
+        withGTK3 = true;
+        withGTK2 = false;
+      });
     };
 
     # dependencies for my very specific configuration of doom
