@@ -10,10 +10,9 @@ in {
       enable = true;
       install = true;
       defaultEditor = true;
-      package = (pkgs.emacs.override {
-        withGTK3 = true;
-        withGTK2 = false;
-      });
+      package = with pkgs;
+        ((emacsPackagesFor emacs).emacsWithPackages
+          (epkgs: with epkgs; [ pdf-tools vterm ]));
     };
 
     # dependencies for my very specific configuration of doom
