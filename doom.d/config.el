@@ -7,7 +7,8 @@
 (defvar self/system-type (pcase system-type
                            ('gnu/linux "linux")
                            ('darwin "darwin"))
-  "System type. Either 'linux' or 'darwin'. Used in loading config specific to those systems.")
+  "System type. Either 'linux' or 'darwin'.
+Used in loading config specific to those systems.")
 
 (message "loading configuration for %s on system %s"
          self/system-name
@@ -25,7 +26,7 @@
   (load! "./self/work.el")
   (load! "./self/work-journal.el"))
 
-;; --------------------------------------------------------------------------------
+;; --------------------------------- doom basics ----------------------------------
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -78,9 +79,7 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
-;; --------------------------------------------------------------------------------
-;;                                      emacs config
-;; --------------------------------------------------------------------------------
+;; -------------------------------- emacs basics --------------------------------
 
 ;; custom bindings
 (map! :leader :desc "Opens EWW url to the right" "o w" #'self/eww-open-url-window-right )
@@ -290,7 +289,7 @@
 ;; lookup/documentation advice
 (advice-add '+lookup/documentation :around #'self/lookup-open-link-like-object)
 
-;; ---------------------------------misc-----------------------------------------
+;; --------------------------------- misc -----------------------------------------
 
 ;; general
 (add-hook 'before-save-hook #'+format/buffer)
