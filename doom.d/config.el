@@ -177,8 +177,8 @@ Used in loading config specific to those systems.")
 (setq
  org-journal-dir "~/org/journal"
  org-journal-file-format "%Y%m%d.org"
- org-journal-enable-encryption t
- org-journal-encrypt-journal t)
+ org-journal-enable-encryption (not config/work-computer-p)
+ org-journal-encrypt-journal (not config/work-computer-p))
 
 (when config/work-computer-p
   (setq org-journal-carryover-items "TODO=\"TODO\"|TODO=\"STRT\"|TODO=\"REVIEW\"")
