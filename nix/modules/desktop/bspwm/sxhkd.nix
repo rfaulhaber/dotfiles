@@ -18,7 +18,7 @@ in {
   # rofi window
   "super + alt + w" = "${rofiExec} -show window";
   # screenshot
-  "super + alt + s" = "${pkgs.gnome3.gnome-screenshot}/bin/gnome-screenshot -i";
+  "super + alt + s" = "${pkgs.gnome.gnome-screenshot}/bin/gnome-screenshot -i";
   # restart polybar
   "super + alt + p" = "${polybarMsgExec} cmd restart";
 

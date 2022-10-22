@@ -63,7 +63,7 @@ in {
       discord
       evince
       feh
-      gnome3.gnome-screenshot
+      gnome.gnome-screenshot
       openvpn
       python3
       spotify
