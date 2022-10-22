@@ -78,8 +78,7 @@
 (package! screenshot
   :recipe (:host github
            :repo "tecosaur/screenshot"
-           :branch "master"
-           :build (:not compile)))
+           :branch "master"))
 
 (package! org-pandoc-import
   :recipe (:host github

@@ -153,18 +153,14 @@ Used in loading config specific to those systems.")
          (concat org-directory "/" str))
        (list "todo.org" "habits.org" "projects.org" "blog.org")))
 
-;; deft
-(setq deft-directory "~/org")
-(setq deft-recursive t)
-
 ;; org-roam
-(setq org-roam-directory "~/org/roam")
-(setq org-roam-graph-exclude-matcher '("daily"))
+(setq
+ org-roam-directory "~/org/roam"
+ org-roam-graph-exclude-matcher '("daily"))
 
 ;; for adding backlinks to exported org-roam files
 ;; (add-hook 'org-export-before-processing-hook #'self/org-export-preprocessor)
 (add-hook 'org-export-before-processing-hook #'self/org-roam-export-refs)
-
 
 ;; org-roam-server-mode
 (after! org

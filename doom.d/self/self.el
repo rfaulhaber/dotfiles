@@ -8,10 +8,12 @@
 
 (defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
 (defvar self/common-directories '() "Alist (Name . Path) of common directories, used by self/visit-common-directories")
+(defvar self/new-buffer-modes '(emacs-lisp-mode js2-mode org-mode) "List of modes that self/new-buffer-with-mode should display.")
 
 (defconst self/date-format-options '(("MM/YYYY"    . "%m/%Y")
                                      ("MM/DD"      . "%m/%d")
-                                     ("MM/DD/YYYY" . "%m/%d/%Y"))
+                                     ("MM/DD/YYYY" . "%m/%d/%Y")
+                                     ("YYYYMMDD" . "%Y%m%d"))
   "Various date formats used in interactive functions.")
 
 ;; ------------------------------ function aliases -----------------------------
@@ -253,6 +255,12 @@ Version 2016-07-13"
       (delete-file file-name)
       (kill-buffer)
       (switch-to-buffer (find-file-noselect new-file-name))))))
+
+(defun self/evil-buffer-new-with-mode (mode &rest args)
+  (interactive
+   (list (completing-read "Mode? " self/new-buffer-modes)))
+  (apply #'evil-buffer-new args)
+  (funcall (intern mode)))
 
 ;; ----------------------------- utility functions -----------------------------
 
