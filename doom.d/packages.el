@@ -70,6 +70,11 @@
            :repo "rfaulhaber/caseconv.el"
            :build t))
 
+(package! nix-local-buffer
+  :recipe (:host github
+           :repo "rfaulhaber/nix-local-buffer"
+           :build t))
+
 (package! ox-agora
   :recipe (:host gitlab
            :repo "ngm/ox-agora"
