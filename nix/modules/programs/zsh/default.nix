@@ -13,10 +13,18 @@ in {
       default = false;
       type = types.bool;
     };
-    theme = mkOption {
-      description = "Zsh theme from oh-my-zsh.";
-      default = "agnoster";
-      type = types.str;
+    ohMyZsh = {
+      enable = mkOption {
+        description = "Enable oh-my-zsh";
+        default = true; # backwards-compatibility
+        type = types.bool;
+      };
+
+      theme = mkOption {
+        description = "oh-my-zsh theme.";
+        default = "agnoster";
+        type = types.str;
+      };
     };
     # TODO make shell agnostic
     useZoxide = mkOption {
@@ -47,10 +55,10 @@ in {
 
     programs.zsh = {
       enable = true;
-      ohMyZsh = {
+      ohMyZsh = mkIf cfg.ohMyZsh.enable {
         enable = true;
         plugins = [ "git" "colored-man-pages" ];
-        theme = cfg.theme;
+        theme = cfg.ohMyZsh.theme;
       };
       autosuggestions.enable = true;
       autosuggestions.highlightStyle = "fg=${colors.grey}";

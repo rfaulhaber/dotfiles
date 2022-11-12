@@ -8,6 +8,7 @@
     ./kitty
     ./neovim
     ./pcloud
+    ./starship
     ./zsh
   ];
 }
