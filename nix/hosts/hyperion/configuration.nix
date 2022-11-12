@@ -15,7 +15,12 @@
       zsh = {
         enable = true;
         setDefault = true;
+        ohMyZsh = {
+          enable = true;
+          theme = "agnoster";
+        };
       };
+      # starship.enable = true;
       emacs.enable = true;
       neovim.enable = true;
       kitty.enable = true;

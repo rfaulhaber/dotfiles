@@ -7,7 +7,7 @@ in {
   options.modules.programs.starship = { enable = mkEnableOption false; };
 
   config = mkIf cfg.enable {
-    programs.starship = {
+    home.programs.starship = {
       enable = true;
       enableZshIntegration = mkIf config.modules.programs.zsh.enable true;
       settings = {

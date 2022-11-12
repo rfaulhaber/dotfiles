@@ -16,7 +16,7 @@ in {
     ohMyZsh = {
       enable = mkOption {
         description = "Enable oh-my-zsh";
-        default = true; # backwards-compatibility
+        default = false;
         type = types.bool;
       };
 
