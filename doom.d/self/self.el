@@ -527,7 +527,10 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
         (file-path-pattern (rx line-start (group (one-or-more any)) "/" (group (one-or-more (not "/"))) line-end)))
     (cond
      ((string-match-p url-pattern identifier) (browse-url identifier))
-     ((and (string-match-p file-path-pattern identifier) (string-match-p ":" identifier)) (self/open-path-with-line-and-col identifier))
+     ((and
+       (string-match-p file-path-pattern identifier)
+       (string-match-p ":" identifier))
+      (self/open-path-with-line-and-col identifier))
      ((file-directory-p identifier) (dired identifier))
      ((file-exists-p identifier) (switch-to-buffer (find-file-noselect identifier)))
      (t (apply lookup-fn args)))))
@@ -631,6 +634,7 @@ This is meant to skip any kind of automatic formatting."
 ;;     )
 ;;   )
 
+;; see https://github.com/emacs-evil/evil/blob/7c3343cef739ae223eb3ca991897d97f2d017462/evil-commands.el#L4283
 (evil-define-operator self/evil-ex-shuf (beg end)
   "The opposite of :sort. Shuffles lines in range."
   :motion mark-whole-buffer
