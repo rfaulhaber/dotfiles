@@ -1,0 +1,9 @@
+#+title: nix
+
+I use [[https://nixos.org/][NixOS]]. This is my system configuration.
+
+- =hosts= is where the actual individual system configurations live. You'll find
+  a configuration for each machine I use Nix on.
+- =lib= is my Nix code library, mostly lifted from other places.
+- =modules= are my actual system modules.
+- =templates= are Nix templates used by =nix flake init=.
