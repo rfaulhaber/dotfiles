@@ -282,6 +282,10 @@ Used in loading config specific to those systems.")
 ;; lookup/documentation advice
 (advice-add '+lookup/documentation :around #'self/lookup-open-link-like-object)
 
+;; magit
+;; set default clone directory. This is the same on all machines
+(setq magit-clone-default-directory "~/Projects/")
+
 ;; --------------------------------- misc -----------------------------------------
 
 ;; general
