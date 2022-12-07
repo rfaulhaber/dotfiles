@@ -107,6 +107,9 @@
 (map! :leader "f O"   #'self/visit-common-directories)
 (map! :leader "d"     #'dired)
 (map! :leader "TAB i" #'+ibuffer/open-for-current-workspace)
+;; racket-mode doesn't define evil-jump-item and it's annoying
+(map! :mode racket-mode
+      "TAB" #'evil-jump-item)
 
 ;; common directories
 (setq self/common-directories '(("Downloads" . "~/Downloads")
