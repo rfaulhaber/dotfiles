@@ -7,7 +7,8 @@
 (defvar self/system-type (pcase system-type
                            ('gnu/linux "linux")
                            ('darwin "darwin"))
-  "System type. Either 'linux' or 'darwin'. Used in loading config specific to those systems.")
+  "System type. Either 'linux' or 'darwin'.
+Used in loading config specific to those systems.")
 
 (message "loading configuration for %s on system %s"
          self/system-name
@@ -25,7 +26,7 @@
   (load! "./self/work.el")
   (load! "./self/work-journal.el"))
 
-;; --------------------------------------------------------------------------------
+;; --------------------------------- doom basics ----------------------------------
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -78,9 +79,7 @@
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
 
-;; --------------------------------------------------------------------------------
-;;                                      emacs config
-;; --------------------------------------------------------------------------------
+;; -------------------------------- emacs basics --------------------------------
 
 ;; custom bindings
 (map! :leader :desc "Opens EWW url to the right" "o w" #'self/eww-open-url-window-right )
@@ -100,9 +99,6 @@
       :n "TAB"        #'man-follow)
 (map! :leader "TAB c" #'+workspace/cycle)
 (map! :leader "n j t" #'org-journal-open-current-journal-file)
-(map! :mode org-journal-mode
-      :leader "n j e" #'self/org-journal-make-entry-encrypted
-      :leader "n j d" #'self/org-journal-make-entry-unencrypted)
 (map! :leader "f o"   #'self/find-org-file)
 (map! :leader "f O"   #'self/visit-common-directories)
 (map! :leader "d"     #'dired)
@@ -157,18 +153,14 @@
          (concat org-directory "/" str))
        (list "todo.org" "habits.org" "projects.org" "blog.org")))
 
-;; deft
-(setq deft-directory "~/org")
-(setq deft-recursive t)
-
 ;; org-roam
-(setq org-roam-directory "~/org/roam")
-(setq org-roam-graph-exclude-matcher '("daily"))
+(setq
+ org-roam-directory "~/org/roam"
+ org-roam-graph-exclude-matcher '("daily"))
 
 ;; for adding backlinks to exported org-roam files
 ;; (add-hook 'org-export-before-processing-hook #'self/org-export-preprocessor)
 (add-hook 'org-export-before-processing-hook #'self/org-roam-export-refs)
-
 
 ;; org-roam-server-mode
 (after! org
@@ -181,8 +173,8 @@
 (setq
  org-journal-dir "~/org/journal"
  org-journal-file-format "%Y%m%d.org"
- org-journal-enable-encryption t
- org-journal-encrypt-journal t)
+ org-journal-enable-encryption (not config/work-computer-p)
+ org-journal-encrypt-journal (not config/work-computer-p))
 
 (when config/work-computer-p
   (setq org-journal-carryover-items "TODO=\"TODO\"|TODO=\"STRT\"|TODO=\"REVIEW\"")
@@ -293,7 +285,11 @@
 ;; lookup/documentation advice
 (advice-add '+lookup/documentation :around #'self/lookup-open-link-like-object)
 
-;; ---------------------------------misc-----------------------------------------
+;; magit
+;; set default clone directory. This is the same on all machines
+(setq magit-clone-default-directory "~/Projects/")
+
+;; --------------------------------- misc -----------------------------------------
 
 ;; general
 (add-hook 'before-save-hook #'+format/buffer)

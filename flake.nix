@@ -43,6 +43,13 @@
           };
         };
     in {
+      templates = {
+        rust = {
+          path = ./nix/templates/rust;
+          description = "Rust project template";
+        };
+      };
+
       # these are the actual system configurations
       nixosConfigurations = {
         hyperion = mkHost ./nix/hosts/hyperion/configuration.nix;

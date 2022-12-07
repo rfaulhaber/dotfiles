@@ -8,10 +8,12 @@
 
 (defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
 (defvar self/common-directories '() "Alist (Name . Path) of common directories, used by self/visit-common-directories")
+(defvar self/new-buffer-modes '(emacs-lisp-mode js2-mode org-mode) "List of modes that self/new-buffer-with-mode should display.")
 
 (defconst self/date-format-options '(("MM/YYYY"    . "%m/%Y")
                                      ("MM/DD"      . "%m/%d")
-                                     ("MM/DD/YYYY" . "%m/%d/%Y"))
+                                     ("MM/DD/YYYY" . "%m/%d/%Y")
+                                     ("YYYYMMDD" . "%Y%m%d"))
   "Various date formats used in interactive functions.")
 
 ;; ------------------------------ function aliases -----------------------------
@@ -253,6 +255,12 @@ Version 2016-07-13"
       (delete-file file-name)
       (kill-buffer)
       (switch-to-buffer (find-file-noselect new-file-name))))))
+
+(defun self/evil-buffer-new-with-mode (mode &rest args)
+  (interactive
+   (list (completing-read "Mode? " self/new-buffer-modes)))
+  (apply #'evil-buffer-new args)
+  (funcall (intern mode)))
 
 ;; ----------------------------- utility functions -----------------------------
 
@@ -519,7 +527,10 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
         (file-path-pattern (rx line-start (group (one-or-more any)) "/" (group (one-or-more (not "/"))) line-end)))
     (cond
      ((string-match-p url-pattern identifier) (browse-url identifier))
-     ((and (string-match-p file-path-pattern identifier) (string-match-p ":" identifier)) (self/open-path-with-line-and-col identifier))
+     ((and
+       (string-match-p file-path-pattern identifier)
+       (string-match-p ":" identifier))
+      (self/open-path-with-line-and-col identifier))
      ((file-directory-p identifier) (dired identifier))
      ((file-exists-p identifier) (switch-to-buffer (find-file-noselect identifier)))
      (t (apply lookup-fn args)))))
@@ -623,6 +634,7 @@ This is meant to skip any kind of automatic formatting."
 ;;     )
 ;;   )
 
+;; see https://github.com/emacs-evil/evil/blob/7c3343cef739ae223eb3ca991897d97f2d017462/evil-commands.el#L4283
 (evil-define-operator self/evil-ex-shuf (beg end)
   "The opposite of :sort. Shuffles lines in range."
   :motion mark-whole-buffer

@@ -70,6 +70,11 @@
            :repo "rfaulhaber/caseconv.el"
            :build t))
 
+(package! nix-local-buffer
+  :recipe (:host github
+           :repo "rfaulhaber/nix-local-buffer"
+           :build t))
+
 (package! ox-agora
   :recipe (:host gitlab
            :repo "ngm/ox-agora"
@@ -78,8 +83,7 @@
 (package! screenshot
   :recipe (:host github
            :repo "tecosaur/screenshot"
-           :branch "master"
-           :build (:not compile)))
+           :branch "master"))
 
 (package! org-pandoc-import
   :recipe (:host github
