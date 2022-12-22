@@ -289,6 +289,10 @@ Used in loading config specific to those systems.")
 ;; set default clone directory. This is the same on all machines
 (setq magit-clone-default-directory "~/Projects/")
 
+;; lsp haskell
+(after! lsp-haskell
+  (setq lsp-haskell-formatting-provider "brittany"))
+
 ;; --------------------------------- misc -----------------------------------------
 
 ;; general
