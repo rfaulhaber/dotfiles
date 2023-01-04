@@ -68,10 +68,11 @@ in {
         };
 
         "pi" = {
-          hostname = mkLocalHostname "79";
+          hostname = mkLocalHostname "70";
           identityFile = "${sshPath}/id_pi";
           user = "pi";
           extraOptions = { "AddKeysToAgent" = "yes"; };
+          port = 2222;
         };
       };
     };
