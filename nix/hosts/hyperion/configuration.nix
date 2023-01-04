@@ -5,10 +5,7 @@
 { config, pkgs, lib, inputs, ... }:
 
 {
-  imports = [ # Include the results of the hardware scan.
-    ../../modules
-    ./hardware-configuration.nix
-  ];
+  imports = [ ../../modules ./hardware-configuration.nix ];
 
   modules = {
     programs = {
