@@ -26,6 +26,7 @@ in {
       permitRootLogin = "no";
       extraConfig = ''
         PermitEmptyPasswords no
+        AllowTcpForwarding yes
       '';
       ports = [ 10222 ];
     };
