@@ -50,7 +50,7 @@ in {
 
       # samba should only be accessible on the local network
       extraConfig = ''
-        hosts allow = 192.168.1.
+        hosts allow = 192.168.0.
         hosts deny = 0.0.0.0/0
 
         server min protocol = SMB3

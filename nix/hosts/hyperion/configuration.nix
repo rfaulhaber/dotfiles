@@ -5,10 +5,7 @@
 { config, pkgs, lib, inputs, ... }:
 
 {
-  imports = [ # Include the results of the hardware scan.
-    ../../modules
-    ./hardware-configuration.nix
-  ];
+  imports = [ ../../modules ./hardware-configuration.nix ];
 
   modules = {
     programs = {
@@ -36,7 +33,7 @@
       samba-mount = {
         enable = true;
         mounts."/home/ryan/calibre" = {
-          domain = "192.168.1.64";
+          domain = "192.168.0.2";
           host = "calibre";
         };
       };

@@ -4,19 +4,18 @@
 
 { config, pkgs, ... }:
 
-let homeDomain = "homelab.lan";
-in {
-  imports = [
-    ../../modules
-    # Include the results of the hardware scan.
-    ./hardware-configuration.nix
-  ];
+{
+  imports = [ ../../modules ./hardware-configuration.nix ];
 
   modules = {
     programs = {
       zsh = {
         enable = true;
         setDefault = true;
+        ohMyZsh = {
+          enable = true;
+          theme = "agnoster";
+        };
       };
       neovim.enable = true;
       git.enable = true;

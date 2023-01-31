@@ -26,6 +26,7 @@ in {
       permitRootLogin = "no";
       extraConfig = ''
         PermitEmptyPasswords no
+        AllowTcpForwarding yes
       '';
       ports = [ 10222 ];
     };
@@ -68,10 +69,11 @@ in {
         };
 
         "pi" = {
-          hostname = mkLocalHostname "79";
+          hostname = mkLocalHostname "70";
           identityFile = "${sshPath}/id_pi";
           user = "pi";
           extraOptions = { "AddKeysToAgent" = "yes"; };
+          port = 2222;
         };
       };
     };
