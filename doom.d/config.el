@@ -94,7 +94,6 @@ Used in loading config specific to those systems.")
 (map! :leader "w w"   #'ace-window)
 (map! :leader "s w"   #'ace-swap-window)
 (map! :leader "f b"   #'calibredb-find-counsel)
-(map! :leader "s R"   #'counsel-evil-marks)
 (map! :mode Man-mode
       :n "TAB"        #'man-follow)
 (map! :leader "TAB c" #'+workspace/cycle)
