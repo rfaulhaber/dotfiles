@@ -22,8 +22,10 @@ in {
   config = mkIf cfg.enable {
     services.openssh = mkIf cfg.enableServer {
       enable = true;
-      passwordAuthentication = false;
-      permitRootLogin = "no";
+      settings = {
+        PasswordAuthentication = false;
+        PermitRootLogin = "no";
+      };
       extraConfig = ''
         PermitEmptyPasswords no
         AllowTcpForwarding yes
