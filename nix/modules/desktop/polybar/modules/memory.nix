@@ -1,4 +1,4 @@
-{ colors }: {
+{colors}: {
   type = "internal/memory";
   interval = "1";
 

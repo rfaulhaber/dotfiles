@@ -1,16 +1,21 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.services.passwords;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.services.passwords;
 in {
-  options.modules.services.passwords = { enable = mkEnableOption false; };
+  options.modules.services.passwords = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
-    assertions = [{
-      assertion = config.services.xserver.enable;
-      message = "This module must be used with xserver";
-    }];
+    assertions = [
+      {
+        assertion = config.services.xserver.enable;
+        message = "This module must be used with xserver";
+      }
+    ];
 
     programs.seahorse.enable = true;
 
@@ -18,7 +23,7 @@ in {
 
     home.services.gnome-keyring = {
       enable = true;
-      components = [ "ssh" "secrets" "pkcs11" ];
+      components = ["ssh" "secrets" "pkcs11"];
     };
   };
 }

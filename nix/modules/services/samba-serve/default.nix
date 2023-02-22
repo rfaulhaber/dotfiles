@@ -1,18 +1,24 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.modules.services.samba-serve;
-  mkShare = name:
-    { path, comment ? name, ... }@shareOpts:
+  mkShare = name: {
+    path,
+    comment ? name,
+    ...
+  } @ shareOpts:
     {
       inherit path comment;
       "read only" = "no";
       browsable = "yes";
       "guest ok" = "no";
       "valid users" = config.user.name;
-    } // shareOpts.extraOptions;
+    }
+    // shareOpts.extraOptions;
 in {
   options.modules.services.samba-serve = {
     enable = mkEnableOption false;
@@ -31,11 +37,10 @@ in {
             example = "Calibre share pont.";
           };
           extraOptions = mkOption {
-            description =
-              "Extra Samba options. Can override defaults set in this module.";
+            description = "Extra Samba options. Can override defaults set in this module.";
             type = types.attrs;
-            default = { };
-            example = { "read only" = "yes"; };
+            default = {};
+            example = {"read only" = "yes";};
           };
         };
       });
@@ -60,8 +65,8 @@ in {
     networking.firewall = {
       enable = true;
       allowPing = true;
-      allowedTCPPorts = [ 445 139 ];
-      allowedUDPPorts = [ 137 138 ];
+      allowedTCPPorts = [445 139];
+      allowedUDPPorts = [137 138];
     };
   };
 }

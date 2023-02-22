@@ -1,6 +1,4 @@
-{ colors }:
-
-{
+{colors}: {
   type = "internal/bspwm";
 
   ws-icon-0 = "I;1";

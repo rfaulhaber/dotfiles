@@ -1,10 +1,13 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.services.keybase;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.services.keybase;
 in {
-  options.modules.services.keybase = { enable = mkEnableOption false; };
+  options.modules.services.keybase = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     services = {
@@ -12,6 +15,6 @@ in {
       kbfs.enable = true;
     };
 
-    environment.systemPackages = with pkgs; [ keybase keybase-gui kbfs ];
+    environment.systemPackages = with pkgs; [keybase keybase-gui kbfs];
   };
 }

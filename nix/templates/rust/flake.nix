@@ -6,36 +6,39 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-        projectName = "project";
-      in rec {
-        packages.${projectName} = pkgs.rustPlatform.buildRustPackage {
-          pname = projectName;
-          version = "0.1.0";
-          src = ./.;
-          # NOTE: make sure Cargo.lock is not in .gitignore
-          cargoLock.lockFile = ./Cargo.lock;
-        };
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+  }:
+    flake-utils.lib.eachDefaultSystem (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+      projectName = "project";
+    in rec {
+      packages.${projectName} = pkgs.rustPlatform.buildRustPackage {
+        pname = projectName;
+        version = "0.1.0";
+        src = ./.;
+        # NOTE: make sure Cargo.lock is not in .gitignore
+        cargoLock.lockFile = ./Cargo.lock;
+      };
 
-        packages.default = self.packages.${system}.${projectName};
+      packages.default = self.packages.${system}.${projectName};
 
-        apps.${projectName} =
-          flake-utils.lib.mkApp { drv = packages.${projectName}; };
+      apps.${projectName} =
+        flake-utils.lib.mkApp {drv = packages.${projectName};};
 
-        apps.default = self.apps.${system}.${projectName};
+      apps.default = self.apps.${system}.${projectName};
 
-        devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            cargo
-            rustc
-            rustfmt
-            clippy
-            rust-analyzer
-            rustup
-          ];
-        };
-      });
+      devShells.default = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          cargo
+          rustc
+          rustfmt
+          clippy
+          rust-analyzer
+          rustup
+        ];
+      };
+    });
 }

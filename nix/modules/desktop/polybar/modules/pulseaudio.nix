@@ -1,4 +1,4 @@
-{ colors }: {
+{colors}: {
   type = "internal/pulseaudio";
   use-ui-max = "false";
 
@@ -29,5 +29,4 @@
   ramp-volume-0-foreground = "${colors.dark-cyan}";
   ramp-volume-1-foreground = "${colors.cyan}";
   ramp-volume-2-foreground = "${colors.yellow}";
-
 }

@@ -1,10 +1,13 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.programs.starship;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.programs.starship;
 in {
-  options.modules.programs.starship = { enable = mkEnableOption false; };
+  options.modules.programs.starship = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     home.programs.starship = {

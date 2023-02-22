@@ -1,10 +1,13 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.services.redshift;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.services.redshift;
 in {
-  options.modules.services.redshift = { enable = mkEnableOption false; };
+  options.modules.services.redshift = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     location = {
@@ -13,7 +16,7 @@ in {
       longitude = -81.787132;
     };
 
-    environment.systemPackages = with pkgs; [ redshift ];
+    environment.systemPackages = with pkgs; [redshift];
 
     services.redshift = {
       enable = true;

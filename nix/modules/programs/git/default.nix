@@ -1,8 +1,11 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.programs.git;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.programs.git;
 in {
   options.modules.programs.git = {
     enable = mkEnableOption false;
@@ -29,7 +32,7 @@ in {
 
       delta = mkIf cfg.useDelta {
         enable = true;
-        options = { line-numbers = true; };
+        options = {line-numbers = true;};
       };
 
       signing = {
@@ -37,7 +40,7 @@ in {
         key = config.userInfo.primaryGPGKey;
       };
 
-      extraConfig = { init.defaultBranch = "main"; };
+      extraConfig = {init.defaultBranch = "main";};
     };
   };
 }

@@ -1,5 +1,4 @@
 # purple cloud theme
-
 {
   bg = "#10061c";
   fg = "#f5e8ff";

@@ -1,5 +1,8 @@
-{ config, pkgs, ... }:
-
+{
+  config,
+  pkgs,
+  ...
+}:
 # TODO make look nicer!
 # https://github.com/polybar/polybar/wiki/Module%3A-battery
 {

@@ -1,8 +1,12 @@
-{ config, lib, pkgs, home-manager, ... }:
-
-with lib;
-
-let cfg = config.modules.desktop;
+{
+  config,
+  lib,
+  pkgs,
+  home-manager,
+  ...
+}:
+with lib; let
+  cfg = config.modules.desktop;
 in {
   imports = [
     ./bspwm
@@ -15,14 +19,12 @@ in {
   ];
   options.modules.desktop = {
     videoDrivers = mkOption {
-      description =
-        "Passthrough property for services.xserver.videoDrivers. All desktop configurations use xserver at the moment.";
+      description = "Passthrough property for services.xserver.videoDrivers. All desktop configurations use xserver at the moment.";
       type = types.listOf types.str;
-      default = [ ];
+      default = [];
     };
     useLaptopSettings = mkOption {
-      description =
-        "If enabled, turns on various laptop settings, such as the battery module in Polybar.";
+      description = "If enabled, turns on various laptop settings, such as the battery module in Polybar.";
       type = types.bool;
       default = false;
     };
@@ -43,14 +45,14 @@ in {
       enableGhostscriptFonts = true;
       enableDefaultFonts = true;
       fonts = with pkgs; [
-        (nerdfonts.override { fonts = [ "Hack" ]; })
+        (nerdfonts.override {fonts = ["Hack"];})
         lato
         merriweather
       ];
       fontconfig.defaultFonts = {
-        serif = [ "Merriweather" ];
-        sansSerif = [ "Lato" ];
-        monospace = [ "Hack Nerd Font Mono" ];
+        serif = ["Merriweather"];
+        sansSerif = ["Lato"];
+        monospace = ["Hack Nerd Font Mono"];
       };
     };
 

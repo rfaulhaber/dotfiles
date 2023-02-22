@@ -1,17 +1,19 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.modules.services.systemd;
   description = "Cleans up Docker.";
 in {
   config = mkIf (cfg.enable && (builtins.elem "docker-cleanup" cfg.modules)) {
     systemd.services.docker-cleanup = {
       inherit description;
-      path = with pkgs; [ docker coreutils bash ];
-      after = [ "multi-user.target" ];
-      wantedBy = [ "multi-user.target" ];
+      path = with pkgs; [docker coreutils bash];
+      after = ["multi-user.target"];
+      wantedBy = ["multi-user.target"];
       serviceConfig = {
         Type = "oneshot";
         User = "root";
@@ -26,7 +28,7 @@ in {
     systemd.timers.docker-cleanup = {
       inherit description;
 
-      wantedBy = [ "timers.target" ];
+      wantedBy = ["timers.target"];
 
       timerConfig = {
         Persistent = true;

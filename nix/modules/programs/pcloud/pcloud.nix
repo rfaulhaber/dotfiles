@@ -18,12 +18,8 @@
 # - Update version
 # - Update key from PKGBUILD
 # - Update sha256 value
-
-{ pkgs ? import <nixpkgs> { }, ... }:
-
-with pkgs;
-
-let
+{pkgs ? import <nixpkgs> {}, ...}:
+with pkgs; let
   pname = "pcloud";
   version = "1.9.9";
   key = "XZWTVkVZQM0GNXA4hrFGPkefzUUWVLKOpPIX";
@@ -40,47 +36,46 @@ let
     inherit name;
     src = "${src}/pcloud";
   };
+in
+  stdenv.mkDerivation {
+    inherit pname version;
 
-in stdenv.mkDerivation {
-  inherit pname version;
+    src = appimageContents;
 
-  src = appimageContents;
+    dontConfigure = true;
+    dontBuild = true;
 
-  dontConfigure = true;
-  dontBuild = true;
+    nativeBuildInputs = [autoPatchelfHook];
 
-  nativeBuildInputs = [ autoPatchelfHook ];
+    buildInputs = [alsaLib dbus-glib fuse gtk3 libdbusmenu-gtk2 xorg.libXdamage nss udev];
 
-  buildInputs =
-    [ alsaLib dbus-glib fuse gtk3 libdbusmenu-gtk2 xorg.libXdamage nss udev ];
-
-  installPhase = ''
-    mkdir "$out"
-    cp -ar . "$out/app"
-    cd "$out"
-    # Remove the AppImage runner, since users are not supposed to use it; the
-    # actual entry point is the `pcloud` binary
-    rm app/AppRun
-    # Adjust directory structure, so that the `.desktop` etc. files are
-    # properly detected
-    mkdir bin
-    mv app/usr/share .
-    mv app/usr/lib .
-    # Adjust the `.desktop` file
-    mkdir share/applications
-    substitute \
-      app/pcloud.desktop \
-      share/applications/pcloud.desktop \
-      --replace 'Name=pcloud' 'Name=pCloud' \
-      --replace 'Exec=AppRun' 'Exec=${pname}'
-    # Build the main executable
-    cat > bin/pcloud <<EOF
-    #! $SHELL -e
-    # This is required for the file picker dialog - otherwise pcloud just
-    # crashes
-    export XDG_DATA_DIRS="${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}:${gtk3}/share/gsettings-schemas/${gtk3.name}:$XDG_DATA_DIRS"
-    exec "$out/app/pcloud"
-    EOF
-    chmod +x bin/pcloud
-  '';
-}
+    installPhase = ''
+      mkdir "$out"
+      cp -ar . "$out/app"
+      cd "$out"
+      # Remove the AppImage runner, since users are not supposed to use it; the
+      # actual entry point is the `pcloud` binary
+      rm app/AppRun
+      # Adjust directory structure, so that the `.desktop` etc. files are
+      # properly detected
+      mkdir bin
+      mv app/usr/share .
+      mv app/usr/lib .
+      # Adjust the `.desktop` file
+      mkdir share/applications
+      substitute \
+        app/pcloud.desktop \
+        share/applications/pcloud.desktop \
+        --replace 'Name=pcloud' 'Name=pCloud' \
+        --replace 'Exec=AppRun' 'Exec=${pname}'
+      # Build the main executable
+      cat > bin/pcloud <<EOF
+      #! $SHELL -e
+      # This is required for the file picker dialog - otherwise pcloud just
+      # crashes
+      export XDG_DATA_DIRS="${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}:${gtk3}/share/gsettings-schemas/${gtk3.name}:$XDG_DATA_DIRS"
+      exec "$out/app/pcloud"
+      EOF
+      chmod +x bin/pcloud
+    '';
+  }

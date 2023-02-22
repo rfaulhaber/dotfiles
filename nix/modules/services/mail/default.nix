@@ -1,14 +1,17 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.services.mail;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.services.mail;
 in {
-  options.modules.services.mail = { enable = mkEnableOption false; };
+  options.modules.services.mail = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     home = {
-      programs.mbsync = { enable = true; };
+      programs.mbsync = {enable = true;};
 
       accounts.email = {
         maildirBasePath = "mail";

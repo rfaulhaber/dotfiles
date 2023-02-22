@@ -1,43 +1,47 @@
-{ config, pkgs, options, lib, home-manager, ... }:
-
-with lib;
-with lib.my;
-
 {
+  config,
+  pkgs,
+  options,
+  lib,
+  home-manager,
+  ...
+}:
+with lib;
+with lib.my; {
   options = with types; {
     user = mkOption {
       description = "Name of the primary account.";
-      default = { };
+      default = {};
       type = attrs;
     };
     userInfo = mkOption {
       description = "Additional user info associated with the user.";
-      default = { };
+      default = {};
       type = attrs;
     };
     home = {
-      accounts = mkOptDesc attrs { }
+      accounts =
+        mkOptDesc attrs {}
         "Accounts managed by home-manager. Used primarily for email";
-      configFile = mkOptDesc attrs { } "Files to place in $XDG_CONFIG_HOME";
-      dataFile = mkOptDesc attrs { } "Files to place in $XDG_DATA_HOME";
-      file = mkOptDesc attrs { } "Files to place directly in $HOME";
-      packages = mkOptDesc attrs [ ] "User-level installed packages";
+      configFile = mkOptDesc attrs {} "Files to place in $XDG_CONFIG_HOME";
+      dataFile = mkOptDesc attrs {} "Files to place in $XDG_DATA_HOME";
+      file = mkOptDesc attrs {} "Files to place directly in $HOME";
+      packages = mkOptDesc attrs [] "User-level installed packages";
       programs =
-        mkOptDesc attrs { } "Programs managed directly from home-manager";
+        mkOptDesc attrs {} "Programs managed directly from home-manager";
       services =
-        mkOptDesc attrs { } "Services managed directly from home-manager";
+        mkOptDesc attrs {} "Services managed directly from home-manager";
       xsession =
-        mkOptDesc attrs { } "Xsession settings managed from home-manager";
+        mkOptDesc attrs {} "Xsession settings managed from home-manager";
     };
 
     env = mkOption {
-      type = attrsOf (oneOf [ str path (listOf (either str path)) ]);
+      type = attrsOf (oneOf [str path (listOf (either str path))]);
       apply = mapAttrs (n: v:
-        if isList v then
-          concatMapStringsSep ":" (x: toString x) v
-        else
-          (toString v));
-      default = { };
+        if isList v
+        then concatMapStringsSep ":" (x: toString x) v
+        else (toString v));
+      default = {};
       description = "";
     };
 
@@ -59,7 +63,7 @@ with lib.my;
       name = "ryan";
       description = "ryan";
       # TODO do better
-      extraGroups = [ "wheel" "audio" "lp" "plugdev" ];
+      extraGroups = ["wheel" "audio" "lp" "plugdev"];
       isNormalUser = true;
       home = "/home/${name}";
       group = "users";
@@ -80,7 +84,7 @@ with lib.my;
       };
     };
 
-    users.groups = { plugdev = { }; };
+    users.groups = {plugdev = {};};
 
     home-manager = {
       useUserPackages = true;

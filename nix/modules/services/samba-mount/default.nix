@@ -1,19 +1,29 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.modules.services.samba-mount;
-  mkMount = name:
-    { fsOptions, domain, host, secrets, uid, gid }: {
-      device = "//${domain}/${host}";
-      fsType = "cifs";
-      options = fsOptions ++ [
+  mkMount = name: {
+    fsOptions,
+    domain,
+    host,
+    secrets,
+    uid,
+    gid,
+  }: {
+    device = "//${domain}/${host}";
+    fsType = "cifs";
+    options =
+      fsOptions
+      ++ [
         "credentials=${secrets}"
         "uid=${toString uid}"
         "gid=${toString gid}"
       ];
-    };
+  };
 in {
   options.modules.services.samba-mount = {
     enable = mkEnableOption false;
@@ -67,7 +77,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [ samba ];
+    environment.systemPackages = with pkgs; [samba];
     fileSystems = mapAttrs mkMount cfg.mounts;
   };
 }

@@ -1,8 +1,11 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.services.snapraid;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.services.snapraid;
 in {
   # these options mostly forward to the snapraid module
   options.modules.services.snapraid = {
@@ -22,14 +25,14 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [ snapraid ];
+    environment.systemPackages = with pkgs; [snapraid];
 
     snapraid = {
       enable = true;
       dataDisks = cfg.dataDisks;
       parityFiles = cfg.parityFiles;
       contentFiles = cfg.contentFiles;
-      exclude = [ "/tmp/" "/lost+found/" ];
+      exclude = ["/tmp/" "/lost+found/"];
     };
   };
 }

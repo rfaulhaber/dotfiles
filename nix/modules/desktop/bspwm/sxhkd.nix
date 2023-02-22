@@ -1,4 +1,8 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  ...
+}:
 # TODO: assert that all of these programs are installed somehow
 let
   kittyExec = "${pkgs.kitty}/bin/kitty";
@@ -43,25 +47,19 @@ in {
   "super + m" = "${bspcExec} desktop -l next";
 
   # send the newest marked node to the newest preselected node
-  "super + y" =
-    "${bspcExec} node newest.marked.local -n newest.!automatic.local";
+  "super + y" = "${bspcExec} node newest.marked.local -n newest.!automatic.local";
   # swap with biggest window
   "super + g" = "${bspcExec} node --swap biggest";
   # change window state
-  "super + {t,shift + t,s,f}" =
-    "${bspcExec} node -t {tiled,pseudo_tiled,floating,fullscreen}";
+  "super + {t,shift + t,s,f}" = "${bspcExec} node -t {tiled,pseudo_tiled,floating,fullscreen}";
   # mark, lock, sticky, or private
-  "super + ctrl + {m,x,y,z}" =
-    "${bspcExec} node -g {marked,locked,sticky,private}";
+  "super + ctrl + {m,x,y,z}" = "${bspcExec} node -g {marked,locked,sticky,private}";
   # motions
-  "super + {_,shift + }{h,j,k,l}" =
-    "${bspcExec} node -{f,s} {west,south,north,east}";
-  "super + {p,b,comma,period}" =
-    "${bspcExec} node -f @{parent,brother,first,second}";
+  "super + {_,shift + }{h,j,k,l}" = "${bspcExec} node -{f,s} {west,south,north,east}";
+  "super + {p,b,comma,period}" = "${bspcExec} node -f @{parent,brother,first,second}";
   "super + {_,shift + }c" = "${bspcExec} node -f {next,prev}.local";
   # cycle active desktops
-  "super + bracket{left,right}" =
-    "${bspcExec} desktop -f {prev,next}.occupied.local";
+  "super + bracket{left,right}" = "${bspcExec} desktop -f {prev,next}.occupied.local";
   # cycle previous desktops
   "super + {grave,Tab}" = "${bspcExec} {node,desktop} -f last";
   "super + {o,i}" = ''
@@ -71,8 +69,7 @@ in {
   '';
 
   # change desktop
-  "super + {_,shift + }{1-9,0}" =
-    "${bspcExec} {desktop -f,node -d} '^{1-9,10}'";
+  "super + {_,shift + }{1-9,0}" = "${bspcExec} {desktop -f,node -d} '^{1-9,10}'";
 
   #
   # preselect
@@ -87,24 +84,20 @@ in {
   "super + ctrl + space" = "${bspcExec} node -p cancel";
 
   # cancel the preselection for the focused desktop
-  "super + ctrl + shift + space" =
-    "${bspcExec} query -N -d | xargs -I id -n 1 ${bspcExec} node id -p cancel";
+  "super + ctrl + shift + space" = "${bspcExec} query -N -d | xargs -I id -n 1 ${bspcExec} node id -p cancel";
 
   #
   # move/resize
   #
 
   # expand a window by moving one of its side outward
-  "super + alt + {h,j,k,l}" =
-    "${bspcExec} node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}";
+  "super + alt + {h,j,k,l}" = "${bspcExec} node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}";
 
   # contract a window by moving one of its side inward
-  "super + alt + shift + {h,j,k,l}" =
-    "${bspcExec} node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}";
+  "super + alt + shift + {h,j,k,l}" = "${bspcExec} node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}";
 
   # move a floating window
-  "super + {Left,Down,Up,Right}" =
-    "${bspcExec} node -v {-20 0,0 20,0 -20,20 0}";
+  "super + {Left,Down,Up,Right}" = "${bspcExec} node -v {-20 0,0 20,0 -20,20 0}";
 
   # lockscreen
   "alt + shift + x" = "${lockExec}";

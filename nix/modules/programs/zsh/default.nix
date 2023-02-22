@@ -1,8 +1,11 @@
-{ config, lib, pkgs, platform, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  platform,
+  ...
+}:
+with lib; let
   cfg = config.modules.programs.zsh;
   colors = config.modules.themes.colors;
 in {
@@ -50,14 +53,14 @@ in {
       ];
 
       # sometimes zsh from nixpkgs doesn't respect highlightStyle value
-      variables = { ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=${colors.grey}"; };
+      variables = {ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=${colors.grey}";};
     };
 
     programs.zsh = {
       enable = true;
       ohMyZsh = mkIf cfg.ohMyZsh.enable {
         enable = true;
-        plugins = [ "git" "colored-man-pages" ];
+        plugins = ["git" "colored-man-pages"];
         theme = cfg.ohMyZsh.theme;
       };
       autosuggestions.enable = true;
@@ -73,12 +76,21 @@ in {
           eval "$(direnv hook zsh)"
         '';
       in ''
-        ${if cfg.useZoxide then zoxideInit else ""}
-        ${if cfg.useDirenv then direnvInit else ""}
-        ${if config.modules.programs.emacs.enable then
-          "PATH=$PATH:~/.emacs.d/bin"
-        else
-          ""}
+        ${
+          if cfg.useZoxide
+          then zoxideInit
+          else ""
+        }
+        ${
+          if cfg.useDirenv
+          then direnvInit
+          else ""
+        }
+        ${
+          if config.modules.programs.emacs.enable
+          then "PATH=$PATH:~/.emacs.d/bin"
+          else ""
+        }
       '';
       shellAliases = {
         pbcopy = "xclip -selection clipboard";
@@ -88,6 +100,6 @@ in {
 
     user.shell = mkIf cfg.setDefault pkgs.zsh;
 
-    environment.pathsToLink = [ "/share/zsh" ];
+    environment.pathsToLink = ["/share/zsh"];
   };
 }

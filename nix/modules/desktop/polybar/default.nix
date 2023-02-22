@@ -1,12 +1,14 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.modules.desktop.polybar;
   desktopCfg = config.modules.desktop;
   colors = config.modules.themes.colors;
-  modules = (import ./modules) { inherit colors config pkgs; };
+  modules = (import ./modules) {inherit colors config pkgs;};
 in {
   options.modules.desktop.polybar = {
     enable = mkOption {
@@ -28,7 +30,8 @@ in {
       package = pkgs.polybarFull;
       # Polybar will be started by bspwm
       script = "";
-      config = let fontSizeStr = toString cfg.fontSize;
+      config = let
+        fontSizeStr = toString cfg.fontSize;
       in {
         "bar/main" = {
           enable-ipc = true;
@@ -60,10 +63,15 @@ in {
               "cpu"
               "memory"
               "pulseaudio"
-              (if desktopCfg.useLaptopSettings then "battery" else "")
+              (
+                if desktopCfg.useLaptopSettings
+                then "battery"
+                else ""
+              )
               "date"
             ];
-          in concatStringsSep " " defaultRightModules;
+          in
+            concatStringsSep " " defaultRightModules;
           module-margin = 0;
 
           # tray
@@ -82,7 +90,7 @@ in {
           label = "%title:0:30:...%";
         };
 
-        "settings" = { screenchange-reload = true; };
+        "settings" = {screenchange-reload = true;};
 
         "global/wm" = {
           margin-top = 5;

@@ -1,8 +1,11 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.programs.emacs;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.programs.emacs;
 in {
   options.modules.programs.emacs.enable = mkEnableOption false;
   config = mkIf cfg.enable {
@@ -10,9 +13,8 @@ in {
       enable = true;
       install = true;
       defaultEditor = true;
-      package = with pkgs;
-        ((emacsPackagesFor emacs).emacsWithPackages
-          (epkgs: with epkgs; [ pdf-tools vterm ]));
+      package = with pkgs; ((emacsPackagesFor emacs).emacsWithPackages
+        (epkgs: with epkgs; [pdf-tools vterm]));
     };
 
     # dependencies for my very specific configuration of doom
@@ -20,6 +22,7 @@ in {
     # we need to include every program either directly or indirectly referenced in config
     environment.systemPackages = with pkgs; [
       (mkIf (config.modules.services.mail.enable) mu)
+      alejandra # nix formatter
       aspell
       aspellDicts.en
       aspellDicts.en-computers

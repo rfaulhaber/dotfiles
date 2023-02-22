@@ -1,1 +1,1 @@
-{ require = [ ./bluetooth ./zsa ]; }
+{require = [./bluetooth ./zsa];}

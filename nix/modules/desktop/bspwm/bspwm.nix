@@ -1,14 +1,15 @@
-{ config, lib, monitors }:
-
-with lib;
-
-let
-  defaultMonitorValue = [ "I" "II" "III" "IV" "V" "VI" "VII" "VIII" "IX" "X" ];
-  mkMonitor = monitor: { "${monitor}" = defaultMonitorValue; };
-  merge = foldr (n: a: n // a) { };
+{
+  config,
+  lib,
+  monitors,
+}:
+with lib; let
+  defaultMonitorValue = ["I" "II" "III" "IV" "V" "VI" "VII" "VIII" "IX" "X"];
+  mkMonitor = monitor: {"${monitor}" = defaultMonitorValue;};
+  merge = foldr (n: a: n // a) {};
 in {
   monitors = merge (map mkMonitor monitors);
-  startupPrograms = [ "sxhkd" "${config.dotfiles.binDir}/polybar/launch" ];
+  startupPrograms = ["sxhkd" "${config.dotfiles.binDir}/polybar/launch"];
   settings = {
     border_width = 0;
     window_gap = 12;

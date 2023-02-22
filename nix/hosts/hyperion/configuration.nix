@@ -1,11 +1,14 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, lib, inputs, ... }:
-
 {
-  imports = [ ../../modules ./hardware-configuration.nix ];
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}: {
+  imports = [../../modules ./hardware-configuration.nix];
 
   modules = {
     programs = {
@@ -43,7 +46,7 @@
       redshift.enable = true;
       systemd = {
         enable = true;
-        modules = [ "updatedb" ];
+        modules = ["updatedb"];
       };
       virt.enable = true;
       ssh = {
@@ -53,7 +56,7 @@
       passwords.enable = true;
       zerotier = {
         enable = true;
-        networks = [ "b6079f73c6986bc2" ];
+        networks = ["b6079f73c6986bc2"];
       };
       syncthing.enable = true;
     };
@@ -62,11 +65,11 @@
       zsa.enable = true;
     };
     desktop = {
-      videoDrivers = [ "nvidia" ];
+      videoDrivers = ["nvidia"];
       bspwm = {
         enable = true;
-        extraStartupPrograms = [ "keybase-gui" "discord" "1password" ];
-        monitors = [ "DP-0" ];
+        extraStartupPrograms = ["keybase-gui" "discord" "1password"];
+        monitors = ["DP-0"];
       };
       sound.enable = true;
       polybar.enable = true;

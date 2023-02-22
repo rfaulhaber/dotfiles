@@ -1,15 +1,16 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.modules.desktop.firefox;
 
   findFirefoxExecPath = pkg:
-    if (hasPrefix "firefox-devedition" pkg.pname) then
-      "firefox-devedition"
-    else
-      "firefox";
+    if (hasPrefix "firefox-devedition" pkg.pname)
+    then "firefox-devedition"
+    else "firefox";
 in {
   options.modules.desktop.firefox = {
     enable = mkEnableOption false;
@@ -26,7 +27,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [ cfg.package ];
+    environment.systemPackages = [cfg.package];
 
     # I use zsh, this should be more modular but it's not
     programs.zsh.shellAliases = {

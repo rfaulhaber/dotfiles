@@ -2,12 +2,13 @@
 # https://github.com/nix-community/home-manager/blob/master/modules/services/random-background.nix
 #
 # but reworked to use my own shell script instead
-
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.modules.desktop.random-wallpaper;
   description = "Sets wallpaper using random-wallpaper script.";
 in {
@@ -27,18 +28,20 @@ in {
     };
   };
 
-  config = mkIf cfg.enable (mkMerge ([
+  config = mkIf cfg.enable (mkMerge [
     {
-      assertions = [{
-        assertion = config.services.xserver.enable;
-        message = "Cannot use random-wallpaper without xserver.";
-      }];
+      assertions = [
+        {
+          assertion = config.services.xserver.enable;
+          message = "Cannot use random-wallpaper without xserver.";
+        }
+      ];
       systemd.user.services.random-wallpaper = {
         inherit description;
-        path = with pkgs; [ bash jq pass feh curl ];
-        after = [ "graphical-session-pre.target" ];
-        partOf = [ "graphical-session.target" ];
-        wantedBy = [ "graphical-session.target" ];
+        path = with pkgs; [bash jq pass feh curl];
+        after = ["graphical-session-pre.target"];
+        partOf = ["graphical-session.target"];
+        wantedBy = ["graphical-session.target"];
         serviceConfig = {
           Type = "oneshot";
           ExecStart = "${config.dotfiles.binDir}/random-wallpaper ${cfg.query}";
@@ -50,10 +53,10 @@ in {
       systemd.user.timers.random-wallpaper = {
         inherit description;
 
-        wantedBy = [ "timers.target" ];
+        wantedBy = ["timers.target"];
 
-        timerConfig = { OnUnitActiveSec = cfg.interval; };
+        timerConfig = {OnUnitActiveSec = cfg.interval;};
       };
     })
-  ]));
+  ]);
 }

@@ -1,11 +1,12 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, ... }:
-
 {
-  imports = [ ../../modules ./hardware-configuration.nix ];
+  config,
+  pkgs,
+  ...
+}: {
+  imports = [../../modules ./hardware-configuration.nix];
 
   modules = {
     programs = {
@@ -29,7 +30,7 @@
       # TODO make these use constants of some kind, e.g. with systemdModules; [ docker-cleanup ]
       systemd = {
         enable = true;
-        modules = [ "updatedb" "docker-cleanup" ];
+        modules = ["updatedb" "docker-cleanup"];
       };
       ssh = {
         enable = true;
@@ -42,7 +43,7 @@
       };
       snapraid = {
         enable = true;
-        parityFiles = [ "/diskp/snapraid.parity" ];
+        parityFiles = ["/diskp/snapraid.parity"];
         dataDisks = {
           disk1 = "/disk1/";
           disk2 = "/disk2/";
@@ -52,13 +53,11 @@
           disk6 = "/disk6/";
           disk7 = "/disk7/";
         };
-        contentFiles =
-          [ "/var/snapraid/snapraid.content" "/diskp/snapraid.content" ];
+        contentFiles = ["/var/snapraid/snapraid.content" "/diskp/snapraid.content"];
       };
       mergerfs = {
         enable = true;
-        branches =
-          [ "/disk1" "/disk2" "/disk3" "/disk4" "/disk5" "/disk6" "/disk7" ];
+        branches = ["/disk1" "/disk2" "/disk3" "/disk4" "/disk5" "/disk6" "/disk7"];
         target = "/data";
       };
       samba-serve = {
@@ -70,8 +69,8 @@
       };
       zerotier = {
         enable = true;
-        networks = [ "12ac4a1e719ca283" "b6079f73c6986bc2" ];
-        dockerWhitelist = [ 8089 ];
+        networks = ["12ac4a1e719ca283" "b6079f73c6986bc2"];
+        dockerWhitelist = [8089];
         sharedNetworkInterface = "ztbto5nphs";
       };
     };
@@ -102,8 +101,8 @@
     firewall = {
       enable = true;
       # required for pihole
-      allowedTCPPorts = [ 8085 80 53 67 ];
-      allowedUDPPorts = [ 53 67 68 546 547 ];
+      allowedTCPPorts = [8085 80 53 67];
+      allowedUDPPorts = [53 67 68 546 547];
       extraCommands = ''
         iptables -I INPUT 1 -p tcp -m tcp --dport 4711 -i lo -j ACCEPT
         iptables -I INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT

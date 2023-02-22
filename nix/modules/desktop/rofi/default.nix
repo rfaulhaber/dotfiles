@@ -1,9 +1,11 @@
-{ config, lib, pkgs, ... }:
-
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 # TODO make custom theme using city lights colors
-
-with lib;
-let
+with lib; let
   cfg = config.modules.desktop.rofi;
   #inherit (config.lib.formats.rasi) mkLiteral;
 in {

@@ -1,10 +1,13 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.hardware.bluetooth;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.hardware.bluetooth;
 in {
-  options.modules.hardware.bluetooth = { enable = mkEnableOption false; };
+  options.modules.hardware.bluetooth = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     hardware.bluetooth = {
@@ -14,6 +17,6 @@ in {
 
     services.blueman.enable = true;
 
-    environment.systemPackages = with pkgs; [ gnome.gnome-bluetooth ];
+    environment.systemPackages = with pkgs; [gnome.gnome-bluetooth];
   };
 }

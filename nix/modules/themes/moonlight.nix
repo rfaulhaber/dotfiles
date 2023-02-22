@@ -33,9 +33,7 @@
   dark-blue = "#4976eb";
   dark-cyan = "#86e1fc";
 }
-
 # adapted from:
-
 # ((bg         '("#212337" "#212337"  "black"))
 #  (bg-alt     '("#191a2a" "#191a2a" "black"))
 #  (base0      '("#161a2a" "#161a2a" "black"))
@@ -51,9 +49,7 @@
 #  (region     '("#383e5c" "#383e5c" "brightblack"))
 #  (fg         '("#c8d3f5" "#c8d3f5" "brightwhite"))
 #  (fg-alt     '("#b4c2f0" "#b4c2f0" "white"))
-
 #  (grey base5)
-
 #  (dark-red      '("#ff5370" "#ff5370" "red"))
 #  (red           '("#ff757f" "#ff757f" "red"))
 #  (light-red     '("#ff98a4" "#ff98a4" "brightred"))
@@ -73,3 +69,4 @@
 #  (pink          '("#f3c1ff" "#f3c1ff" "magenta"))
 #  (cyan          '("#b4f9f8" "#b4f9f8" "brightcyan"))
 #  (dark-cyan     '("#86e1fc" "#86e1fc" "cyan"))
+

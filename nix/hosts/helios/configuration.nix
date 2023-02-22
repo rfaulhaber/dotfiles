@@ -1,11 +1,15 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, lib, inputs, ... }:
-
 {
-  imports = [ # Include the results of the hardware scan.
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}: {
+  imports = [
+    # Include the results of the hardware scan.
     ../../modules
     ./hardware-configuration.nix
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t495
@@ -46,7 +50,7 @@
       redshift.enable = true;
       systemd = {
         enable = true;
-        modules = [ "updatedb" ];
+        modules = ["updatedb"];
       };
       ssh = {
         enable = true;
@@ -55,7 +59,7 @@
       passwords.enable = true;
       zerotier = {
         enable = true;
-        networks = [ "b6079f73c6986bc2" ];
+        networks = ["b6079f73c6986bc2"];
       };
     };
     hardware = {
@@ -65,8 +69,8 @@
     desktop = {
       bspwm = {
         enable = true;
-        extraStartupPrograms = [ "keybase-gui" "pcloud" "discord" ];
-        monitors = [ "eDP" ];
+        extraStartupPrograms = ["keybase-gui" "pcloud" "discord"];
+        monitors = ["eDP"];
       };
       sound.enable = true;
       polybar = {

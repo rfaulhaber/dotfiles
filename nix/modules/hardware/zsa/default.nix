@@ -1,10 +1,13 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.hardware.zsa;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.hardware.zsa;
 in {
-  options.modules.hardware.zsa = { enable = mkEnableOption false; };
+  options.modules.hardware.zsa = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     # I only own the Moonlander and Planck-EZ keyboards, which use the same config

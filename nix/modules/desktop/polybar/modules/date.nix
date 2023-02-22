@@ -1,6 +1,4 @@
-{ colors }:
-
-{
+{colors}: {
   type = "internal/date";
   interval = "1";
 

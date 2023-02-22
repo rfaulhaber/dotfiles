@@ -1,15 +1,19 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-let cfg = config.modules.programs.neovim;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.programs.neovim;
 in {
-  options.modules.programs.neovim = { enable = mkEnableOption false; };
+  options.modules.programs.neovim = {enable = mkEnableOption false;};
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [ fzf ];
+    environment.systemPackages = with pkgs; [fzf];
 
     home.programs.neovim = {
       enable = true;
-      coc = { enable = true; };
+      coc = {enable = true;};
 
       plugins = with pkgs.vimPlugins; [
         coc-fzf

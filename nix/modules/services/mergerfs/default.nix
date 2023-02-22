@@ -1,8 +1,11 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.services.mergerfs;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.services.mergerfs;
 in {
   options.modules.services.mergerfs = {
     enable = mkEnableOption false;
@@ -10,7 +13,7 @@ in {
     branches = mkOption {
       type = types.listOf types.str;
       description = "Branches used by mergerfs.";
-      default = [ ];
+      default = [];
     };
     target = mkOption {
       type = types.str;
@@ -19,7 +22,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [ mergerfs ];
+    environment.systemPackages = with pkgs; [mergerfs];
 
     fileSystems."${cfg.target}" = {
       device = concatStringsSep ":" cfg.branches;
