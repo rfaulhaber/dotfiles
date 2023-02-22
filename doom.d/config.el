@@ -292,6 +292,10 @@ Used in loading config specific to those systems.")
 (after! lsp-haskell
   (setq lsp-haskell-formatting-provider "brittany"))
 
+;; nix mode
+;; set formatter to alejandra
+(set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
+
 ;; --------------------------------- misc -----------------------------------------
 
 ;; general
