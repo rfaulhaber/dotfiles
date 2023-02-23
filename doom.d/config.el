@@ -158,8 +158,7 @@ Used in loading config specific to those systems.")
  org-roam-graph-exclude-matcher '("daily"))
 
 ;; for adding backlinks to exported org-roam files
-;; (add-hook 'org-export-before-processing-hook #'self/org-export-preprocessor)
-(add-hook 'org-export-before-processing-hook #'self/org-roam-export-refs)
+(add-hook 'org-export-before-processing-functions #'self/org-roam-export-refs)
 
 ;; org-roam-server-mode
 (after! org
