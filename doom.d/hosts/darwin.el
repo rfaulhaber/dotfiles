@@ -4,11 +4,11 @@
 (setq ispell-program-name "/usr/local/bin/aspell")
 
 ;; do some key remapping
-(setq mac-option-buffer 'meta
-      mac-right-option-modifier 'meta
-      mac-command-modifier 'super
+(setq mac-option-buffer          'meta
+      mac-right-option-modifier  'meta
+      mac-command-modifier       'super
       mac-right-command-modifier 'super)
 
 ;; browse-url needs some help on macOS
-(setq browse-url-browser-function (quote browse-url-generic))
-(setq browse-url-generic-program "open")
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program  "open")
