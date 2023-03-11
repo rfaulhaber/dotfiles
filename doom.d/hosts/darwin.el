@@ -8,3 +8,7 @@
       mac-right-option-modifier 'meta
       mac-command-modifier 'super
       mac-right-command-modifier 'super)
+
+;; browse-url needs some help on macOS
+(setq browse-url-browser-function (quote browse-url-generic))
+(setq browse-url-generic-program "open")
