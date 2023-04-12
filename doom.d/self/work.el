@@ -5,6 +5,17 @@
 (require 'request)
 
 (defconst work/tasks-pattern (rx "Tasks" (zero-or-more any)))
+(defconst work/jira-board-template "https://onekfinancial.atlassian.net/jira/software/projects/IE/boards/43?selectedIssue=IE-%s")
+
+(defvar work/email nil "Work email. Defaults to nil for privacy reasons.")
+
+(defconst work/org-todo-items
+  '((sequence "TODO(t)" "STRT(s)" "QC(q)" "DPLY(e)" "|" "DONE(d)" "BLOCKED(b)")
+    (sequence "[ ](T)" "[-](S)" "[?](Q)" "[!](E)" "|" "[X](D)" "[B](B)"))
+  "Custom work TODO items.")
+
+(defconst work/org-carryover-items "TODO=\"TODO\"|TODO=\"STRT\"|TODO=\"QC\"|TODO=\"DPLY\""
+  "Custom carryover items")
 
 ;; TODO add function that converts bullet item to TODO heading
 
@@ -34,13 +45,13 @@
       (setq paragraph-count (string-to-number (read-from-minibuffer "How many paragraphs? " "5"))))
 
     (request "https://lipsum.com/feed/json"
-             :type "POST"
-             :data `(("amount" . ,paragraph-count))
-             :parser 'json-read
-             :sync t
-             :success (cl-function
-                       (lambda (&key data &allow-other-keys)
-                         (setq ret (cdr (assoc 'lipsum (assoc 'feed data)))))))
+      :type "POST"
+      :data `(("amount" . ,paragraph-count))
+      :parser 'json-read
+      :sync t
+      :success (cl-function
+                (lambda (&key data &allow-other-keys)
+                  (setq ret (cdr (assoc 'lipsum (assoc 'feed data)))))))
     (kill-new ret)
     (message "Lorem Ipsum saved to kill ring")))
 
@@ -68,15 +79,37 @@
 *** On track for this week: 🟢
 ")))
 
+(defun work/get-random-number-of-length (len)
+  (substring (number-to-string (abs (random))) 0 len))
+
 (defun work/get-random-phone-number (&optional prefix)
   "Returns a number that could look like a phone number."
   (interactive "p")
-  (let ((number (substring (number-to-string (abs (random))) 0 10)))
+  (let ((number (work/get-random-number-of-length 10)))
     (pcase prefix
       (1 (insert number))
       (4 (progn
            (kill-new number)
            (message "%s has been added to the kill-ring" number))))))
+
+(defun work/get-random-work-email (&optional prefix)
+  (interactive "p")
+  (let* ((number (work/get-random-number-of-length 10))
+         (email (format "ryan.faulhaber+testing%s@facetwealth.com" number)))
+    (pcase prefix
+      (1 (insert email))
+      (4 (progn
+           (kill-new email)
+           (message "%s has been added to the kill-ring" email))))))
+
+(defun work/insert-jira-story (story-number)
+  (interactive "nStory number: ")
+  (let ((link (format work/jira-board-template story-number)))
+    (save-excursion
+      (goto-char (point-min))
+      (re-search-forward (regexp-quote "Tasks"))
+      (org-insert-subheading t)
+      (insert (format "TODO [[%s][IE-%s]]" link story-number)))))
 
 ;; non-interactive
 
@@ -198,13 +231,12 @@
       dates)))
 
 (defun work/org-journal-after-header-create-hook ()
-  (work/add-journal-header)
   (work/journal-add-default-headers))
 
-(defun work/add-journal-header ()
-  (save-excursion
-    (goto-char (point-min))
-    (insert "#+options: toc:nil author:nil\n\n")))
+(defun work/org-journal-file-header (&rest args)
+  "Stuff to add to org journal file header."
+  (concat
+   "#+options: toc:nil author:nil\n\n"))
 
 (defun work/journal-add-default-headers ()
   ;; (when (null (work/journal-contains-task-header-p))
