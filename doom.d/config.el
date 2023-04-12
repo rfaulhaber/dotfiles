@@ -175,7 +175,9 @@ Used in loading config specific to those systems.")
  org-journal-encrypt-journal (not config/work-computer-p))
 
 (when config/work-computer-p
-  (setq org-journal-carryover-items "TODO=\"TODO\"|TODO=\"STRT\"|TODO=\"REVIEW\"")
+  (setq org-todo-keywords work/org-todo-items)
+  (setq org-journal-carryover-items work/org-carryover-items)
+  (setq org-journal-file-header #'work/org-journal-file-header)
   (add-hook 'org-journal-after-header-create-hook #'work/org-journal-after-header-create-hook))
 
 ;; org-ref
