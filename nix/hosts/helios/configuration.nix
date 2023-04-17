@@ -89,8 +89,10 @@
   };
 
   boot = {
-    tmpOnTmpfs = true;
-    cleanTmpDir = true;
+    tmp = {
+      useTmpfs = true;
+      cleanOnBoot = true;
+    };
 
     loader = {
       systemd-boot.enable = true;

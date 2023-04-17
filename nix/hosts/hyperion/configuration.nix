@@ -80,8 +80,11 @@
     themes.active = "moonlight";
   };
 
-  boot.tmpOnTmpfs = true;
-  boot.cleanTmpDir = true;
+  boot.tmp = {
+    useTmpfs = true;
+    cleanOnBoot = true;
+  };
+
   boot.loader = {
     grub = {
       enable = true;
