@@ -68,7 +68,7 @@
       videoDrivers = ["nvidia"];
       bspwm = {
         enable = true;
-        extraStartupPrograms = ["keybase-gui" "discord" "1password"];
+        extraStartupPrograms = ["keybase-gui" "discord" "1password" "telegram-desktop"];
         monitors = ["DP-0"];
       };
       sound.enable = true;
