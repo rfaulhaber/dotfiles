@@ -51,7 +51,6 @@
 
 ;; *elpa packages
 (package! calibredb)
-(package! deadgrep)
 (package! mermaid-mode)
 (package! nov)
 (package! ob-mermaid)
@@ -59,8 +58,6 @@
 (package! org-cliplink)
 (package! pollen-mode)
 (package! prettier)
-(package! vimgolf)
-(package! wttrin)
 ;; (package! fzf) ;; redundant with consult / vertico
 ;; (package! hyperbole)
 
