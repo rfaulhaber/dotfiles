@@ -170,9 +170,7 @@ Used in loading config specific to those systems.")
 ;; org-journal
 (setq
  org-journal-dir "~/org/journal"
- org-journal-file-format "%Y%m%d.org"
- org-journal-enable-encryption (not config/work-computer-p)
- org-journal-encrypt-journal (not config/work-computer-p))
+ org-journal-file-format "%Y%m%d.org")
 
 (when config/work-computer-p
   (setq org-todo-keywords work/org-todo-items)
