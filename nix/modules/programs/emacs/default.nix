@@ -48,6 +48,7 @@ in {
       texlive.combined.scheme-medium
       wordnet
       xdotool
+      xorg.xprop
       xorg.xwininfo
       zstd
     ];
