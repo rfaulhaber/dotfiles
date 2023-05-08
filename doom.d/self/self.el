@@ -302,8 +302,8 @@ Version 2016-07-13"
 (defun self/evil-buffer-new-with-mode (mode &rest args)
   (interactive
    (list (completing-read "Mode? " self/new-buffer-modes)))
-  (apply #'evil-buffer-new args)
-  (funcall (intern mode)))
+  (let ((major-mode (intern mode)))
+    (apply #'evil-buffer-new args)))
 
 (defun self/string-to-nato-phonetic (input)
   (interactive "sInput: ")
