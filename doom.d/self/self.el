@@ -202,16 +202,18 @@ Version 2016-07-13"
              (forward-line -2)
              (insert new-text)))))))
 
-(defun self/insert-border-comment (msg &optional width char)
+(defun self/insert-border-comment (msg &optional char)
   "Inserts a comment intended to divide the file up by a character."
   (interactive "sMessage: ")
-  (let* ((width (or width 80))
-         (char (or char ?-))
-         (half-width (/ (- width (length msg)) 2)))
-    (insert (make-string half-width char))
-    (insert " " msg " ")
-    (insert (make-string half-width char))
-    (comment-region (line-beginning-position) (line-end-position))))
+  (save-excursion
+    (delete-horizontal-space)
+    (comment-dwim nil)
+    (let* ((remaining-length (- fill-column (current-column) (length msg)))
+           (char (or char ?-))
+           (half-width (/ remaining-length 2)))
+      (insert (format "%s %s %s" (make-string half-width char) msg (make-string half-width char)))
+      (when (> (- (eol) (bol)) fill-column)
+        (delete-char (- (- (eol) (bol)) fill-column))))))
 
 (defun self/eww-open-here (url)
   "Opens a new EWW buffer with URL here in the current window."
