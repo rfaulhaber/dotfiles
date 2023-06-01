@@ -5,9 +5,8 @@
       config/work-computer-p t)
 
 ;; set window size
-(when (window-system)
-  (set-frame-size (selected-frame) 120 50))
+(add-to-list 'default-frame-alist '(width . 120))
+(add-to-list 'default-frame-alist '(height . 50))
 
 ;; org-journal config
-(setq org-journal-carryover-items "TODO=\"TODO\"|TODO=\"STRT\"")
 (add-hook 'org-journal-after-header-create-hook #'work/org-journal-after-header-create-hook)
