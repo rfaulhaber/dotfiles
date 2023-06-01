@@ -16,49 +16,6 @@
                                      ("YYYYMMDD" . "%Y%m%d"))
   "Various date formats used in interactive functions.")
 
-(defconst self/nato-phonetic-alphabet '(("a" . "alfa")
-                                        ("b" . "bravo")
-                                        ("c" . "charlie")
-                                        ("d" . "delta")
-                                        ("e" . "echo")
-                                        ("f" . "foxtrot")
-                                        ("g" . "golf")
-                                        ("h" . "hotel")
-                                        ("i" . "india")
-                                        ("j" . "juliet")
-                                        ("k" . "kilo")
-                                        ("l" . "lima")
-                                        ("m" . "mike")
-                                        ("n" . "november")
-                                        ("o" . "oscar")
-                                        ("p" . "papa")
-                                        ("q" . "quebec")
-                                        ("r" . "romeo")
-                                        ("s" . "sierra")
-                                        ("t" . "tango")
-                                        ("u" . "uniform")
-                                        ("v" . "victor")
-                                        ("w" . "whiskey")
-                                        ("x" . "x-ray")
-                                        ("y" . "yankee")
-                                        ("z" . "zulu")
-                                        ("0" . "zero")
-                                        ("1" . "one")
-                                        ("2" . "two")
-                                        ("3" . "three")
-                                        ("4" . "four")
-                                        ("5" . "five")
-                                        ("6" . "six")
-                                        ("7" . "seven")
-                                        ("8" . "eight")
-                                        ("9" . "niner")
-                                        ("." . "stop/decimal")
-                                        ("," . "comma")
-                                        ("-" . "dash")
-                                        ("/" . "slant")
-                                        ("(" . "brackets on")
-                                        (")" . "brackets off")))
-
 ;; ------------------------------ function aliases -----------------------------
 
 ;; I can never remember the envrc functions
@@ -245,16 +202,18 @@ Version 2016-07-13"
              (forward-line -2)
              (insert new-text)))))))
 
-(defun self/insert-border-comment (msg &optional width char)
+(defun self/insert-border-comment (msg &optional char)
   "Inserts a comment intended to divide the file up by a character."
   (interactive "sMessage: ")
-  (let* ((width (or width 80))
-         (char (or char ?-))
-         (half-width (/ (- width (length msg)) 2)))
-    (insert (make-string half-width char))
-    (insert " " msg " ")
-    (insert (make-string half-width char))
-    (comment-region (line-beginning-position) (line-end-position))))
+  (save-excursion
+    (delete-horizontal-space)
+    (comment-dwim nil)
+    (let* ((remaining-length (- fill-column (current-column) (length msg)))
+           (char (or char ?-))
+           (half-width (/ remaining-length 2)))
+      (insert (format "%s %s %s" (make-string half-width char) msg (make-string half-width char)))
+      (when (> (- (eol) (bol)) fill-column)
+        (delete-char (- (- (eol) (bol)) fill-column))))))
 
 (defun self/eww-open-here (url)
   "Opens a new EWW buffer with URL here in the current window."
@@ -304,20 +263,6 @@ Version 2016-07-13"
    (list (completing-read "Mode? " self/new-buffer-modes)))
   (let ((major-mode (intern mode)))
     (apply #'evil-buffer-new args)))
-
-(defun self/string-to-nato-phonetic (input)
-  (interactive "sInput: ")
-  (let* ((chars (string-split (downcase input) "" t))
-         (output (string-join
-                  (mapcar (lambda (char)
-                            (if (assoc char self/nato-phonetic-alphabet)
-                                (cdr (assoc char self/nato-phonetic-alphabet))
-                              char))
-                          chars)
-                  " ")))
-    (message "%s" output)
-    (when current-prefix-arg
-      (insert output))))
 
 ;; ----------------------------- utility functions -----------------------------
 
