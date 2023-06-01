@@ -176,6 +176,7 @@ Used in loading config specific to those systems.")
   (setq org-todo-keywords work/org-todo-items)
   (setq org-journal-carryover-items work/org-carryover-items)
   (setq org-journal-file-header #'work/org-journal-file-header)
+  (setq hl-todo-keyword-faces work/hl-todo-faces)
   (add-hook 'org-journal-after-header-create-hook #'work/org-journal-after-header-create-hook))
 
 ;; org-ref

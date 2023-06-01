@@ -6,6 +6,7 @@
 
 (defconst work/tasks-pattern (rx "Tasks" (zero-or-more any)))
 (defconst work/jira-board-template "https://onekfinancial.atlassian.net/jira/software/projects/IE/boards/43?selectedIssue=IE-%s")
+(defconst work/logging-properties "STRT(!) QC(!) DPLY(!) DONE(!) logdone")
 
 (defvar work/email nil "Work email. Defaults to nil for privacy reasons.")
 
@@ -16,6 +17,13 @@
 
 (defconst work/org-carryover-items "TODO=\"TODO\"|TODO=\"STRT\"|TODO=\"QC\"|TODO=\"DPLY\""
   "Custom carryover items")
+
+(defconst work/hl-todo-faces
+  '(("TODO" warning bold)
+    ("STRT" font-lock-constant-face bold)
+    ("DPLY" font-lock-keyword-face bold)
+    ("DONE" font-lock-doc-face bold)
+    ("BLOCKED" error bold)))
 
 ;; TODO add function that converts bullet item to TODO heading
 
@@ -59,10 +67,10 @@
   (interactive)
   (save-excursion
     (goto-char (point-max))
-    (insert "** Tasks [/]
+    (insert (format "** Tasks [/]
 :PROPERTIES:
-:LOGGING:  STRT(!) DONE(!) logdone
-:END:")))
+:LOGGING:  %s
+:END:" work/logging-properties))))
 
 (defun work/insert-blank-standup-header ()
   (interactive)
@@ -78,6 +86,28 @@
 -
 *** On track for this week: 🟢
 ")))
+
+(defun work/make-work-standup-template ()
+  (interactive)
+  (let ((open-items (work/get-in-progress-org-items-for-buffer)))
+    (save-excursion
+      (goto-char (point-max))
+      (apply #'insert "** Standup\n" (mapcar (lambda (item)
+                                               (format "- %s:\n" item))
+                                             open-items)))))
+
+(defun work/get-in-progress-org-items-for-buffer ()
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward "** Tasks")
+    (seq-filter #'identity
+                (org-map-entries (lambda ()
+                                   (when (eq (org-element-property :todo-type (org-element-at-point)) 'todo)
+                                     (let ((title (org-element-property :title (org-element-at-point))))
+                                       (if (string-match (rx "[[" (one-or-more any) "][" (group (one-or-more any)) "]]") title)
+                                           (match-string 1 title)
+                                         title))))
+                                 nil 'tree))))
 
 (defun work/get-random-number-of-length (len)
   (substring (number-to-string (abs (random))) 0 len))
@@ -236,7 +266,7 @@
 (defun work/org-journal-file-header (&rest args)
   "Stuff to add to org journal file header."
   (concat
-   "#+options: toc:nil author:nil\n\n"))
+   "#+options: toc:nil author:nil e:nil\n\n"))
 
 (defun work/journal-add-default-headers ()
   ;; (when (null (work/journal-contains-task-header-p))
