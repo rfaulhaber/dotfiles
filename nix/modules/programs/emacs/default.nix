@@ -14,7 +14,7 @@ in {
       install = true;
       defaultEditor = true;
       package = with pkgs; ((emacsPackagesFor emacs).emacsWithPackages
-        (epkgs: with epkgs; [pdf-tools vterm]));
+        (epkgs: with epkgs; [pdf-tools prettier vterm]));
     };
 
     # dependencies for my very specific configuration of doom

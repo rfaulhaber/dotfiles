@@ -25,7 +25,6 @@
     services = {
       docker.enable = true;
       gpg.enable = true;
-      virt.enable = true;
       # TODO this is required but it shouldn't be
       # TODO make these use constants of some kind, e.g. with systemdModules; [ docker-cleanup ]
       systemd = {
