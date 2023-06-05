@@ -48,7 +48,6 @@
         enable = true;
         modules = ["updatedb"];
       };
-      virt.enable = true;
       ssh = {
         enable = true;
         enableClient = true;
