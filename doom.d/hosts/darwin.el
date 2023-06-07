@@ -12,3 +12,6 @@
 ;; browse-url needs some help on macOS
 (setq browse-url-browser-function 'browse-url-generic
       browse-url-generic-program  "open")
+
+;; temporary --- reset woman-manpath to original value
+(setq woman-manpath '("/opt/homebrew/share/man/" "/usr/share/man/" "/usr/local/share/man/" "/Applications/kitty.app/Contents/Resources/man/" "/usr/share/man" "/usr/local/share/man" "/usr/X11/man" "/Library/Apple/usr/share/man"))
