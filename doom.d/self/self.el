@@ -34,38 +34,6 @@
     (with-selected-window new-window
       (switch-to-buffer (format "*%s*" (make-temp-name "scratch-"))))))
 
-(defun self/org-roam-subtree-to-new-file ()
-  "Moves current Org subtree to new org-roam file. Kind of hacky!"
-  (interactive)
-  (let* ((el (org-element-at-point))
-         (title (org-element-property :title el))
-         (type (car el))
-         (header-start (org-element-property :begin el))
-         (el-start (org-element-property :contents-begin el))
-         (el-end (org-element-property :contents-end el)))
-    (if (not (eq 'headline type))
-        (user-error "Not at header")
-      (progn
-        (kill-region el-start el-end)
-        (goto-char header-start)
-        (kill-line)
-        (let ((new-buf (with-temp-buffer
-                         (org-mode)
-                         (insert "\n")
-                         (insert (car (cdr kill-ring)))
-                         (buffer-string))))
-          (org-roam-insert nil (list title) nil title))
-        (insert new-buf)))))
-
-(defun self/org-paste-quote (page-number)
-  "Inserts latest element of kill ring into quote block."
-  ;; TODO automatically insert into document
-  (interactive "sPage number: ")
-  (insert (format "- %s\n" page-number))
-  (insert "\t#+begin_quote\n\t")
-  (yank)
-  (insert "\n\t#+end_quote"))
-
 ;; thank you xah
 (defun self/unfill-region (start end)
   "Replace newline chars in region by single spaces.
@@ -511,7 +479,8 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
   (forward-line (- line-number (line-number-at-pos))))
 
 (defun self/goto-col-non-interactive (col-number)
-  "Helper for going to a col at COL-NUMBER without invoking `goto-char' or `move-to-column'."
+  "Helper for going to a col at COL-NUMBER without invoking `goto-char' or
+`move-to-column'."
   (forward-char (- col-number (current-column))))
 
 ;; thank you http://stackoverflow.com/questions/6158990/generating-randoms-numbers-in-a-certain-range-for-common-lisp
@@ -556,38 +525,6 @@ of line, moves cursor to the end of LINE."
     (if (< (- (line-end-position) (point)) col)
         (end-of-line)
       (self/goto-col-non-interactive col))))
-
-;; TODO
-;; (defun self/file-path-with-line-extension-p (path)
-;;   (let ((file-path-pattern-with-line-ext (rx line-start (one-or-more any) "/" (one-or-more (not "/")) line-end)))
-
-;;     ))
-
-;; TODO
-;; (defun self/consult-evil-marks ()
-;;   (let ((all-markers (self/get-all-evil-marks-for-buffer)))
-
-;;     ))
-
-;; (defun self/get-all-evil-marks-for-buffer ()
-;;   "Stolen from evil-commands.el:3525"
-;;   (let ((all-markers (append (cl-remove-if (lambda (m)
-;;                                              (or (evil-global-marker-p (car m))
-;;                                                  (not (markerp (cdr m)))))
-;;                                            evil-markers-alist)
-;;                              (cl-remove-if (lambda (m)
-;;                                              (or (not (evil-global-marker-p (car m)))
-;;                                                  (not (markerp (cdr m)))))
-;;                                            (default-value 'evil-markers-alist)))))
-;;     (mapcar (lambda (m)
-;;               (with-current-buffer (marker-buffer (cdr m))
-;;                 (save-excursion
-;;                   (goto-char (cdr m))
-;;                   (list (car m)
-;;                         (line-number-at-pos (point))
-;;                         (current-column)
-;;                         (buffer-name)))))
-;;             all-markers)))
 
 ;; custom evil operators ------------------------------------
 
