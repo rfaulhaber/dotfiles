@@ -138,6 +138,10 @@ Used in loading config specific to those systems.")
 (after! org
   (load! "./self/org-templates.el"))
 
+;; for org mode, set the fill column to 130
+(add-hook 'org-mode-hook (lambda ()
+                           (setq-local fill-column 130)))
+
 ;; org-md
 ;; the default md exporter for source code blocks is bad, so we replace it
 (advice-add 'org-md-example-block :override #'self/org-md-src-block)
