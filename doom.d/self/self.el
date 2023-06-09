@@ -196,41 +196,32 @@ Version 2016-07-13"
   (interactive)
   (org-roam-ref-add (car kill-ring)))
 
-(defun self/org-journal-make-entry-encrypted ()
-  (interactive)
-  (cond
-   ((not (eq major-mode 'org-journal-mode)) (message "Not in org-journal file."))
-   ((string-match-p (rx ".gpg" eol) (buffer-file-name)) (message "Already encrypted."))
-   ((not (buffer-file-name)) (message "Not visiting a file."))
-   (t
-    (let* ((file-name (buffer-file-name))
-           (new-file-name (concat file-name ".gpg")))
-      (epa-encrypt-file file-name (epa-select-keys (epg-make-context epa-protocol) "Select a key."))
-      ;; (rename-file file-name new-file-name)
-      (kill-buffer)
-      (delete-file file-name)
-      (switch-to-buffer (find-file-noselect new-file-name))))))
-
-;; TODO merge this function and the one above
-(defun self/org-journal-make-entry-unencrypted ()
-  (interactive)
-  (cond
-   ((not (eq major-mode 'org-journal-mode)) (message "Not in org-journal file."))
-   ((not (string-match-p (rx ".gpg" eol) (buffer-file-name))) (message "Already encrypted."))
-   ((not (buffer-file-name)) (message "Not visiting a file."))
-   (t
-    (let* ((file-name (buffer-file-name))
-           (new-file-name (string-replace ".gpg" "" file-name)))
-      (epa-decrypt-file file-name new-file-name)
-      (delete-file file-name)
-      (kill-buffer)
-      (switch-to-buffer (find-file-noselect new-file-name))))))
-
 (defun self/evil-buffer-new-with-mode (mode &rest args)
   (interactive
    (list (completing-read "Mode? " self/new-buffer-modes)))
   (let ((major-mode (intern mode)))
     (apply #'evil-buffer-new args)))
+
+(defun self/surround-line-with-character (char)
+  "Surrounds the current line with a character CHAR.
+For example, give this line of text:
+
+hello world
+
+returns:
+
+===========
+hello world
+==========="
+  (interactive "sChar: ")
+  (let ((current-line-length (- (eol) (bol))))
+    (save-excursion
+      (forward-line -1)
+      (delete-region (bol) (eol))
+      (insert (make-string current-line-length (string-to-char char)))
+      (forward-line 2)
+      (delete-region (bol) (eol))
+      (insert (make-string current-line-length (string-to-char char))))))
 
 ;; ----------------------------- utility functions -----------------------------
 
