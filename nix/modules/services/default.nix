@@ -11,10 +11,11 @@
     ./samba-mount
     ./samba-serve
     ./snapraid
-    ./syncthing
     ./ssh.nix
+    ./syncthing
     ./systemd
     ./virt
+    ./wireguard
     ./zerotier
   ];
 }

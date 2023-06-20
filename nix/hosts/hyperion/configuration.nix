@@ -53,6 +53,9 @@
         enableClient = true;
       };
       passwords.enable = true;
+      wireguard = {
+        enable = true;
+      };
       zerotier = {
         enable = true;
         networks = ["b6079f73c6986bc2"];
