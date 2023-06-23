@@ -30,6 +30,9 @@
         useDelta = true;
       };
       exa.enable = true;
+      nushell = {
+        enable = true;
+      };
     };
     services = {
       docker.enable = true;

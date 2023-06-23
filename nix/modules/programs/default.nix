@@ -7,6 +7,7 @@
     ./keychain
     ./kitty
     ./neovim
+    ./nushell
     ./pcloud
     ./starship
     ./zsh
