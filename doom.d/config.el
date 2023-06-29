@@ -106,6 +106,8 @@ Used in loading config specific to those systems.")
 (map! :mode racket-mode
       "TAB" #'evil-jump-item)
 
+(map! :leader "b o" #'self/new-buffer-with-mode)
+
 ;; common directories
 (setq self/common-directories '(("Downloads" . "~/Downloads")
                                 ("Projects" . "~/Projects")
@@ -117,7 +119,8 @@ Used in loading config specific to those systems.")
 ;; custom ex commands for evil
 (evil-ex-define-cmd "wt[emp]" #'self/evil-write-temp)
 (evil-ex-define-cmd "ws[uspend]" #'self/evil-write-suspend)
-(evil-ex-define-cmd "shuf" #'self/evil-ex-shuf)
+(evil-ex-define-cmd "shuf" #'self/evil-ex-shuffle-lines)
+(evil-ex-define-cmd "uniq" #'self/evil-ex-remove-duplicates)
 
 ;; custom variable settings
 ;; Tramp shell prompt, to allow it to work with terminal colors
