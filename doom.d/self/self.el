@@ -8,7 +8,6 @@
 
 (defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
 (defvar self/common-directories '() "Alist (Name . Path) of common directories, used by self/visit-common-directories")
-(defvar self/new-buffer-modes '(emacs-lisp-mode js2-mode org-mode) "List of modes that self/new-buffer-with-mode should display.")
 
 (defconst self/date-format-options '(("MM/YYYY"    . "%m/%Y")
                                      ("MM/DD"      . "%m/%d")
@@ -170,18 +169,19 @@ Version 2016-07-13"
              (forward-line -2)
              (insert new-text)))))))
 
-(defun self/insert-border-comment (msg &optional char)
-  "Inserts a comment intended to divide the file up by a character."
-  (interactive "sMessage: ")
-  (save-excursion
-    (delete-horizontal-space)
-    (comment-dwim nil)
-    (let* ((remaining-length (- fill-column (current-column) (length msg)))
-           (char (or char ?-))
-           (half-width (/ remaining-length 2)))
-      (insert (format "%s %s %s" (make-string half-width char) msg (make-string half-width char)))
-      (when (> (- (eol) (bol)) fill-column)
-        (delete-char (- (- (eol) (bol)) fill-column))))))
+;; thank you ChatGPT
+(defun self/create-centered-comment (text)
+  "Create a vertically centered comment with the given TEXT."
+  (interactive "sEnter comment: ")
+  (let* ((comment-start (concat comment-start " "))
+         (comment-end (concat " " comment-end))
+         (available-width (- fill-column (length comment-start) (length comment-end) 2))
+         (padding-width (/ (- available-width (length text)) 2))
+         (padding (make-string padding-width ?-))
+         (centered-text (concat padding " " text " " padding)))
+    (save-excursion
+      (insert (concat comment-start centered-text comment-end))
+      (comment-region (line-beginning-position) (line-end-position)))))
 
 (defun self/eww-open-here (url)
   "Opens a new EWW buffer with URL here in the current window."
@@ -196,11 +196,14 @@ Version 2016-07-13"
   (interactive)
   (org-roam-ref-add (car kill-ring)))
 
-(defun self/evil-buffer-new-with-mode (mode &rest args)
-  (interactive
-   (list (completing-read "Mode? " self/new-buffer-modes)))
-  (let ((major-mode (intern mode)))
-    (apply #'evil-buffer-new args)))
+;; thank you ChatGPT
+(defun self/new-buffer-with-mode ()
+  "Create a new buffer with a selected major mode."
+  (interactive)
+  (let* ((available-modes (sort (mapcar #'symbol-name (apropos-internal "-mode$" 'commandp)) #'string-lessp))
+         (mode (completing-read "Enter major mode: " available-modes)))
+    (switch-to-buffer (generate-new-buffer "*new*"))
+    (funcall (intern mode))))
 
 (defun self/surround-line-with-character (char)
   "Surrounds the current line with a character CHAR.
@@ -222,6 +225,33 @@ hello world
       (forward-line 2)
       (delete-region (bol) (eol))
       (insert (make-string current-line-length (string-to-char char))))))
+
+;; thank you ChatGPT
+(defun self/evil-ex-shuffle-lines (beg end)
+  "Shuffle the lines in the region from BEG to END."
+  (interactive "r")
+  (save-excursion
+    (narrow-to-region beg end)
+    (goto-char (point-min))
+    (forward-line 1)
+    (let ((lines (split-string (buffer-substring (point-min) (point-max)) "\n" t))
+          (n (count-lines (point-min) (point-max))))
+      (dotimes (i n)
+        (let ((j (+ i (random (- n i)))))
+          (when (/= i j)
+            (cl-rotatef (elt lines i) (elt lines j)))))
+      (erase-buffer)
+      (insert (mapconcat 'identity lines "\n"))))
+  (widen))
+
+;; thank you ChatGPT
+(defun evil-ex-remove-duplicates (beg end)
+  "Remove duplicate lines in the region from BEG to END."
+  (interactive "r")
+  (save-excursion
+    (narrow-to-region beg end)
+    (delete-duplicate-lines (point-min) (point-max))
+    (widen)))
 
 ;; ----------------------------- utility functions -----------------------------
 
@@ -287,7 +317,6 @@ filename. This is mainly to override org-roam's default filename convention of
   (let* ((file-path (read-file-name "File: "))
          (file-name (read-from-minibuffer "Description: ")))
     (format "[[%s][%s]]" file-path file-name)))
-
 
 (defun self/pick-random-word (word-count)
   "Picks WORD-COUNT number of random words from the system dictionary."
@@ -546,34 +575,3 @@ This is meant to skip any kind of automatic formatting."
   (text-mode)
   (evil-write beg end type file-or-append bang)
   (major-mode-restore))
-
-;; (evil-define-operator self/evil-ex-uniq (beg end)
-;;   "Like :sort u, except it doesn't sort."
-;;   :motion mark-whole-buffer
-;;   :move-point nil
-;;   (interactive "<r>")
-;;   (let ((main-buf (current-buffer)))
-;;     (insert (with-temp-buffer
-;;               (insert-buffer-substring main-buf beg end)
-;;               (sort-lines nil (point-min) (point-max))
-;;               (while (and (< (point) (point-max)) (not eobp))
-;;                 (let ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-;;                   )
-;;                 )
-;;               ))
-;;     )
-;;   )
-
-;; see https://github.com/emacs-evil/evil/blob/7c3343cef739ae223eb3ca991897d97f2d017462/evil-commands.el#L4283
-(evil-define-operator self/evil-ex-shuf (beg end)
-  "The opposite of :sort. Shuffles lines in range."
-  :motion mark-whole-buffer
-  :move-point nil
-  (interactive "<r>")
-  (let ((f (line-number-at-pos end))
-        (i (line-number-at-pos beg)))
-    (while (< i f)
-      (let ((rand (self/random-in-range i f)))
-        (unless (= i rand)
-          (self/swap-lines i rand)
-          (setq i (+ i 1)))))))
