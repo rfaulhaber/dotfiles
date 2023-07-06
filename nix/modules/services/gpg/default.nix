@@ -16,10 +16,14 @@ in {
       dbus.packages = with pkgs; [gnome.gnome-keyring gcr dconf];
       gnome = {gnome-keyring.enable = true;};
     };
+
     programs.gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
-      pinentryFlavor = "gnome3";
+      pinentryFlavor = "emacs";
     };
+
+    # adding this in to resolve an issue where "pass" doesn't work
+    environment.systemPackages = with pkgs; [pinentry];
   };
 }
