@@ -233,15 +233,10 @@ hello world
   (save-excursion
     (narrow-to-region beg end)
     (goto-char (point-min))
-    (forward-line 1)
-    (let ((lines (split-string (buffer-substring (point-min) (point-max)) "\n" t))
-          (n (count-lines (point-min) (point-max))))
-      (dotimes (i n)
-        (let ((j (+ i (random (- n i)))))
-          (when (/= i j)
-            (cl-rotatef (elt lines i) (elt lines j)))))
-      (erase-buffer)
-      (insert (mapconcat 'identity lines "\n"))))
+    (let ((lines (split-string (buffer-substring (point-min) (point-max)) "\n" t)))
+      (self/shuffle lines)
+      (delete-region beg end)
+      (insert (mapconcat #'identity lines "\n"))))
   (widen))
 
 ;; thank you ChatGPT
@@ -389,7 +384,8 @@ channel."
 
 ;; TODO see above todo
 (defun self/org-roam-export-refs (_backend)
-  "For org-roam files, exports the ROAM_REF property as a section at the bottom of the file as an unordered list."
+  "For org-roam files, exports the ROAM_REF property as a section at the bottom
+of the file as an unordered list."
   (save-excursion
     (goto-char (point-min))
     (when (and
@@ -417,11 +413,11 @@ channel."
      (point-max))))
 
 (cl-defun self/find-file-non-recursive (dir &key prompt filter-fn exclude-directories show-hidden)
-  "Like `counsel-find-file' for DIR, but excludes directories and their children.
-PROMPT sets the `completing-read' prompt.
-FILTER-FN is a function to filter the list of retrieved files from the directory.
-EXCLUDE-DIRECTORIES, if non-nil, will remove any directories from the list.
-If SHOW-HIDDEN is non-nil, will include any files that begin with ."
+  "Like `counsel-find-file' for DIR, but excludes directories and their
+children. PROMPT sets the `completing-read' prompt. FILTER-FN is a function to
+filter the list of retrieved files from the directory. EXCLUDE-DIRECTORIES, if
+non-nil, will remove any directories from the list. If SHOW-HIDDEN is non-nil,
+will include any files that begin with ."
   (let* ((dir (concat (string-trim-right dir (rx (one-or-more "/"))) "/"))
          (filter (rx line-start (not ".") (zero-or-more any) eol)) ; ^[^.].*$
          (files (directory-files dir nil (if show-hidden nil filter)))
@@ -459,7 +455,8 @@ If SHOW-HIDDEN is non-nil, will include any files that begin with ."
     headings))
 
 (defun self/org-property-filter (data types pred)
-  "Like `org-element-map', but a filter function. Applies DATA, TYPES, and PRED to `org-element-map'"
+  "Like `org-element-map', but a filter function. Applies DATA, TYPES, and PRED
+to `org-element-map'"
   (let ((col nil))
     (org-element-map seq types (lambda (el)
                                  (when (funcall pred el)
@@ -546,7 +543,16 @@ of line, moves cursor to the end of LINE."
         (end-of-line)
       (self/goto-col-non-interactive col))))
 
-;; custom evil operators ------------------------------------
+(defun self/shuffle (lst)
+  "Shuffles a list LST."
+  (let ((n (length lst)))
+    (dotimes (i (length lst))
+      (let ((j (+ i (random (- n i)))))
+        (when (/= i j)
+          (cl-rotatef (elt lst i) (elt lst j))))))
+  lst)
+
+;; --------------------------- custom evil operators ---------------------------
 
 (evil-define-operator self/evil-write-temp (beg end &optional prefix)
   "Like evil-write, but creates a new temporary file and writes to that."
