@@ -63,13 +63,19 @@ in {
         "github.com" = {
           hostname = "github.com";
           identityFile = "${sshPath}/id_github";
-          extraOptions = {"PreferredAuthentications" = "publickey";};
+          extraOptions = {
+            "PreferredAuthentications" = "publickey";
+            "AddKeysToAgent" = "yes";
+          };
         };
 
         "gitlab.com" = {
           hostname = "github.com";
           identityFile = "${sshPath}/id_gitlab";
-          extraOptions = {"PreferredAuthentications" = "publickey";};
+          extraOptions = {
+            "PreferredAuthentications" = "publickey";
+            "AddKeysToAgent" = "yes";
+          };
         };
 
         "pi" = {
