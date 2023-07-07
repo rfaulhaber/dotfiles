@@ -92,4 +92,9 @@ in rec {
   # thank you hlissner
   mapHosts = dir: attrs @ {system ? defaultSystem, ...}:
     mapModules dir (hostPath: mkHost hostPath attrs);
+
+  systemdModules = import ../modules/services/systemd/modules {
+    inherit lib;
+    pkgs = import nixpkgs {system = defaultSystem;};
+  };
 }
