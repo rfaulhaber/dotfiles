@@ -14,7 +14,7 @@
     programs = {
       zsh = {
         enable = true;
-        setDefault = true;
+        # setDefault = true;
         ohMyZsh = {
           enable = true;
           theme = "agnoster";
@@ -32,7 +32,9 @@
       exa.enable = true;
       nushell = {
         enable = true;
+        setDefault = true;
       };
+      direnv.enable = true;
     };
     services = {
       docker.enable = true;

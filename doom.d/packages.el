@@ -51,6 +51,7 @@
 
 ;; *elpa packages
 (package! calibredb)
+(package! deadgrep)
 (package! mermaid-mode)
 (package! nov)
 (package! ob-mermaid)
@@ -58,7 +59,7 @@
 (package! org-cliplink)
 (package! pollen-mode)
 (package! prettier)
-;; (package! fzf) ;; redundant with consult / vertico
+(package! fzf)
 ;; (package! hyperbole)
 
 ;; non-*elpa packages
@@ -86,6 +87,15 @@
   :recipe (:host github
            :repo "tecosaur/org-pandoc-import"
            :files ("*.el" "filters" "preprocessors")))
+
+(package! zoxide.el
+  :recipe (:host gitlab
+           :repo "Vonfry/zoxide.el"
+           :branch "master"))
+
+(package! nushell-mode
+  :recipe (:host github
+           :repo "mrkkrp/nushell-mode"))
 
 ;; org roam ui
 (package! websocket)

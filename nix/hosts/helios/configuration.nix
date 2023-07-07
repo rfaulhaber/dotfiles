@@ -48,10 +48,7 @@
       gpg.enable = true;
       mail.enable = true;
       redshift.enable = true;
-      systemd = {
-        enable = true;
-        modules = ["updatedb"];
-      };
+      systemd.modules = with lib.my.systemdModules; [updatedb];
       ssh = {
         enable = true;
         enableClient = true;
