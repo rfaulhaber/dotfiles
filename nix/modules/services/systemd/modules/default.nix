@@ -1,10 +1,11 @@
 {
   lib,
   pkgs,
-}: let
-  fileNames = builtins.filter (f: f != "default.nix") (builtins.attrNames (builtins.readDir ./.));
+}:
+with builtins; let
+  fileNames = filter (f: f != "default.nix") (attrNames (readDir ./.));
   imports =
-    builtins.map (mod: import (./. + "/${mod}") {inherit lib pkgs;}) fileNames;
-  modules = builtins.map (mod: {"${mod.name}" = mod;}) imports;
+    map (mod: import (./. + "/${mod}") {inherit lib pkgs;}) fileNames;
+  modules = map (mod: {"${mod.name}" = mod;}) imports;
 in
-  builtins.foldl' (left: right: left // right) {} modules
+  foldl' (left: right: left // right) {} modules
