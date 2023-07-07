@@ -7,7 +7,9 @@
 with lib; let
   cfg = config.modules.services.gpg;
 in {
-  options.modules.services.gpg = {enable = mkEnableOption false;};
+  options.modules.services.gpg = {
+    enable = mkEnableOption false;
+  };
 
   config = mkIf cfg.enable {
     # it is unclear to me how to automatically unlock gnome keyring upon login, so
