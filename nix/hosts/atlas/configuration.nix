@@ -3,6 +3,7 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 {
   config,
+  lib,
   pkgs,
   ...
 }: {
@@ -25,12 +26,7 @@
     services = {
       docker.enable = true;
       gpg.enable = true;
-      # TODO this is required but it shouldn't be
-      # TODO make these use constants of some kind, e.g. with systemdModules; [ docker-cleanup ]
-      systemd = {
-        enable = true;
-        modules = ["updatedb" "docker-cleanup"];
-      };
+      systemd.modules = with lib.my.systemdModules; [updatedb dockerCleanup];
       ssh = {
         enable = true;
         enableServer = true;
