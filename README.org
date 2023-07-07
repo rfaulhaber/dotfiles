@@ -14,7 +14,7 @@ this configuration useful, or have any questions, please let me know.
 [[https://ryanfaulhaber.com/posts/try-emacs/][I use Emacs]] as my default editor. I use Emacs for any task that involves text.
 * Nix
 My Linux distro of choice (after going through about a dozen distros in my time
-with Linux) is NixOS.
+with Linux) is [[https://nixos.org/][NixOS]].
 
 The =nix= directory contains modules, which are pre-configured "switches" that
 are flipped on and off in configurations under the =nix/hosts= directory. This
