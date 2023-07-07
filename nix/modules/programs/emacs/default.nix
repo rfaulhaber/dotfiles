@@ -34,6 +34,7 @@ in {
       editorconfig-core-c
       epdfview
       fd
+      fzf
       git
       gnumake
       gnutls

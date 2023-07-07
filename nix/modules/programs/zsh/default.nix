@@ -37,7 +37,7 @@ in {
       type = types.bool;
     };
     useDirenv = mkOption {
-      description = "Use Zoxide with Zsh.";
+      description = "Use Direnv with Zsh.";
       # I use Direnv by default
       default = true;
       type = types.bool;
