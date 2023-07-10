@@ -81,6 +81,8 @@ with lib.my; {
         city = "Cleveland";
         state = "Ohio";
         country = "United States";
+        latitude = 41.49;
+        longitude = -81.69;
       };
     };
 
