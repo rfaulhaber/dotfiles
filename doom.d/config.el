@@ -328,3 +328,11 @@ Used in loading config specific to those systems.")
   :override #'+org-inline-image-data-fn
   "Interpret LINK as base64-encoded image data. Ignore all errors."
   (with-demoted-errors "%S" (base64-decode-string link)))
+
+;; --------------------------------- quickrun ---------------------------------
+
+;; adds custom nushell runner
+(quickrun-add-command "nushell"
+  '((:command . "nu"))
+  :default "nushell"
+  :mode 'nushell-mode)
