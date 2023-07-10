@@ -28,7 +28,11 @@ in {
         configFile.source = "${config.dotfiles.dir}/config/nushell/config.nu";
         envFile.source = "${config.dotfiles.dir}/config/nushell/env.nu";
       };
-      zoxide.enableNushellIntegration = mkIf cfg.useZoxide true;
+
+      zoxide = mkIf cfg.useZoxide {
+        enable = true;
+        enableNushellIntegration = true;
+      };
     };
 
     user.shell = mkIf cfg.setDefault pkgs.nushell;
