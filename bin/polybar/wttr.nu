@@ -1,28 +1,22 @@
 #!/usr/bin/env nu
 
 def main [--latitude: number, --longitude: number] {
-    let location = {
-        latitude: $latitude,
-        longitude: $longitude
-    };
+    echo (
+        http get $"https://api.weather.gov/points/($latitude),($longitude)"
+            | from json
+            | get properties.forecastHourly
+            | http get $in
+            | from json
+            | get properties.periods
+            | filter { |period|
+                let start = ($period.startTime | into datetime)
+                let end = ($period.endTime | into datetime)
 
-    let hourly = ($location
-        | format "https://api.weather.gov/points/{latitude},{longitude}"
-        | http get $in
-        | from json
-        | get properties.forecastHourly
-        | http get $in
-        | from json)
+                let now = (date now)
 
-    let current = ($hourly.properties.periods
-        | filter { |period|
-            let start = ($period.startTime | into datetime)
-            let end = ($period.endTime | into datetime)
-
-            let now = (date now)
-
-            ( $start <= $now ) and ( $end >= $now )
-        })
-
-    echo $current | first | format "{shortForecast} {temperature}{temperatureUnit}°"
+                ( $start <= $now ) and ( $end >= $now )
+            }
+            | first
+            | format "{shortForecast} {temperature}{temperatureUnit}°"
+    )
 }
