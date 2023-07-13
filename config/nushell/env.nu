@@ -85,6 +85,6 @@ $env.NU_PLUGIN_DIRS = [
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
 
-if (sys | get host.name) == "Darwin" {
+if $nu.os-info.name == "macos" {
    zoxide init nushell | save -f ~/.zoxide.nu
 }
