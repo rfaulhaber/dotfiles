@@ -27,6 +27,12 @@ in {
         enable = true;
         configFile.source = "${config.dotfiles.dir}/config/nushell/config.nu";
         envFile.source = "${config.dotfiles.dir}/config/nushell/env.nu";
+
+        shellAliases = {
+          l = "ls -la";
+          pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
+          pbpaste = "${pkgs.xclip}/bin/xclip -selection clipboard -o";
+        };
       };
 
       zoxide = mkIf cfg.useZoxide {
@@ -36,5 +42,7 @@ in {
     };
 
     user.shell = mkIf cfg.setDefault pkgs.nushell;
+
+    environment.systemPackages = with pkgs; [xclip];
   };
 }
