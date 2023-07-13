@@ -552,6 +552,6 @@ $env.config = {
   ]
 }
 
-if (sys | get host.name) == "Darwin" {
+if $nu.os-info.name == "macos" {
    source ~/.zoxide.nu
 }
