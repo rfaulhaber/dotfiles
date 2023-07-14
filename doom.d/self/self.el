@@ -351,21 +351,6 @@ channel."
             (org-remove-indentation
              (org-export-format-code-default src-block info)))))
 
-(defun self/write-temp (beg end &optional prefix)
-  "Writes BEG and END from current buffer into a temporary file."
-  (with-current-buffer (current-buffer)
-    (let ((temp-path (self/mktemp prefix)))
-      (write-region beg end temp-path))))
-
-(defun self/mktemp (&optional prefix)
-  "Calls mktemp and passes PREFIX to the command, defaulting to 'emacs'. Returns result of `mktemp`."
-  (let ((pre
-         (cond
-          ((null prefix) "emacsXXX")
-          ((not (s-contains-p "XXX" prefix)) (format "%sXXX" prefix))
-          (t prefix))))
-    (s-trim-right (shell-command-to-string (format "mktemp -p /tmp %s" pre)))))
-
 ;; TODO write more generic roam exporter that extends org publishing
 (defun self/org-export-preprocessor (_backend)
   "For org-roam files, this will append all backlinks to a file to the end."
@@ -565,9 +550,10 @@ of line, moves cursor to the end of LINE."
         (f (or end (point-max)))
         (bufname (buffer-file-name (buffer-base-buffer))))
     (cond
-     ((null bufname) (let ((filename (self/mktemp prefix)))
+     ((null bufname) (let ((filename (make-temp-file prefix)))
                        (write-file filename)))
-     (t (self/write-temp s f prefix)))))
+     (t (let ((tmpfile (make-temp-file prefix))
+              (write-region s f tmpfile)))))))
 
 (evil-define-operator self/evil-write-suspend (beg end type file-or-append &optional bang)
   "Like evil-write, but quickly changes the buffer to `text-mode' first.
