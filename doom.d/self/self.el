@@ -419,9 +419,10 @@ will include any files that begin with ."
 (defun self/org-insert-modified-timestamp ()
   "Inserts inactive timestamp to bottom of file."
   (when (org-roam--org-roam-file-p)
-    (goto-char (point-max))
-    (insert "Updated: ")
-    (org-time-stamp '(16) 'inactive)))
+    (save-excursion
+      (goto-char (point-max))
+      (insert "Updated: ")
+      (org-time-stamp '(16) 'inactive))))
 
 (defun self/choose-date-format ()
   "Provides user with options from `self/date-format-options'."
