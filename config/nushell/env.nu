@@ -86,5 +86,5 @@ $env.NU_PLUGIN_DIRS = [
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
 
 if $nu.os-info.name == "macos" {
-   zoxide init nushell | save -f ~/.zoxide.nu
+   zoxide init nushell | save -f ~/zoxide.nu
 }
