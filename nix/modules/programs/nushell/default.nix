@@ -6,6 +6,7 @@
 }:
 with lib; let
   cfg = config.modules.programs.nushell;
+  mkNuString = str: "'${str}'";
 in {
   options.modules.programs.nushell = {
     enable = mkEnableOption false;
@@ -33,6 +34,14 @@ in {
           pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
           pbpaste = "${pkgs.xclip}/bin/xclip -selection clipboard -o";
         };
+
+        extraEnv = let
+          extraPaths = concatStringsSep ", " (builtins.map mkNuString [
+            "${config.user.home}/.emacs.d/bin"
+          ]);
+        in ''
+          let-env PATH = ($env.PATH | split row (char esep) | append [${extraPaths}])
+        '';
       };
 
       zoxide = mkIf cfg.useZoxide {
