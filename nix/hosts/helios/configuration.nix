@@ -39,7 +39,7 @@
       docker.enable = true;
       samba-mount = {
         enable = true;
-        mounts."/home/ryan/calibre" = {
+        mounts."${config.user.home}/calibre" = {
           domain = "192.168.86.10";
           host = "calibre";
         };
