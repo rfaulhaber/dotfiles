@@ -553,5 +553,5 @@ $env.config = {
 }
 
 if $nu.os-info.name == "macos" {
-   source ~/zoxide.nu
+   source ~/.zoxide.nu
 }
