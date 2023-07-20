@@ -13,11 +13,16 @@
 
   outputs = { self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.\${system}; in
+      let pkgs = nixpkgs.legacyPackages.\${system};
+          projectName = "$2";
+      in
       rec {
-        defaultPackage = pkgs.stdenv.mkDerivation {};
-        apps.$2 = flake-utils.lib.mkApp { drv = packages.$2; };
-        defaultApp = apps.$2;
+        packages.default = self.packages.${system}.${projectName};
+        apps.${projectName} = flake-utils.lib.mkApp {drv = packages.${projectName};};
+
+      apps.default = self.apps.${system}.${projectName};
+
+        apps.default = apps.$2;
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [  ];
         };
