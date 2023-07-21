@@ -20,7 +20,7 @@
   cyan = "#b4f9f8";
 
   # bright
-  bright-black = "#191a2a";
+  bright-black = "#787878";
   bright-blue = "#50c4fa";
   bright-cyan = "#b4f9f8";
   bright-green = "#4ff0c6";
