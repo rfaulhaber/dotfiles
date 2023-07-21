@@ -86,5 +86,11 @@ $env.NU_PLUGIN_DIRS = [
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
 
 if $nu.os-info.name == "macos" {
-   zoxide init nushell | save -f ~/.zoxide.nu
+   # add zoxide
+   if (which zoxide | length) > 0 {
+      zoxide init nushell | save -f ~/.zoxide.nu
+   }
+
+   # add homebrew to PATH
+   $env.PATH = ($env.PATH | split row (char esep) | prepend '/opt/homebrew/bin')
 }
