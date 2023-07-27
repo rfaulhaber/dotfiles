@@ -43,11 +43,11 @@ in {
     fonts = {
       fontDir.enable = true;
       enableGhostscriptFonts = true;
-      enableDefaultFonts = true;
       fonts = with pkgs; [
         (nerdfonts.override {fonts = ["Hack"];})
         lato
         merriweather
+        corefonts
       ];
       fontconfig.defaultFonts = {
         serif = ["Merriweather"];
