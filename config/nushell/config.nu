@@ -552,6 +552,7 @@ $env.config = {
   ]
 }
 
-if $nu.os-info.name == "macos" {
-   source ~/.zoxide.nu
-}
+# commented out due to nushell bug
+# if $nu.os-info.name == "macos" {
+#    source ~/.zoxide.nu
+# }
