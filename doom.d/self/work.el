@@ -25,26 +25,6 @@
     ("DONE" font-lock-doc-face bold)
     ("BLOCKED" error bold)))
 
-;; TODO add function that converts bullet item to TODO heading
-
-;; TODO make more robust jira connection
-;; (defun work/org-link-number-to-jira-ticket ()
-;;   "Replaces the number under point with a link to the related ticket in jira."
-;;   (interactive)
-;;   (when (or (eq major-mode 'org-mode) (eq major-mode 'org-journal-mode))
-;;     (let* ((bound-info (work/get-word-at-point-or-region))
-;;            (bounds     (cdr (assoc 'bounds bound-info)))
-;;            (text       (cdr (assoc 'text bound-info)))
-;;            (start      (cdr (assoc 'start bound-info)))
-;;            (end        (cdr (assoc 'end bound-info))))
-;;       (when (and bounds (work/valid-number text))
-;;         (delete-region start end)
-;;         (insert (format work/jira-link-template text text))))))
-
-;; TODO
-;; (defun work/create-git-branch-from-bitbucket-ticket ()
-;;   (interactive))
-
 (defun work/get-lorem-ipsum (arg)
   (interactive "P")
   (let ((paragraph-count arg)
