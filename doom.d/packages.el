@@ -97,6 +97,10 @@
   :recipe (:host github
            :repo "mrkkrp/nushell-mode"))
 
+(package! apheleia
+  :recipe (:host github
+           :repo "radian-software/apheleia"))
+
 ;; org roam ui
 (package! websocket)
 (package! org-roam-ui

@@ -303,6 +303,15 @@ Used in loading config specific to those systems.")
 ;; set formatter to alejandra
 (set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
 
+;; apheleia
+(apheleia-global-mode +1)
+
+;; add formatter for alejandra
+(push '(alejandra . ("alejandra" "-")) apheleia-formatters)
+
+;; set nix to use alejandra rather than nixfmt
+(setf (alist-get 'nix apheleia-mode-alist) 'alejandra)
+
 ;; --------------------------------- misc -----------------------------------------
 
 ;; general
