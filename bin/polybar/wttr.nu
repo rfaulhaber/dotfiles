@@ -17,6 +17,6 @@ def main [--latitude: number, --longitude: number] {
                 ( $start <= $now ) and ( $end >= $now )
             }
             | first
-            | format "{shortForecast} {temperature}{temperatureUnit}°"
+            | $"($in.shortForecast) ($in.temperature)($in.temperatureUnit)°"
     )
 }
