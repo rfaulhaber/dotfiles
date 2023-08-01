@@ -85,14 +85,15 @@ $env.NU_PLUGIN_DIRS = [
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
 
-if $nu.os-info.name == "macos" {
+if $nu.os-info.name == 'macos' {
    # add zoxide
-   # commented out due to nushell bug
-   # if (which zoxide | length) > 0 {
-   #    zoxide init nushell | save -f ~/.zoxide.nu
-   # }
+   if (which zoxide | length) > 0 {
+      zoxide init nushell | save -f ~/.zoxide.nu
+   } else {
+     echo 'zoxide not installed'
+   }
 
    # add homebrew to PATH
-    $env.PATH = ($env.PATH | split row (char esep) | append '/opt/homebrew/bin')
-    $env.PATH = ($env.PATH | split row (char esep) | append '/usr/local/bin')
+   $env.PATH = ($env.PATH | split row (char esep) | prepend '/opt/homebrew/bin')
+   $env.PATH = ($env.PATH | split row (char esep) | prepend '/usr/local/bin')
 }
