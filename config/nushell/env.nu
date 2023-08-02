@@ -102,8 +102,13 @@ if $nu.os-info.name == 'macos' {
      echo 'zoxide not installed'
    }
 
+   # /usr/local/bin doesn't exist by default on macOS, but I need it
+   # should be low in the PATH
    $env.PATH = ($env.PATH | split row (char esep) | append '/usr/local/bin')
-   #
+
    # add homebrew to PATH
    $env.PATH = ($env.PATH | split row (char esep) | prepend '/opt/homebrew/bin')
+
+   # add nix profile
+   $env.PATH = ($env.PATH | split row (char esep) | append $'($env.HOME)/.nix-profile/bin')
 }
