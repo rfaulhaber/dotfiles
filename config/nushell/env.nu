@@ -85,6 +85,15 @@ $env.NU_PLUGIN_DIRS = [
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
 
+# add doom bin to path
+let doom_path = $'($env.HOME)/.emacs.d/bin/doom'
+
+if $doom_path | path exists {
+    $env.PATH = ($env.PATH | split row (char esep) | prepend $doom_path)
+}
+
+
+# macOS-specific configuration
 if $nu.os-info.name == 'macos' {
    # add zoxide
    if (which zoxide | length) > 0 {
