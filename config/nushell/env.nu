@@ -86,10 +86,10 @@ $env.NU_PLUGIN_DIRS = [
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
 
 # add doom bin to path
-let doom_path = $'($env.HOME)/.emacs.d/bin/doom'
+let emacs_bin_path = $'($env.HOME)/.emacs.d/bin'
 
-if ($doom_path | path exists) {
-    $env.PATH = ($env.PATH | split row (char esep) | prepend $doom_path)
+if ($emacs_bin_path | path exists) {
+    $env.PATH = ($env.PATH | split row (char esep) | prepend $emacs_bin_path)
 }
 
 
