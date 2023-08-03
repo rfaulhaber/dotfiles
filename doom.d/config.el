@@ -179,6 +179,9 @@ Used in loading config specific to those systems.")
  org-journal-dir "~/org/journal"
  org-journal-file-format "%Y%m%d.org")
 
+(add-hook 'org-journal-mode-hook (lambda ()
+                                   (setq org-element-use-cache nil)))
+
 (when config/work-computer-p
   (setq org-todo-keywords work/org-todo-items)
   (setq org-journal-carryover-items work/org-carryover-items)
@@ -304,13 +307,13 @@ Used in loading config specific to those systems.")
 (set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
 
 ;; apheleia
-(apheleia-global-mode +1)
+(after! apheleia
+  (apheleia-global-mode +1)
+  ;; add formatter for alejandra
+  (push '(alejandra . ("alejandra" "-")) apheleia-formatters)
 
-;; add formatter for alejandra
-(push '(alejandra . ("alejandra" "-")) apheleia-formatters)
-
-;; set nix to use alejandra rather than nixfmt
-(setf (alist-get 'nix apheleia-mode-alist) 'alejandra)
+  ;; set nix to use alejandra rather than nixfmt
+  (setf (alist-get 'nix apheleia-mode-alist) 'alejandra))
 
 ;; --------------------------------- misc -----------------------------------------
 
