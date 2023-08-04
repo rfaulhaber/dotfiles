@@ -2,6 +2,8 @@
 #
 # version = 0.82.1
 
+use ./self.nu colored_man_pages
+
 # For more information on defining custom themes, see
 # https://www.nushell.sh/book/coloring_and_theming.html
 # And here is the theme collection
@@ -556,3 +558,5 @@ $env.config = {
 # if $nu.os-info.name == "macos" {
 #    source ~/.zoxide.nu
 # }
+
+alias man = colored_man_pages
