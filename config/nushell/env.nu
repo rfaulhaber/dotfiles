@@ -92,7 +92,6 @@ if ($emacs_bin_path | path exists) {
     $env.PATH = ($env.PATH | split row (char esep) | prepend $emacs_bin_path)
 }
 
-
 # macOS-specific configuration
 if $nu.os-info.name == 'macos' {
    # add zoxide
