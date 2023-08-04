@@ -13,7 +13,7 @@ export def colored_man_pages [
             mb: (ansi red_bold),
             md: (ansi red_bold),
             me: (ansi reset)
-            so: $"(ansi yellow_bold)(ansi blue)",
+            so: (ansi { fg: 'yellow_bold', bg: 'blue', attr: 'b' })
             se: (ansi reset),
             us: (ansi green_bold),
             ue: (ansi reset)
