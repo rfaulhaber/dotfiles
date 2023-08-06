@@ -1,0 +1,1 @@
+export use colored_man_pages

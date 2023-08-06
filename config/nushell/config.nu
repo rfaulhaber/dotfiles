@@ -2,6 +2,8 @@
 #
 # version = 0.82.1
 
+use self colored_man_pages
+
 # For more information on defining custom themes, see
 # https://www.nushell.sh/book/coloring_and_theming.html
 # And here is the theme collection
@@ -553,8 +555,6 @@ $env.config = {
 }
 
 # platform specific config
-
-# commented out due to nushell bug
 if $nu.os-info.name == "macos" {
    source ~/.zoxide.nu
 }
@@ -563,32 +563,32 @@ if $nu.os-info.name == "macos" {
 # I would like to put these into modules, however nushell doesn't seem to allow
 # using `use` or `source` at startup
 
-def colored_man_pages [
-    --theme: record, # Theme you want to color the manpage with. Should be a record with attributes mb, md, me, so, se, us, ue, which correspond to LESS_TERMCAP variables
-    ...args # Arguments passed to `man`
-] {
+# def colored_man_pages [
+#     --theme: record, # Theme you want to color the manpage with. Should be a record with attributes mb, md, me, so, se, us, ue, which correspond to LESS_TERMCAP variables
+#     ...args # Arguments passed to `man`
+# ] {
 
-    # we create a private extern for `man` so we can pass it a list of strings later
-    extern man [...args: string]
+#     # we create a private extern for `man` so we can pass it a list of strings later
+#     extern man [...args: string]
 
-    let colors = if $theme != null {
-        $theme
-    } else {
-        {
-            mb: (ansi red_bold),
-            md: (ansi red_bold),
-            me: (ansi reset)
-            so: (ansi { fg: 'yellow_bold', bg: 'blue', attr: 'b' })
-            se: (ansi reset),
-            us: (ansi green_bold),
-            ue: (ansi reset)
-        }
-    }
+#     let colors = if $theme != null {
+#         $theme
+#     } else {
+#         {
+#             mb: (ansi red_bold),
+#             md: (ansi red_bold),
+#             me: (ansi reset)
+#             so: (ansi { fg: 'yellow_bold', bg: 'blue', attr: 'b' })
+#             se: (ansi reset),
+#             us: (ansi green_bold),
+#             ue: (ansi reset)
+#         }
+#     }
 
-    let less_env = ($colors | columns | reduce -f {} { |c, all| $all | insert $"LESS_TERMCAP_($c)" ($colors | get $c)  })
+#     let less_env = ($colors | columns | reduce -f {} { |c, all| $all | insert $"LESS_TERMCAP_($c)" ($colors | get $c)  })
 
-    with-env $less_env { ^man $args }
-}
+#     with-env $less_env { ^man $args }
+# }
 
 # aliases
 alias man = colored_man_pages
