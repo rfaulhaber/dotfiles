@@ -2,6 +2,8 @@
 #
 # version = 0.82.1
 
+let dotfiles_path = "~/Projects/dotfiles/config/nushell"
+
 def create_left_prompt [] {
     mut home = ""
     try {
@@ -69,11 +71,10 @@ $env.ENV_CONVERSIONS = {
 }
 
 # Directories to search for scripts when calling source or use
-#
-# By default, <nushell-config-dir>/scripts is added
 $env.NU_LIB_DIRS = [
+    # By default, <nushell-config-dir>/scripts is added
     ($nu.default-config-dir | path join 'scripts')
-    ($nu.default-config-dir | path join 'self')
+    $dotfiles_path
 ]
 
 # Directories to search for plugin binaries when calling register
