@@ -84,6 +84,11 @@ $env.NU_PLUGIN_DIRS = [
     ($nu.default-config-dir | path join 'plugins')
 ]
 
+# use bat as the default pager and manpager
+$env.PAGER = "bat bat -p"
+# thank you https://www.reddit.com/r/Nushell/comments/15jul5o/comment/jv3fe9h/
+$env.MANPAGER = "sh -c 'col -bx | bat -l man -p'"
+
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
 

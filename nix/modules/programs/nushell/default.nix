@@ -52,6 +52,9 @@ in {
 
     user.shell = mkIf cfg.setDefault pkgs.nushell;
 
-    environment.systemPackages = with pkgs; [xclip];
+    environment.systemPackages = with pkgs; [
+      bat # bat is used as nushell's pager
+      xclip
+    ];
   };
 }
