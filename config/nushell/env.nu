@@ -88,6 +88,8 @@ $env.NU_PLUGIN_DIRS = [
 $env.PAGER = "bat bat -p"
 # thank you https://www.reddit.com/r/Nushell/comments/15jul5o/comment/jv3fe9h/
 $env.MANPAGER = "sh -c 'col -bx | bat -l man -p'"
+# bat documentation recommends setting this variable as well if the above is set
+$env.MANROFFOPT = "-c"
 
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
