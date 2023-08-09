@@ -65,7 +65,6 @@
       syncthing.enable = true;
     };
     hardware = {
-      bluetooth.enable = true;
       zsa.enable = true;
     };
     desktop = {
