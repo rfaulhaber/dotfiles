@@ -105,7 +105,7 @@ if ($emacs_bin_path | path exists) {
 if $nu.os-info.name == 'macos' {
    # add zoxide
    if (which zoxide | length) > 0 {
-      zoxide init nushell | str replace -a `let-env (\w+)` "$$env.$1" | save -f ~/.zoxide.nu
+      zoxide init nushell | save -f ~/.zoxide.nu
    } else {
      echo 'zoxide not installed'
    }
