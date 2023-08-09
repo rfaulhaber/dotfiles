@@ -561,4 +561,4 @@ if $nu.os-info.name == "macos" {
 
 # aliases
 alias man = colored_man_pages
-alias l = "ls -la"
+alias l = ls -la
