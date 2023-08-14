@@ -11,6 +11,7 @@ in {
   imports = [
     ./bspwm
     ./firefox
+    ./hyprland
     ./polybar
     ./random-wallpaper.nix
     ./rofi
@@ -18,6 +19,8 @@ in {
     ./util.nix
   ];
   options.modules.desktop = {
+    # TODO rewrite such that you don't need this
+    enable = mkEnableOption false;
     videoDrivers = mkOption {
       description = "Passthrough property for services.xserver.videoDrivers. All desktop configurations use xserver at the moment.";
       type = types.listOf types.str;
@@ -29,15 +32,18 @@ in {
       default = false;
     };
   };
-  config = mkIf config.services.xserver.enable {
-    environment.variables = rec {
-      # TODO move elsewhere
-      XDG_CONFIG_HOME = "$HOME/.config";
-      XDG_CACHE_HOME = "$HOME/.cache";
-      XDG_DATA_HOME = "$HOME/.local/share";
-      XDG_BIN_HOME = "$HOME/.local/bin";
-      RUSTUP_HOME = "${XDG_DATA_HOME}/rustup";
-      CARGO_HOME = "${XDG_DATA_HOME}/cargo";
+  config = mkIf cfg.enable {
+    services.xserver = {
+      enable = true;
+      layout = "us";
+      xkbOptions = "eurosign:e";
+      displayManager = {
+        lightdm = {
+          enable = true;
+          background = pkgs.nixos-artwork.wallpapers.dracula.gnomeFilePath;
+        };
+      };
+      videoDrivers = mkIf ((length cfg.videoDrivers) > 0) cfg.videoDrivers;
     };
 
     fonts = {

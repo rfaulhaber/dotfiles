@@ -11,6 +11,10 @@ with lib; let
     if (hasPrefix "firefox-devedition" pkg.pname)
     then "firefox-devedition"
     else "firefox";
+
+  firefoxAlias = {
+    firefox = "${cfg.package}/bin/${findFirefoxExecPath cfg.package}";
+  };
 in {
   options.modules.desktop.firefox = {
     enable = mkEnableOption false;
@@ -29,9 +33,8 @@ in {
   config = mkIf cfg.enable {
     environment.systemPackages = [cfg.package];
 
-    # I use zsh, this should be more modular but it's not
-    programs.zsh.shellAliases = {
-      firefox = "${cfg.package}/bin/${findFirefoxExecPath cfg.package}";
-    };
+    programs.zsh.shellAliases = mkIf config.modules.programs.zsh.enable firefoxAlias;
+
+    home.programs.nushell.shellAliases = mkIf config.modules.programs.nushell.enable firefoxAlias;
   };
 }

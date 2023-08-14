@@ -33,6 +33,8 @@ with lib.my; {
         mkOptDesc attrs {} "Services managed directly from home-manager";
       xsession =
         mkOptDesc attrs {} "Xsession settings managed from home-manager";
+      wayland =
+        mkOptDesc attrs {} "Wayland settings managed from home-manager";
     };
 
     env = mkOption {

@@ -37,18 +37,8 @@ in {
 
     # TODO put most of this configuration elsewhere
     services.xserver = {
-      enable = true;
-      layout = "us";
-      xkbOptions = "eurosign:e";
       windowManager.bspwm.enable = true;
-      displayManager = {
-        lightdm = {
-          enable = true;
-          background = pkgs.nixos-artwork.wallpapers.dracula.gnomeFilePath;
-        };
-        defaultSession = "none+bspwm";
-      };
-      videoDrivers = mkIf ((length videoDrivers) > 0) videoDrivers;
+      displayManager.defaultSession = "none+bspwm";
     };
 
     home.xsession = {
@@ -72,7 +62,5 @@ in {
       inherit keybindings;
       enable = true;
     };
-
-    environment.systemPackages = with pkgs; [lightlocker xtitle xscreensaver];
   };
 }
