@@ -32,5 +32,7 @@ in {
       user.timers =
         mkModules ["user" "timers"] cfg.modules;
     };
+
+    environment.systemPackages = with pkgs; [findutils];
   };
 }

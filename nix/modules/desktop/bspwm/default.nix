@@ -35,10 +35,18 @@ in {
       }
     ];
 
-    # TODO put most of this configuration elsewhere
     services.xserver = {
       windowManager.bspwm.enable = true;
-      displayManager.defaultSession = "none+bspwm";
+
+      # TODO refactor
+      displayManager = {
+        lightdm = {
+          enable = true;
+          background = pkgs.nixos-artwork.wallpapers.dracula.gnomeFilePath;
+        };
+
+        defaultSession = "none+bspwm";
+      };
     };
 
     home.xsession = {

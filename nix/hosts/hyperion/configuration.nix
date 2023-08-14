@@ -68,15 +68,15 @@
     desktop = {
       enable = true;
       videoDrivers = ["nvidia"];
-      # bspwm = {
-      #   enable = true;
-      #   extraStartupPrograms = ["keybase-gui" "discord" "1password" "telegram-desktop"];
-      #   monitors = ["DP-0"];
-      # };
+      bspwm = {
+        enable = true;
+        extraStartupPrograms = ["keybase-gui" "discord" "1password" "telegram-desktop"];
+        monitors = ["DP-0"];
+      };
       sound.enable = true;
-      # polybar.enable = true;
-      # rofi.enable = true;
-      hyprland.enable = true;
+      polybar.enable = true;
+      rofi.enable = true;
+      # hyprland.enable = true;
       random-wallpaper.enable = true;
       firefox.enable = true;
     };

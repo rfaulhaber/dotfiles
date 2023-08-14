@@ -37,12 +37,6 @@ in {
       enable = true;
       layout = "us";
       xkbOptions = "eurosign:e";
-      displayManager = {
-        lightdm = {
-          enable = true;
-          background = pkgs.nixos-artwork.wallpapers.dracula.gnomeFilePath;
-        };
-      };
       videoDrivers = mkIf ((length cfg.videoDrivers) > 0) cfg.videoDrivers;
     };
 
