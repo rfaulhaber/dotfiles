@@ -18,6 +18,14 @@ in {
   };
 
   config = mkIf cfg.enable {
+    # not great
+    services.xserver.displayManager.gdm = {
+      enable = true;
+      wayland = true;
+    };
+
+    programs.hyprland.enable = true;
+
     home.wayland.windowManager.hyprland = {
       enable = true;
       enableNvidiaPatches = cfg.enableNvidiaPatches;
