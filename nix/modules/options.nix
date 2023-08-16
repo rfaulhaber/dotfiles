@@ -35,6 +35,8 @@ with lib.my; {
         mkOptDesc attrs {} "Xsession settings managed from home-manager";
       wayland =
         mkOptDesc attrs {} "Wayland settings managed from home-manager";
+      xdg =
+        mkOptDesc attrs {} "XDG config files to write to directly.";
     };
 
     env = mkOption {

@@ -49,7 +49,7 @@
       gpg.enable = true;
       mail.enable = true;
       redshift.enable = true;
-      systemd.modules = with lib.my.systemdModules; [updatedb sshAgent];
+      systemd.modules = with lib.my.systemdModules; [sshAgent];
       ssh = {
         enable = true;
         enableClient = true;
@@ -83,25 +83,28 @@
     themes.active = "moonlight";
   };
 
-  boot.tmp = {
-    useTmpfs = true;
-    cleanOnBoot = true;
-  };
-
-  boot.loader = {
-    grub = {
-      enable = true;
-      useOSProber = true;
-      efiSupport = true;
-      device = "nodev";
+  boot = {
+    tmp = {
+      useTmpfs = true;
+      cleanOnBoot = true;
     };
 
-    efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = "/boot";
+    loader = {
+      grub = {
+        enable = true;
+        useOSProber = true;
+        efiSupport = true;
+        device = "nodev";
+      };
+
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
     };
   };
 
+  # TODO move, set defaults
   networking = {
     hostName = "hyperion";
     # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -114,13 +117,10 @@
     networkmanager.enable = true;
   };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  programs.mtr.enable = true;
-
-  # List services that you want to enable:
-
-  # services = { printing.enable = true; };
+  hardware = {
+    opengl.enable = true;
+    nvidia.modesetting.enable = true;
+  };
 
   system.autoUpgrade = {
     enable = true;
