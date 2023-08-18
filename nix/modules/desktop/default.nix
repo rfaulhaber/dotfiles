@@ -11,7 +11,7 @@ in {
   imports = [
     ./bspwm
     ./firefox
-    ./hyprland
+    ./lightdm
     ./polybar
     ./random-wallpaper.nix
     ./rofi
