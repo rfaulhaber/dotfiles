@@ -95,6 +95,7 @@
         useOSProber = true;
         efiSupport = true;
         device = "nodev";
+        gfxmodeEfi = "1024x768";
       };
 
       efi = {
