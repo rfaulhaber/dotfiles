@@ -14,6 +14,15 @@ in {
       enable = true;
     };
 
-    modules.desktop.lightdm.enable = true;
+    modules.desktop.lightdm = {
+      enable = true;
+      defaultSession = "none+awesome";
+    };
+
+    home.configFile."awesome" = {
+      source = "${config.dotfiles.configDir}/awesome";
+      target = "./awesome";
+      recursive = true;
+    };
   };
 }

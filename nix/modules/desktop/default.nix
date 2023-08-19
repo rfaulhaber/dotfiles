@@ -5,10 +5,12 @@
   home-manager,
   ...
 }:
-with lib; let
+with lib;
+with lib.my; let
   cfg = config.modules.desktop;
 in {
   imports = [
+    ./awesome
     ./bspwm
     ./firefox
     ./lightdm
@@ -33,6 +35,17 @@ in {
     };
   };
   config = mkIf cfg.enable {
+    assertions = let
+      desktops = [
+        cfg.bspwm.enable
+        cfg.awesome.enable
+      ];
+    in [
+      {
+        assertion = (count (x: x) desktops) == 1;
+        message = "You cannot have more than one desktop enabled.";
+      }
+    ];
     services.xserver = {
       enable = true;
       layout = "us";

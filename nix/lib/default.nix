@@ -41,6 +41,15 @@ in rec {
 
   mkAssert = assertion: message: {inherit assertion message;};
 
+  sum = builtins.foldl' (x: y: x + y) 0;
+
+  count = pred:
+    builtins.foldl' (acc: val:
+      if (pred val)
+      then acc + 1
+      else acc)
+    0;
+
   # thank you hlissner
   # https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix#L7
   mkHost = path: attrs @ {
