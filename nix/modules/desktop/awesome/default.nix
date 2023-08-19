@@ -10,9 +10,7 @@ in {
   options.modules.desktop.awesome = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
-    services.xserver.windowManager.awesome = {
-      enable = true;
-    };
+    services.xserver.windowManager.awesome = {enable = true;};
 
     modules.desktop.lightdm = {
       enable = true;
@@ -24,5 +22,10 @@ in {
       target = "./awesome";
       recursive = true;
     };
+
+    environment.systemPackages = with pkgs; [
+      lua-language-server
+      stylua
+    ];
   };
 }

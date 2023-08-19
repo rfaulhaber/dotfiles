@@ -315,6 +315,11 @@ Used in loading config specific to those systems.")
   ;; set nix to use alejandra rather than nixfmt
   (setf (alist-get 'nix apheleia-mode-alist) 'alejandra))
 
+;; lua mode
+(after! lua-mode
+  ;; set LSP location
+  (setq lsp-clients-lua-language-server-bin (executable-find "lua-language-server")))
+
 ;; --------------------------------- misc -----------------------------------------
 
 ;; general
