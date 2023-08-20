@@ -117,6 +117,14 @@ if $nu.os-info.name == 'macos' {
    # add homebrew to PATH
    $env.PATH = ($env.PATH | split row (char esep) | prepend '/opt/homebrew/bin')
 
-   # add nix profile
-   $env.PATH = ($env.PATH | split row (char esep) | append $'($env.HOME)/.nix-profile/bin')
+   # this is a port of the nix-daemon.sh script that's supposed to get autoloaded
+   let nix_link = $"/nix/var/nix/profiles/default"
+   $env.NIX_LINK = $nix_link
+   $env.NIX_LINK_NEW = $nix_link
+
+   $env.NIX_PROFILES = $"/nix/var/nix/profiles/default ($nix_link)"
+
+   $env.NIX_SSL_CERT_FILE = "/nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt"
+
+   $env.PATH = ($env.PATH | split row (char esep) | append $"($nix_link)/bin")
 }

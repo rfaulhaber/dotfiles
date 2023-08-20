@@ -2,7 +2,7 @@
 #
 # version = 0.82.1
 
-use self colored_man_pages
+# use self colored_man_pages
 
 # For more information on defining custom themes, see
 # https://www.nushell.sh/book/coloring_and_theming.html
@@ -557,8 +557,17 @@ $env.config = {
 # platform specific config
 if $nu.os-info.name == "macos" {
    source ~/.zoxide.nu
+
+  $env.config = {
+    hooks: {
+      pre_prompt: [{ ||
+        let direnv = (direnv export json | from json)
+        let direnv = if ($direnv | length) == 1 { $direnv } else { {} }
+        $direnv | load-env
+      }]
+    }
+  }
 }
 
 # aliases
-alias man = colored_man_pages
 alias l = ls -la
