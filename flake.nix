@@ -21,11 +21,22 @@
     flake-utils,
     ...
   }: let
-    # inherit (lib.my) mkHost;
+    inherit (lib.my) mapModules;
+    # does not support macOS yet!
+    system = "x86_64-linux";
+
+    mkPkgs = pkgs: extraOverlays:
+      import pkgs {
+        inherit system;
+        config.allowUnfree = true;
+        overlays = extraOverlays ++ (lib.attrValues self.overlays);
+      };
+
+    pkgs = mkPkgs nixpkgs [];
+
     lib = nixpkgs.lib.extend (self: super: {
       my = import ./nix/lib {
-        inherit inputs;
-        pkgs = nixpkgs;
+        inherit inputs pkgs;
         lib = self;
       };
     });
@@ -39,6 +50,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            nixpkgs.pkgs = pkgs;
           }
           cfgFile
         ];
@@ -59,6 +71,9 @@
           description = "Emacs Lisp template";
         };
       };
+
+      overlays =
+        mapModules ./nix/overlays import;
 
       # these are the actual system configurations
       nixosConfigurations = {

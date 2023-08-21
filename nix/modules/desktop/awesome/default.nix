@@ -10,7 +10,10 @@ in {
   options.modules.desktop.awesome = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
-    services.xserver.windowManager.awesome = {enable = true;};
+    services.xserver.windowManager.awesome = {
+      enable = true;
+      package = pkgs.awesome-git;
+    };
 
     modules.desktop.lightdm = {
       enable = true;
