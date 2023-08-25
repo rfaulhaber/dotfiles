@@ -556,17 +556,15 @@ $env.config = {
 
 # platform specific config
 if $nu.os-info.name == "macos" {
-   source ~/.zoxide.nu
+  source ~/.zoxide.nu
 
-  $env.config = {
-    hooks: {
-      pre_prompt: [{ ||
-        let direnv = (direnv export json | from json)
-        let direnv = if ($direnv | length) == 1 { $direnv } else { {} }
-        $direnv | load-env
-      }]
-    }
+  let direnv_pre_prompt = { ||
+    let direnv = (direnv export json | from json)
+    let direnv = if ($direnv | length) == 1 { $direnv } else { {} }
+    $direnv | load-env
   }
+
+  $env.config = ($env.config | update hooks.pre_prompt ($env.config.hooks.pre_prompt | append $direnv_pre_prompt))
 }
 
 # aliases
