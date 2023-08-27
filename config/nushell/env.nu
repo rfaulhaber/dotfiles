@@ -15,7 +15,7 @@ def create_left_prompt [] {
     }
 
     let dir = ([
-        ($env.PWD | str substring 0..($home | str length) | str replace --string $home "~"),
+        ($env.PWD | str substring 0..($home | str length) | str replace  $home "~"),
         ($env.PWD | str substring ($home | str length)..)
     ] | str join)
 
@@ -23,7 +23,7 @@ def create_left_prompt [] {
     let separator_color = (if (is-admin) { ansi light_red_bold } else { ansi light_green_bold })
     let path_segment = $"($path_color)($dir)"
 
-    $path_segment | str replace --all --string (char path_sep) $"($separator_color)/($path_color)"
+    $path_segment | str replace --all  (char path_sep) $"($separator_color)/($path_color)"
 }
 
 def create_right_prompt [] {
@@ -31,7 +31,7 @@ def create_right_prompt [] {
     let time_segment = ([
         (ansi reset)
         (ansi magenta)
-        (date now | date format '%Y/%m/%d %r')
+        (date now | format date '%Y/%m/%d %r')
     ] | str join | str replace --all "([/:])" $"(ansi green)${1}(ansi magenta)" |
         str replace --all "([AP]M)" $"(ansi magenta_underline)${1}")
 
