@@ -538,6 +538,11 @@ of line, moves cursor to the end of LINE."
           (cl-rotatef (elt lst i) (elt lst j))))))
   lst)
 
+(defun self/pick (lst)
+  "Randomly chooses an item from a list."
+  (let ((choice (abs (random (length lst)))))
+    (nth choice lst)))
+
 ;; --------------------------- custom evil operators ---------------------------
 
 (evil-define-operator self/evil-write-temp (beg end &optional prefix)
