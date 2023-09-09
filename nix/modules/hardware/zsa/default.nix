@@ -14,5 +14,7 @@ in {
     services.udev.extraRules = ''
       SUBSYSTEM=="usb", ATTR{idVendor}=="3297", ATTR{idProduct}=="1969", GROUP="plugdev"
     '';
+
+    environment.systemPackages = with pkgs; [wally-cli];
   };
 }

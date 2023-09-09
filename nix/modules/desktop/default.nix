@@ -83,7 +83,6 @@ in {
       python3
       spotify
       tdesktop
-      wally-cli
     ];
   };
 }
