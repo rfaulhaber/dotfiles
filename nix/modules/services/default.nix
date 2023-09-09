@@ -5,6 +5,7 @@
     ./keybase
     ./mail
     ./mergerfs
+    ./mullvad
     ./passwords
     ./proxy
     ./redshift

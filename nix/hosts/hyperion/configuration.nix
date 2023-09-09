@@ -55,12 +55,15 @@
         enableClient = true;
       };
       passwords.enable = true;
-      wireguard.enable = true;
       zerotier = {
         enable = true;
         networks = ["b6079f73c6986bc2"];
       };
       syncthing.enable = true;
+      mullvad = {
+        enable = true;
+        enableGUI = true;
+      };
     };
     hardware = {
       zsa.enable = true;
@@ -69,14 +72,7 @@
       enable = true;
       videoDrivers = ["nvidia"];
       awesome.enable = true;
-      # bspwm = {
-      #   enable = true;
-      #   extraStartupPrograms = ["keybase-gui" "discord" "1password" "telegram-desktop"];
-      #   monitors = ["DP-0"];
-      # };
       sound.enable = true;
-      # polybar.enable = true;
-      # rofi.enable = true;
       random-wallpaper.enable = true;
       firefox.enable = true;
     };
