@@ -48,7 +48,7 @@
       gpg.enable = true;
       mail.enable = true;
       redshift.enable = true;
-      systemd.modules = with lib.my.systemdModules; [updatedb];
+      systemd.modules = with lib.my.systemdModules; [sshAgent];
       ssh = {
         enable = true;
         enableClient = true;
@@ -64,6 +64,7 @@
       zsa.enable = true;
     };
     desktop = {
+      enable = true;
       bspwm = {
         enable = true;
         extraStartupPrograms = ["keybase-gui" "pcloud" "discord"];
