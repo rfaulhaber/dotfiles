@@ -1,9 +1,9 @@
-(self: super: {
-  awesome-git = (super.awesome.override {lua = super.luajit;}).overrideAttrs (old: rec
+(final: prev: {
+  awesome-git = (final.awesome.override {lua = final.luajit;}).overrideAttrs (old: rec
     {
       pname = "awesome-git";
       version = "4.3-master";
-      src = super.fetchFromGitHub {
+      src = final.fetchFromGitHub {
         owner = "awesomeWM";
         repo = "awesome";
         rev = "28381d2792856419d4860dd6b9ed9b94b457c7f2";
