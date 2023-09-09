@@ -243,7 +243,7 @@ awful.keyboard.append_global_keybindings({
       }
     end,
     { description = "lua execute prompt", group = "awesome" }),
-  awful.key({ modkey, }, "Return", function() awful.spawn(terminal) end,
+  awful.key({ modkey, }, "Return", function() awful.spawn(terminal, { tag = "3", maximized = true }) end,
     { description = "open a terminal", group = "launcher" }),
   awful.key({ modkey }, "r", function() awful.screen.focused().mypromptbox:run() end,
     { description = "run prompt", group = "launcher" }),
@@ -251,10 +251,16 @@ awful.keyboard.append_global_keybindings({
     { description = "show the menubar", group = "launcher" }),
 
   awful.key({ modkey }, "e", function()
-    awful.spawn("emacsclient -c")
+    awful.spawn("emacsclient -c", {
+      tag = "2",
+      maximized = true
+    })
   end, { description = "start emacs", group = "client" }),
   awful.key({ modkey }, "b", function()
-    awful.spawn("firefox-devedition")
+    awful.spawn("firefox-devedition", {
+      tag = "1",
+      maximized = true
+    })
   end, { description = "start firefox", group = "client" })
 })
 
@@ -425,7 +431,7 @@ client.connect_signal("request::default_keybindings", function()
       { description = "toggle fullscreen", group = "client" }),
     awful.key({ modkey }, "w", function(c) c:kill() end,
       { description = "close", group = "client" }),
-    awful.key({ modkey, "Control" }, "space", awful.client.floating.toggle,
+    awful.key({ modkey, "Control" }, "f", awful.client.floating.toggle,
       { description = "toggle floating", group = "client" }),
     awful.key({ modkey, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end,
       { description = "move to master", group = "client" }),
@@ -509,10 +515,48 @@ ruled.client.connect_signal("request::rules", function()
   }
 
   -- Set Firefox to always map on the tag named "2" on screen 1.
-  -- ruled.client.append_rule {
-  --     rule       = { class = "Firefox"     },
-  --     properties = { screen = 1, tag = "2" }
-  -- }
+  ruled.client.append_rule {
+    rule       = { class = "Firefox" },
+    properties = {
+      screen = 1,
+      tag = "1",
+      maximized = true,
+    }
+  }
+
+  ruled.client.append_rule {
+    rule       = { class = "Emacs" },
+    properties = {
+      screen = 1,
+      tag = "2",
+      maximized = true,
+    }
+  }
+
+  ruled.client.append_rule {
+    rule       = { class = "kitty" },
+    properties = {
+      screen = 1,
+      tag = "3",
+      maximized = true,
+    }
+  }
+
+  ruled.client.append_rule {
+    rule       = { class = "Telegram" },
+    properties = {
+      screen = 1,
+      tag = "4"
+    }
+  }
+
+  ruled.client.append_rule {
+    rule       = { class = "Spotify" },
+    properties = {
+      screen = 1,
+      tag = "5"
+    }
+  }
 end)
 -- }}}
 
