@@ -60,7 +60,6 @@
 (package! pollen-mode)
 (package! prettier)
 (package! fzf)
-(package! apheleia)
 
 ;; (package! hyperbole)
 
