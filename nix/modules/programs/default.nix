@@ -3,7 +3,7 @@
     ./1password
     ./direnv
     ./emacs
-    ./exa
+    ./eza
     ./git
     ./keychain
     ./kitty

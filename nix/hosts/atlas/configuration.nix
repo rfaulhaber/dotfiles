@@ -21,7 +21,7 @@
       };
       neovim.enable = true;
       git.enable = true;
-      exa.enable = true;
+      eza.enable = true;
     };
     services = {
       docker.enable = true;

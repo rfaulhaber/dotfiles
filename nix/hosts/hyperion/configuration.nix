@@ -29,7 +29,6 @@
         enable = true;
         useDelta = true;
       };
-      exa.enable = true;
       nushell = {
         enable = true;
         setDefault = true;

@@ -33,7 +33,7 @@
         enable = true;
         useDelta = true;
       };
-      exa.enable = true;
+      eza.enable = true;
     };
     services = {
       docker.enable = true;
