@@ -306,6 +306,14 @@ Used in loading config specific to those systems.")
 ;; set formatter to alejandra
 (set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
 
+;; apheleia
+(after! apheleia
+  ;; add formatter for alejandra
+  (push '(alejandra . ("alejandra" "-")) apheleia-formatters)
+
+  ;; set nix to use alejandra rather than nixfmt
+  (setf (alist-get 'nix apheleia-mode-alist) 'alejandra))
+
 ;; lua mode
 (after! lua-mode
   ;; set LSP location
@@ -314,7 +322,8 @@ Used in loading config specific to those systems.")
 ;; --------------------------------- misc -----------------------------------------
 
 ;; general
-(add-hook 'before-save-hook #'+format/buffer)
+;; commented out for now, `'+format/buffer''s behavior has changed
+;; (add-hook 'before-save-hook #'+format/buffer)
 
 ;; dynamically load languages for org-babel
 ;; thank you r/emacs: https://www.reddit.com/r/emacs/comments/us7zae/comment/i9ceaco
