@@ -560,7 +560,7 @@ if $nu.os-info.name == "macos" {
 
   let direnv_pre_prompt = { ||
     let direnv = (direnv export json | from json)
-    let direnv = if ($direnv | length) == 1 { $direnv } else { {} }
+    let direnv = if $direnv != null { $direnv } else { {} }
     $direnv | load-env
   }
 
