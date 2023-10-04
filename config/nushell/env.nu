@@ -117,6 +117,9 @@ if $nu.os-info.name == 'macos' {
    # add homebrew to PATH
    $env.PATH = ($env.PATH | split row (char esep) | prepend '/opt/homebrew/bin')
 
+   # add nix profile to PATH
+   $env.PATH = ($env.PATH | split row (char esep) | prepend $'($env.HOME)/.nix-profile/bin')
+
    # this is a port of the nix-daemon.sh script that's supposed to get autoloaded
    let nix_link = $"/nix/var/nix/profiles/default"
    $env.NIX_LINK = $nix_link
