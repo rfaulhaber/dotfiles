@@ -13,7 +13,7 @@ in {
       enable = true;
       install = true;
       defaultEditor = true;
-      package = with pkgs; ((emacsPackagesFor emacs).emacsWithPackages
+      package = with pkgs; ((emacsPackagesFor emacs29).emacsWithPackages
         (epkgs: with epkgs; [pdf-tools prettier vterm]));
     };
 
