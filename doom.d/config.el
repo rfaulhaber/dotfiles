@@ -304,7 +304,7 @@ Used in loading config specific to those systems.")
 
 ;; nix mode
 ;; set formatter to alejandra
-(set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
+(set-formatter! 'alejandra '("alejandra" "--quiet") :modes '(nix-mode))
 
 ;; apheleia
 (after! apheleia
