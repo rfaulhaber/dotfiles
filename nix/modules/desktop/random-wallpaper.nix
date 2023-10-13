@@ -38,13 +38,13 @@ in {
       ];
       systemd.user.services.random-wallpaper = {
         inherit description;
-        path = with pkgs; [bash jq pass feh curl];
+        path = with pkgs; [nushell pass feh];
         after = ["graphical-session-pre.target"];
         partOf = ["graphical-session.target"];
         wantedBy = ["graphical-session.target"];
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${config.dotfiles.binDir}/random-wallpaper ${cfg.query}";
+          ExecStart = "${config.dotfiles.binDir}/random-wallpaper.nu ${cfg.query}";
           IOSchedulingClass = "idle";
         };
       };
