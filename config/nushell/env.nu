@@ -101,33 +101,13 @@ if ($emacs_bin_path | path exists) {
     $env.PATH = ($env.PATH | split row (char esep) | prepend $emacs_bin_path)
 }
 
-# macOS-specific configuration
-if $nu.os-info.name == 'macos' {
-   # add zoxide
-   if (which zoxide | length) > 0 {
-      zoxide init nushell | save -f ~/.zoxide.nu
-   } else {
-     echo 'zoxide not installed'
-   }
+# nushell can't source files dynamically, so we have to do this
+match $nu.os-info.name {
+      "macos" => { source "./hosts/env/darwin.nu" },
+      "linux" => { source "./hosts/env/linux.nu" },
+}
 
-   # /usr/local/bin doesn't exist by default on macOS, but I need it
-   # should be low in the PATH
-   $env.PATH = ($env.PATH | split row (char esep) | append '/usr/local/bin')
-
-   # add homebrew to PATH
-   $env.PATH = ($env.PATH | split row (char esep) | prepend '/opt/homebrew/bin')
-
-   # add nix profile to PATH
-   $env.PATH = ($env.PATH | split row (char esep) | prepend $'($env.HOME)/.nix-profile/bin')
-
-   # this is a port of the nix-daemon.sh script that's supposed to get autoloaded
-   let nix_link = $"/nix/var/nix/profiles/default"
-   $env.NIX_LINK = $nix_link
-   $env.NIX_LINK_NEW = $nix_link
-
-   $env.NIX_PROFILES = $"/nix/var/nix/profiles/default ($nix_link)"
-
-   $env.NIX_SSL_CERT_FILE = "/nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt"
-
-   $env.PATH = ($env.PATH | split row (char esep) | append $"($nix_link)/bin")
+match (sys | get host.hostname) {
+      "hyperion" => { source "./hosts/env/hyperion.nu" },
+      "eos" => { source "./hosts/env/eos.nu" },
 }

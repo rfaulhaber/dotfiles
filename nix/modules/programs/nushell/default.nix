@@ -23,14 +23,14 @@ in {
   };
 
   config = mkIf cfg.enable {
+    # TODO import config into nu configuration from here
     home.programs = {
       nushell = {
         enable = true;
-        configFile.source = "${config.dotfiles.dir}/config/nushell/config.nu";
-        envFile.source = "${config.dotfiles.dir}/config/nushell/env.nu";
+        configFile.text = "source ${config.dotfiles.configDir}/nushell/config.nu";
+        envFile.text = "source ${config.dotfiles.configDir}/nushell/env.nu";
 
         shellAliases = {
-          l = "ls -la";
           pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
           pbpaste = "${pkgs.xclip}/bin/xclip -selection clipboard -o";
         };
