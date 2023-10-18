@@ -34,6 +34,7 @@
         setDefault = true;
       };
       direnv.enable = true;
+      carapace.enable = true;
     };
     services = {
       docker.enable = true;
