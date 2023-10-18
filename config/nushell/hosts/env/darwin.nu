@@ -2,7 +2,7 @@
 if (which zoxide | length) > 0 {
     zoxide init nushell | save -f ~/.zoxide.nu
 } else {
-    echo 'zoxide not installed'
+    print 'zoxide not installed'
 }
 
 # should be low in the PATH
@@ -24,3 +24,16 @@ $env.NIX_PROFILES = $"/nix/var/nix/profiles/default ($nix_link)"
 $env.NIX_SSL_CERT_FILE = "/nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt"
 
 $env.PATH = ($env.PATH | split row (char esep) | append $"($nix_link)/bin")
+
+## set up carapace
+
+if (which carapace | length) > 0 {
+  mkdir ~/.cache/carapace
+  carapace _carapace nushell | save --force ~/.cache/carapace/init.nu
+} else {
+  print "carapace not installed"
+}
+
+
+
+
