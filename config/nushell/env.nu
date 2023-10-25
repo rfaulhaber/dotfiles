@@ -2,7 +2,8 @@
 #
 # version = 0.82.1
 
-let dotfiles_path = "~/Projects/dotfiles/config/nushell"
+# this is the same on every system I use
+const dotfiles_path = "~/Projects/dotfiles/config/nushell"
 
 def create_left_prompt [] {
     mut home = ""
@@ -72,8 +73,10 @@ $env.ENV_CONVERSIONS = {
 
 # Directories to search for scripts when calling source or use
 $env.NU_LIB_DIRS = [
-    # By default, <nushell-config-dir>/scripts is added
-    ($nu.default-config-dir | path join 'scripts')
+    ($nu.default-config-dir | path join "hosts")
+    ($nu.default-config-dir | path join "hosts/env")
+    ($nu.default-config-dir | path join "hosts/config")
+    ($nu.default-config-dir | path join "themes")
     $dotfiles_path
 ]
 
@@ -110,4 +113,5 @@ match $nu.os-info.name {
 match (sys | get host.hostname) {
       "hyperion" => { source "./hosts/env/hyperion.nu" },
       "eos" => { source "./hosts/env/eos.nu" },
+       $x if $x =~ "FW*" => { source "./hosts/config/fw.nu" }
 }

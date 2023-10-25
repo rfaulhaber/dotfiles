@@ -28,9 +28,6 @@ $env.config = {
   rm: {
     always_trash: false # always act as if -t was given. Can be overridden with -p
   }
-  cd: {
-    abbreviations: true # allows `cd s/o/f` to expand to `cd some/other/folder`
-  }
   table: {
     mode: rounded # basic, compact, compact_double, light, thin, with_love, rounded, reinforced, heavy, none, other
     index_mode: always # "always" show indexes, "never" show indexes, "auto" = show indexes when a table has "index" column
@@ -399,4 +396,5 @@ match $nu.os-info.name {
 match (sys | get host.hostname) {
       "hyperion" => { source "./hosts/config/hyperion.nu" },
       "eos" => { source "./hosts/config/eos.nu" },
+       $x if $x =~ "FW*" => { source "./hosts/config/fw.nu" }
 }
