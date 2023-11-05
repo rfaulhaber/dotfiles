@@ -45,6 +45,12 @@ editor_cmd = terminal .. " -e " .. editor
 
 browser_cmd = "firefox-developer-edition"
 
+lock_exec = "dm-tool lock"
+
+local function lock_screen()
+	awful.spawn(lock_exec)
+end
+
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
 -- If you do not like this or do not have such a key,
@@ -77,7 +83,11 @@ myawesomemenu = {
 }
 
 mymainmenu = awful.menu({
-	items = { { "awesome", myawesomemenu, beautiful.awesome_icon }, { "open terminal", terminal } },
+	items = {
+		{ "awesome", myawesomemenu, beautiful.awesome_icon },
+		{ "open terminal", terminal },
+		{ "lock screen", lock_screen },
+	},
 })
 
 mylauncher = awful.widget.launcher({
@@ -260,6 +270,8 @@ awful.keyboard.append_global_keybindings({
 		menubar.show()
 	end, { description = "show the menubar", group = "launcher" }),
 
+	-- non-boilerplate keybindings
+
 	awful.key({ modkey }, "e", function()
 		awful.spawn("emacsclient -c", {
 			tag = "2",
@@ -272,6 +284,7 @@ awful.keyboard.append_global_keybindings({
 			maximized = true,
 		})
 	end, { description = "start firefox", group = "client" }),
+	awful.key({ modkey }, "l", lock_screen, { description = "lock screen", group = "client" }),
 })
 
 -- Tags related keybindings
