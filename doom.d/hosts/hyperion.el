@@ -8,4 +8,4 @@
 (setq geiser-active-implementations '(racket))
 
 (setq browse-url-browser-function 'browse-url-firefox
-      browse-url-firefox-program "firefox-devedition")
+      browse-url-firefox-program "firefox-developer-edition")
