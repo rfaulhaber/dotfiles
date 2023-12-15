@@ -23,7 +23,6 @@
       };
       emacs.enable = true;
       neovim.enable = true;
-      pcloud.enable = true;
       kitty = {
         enable = true;
         fontSize = 16;
@@ -51,7 +50,7 @@
       systemd.modules = with lib.my.systemdModules; [sshAgent];
       ssh = {
         enable = true;
-        enableClient = true;
+        client.enable = true;
       };
       passwords.enable = true;
       zerotier = {
@@ -67,7 +66,7 @@
       enable = true;
       bspwm = {
         enable = true;
-        extraStartupPrograms = ["keybase-gui" "pcloud" "discord"];
+        extraStartupPrograms = ["keybase-gui" "discord"];
         monitors = ["eDP"];
       };
       sound.enable = true;

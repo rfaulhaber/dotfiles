@@ -8,21 +8,48 @@ with lib; let
   cfg = config.modules.services.ssh;
   _1passwordEnable = config.modules.programs._1password.enable;
 in {
+  # TODO create hostnames on ZeroTier network for mobile devices
   options.modules.services.ssh = {
     enable = mkEnableOption false;
-    keys = mkOption {
-      description = "SSH keys used by the default user of this machine.";
-      default = [];
-      type = types.listOf types.str;
+
+    client = {
+      enable = mkOption {
+        description = "If true, enables SSH client.";
+        type = types.bool;
+        default = false;
+      };
+
+      sshPath = mkOption {
+        description = "Path to SSH directory.";
+        type = types.either types.str types.path;
+        default = "${config.user.home}/.ssh";
+        apply = toString;
+      };
     };
-    # TODO split into two separate modules
-    enableClient = mkEnableOption false;
-    # TODO create hostnames on ZeroTier network for mobile devices
-    enableServer = mkEnableOption false;
+
+    server = {
+      enable = mkOption {
+        description = "If true, enables SSH server.";
+        type = types.bool;
+        default = false;
+      };
+
+      keys = mkOption {
+        description = "SSH keys used by the default user of this machine.";
+        default = [];
+        type = types.listOf types.str;
+      };
+
+      port = mkOption {
+        description = "SSH port to use.";
+        default = 10222;
+        type = types.int;
+      };
+    };
   };
 
   config = mkIf cfg.enable {
-    services.openssh = mkIf cfg.enableServer {
+    services.openssh = mkIf cfg.server.enable {
       enable = true;
       settings = {
         PasswordAuthentication = false;
@@ -32,23 +59,23 @@ in {
         PermitEmptyPasswords no
         AllowTcpForwarding yes
       '';
-      ports = [10222];
+      ports = [cfg.port];
     };
 
     # TODO support multiple users?
-    # TODO make configurable from outside?
-    user.openssh.authorizedKeys.keys = mkIf cfg.enableServer cfg.keys;
+    user.openssh.authorizedKeys.keys = mkIf cfg.server.enable cfg.server.keys;
 
-    security.pam.enableSSHAgentAuth = mkIf cfg.enableServer true;
+    security.pam.enableSSHAgentAuth = mkIf cfg.server.enable true;
 
-    home.programs.ssh = mkIf cfg.enableClient {
+    # TODO define hosts externally?
+    home.programs.ssh = mkIf cfg.client.enable {
       enable = true;
       compression = true;
       hashKnownHosts = true;
 
       matchBlocks = let
-        sshPath = "${config.user.home}/.ssh";
         mkLocalHostname = n: "192.168.0.${n}";
+        sshPath = cfg.client.sshPath;
       in {
         "*".identitiesOnly = true;
 

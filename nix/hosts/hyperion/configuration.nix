@@ -14,13 +14,11 @@
     programs = {
       zsh = {
         enable = true;
-        # setDefault = true;
         ohMyZsh = {
           enable = true;
           theme = "agnoster";
         };
       };
-      # starship.enable = true;
       emacs.enable = true;
       neovim.enable = true;
       kitty.enable = true;
@@ -52,7 +50,7 @@
       systemd.modules = with lib.my.systemdModules; [sshAgent];
       ssh = {
         enable = true;
-        enableClient = true;
+        client.enable = true;
       };
       passwords.enable = true;
       zerotier = {
