@@ -59,7 +59,7 @@ in {
         PermitEmptyPasswords no
         AllowTcpForwarding yes
       '';
-      ports = [cfg.port];
+      ports = [cfg.server.port];
     };
 
     # TODO support multiple users?
