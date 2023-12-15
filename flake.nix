@@ -10,6 +10,10 @@
     deploy-rs.url = "github:serokell/deploy-rs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     flake-utils.url = "github:numtide/flake-utils";
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -75,7 +79,11 @@
       overlays =
         mapModules ./nix/overlays import;
 
+      formatter = pkgs.alejandra;
+
       # these are the actual system configurations
+      # any particular system can be build with nixos-rebuild of course, but also:
+      # nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel
       nixosConfigurations = {
         hyperion = mkHost ./nix/hosts/hyperion/configuration.nix;
         atlas = mkHost ./nix/hosts/atlas/configuration.nix;
