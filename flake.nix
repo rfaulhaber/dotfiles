@@ -23,6 +23,7 @@
     deploy-rs,
     nixos-hardware,
     flake-utils,
+    nixos-generators,
     ...
   }: let
     inherit (lib.my) mapModules;
@@ -69,7 +70,7 @@
         hyperion = lib.my.mkHost ./nix/hosts/hyperion/configuration.nix {};
         atlas = lib.my.mkHost ./nix/hosts/atlas/configuration.nix {};
         helios = lib.my.mkHost ./nix/hosts/helios/configuration.nix {};
-        cerberus = lib.my.mkHost ./nix/hosts/cerberus/configuration.nix {system = "aarch64-linux";};
+        cerberus = lib.my.mkHost ./nix/hosts/cerberus/configuration.nix {};
       };
 
       # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix

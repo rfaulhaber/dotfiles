@@ -7,7 +7,7 @@
 with builtins;
 with lib;
 with lib.my; let
-  inherit (inputs) nixpkgs home-manager;
+  inherit (inputs) nixpkgs home-manager nixos-generators;
   defaultSystem = "x86_64-linux";
 in rec {
   mkOpt = type: default: mkOption {inherit type default;};

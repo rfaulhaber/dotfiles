@@ -5,49 +5,52 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: {
-  imports = [../../modules];
+  imports = [
+    ../../modules
+    inputs.nixos-generators.nixosModules.all-formats
+  ];
 
-  # only needed for crosscompilation
-  nixpkgs.crossSystem = lib.systems.elaborate lib.systems.examples.aarch64-multiplatform;
+  nixpkgs.hostPlatform = "x86_64-linux";
 
-  sdImage.postBuildCommands = with pkgs; ''
-    dd if=${ubootRock64}/idbloader.img of=$img conv=fsync,notrunc bs=512 seek=64
-    dd if=${ubootRock64}/u-boot.itb of=$img conv=fsync,notrunc bs=512 seek=16384
-  '';
-
-  modules = {
-    programs = {
-      zsh = {
-        enable = true;
-        setDefault = true;
-        ohMyZsh = {
+  formatConfigs.sd-aarch64-installer = {config, ...}: {
+    modules = {
+      programs = {
+        zsh = {
           enable = true;
-          theme = "agnoster";
+          ohMyZsh = {
+            enable = true;
+            theme = "agnoster";
+          };
+        };
+        nushell = {
+          enable = true;
+          setDefault = true;
+        };
+        neovim.enable = true;
+        git.enable = true;
+      };
+      services = {
+        docker.enable = true;
+        gpg.enable = true;
+        systemd.modules = with lib.my.systemdModules; [dockerCleanup];
+        ssh = {
+          enable = true;
+          server = {
+            enable = true;
+            keys = [
+              "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvwfQy4U/GVd5S2JhNnaQvuKizbavuUWihmr/89fjZo ryan@hyperion"
+            ];
+            port = 11689;
+          };
         };
       };
-      neovim.enable = true;
-      git.enable = true;
     };
-    services = {
-      docker.enable = true;
-      gpg.enable = true;
-      systemd.modules = with lib.my.systemdModules; [updatedb dockerCleanup];
-      ssh = {
-        enable = true;
-        server = {
-          enable = true;
-          keys = [
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvwfQy4U/GVd5S2JhNnaQvuKizbavuUWihmr/89fjZo ryan@hyperion"
-          ];
-        };
-      };
-    };
-    themes.active = "city-lights";
-  };
 
-  networking = {
-    hostName = "cerberus";
+    networking = {
+      hostName = "cerberus";
+    };
   };
 }
