@@ -44,25 +44,6 @@
         lib = self;
       };
     });
-
-    mkHost = cfgFile:
-      nixpkgs.lib.nixosSystem rec {
-        # TODO account for darwin
-        system = "x86_64-linux";
-        modules = [
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            nixpkgs.pkgs = pkgs;
-          }
-          cfgFile
-        ];
-        specialArgs = {
-          inherit lib inputs;
-          platform = system;
-        };
-      };
   in
     {
       templates = {
@@ -85,9 +66,10 @@
       # any particular system can be build with nixos-rebuild of course, but also:
       # nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel
       nixosConfigurations = {
-        hyperion = mkHost ./nix/hosts/hyperion/configuration.nix;
-        atlas = mkHost ./nix/hosts/atlas/configuration.nix;
-        helios = mkHost ./nix/hosts/helios/configuration.nix;
+        hyperion = lib.my.mkHost ./nix/hosts/hyperion/configuration.nix {};
+        atlas = lib.my.mkHost ./nix/hosts/atlas/configuration.nix {};
+        helios = lib.my.mkHost ./nix/hosts/helios/configuration.nix {};
+        cerberus = lib.my.mkHost ./nix/hosts/cerberus/configuration.nix {system = "aarch64-linux";};
       };
 
       # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix

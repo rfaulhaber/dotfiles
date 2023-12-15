@@ -1,10 +1,12 @@
 {
   lib,
   inputs,
+  pkgs,
   ...
 }:
 with builtins;
-with lib; let
+with lib;
+with lib.my; let
   inherit (inputs) nixpkgs home-manager;
   defaultSystem = "x86_64-linux";
 in rec {
@@ -52,12 +54,8 @@ in rec {
 
   # thank you hlissner
   # https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix#L7
-  mkHost = path: attrs @ {
-    system ? defaultSystem,
-    nixpkgs,
-    ...
-  }:
-    nixpkgs.lib.nixosSystem rec {
+  mkHost = path: attrs @ {system ? defaultSystem, ...}:
+    nixosSystem rec {
       inherit system;
       modules = [
         home-manager.nixosModules.home-manager
@@ -66,12 +64,11 @@ in rec {
           home-manager.useUserPackages = true;
         }
         {
-          nixpkgs.pkgs = nixpkgs;
-          networking.hostName =
-            mkDefault (removeSuffix ".nix" (baseNameOf path));
+          nixpkgs.pkgs = pkgs;
+          # networking.hostName =
+          #   mkDefault (match ".*/([[:alpha:]]+)/configuration.nix" (toString path));
         }
         (filterAttrs (n: v: !elem n ["system"]) attrs)
-        # ../. # /default.nix
         path
       ];
       specialArgs = {
