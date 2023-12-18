@@ -1,4 +1,7 @@
-source ~/.zoxide.nu
+if (which zoxide | length) > 0 {
+  source ~/.zoxide.nu
+}
+
 
 let direnv_pre_prompt = { ||
   let direnv = (direnv export json | from json)
