@@ -10,7 +10,9 @@ let direnv_pre_prompt = { ||
   direnv export json | from json | default {} | load-env
 }
 
-$env.config = ($env.config | update hooks.pre_prompt ($env.config.hooks.pre_prompt | append $direnv_pre_prompt))
+$env.config.hooks.env_change.PWD = (
+  $env.config.hooks.env_change.PWD | append $direnv_pre_prompt
+)
 
 if ("~/.cache/carapace/init.nu" | path exists) {
   source ~/.cache/carapace/init.nu
