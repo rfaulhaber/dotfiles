@@ -14,6 +14,10 @@
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -24,13 +28,14 @@
     nixos-hardware,
     flake-utils,
     nixos-generators,
+    nix-darwin,
     ...
   }: let
     inherit (lib.my) mapModules;
     # does not support macOS yet!
     system = "x86_64-linux";
 
-    mkPkgs = pkgs: extraOverlays:
+    mkPkgs = pkgs: system: extraOverlays:
       import pkgs {
         inherit system;
         config.allowUnfree = true;
@@ -61,16 +66,26 @@
       overlays =
         mapModules ./nix/overlays import;
 
-      formatter = pkgs.alejandra;
-
       # these are the actual system configurations
       # any particular system can be build with nixos-rebuild of course, but also:
       # nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel
-      nixosConfigurations = {
+      nixosConfigurations = let
+        pkgs = mkPkgs nixpkgs "x86_64-linux" [];
+        lib = nixpkgs.lib.extend (self: super: {
+          my = import ./nix/lib {
+            inherit inputs pkgs;
+            lib = self;
+          };
+        });
+      in {
         hyperion = lib.my.mkHost ./nix/hosts/hyperion/configuration.nix {};
         atlas = lib.my.mkHost ./nix/hosts/atlas/configuration.nix {};
         helios = lib.my.mkHost ./nix/hosts/helios/configuration.nix {};
         cerberus = lib.my.mkHost ./nix/hosts/cerberus/configuration.nix {};
+      };
+
+      darwinConfigurations = {
+        eos = lib.my.mkHost ./nix/hosts/eos/configuration.nix {system = "aarch64-darwin";};
       };
 
       # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix
@@ -94,6 +109,8 @@
     // flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
     in {
+      formatter = pkgs.alejandra;
+
       # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
       # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
       apps.deploy-rs = deploy-rs.defaultApp."${system}";

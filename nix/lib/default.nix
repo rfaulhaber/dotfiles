@@ -7,7 +7,7 @@
 with builtins;
 with lib;
 with lib.my; let
-  inherit (inputs) nixpkgs home-manager nixos-generators;
+  inherit (inputs) nixpkgs home-manager nixos-generators nix-darwin;
   defaultSystem = "x86_64-linux";
 in rec {
   mkOpt = type: default: mkOption {inherit type default;};
@@ -65,8 +65,27 @@ in rec {
         }
         {
           nixpkgs.pkgs = pkgs;
-          # networking.hostName =
-          #   mkDefault (match ".*/([[:alpha:]]+)/configuration.nix" (toString path));
+        }
+        (filterAttrs (n: v: !elem n ["system"]) attrs)
+        path
+      ];
+      specialArgs = {
+        inherit lib inputs system;
+        platform = system;
+      };
+    };
+
+  mkDarwinHost = path: attrs @ {system ? "aarch64-darwin", ...}:
+    darwinSystem rec {
+      inherit system;
+      modules = [
+        home-manager.darwinModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+        }
+        {
+          nixpkgs.pkgs = pkgs;
         }
         (filterAttrs (n: v: !elem n ["system"]) attrs)
         path

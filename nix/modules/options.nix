@@ -63,7 +63,7 @@ with lib.my; {
   };
 
   config = {
-    user = rec {
+    user = mkIf pkgs.stdenv.isLinux rec {
       name = "ryan";
       description = "ryan";
       # TODO do better
@@ -90,7 +90,7 @@ with lib.my; {
       };
     };
 
-    users.groups = {plugdev = {};};
+    users.groups = mkIf pkgs.stdenv.isLinux {plugdev = {};};
 
     home-manager = {
       useUserPackages = true;

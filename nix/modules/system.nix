@@ -7,7 +7,7 @@
 with lib;
 # standard system configuration items across Linux systems for NixOS
   {
-    config = {
+    config = mkIf pkgs.stdenv.isLinux {
       # All my machines are in the same timezone
       # TODO should this be here?
       time = {
