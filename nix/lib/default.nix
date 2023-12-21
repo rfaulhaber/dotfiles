@@ -52,49 +52,47 @@ in rec {
       else acc)
     0;
 
-  # thank you hlissner
-  # https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix#L7
-  mkHost = path: attrs @ {system ? defaultSystem, ...}:
-    nixosSystem rec {
+  mkPkgs = system: pkgs: extraOverlays:
+    import pkgs {
       inherit system;
-      modules = [
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-        }
-        {
-          nixpkgs.pkgs = pkgs;
-        }
-        (filterAttrs (n: v: !elem n ["system"]) attrs)
-        path
-      ];
-      specialArgs = {
-        inherit lib inputs system;
-        platform = system;
-      };
+      config.allowUnfree = true;
+      overlays = extraOverlays ++ (lib.attrValues inputs.self.overlays);
     };
 
-  mkDarwinHost = path: attrs @ {system ? "aarch64-darwin", ...}:
-    darwinSystem rec {
-      inherit system;
-      modules = [
-        home-manager.darwinModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-        }
-        {
-          nixpkgs.pkgs = pkgs;
-        }
-        (filterAttrs (n: v: !elem n ["system"]) attrs)
-        path
-      ];
-      specialArgs = {
-        inherit lib inputs system;
-        platform = system;
-      };
+  # thank you hlissner
+  # https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix#L7
+  mkHost = path: attrs @ {
+    system ? defaultSystem,
+    ...
+  }: let
+    pkgs = mkPkgs system nixpkgs [];
+  in {
+    inherit system;
+    modules = [
+      home-manager.nixosModules.home-manager
+      {
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+      }
+      {
+        nixpkgs.pkgs = pkgs;
+        # networking.hostName =
+        #   mkDefault (match ".*/([[:alpha:]]+)/configuration.nix" (toString path));
+      }
+      (filterAttrs (n: v: !elem n ["system"]) attrs)
+      path
+    ];
+    specialArgs = {
+      inherit lib inputs system;
+      platform = system;
     };
+  };
+
+  mkNixOSHost = path: attrs:
+    nixosSystem (mkHost path attrs);
+
+  mkDarwinHost = path: attrs:
+    darwinSystem (mkHost path attrs);
 
   # thank you hlissner
   # mapFilterAttrs ::

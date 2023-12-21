@@ -1,3 +1,9 @@
+# this flake has gotten rather unwieldy and I need to refactor it severely
+# a couple of improvements I need to make are:
+# - refactor modules to not depend on pkgs
+# - refactor configurations to be platform independent
+# - refactor to allow the same host to be built for different targets, e.g. hyperion on a vm
+
 {
   description = "My Nix system configurations.";
 
@@ -31,19 +37,10 @@
     nix-darwin,
     ...
   }: let
-    inherit (lib.my) mapModules;
-    # does not support macOS yet!
-    system = "x86_64-linux";
-
-    mkPkgs = pkgs: system: extraOverlays:
-      import pkgs {
-        inherit system;
-        config.allowUnfree = true;
-        overlays = extraOverlays ++ (lib.attrValues self.overlays);
-      };
-
+    inherit (lib.my) mapModules mkPkgs;
     pkgs = mkPkgs nixpkgs [];
 
+    # TODO import lib functions that don't depend on pkgs
     lib = nixpkgs.lib.extend (self: super: {
       my = import ./nix/lib {
         inherit inputs pkgs;
@@ -70,23 +67,23 @@
       # any particular system can be build with nixos-rebuild of course, but also:
       # nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel
       nixosConfigurations = let
-        pkgs = mkPkgs nixpkgs "x86_64-linux" [];
-        lib = nixpkgs.lib.extend (self: super: {
-          my = import ./nix/lib {
-            inherit inputs pkgs;
-            lib = self;
-          };
-        });
+        mkHost = lib.my.mkNixOSHost;
       in {
-        hyperion = lib.my.mkHost ./nix/hosts/hyperion/configuration.nix {};
-        atlas = lib.my.mkHost ./nix/hosts/atlas/configuration.nix {};
-        helios = lib.my.mkHost ./nix/hosts/helios/configuration.nix {};
-        cerberus = lib.my.mkHost ./nix/hosts/cerberus/configuration.nix {};
+        hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
+          system = "x86_64-linux";
+        };
+        atlas = mkHost ./nix/hosts/atlas/configuration.nix {
+          system = "x86_64-linux";
+        };
+        helios = mkHost ./nix/hosts/helios/configuration.nix {
+          system = "x86_64-linux";
+        };
+        cerberus = mkHost ./nix/hosts/cerberus/configuration.nix {
+          system = "aarch64-linux";
+        };
       };
 
-      darwinConfigurations = {
-        eos = lib.my.mkHost ./nix/hosts/eos/configuration.nix {system = "aarch64-darwin";};
-      };
+      # TODO add darwin configurations
 
       # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix
       # nixosConfigurations = mapHosts ./nix/hosts { };
@@ -107,7 +104,9 @@
       };
     }
     // flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+      };
     in {
       formatter = pkgs.alejandra;
 

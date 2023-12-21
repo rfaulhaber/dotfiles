@@ -7,7 +7,10 @@
 with lib; let
   cfg = config.modules.desktop.awesome;
 in {
-  options.modules.desktop.awesome = {enable = mkEnableOption false;};
+  options.modules.desktop.awesome = {
+    enable = mkEnableOption false;
+    # writeConfig = mkEnableOption false;
+  };
 
   config = mkIf cfg.enable {
     services.xserver.windowManager.awesome = {
@@ -30,5 +33,11 @@ in {
       lua-language-server
       stylua
     ];
+
+    # home.file."globals.json" = {
+    #   text =
+    #     builtins.toJSON {
+    #     };
+    # };
   };
 }
