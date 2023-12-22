@@ -3,7 +3,6 @@
 # - refactor modules to not depend on pkgs
 # - refactor configurations to be platform independent
 # - refactor to allow the same host to be built for different targets, e.g. hyperion on a vm
-
 {
   description = "My Nix system configurations.";
 
@@ -78,7 +77,7 @@
         helios = mkHost ./nix/hosts/helios/configuration.nix {
           system = "x86_64-linux";
         };
-        cerberus = mkHost ./nix/hosts/cerberus/configuration.nix {
+        pallas = mkHost ./nix/hosts/cerberus/configuration.nix {
           system = "aarch64-linux";
         };
       };
