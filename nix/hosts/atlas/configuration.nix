@@ -26,7 +26,10 @@
     services = {
       docker.enable = true;
       gpg.enable = true;
-      systemd.modules = with lib.my.systemdModules; [updatedb dockerCleanup];
+      systemd.modules = {
+        updatedb.enable = true;
+        dockerCleanup.enable = true;
+      };
       ssh = {
         enable = true;
         server = {

@@ -27,7 +27,7 @@ in {
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [snapraid];
 
-    snapraid = {
+    services.snapraid = {
       enable = true;
       dataDisks = cfg.dataDisks;
       parityFiles = cfg.parityFiles;

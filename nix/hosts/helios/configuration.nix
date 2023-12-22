@@ -47,7 +47,9 @@
       gpg.enable = true;
       mail.enable = true;
       redshift.enable = true;
-      systemd.modules = with lib.my.systemdModules; [sshAgent];
+      systemd.modules = {
+        sshAgent.enable = true;
+      };
       ssh = {
         enable = true;
         client.enable = true;
