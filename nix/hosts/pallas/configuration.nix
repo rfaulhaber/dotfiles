@@ -13,38 +13,40 @@
     inputs.nixos-generators.nixosModules.all-formats
   ];
 
+  nixpkgs.hostPlatform = "x86_64-linux";
+
+  modules = {
+    programs = {
+      nushell = {
+        enable = true;
+        setDefault = true;
+      };
+      neovim.enable = true;
+      git.enable = true;
+    };
+    services = {
+      docker.enable = true;
+      gpg.enable = true;
+      systemd.modules = {
+        dockerCleanup.enable = true;
+      };
+      ssh = {
+        enable = true;
+        server = {
+          enable = true;
+          keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvwfQy4U/GVd5S2JhNnaQvuKizbavuUWihmr/89fjZo ryan@hyperion"
+          ];
+          port = 11689;
+        };
+      };
+    };
+  };
+
   formatConfigs.sd-aarch64-installer = {config, ...}: {
-    modules = {
-      programs = {
-        zsh = {
-          enable = true;
-          ohMyZsh = {
-            enable = true;
-            theme = "agnoster";
-          };
-        };
-        nushell = {
-          enable = true;
-          setDefault = true;
-        };
-        neovim.enable = true;
-        git.enable = true;
-      };
-      services = {
-        docker.enable = true;
-        gpg.enable = true;
-        systemd.modules = with lib.my.systemdModules; [dockerCleanup];
-        ssh = {
-          enable = true;
-          server = {
-            enable = true;
-            keys = [
-              "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvwfQy4U/GVd5S2JhNnaQvuKizbavuUWihmr/89fjZo ryan@hyperion"
-            ];
-            port = 11689;
-          };
-        };
-      };
+    services.openssh = {
+      enable = true;
+      settings.PermitRootLogin = lib.mkForce "yes";
     };
   };
 }

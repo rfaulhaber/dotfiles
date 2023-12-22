@@ -8,7 +8,6 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   imports = [./modules];
 }

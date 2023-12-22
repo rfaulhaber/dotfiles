@@ -1,7 +1,6 @@
 # since I use home-manager for SSH configuration, I couldn't use the standard programs.ssh.sshAgent module.
 # this is taken from:
 # https://github.com/NixOS/nixpkgs/blob/nixos-23.05/nixos/modules/programs/ssh.nix
-
 # NOTE: should this be part of the ssh client module?
 {
   config,

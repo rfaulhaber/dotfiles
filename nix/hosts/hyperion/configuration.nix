@@ -99,6 +99,8 @@
         efiSysMountPoint = "/boot";
       };
     };
+
+    binfmt.emulatedSystems = [ "aarch64-linux" ];
   };
 
   # TODO move, set defaults

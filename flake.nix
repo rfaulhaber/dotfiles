@@ -77,7 +77,7 @@
         helios = mkHost ./nix/hosts/helios/configuration.nix {
           system = "x86_64-linux";
         };
-        pallas = mkHost ./nix/hosts/cerberus/configuration.nix {
+        pallas = mkHost ./nix/hosts/pallas/configuration.nix {
           system = "aarch64-linux";
         };
       };
