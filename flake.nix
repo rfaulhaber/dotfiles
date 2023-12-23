@@ -23,6 +23,7 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # nixos-aarch64-images.url = "github:Mic92/nixos-aarch64-images";
   };
 
   outputs = inputs @ {
@@ -108,6 +109,22 @@
       };
     in {
       formatter = pkgs.alejandra;
+
+      # run with something like
+      # nix build .#arm-installer --system aarch64-linux
+      # pass --impure if you need to modify environment variable
+      # currently does not produce desired output
+      packages.arm-installer = nixos-generators.nixosGenerate {
+        system = "aarch64-linux";
+        modules = [
+          ./nix/installers/aarch64-linux/configuration.nix
+        ];
+        specialArgs = {
+          inherit inputs;
+        };
+        customFormats.aarch64-linux-roc = import ./nix/formats/aarch64-linux-roc/configuration.nix { inherit pkgs; };
+        format = "aarch64-linux-roc";
+      };
 
       # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
       # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
