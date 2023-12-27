@@ -10,10 +10,7 @@
 }: {
   imports = [
     ../../modules
-    inputs.nixos-generators.nixosModules.all-formats
   ];
-
-  nixpkgs.hostPlatform = "x86_64-linux";
 
   modules = {
     programs = {
@@ -40,13 +37,6 @@
           port = 11689;
         };
       };
-    };
-  };
-
-  formatConfigs.sd-aarch64-installer = {config, ...}: {
-    services.openssh = {
-      enable = true;
-      settings.PermitRootLogin = lib.mkForce "yes";
     };
   };
 }

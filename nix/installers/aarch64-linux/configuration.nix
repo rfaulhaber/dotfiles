@@ -5,10 +5,6 @@
   inputs,
   ...
 }: {
-  imports = [
-    inputs.nixos-generators.nixosModules.all-formats
-  ];
-
   services.openssh.enable = true;
 
   services.sshd.enable = true;

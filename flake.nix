@@ -103,28 +103,45 @@
         };
       };
     }
+    # x86_64-linux-specific packages
+    # right now, my custom aarch64 installer can only be built on x86_64 linux
+    // {
+      packages.x86_64-linux = let
+        system = "x86_64-linux";
+        pkgs = import nixpkgs {
+          inherit system;
+        };
+      in {
+        roc-rk3328-cc-bootloader = import ./nix/pkgs/roc-rk3328-cc-bootloader {
+          inherit pkgs;
+          lib = pkgs.lib;
+        };
+
+        # run with:
+        # nix build .#arm-installer --system aarch64-linux
+        arm-installer = nixos-generators.nixosGenerate {
+          system = "aarch64-linux";
+          modules = [
+            ./nix/installers/aarch64-linux/configuration.nix
+          ];
+          specialArgs = {
+            inherit inputs;
+          };
+          customFormats.aarch64-linux-roc = import ./nix/formats/aarch64-linux-roc/configuration.nix {
+            inherit pkgs;
+            bootloader = self.packages.x86_64-linux.roc-rk3328-cc-bootloader;
+          };
+          format = "aarch64-linux-roc";
+        };
+      };
+    }
+    # cross-platform applications and packages
     // flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
       };
     in {
       formatter = pkgs.alejandra;
-
-      # run with something like
-      # nix build .#arm-installer --system aarch64-linux
-      # pass --impure if you need to modify environment variable
-      # currently does not produce desired output
-      packages.arm-installer = nixos-generators.nixosGenerate {
-        system = "aarch64-linux";
-        modules = [
-          ./nix/installers/aarch64-linux/configuration.nix
-        ];
-        specialArgs = {
-          inherit inputs;
-        };
-        customFormats.aarch64-linux-roc = import ./nix/formats/aarch64-linux-roc/configuration.nix { inherit pkgs; };
-        format = "aarch64-linux-roc";
-      };
 
       # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
       # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
