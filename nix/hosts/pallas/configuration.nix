@@ -57,6 +57,4 @@
     useDHCP = true;
     interfaces.end0.useDHCP = true;
   };
-
-  system.stateVersion = "24.05";
 }
