@@ -66,6 +66,9 @@
       # these are the actual system configurations
       # any particular system can be build with nixos-rebuild of course, but also:
       # nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel
+
+      # TODO refactor as packages, configurations can be built as packages
+      # like so: packages.<platform>.nixosConfigurations.<hostname>.config.system.build.toplevel
       nixosConfigurations = let
         mkHost = lib.my.mkNixOSHost;
       in {
@@ -88,8 +91,9 @@
       # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix
       # nixosConfigurations = mapHosts ./nix/hosts { };
 
-      # run with: nix run '.#deploy-rs' '.#atlas'
+      # TODO make deployment nodes their own files
       deploy.nodes = {
+      # run with: nix run '.#deploy-rs' '.#atlas'
         atlas = {
           hostname = "atlas";
           sshUser = "ryan";

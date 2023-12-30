@@ -114,7 +114,7 @@ in {
         };
 
         "pallas" = {
-          hostname = mkLocalHostName "191"; # temporary
+          hostname = mkLocalHostname "197"; # temporary
           identityFile = "${sshPath}/id_pallas";
           user = "ryan";
           extraOptions = {"AddKeysToAgent" = "yes";};

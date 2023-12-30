@@ -19,6 +19,7 @@
         enable = true;
         setDefault = true;
       };
+      carapace.enable = true;
       neovim.enable = true;
       git.enable = true;
     };
@@ -50,6 +51,7 @@
 
     # necessary for libre computer board
     kernelParams = ["console=tty1" "console=ttyS2,1500000n8"];
+    kernelPackages = pkgs.linuxPackages_latest;
   };
 
   networking = {
