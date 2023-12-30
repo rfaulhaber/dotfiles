@@ -60,6 +60,8 @@
         };
       };
 
+      # TODO utilize top-level nixosModules
+
       overlays =
         mapModules ./nix/overlays import;
 
