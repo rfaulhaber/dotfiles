@@ -89,17 +89,32 @@
       # nixosConfigurations = mapHosts ./nix/hosts { };
 
       # run with: nix run '.#deploy-rs' '.#atlas'
-      deploy.nodes.atlas = {
-        hostname = "atlas";
-        sshUser = "ryan";
-        sshOpts = ["-t"];
-        autoRollback = true;
-        magicRollback = false;
-        profiles.system = {
-          user = "root";
-          path =
-            deploy-rs.lib.x86_64-linux.activate.nixos
-            self.nixosConfigurations.atlas;
+      deploy.nodes = {
+        atlas = {
+          hostname = "atlas";
+          sshUser = "ryan";
+          sshOpts = ["-t"];
+          autoRollback = true;
+          magicRollback = false;
+          profiles.system = {
+            user = "root";
+            path =
+              deploy-rs.lib.x86_64-linux.activate.nixos
+              self.nixosConfigurations.atlas;
+          };
+        };
+        pallas = {
+          hostname = "pallas";
+          sshUser = "ryan";
+          sshOpts = ["-t"];
+          autoRollback = true;
+          magicRollback = false;
+          profiles.system = {
+            user = "root";
+            path =
+              deploy-rs.lib.aarch64-linux.activate.nixos
+              self.nixosConfigurations.pallas;
+          };
         };
       };
     }

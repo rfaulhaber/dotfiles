@@ -9,6 +9,7 @@
   ...
 }: {
   imports = [
+    ./hardware-configuration.nix
     ../../modules
   ];
 
@@ -39,4 +40,23 @@
       };
     };
   };
+
+  boot = {
+    loader = {
+      grub.enable = false;
+      # Enables the generation of /boot/extlinux/extlinux.conf
+      generic-extlinux-compatible.enable = true;
+    };
+
+    # necessary for libre computer board
+    kernelParams = ["console=tty1" "console=ttyS2,1500000n8"];
+  };
+
+  networking = {
+    hostName = "pallas";
+    useDHCP = true;
+    interfaces.end0.useDHCP = true;
+  };
+
+  system.stateVersion = "24.05";
 }

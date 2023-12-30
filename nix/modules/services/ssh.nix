@@ -112,6 +112,14 @@ in {
           extraOptions = {"AddKeysToAgent" = "yes";};
           port = 2222;
         };
+
+        "pallas" = {
+          hostname = mkLocalHostName "191"; # temporary
+          identityFile = "${sshPath}/id_pallas";
+          user = "ryan";
+          extraOptions = {"AddKeysToAgent" = "yes";};
+          port = 11689;
+        };
       };
     };
   };
