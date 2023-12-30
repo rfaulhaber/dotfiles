@@ -240,7 +240,7 @@ hello world
   (widen))
 
 ;; thank you ChatGPT
-(defun evil-ex-remove-duplicates (beg end)
+(defun self/evil-ex-remove-duplicates (beg end)
   "Remove duplicate lines in the region from BEG to END."
   (interactive "r")
   (save-excursion
@@ -255,12 +255,12 @@ hello world
 (defun self/slugify-title (title)
   "Convert TITLE to a filename-suitable slug. Use hyphens rather than underscores."
   (cl-flet* ((nonspacing-mark-p (char)
-                                (eq 'Mn (get-char-code-property char 'general-category)))
+               (eq 'Mn (get-char-code-property char 'general-category)))
              (strip-nonspacing-marks (s)
-                                     (apply #'string (seq-remove #'nonspacing-mark-p
-                                                                 (ucs-normalize-NFD-string s))))
+               (apply #'string (seq-remove #'nonspacing-mark-p
+                                           (ucs-normalize-NFD-string s))))
              (cl-replace (title pair)
-                         (replace-regexp-in-string (car pair) (cdr pair) title)))
+               (replace-regexp-in-string (car pair) (cdr pair) title)))
     (let* ((pairs `(("['\?,%]" . "")
                     ("[^[:alnum:][:digit:]]" . "-") ;; convert anything not alphanumeric
                     ("--*" . "-")                   ;; remove sequential underscores
