@@ -104,6 +104,7 @@
       };
     }
     # x86_64-linux-specific packages
+    # TODO custom packages should be added to pkgs, made available globally
     # right now, my custom aarch64 installer can only be built on x86_64 linux
     // {
       packages.x86_64-linux = let
