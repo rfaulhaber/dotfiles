@@ -40,7 +40,10 @@ in {
         key = config.userInfo.primaryGPGKey;
       };
 
-      extraConfig = {init.defaultBranch = "main";};
+      extraConfig = {
+        init.defaultBranch = "main";
+        merge.conflictStyle = "zdiff3";
+      };
     };
   };
 }
