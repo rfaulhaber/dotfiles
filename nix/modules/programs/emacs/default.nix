@@ -20,6 +20,7 @@ in {
     # dependencies for my very specific configuration of doom
     # see doom.d/init.el for more
     # we need to include every program either directly or indirectly referenced in config
+    # TODO can I rewrite this such that they're not all globally available?
     environment.systemPackages = with pkgs; [
       (mkIf (config.modules.services.mail.enable) mu)
       aspell
