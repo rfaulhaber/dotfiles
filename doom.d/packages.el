@@ -61,6 +61,12 @@
 (package! prettier)
 (package! fzf)
 
+;; fixes the issue detailed in these:
+;; - https://github.com/seagle0128/doom-modeline/issues/687
+;; - https://discord.com/channels/406534637242810369/1191226198425088020/1191331227224002610
+(package! doom-modeline
+  :pin "cfc7bcf1494cb0634a1464dc40a4a1a1e337cb37")
+
 ;; (package! hyperbole)
 
 ;; non-*elpa packages
@@ -94,9 +100,7 @@
            :repo "Vonfry/zoxide.el"
            :branch "master"))
 
-(package! nushell-mode
-  :recipe (:host github
-           :repo "mrkkrp/nushell-mode"))
+(package! nushell-ts-mode)
 
 ;; org roam ui
 (package! websocket)
