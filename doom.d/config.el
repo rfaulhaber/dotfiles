@@ -319,7 +319,16 @@ Used in loading config specific to those systems.")
   ;; set LSP location
   (setq lsp-clients-lua-language-server-bin (executable-find "lua-language-server")))
 
-;; --------------------------------- misc -----------------------------------------
+;; nushell-ts-mode
+(if (treesit-language-available-p 'nu)
+    (add-to-list 'auto-mode-alist '("\\.nu\\'" . nushell-ts-mode))
+  (message "treesit language unavailable for nu!"))
+
+;; ---------------------------------- treesit ----------------------------------
+
+(setq treesit-language-source-alist '((nu . ("https://github.com/nushell/tree-sitter-nu" "main"))))
+
+;; ----------------------------------- misc ------------------------------------
 
 ;; general
 ;; commented out for now, `'+format/buffer''s behavior has changed
