@@ -396,5 +396,5 @@ match $nu.os-info.name {
 match (sys | get host.hostname) {
       "hyperion" => { source "./hosts/config/hyperion.nu" },
       "eos" => { source "./hosts/config/eos.nu" },
-       $x if $x =~ "FW*" => { source "./hosts/config/fw.nu" }
+       $x if $x =~ "ponos*" => { source "./hosts/config/ponos.nu" }
 }
