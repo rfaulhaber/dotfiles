@@ -5,6 +5,7 @@
 (require 'request)
 
 (defconst work/tasks-pattern (rx "Tasks" (zero-or-more any)))
+(defconst work/logging-properties '("STRT(!)" "DONE(!)" "logdone"))
 
 (defvar work/email nil "Work email. Defaults to nil for privacy reasons.")
 
@@ -26,6 +27,7 @@
     (kill-new ret)
     (message "Lorem Ipsum saved to kill ring")))
 
+;; TODO make a little smarter!
 (defun work/insert-task-header ()
   (interactive)
   (save-excursion
@@ -33,7 +35,7 @@
     (insert (format "** Tasks [/]
 :PROPERTIES:
 :LOGGING:  %s
-:END:" work/logging-properties))))
+:END:" (string-join work/logging-properties " ")))))
 
 ;; non-interactive
 
