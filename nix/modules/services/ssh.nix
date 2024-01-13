@@ -80,7 +80,7 @@ in {
         "*".identitiesOnly = true;
 
         "atlas" = {
-          hostname = mkLocalHostname "2";
+          hostname = mkLocalHostname "3";
           identityFile = "${sshPath}/id_atlas";
           user = config.user.name;
           port = 10222;
@@ -114,7 +114,7 @@ in {
         };
 
         "pallas" = {
-          hostname = mkLocalHostname "197"; # temporary
+          hostname = mkLocalHostname "2";
           identityFile = "${sshPath}/id_pallas";
           user = "ryan";
           extraOptions = {"AddKeysToAgent" = "yes";};
