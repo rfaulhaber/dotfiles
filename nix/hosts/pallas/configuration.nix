@@ -35,6 +35,7 @@
           enable = true;
           keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvwfQy4U/GVd5S2JhNnaQvuKizbavuUWihmr/89fjZo ryan@hyperion"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDCYJHzbywNiBt3tQGf8Xoi670NU/Gv77Bhzeemr98ro ryan@eos"
           ];
           port = 11689;
         };
