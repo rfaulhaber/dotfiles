@@ -543,6 +543,20 @@ of line, moves cursor to the end of LINE."
   (let ((choice (abs (random (length lst)))))
     (nth choice lst)))
 
+;; NOTE doesn't quite work?
+(defun self/org-babel-execute-src-block-lazy-load (original-fn &rest args)
+  (let ((lang (org-element-property :language (org-element-at-point))))
+    (when (or (string= lang "bash") (string= lang "sh"))
+      (setq lang "shell"))
+    (unless (or (not (boundp 'org-babel-load-languages)) (cdr (assoc (intern lang) org-babel-load-languages)))
+      (add-to-list 'org-babel-load-languages (cons (intern lang) t))
+      (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
+    (apply original-fn args)))
+
+(defun self/+org-inline-image-data-fn (_original-fn &rest args)
+  (cl-destructuring-bind (_ link) args
+    (with-demoted-errors "%S" (base64-decode-string link))))
+
 ;; --------------------------- custom evil operators ---------------------------
 
 (evil-define-operator self/evil-write-temp (beg end &optional prefix)

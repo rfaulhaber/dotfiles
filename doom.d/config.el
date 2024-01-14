@@ -333,24 +333,10 @@ Used in loading config specific to those systems.")
 
 ;; dynamically load languages for org-babel
 ;; thank you r/emacs: https://www.reddit.com/r/emacs/comments/us7zae/comment/i9ceaco
-;; TODO refactor using advice-add
-(defadvice org-babel-execute-src-block (around load-language nil activate)
-  "Load ob-{language} only when needed."
-  (let ((lang (org-element-property :language (org-element-at-point))))
-    (when (or (string= lang "bash") (string= lang "sh"))
-      (setq lang "shell"))
-    (unless (cdr (assoc (intern lang) org-babel-load-languages))
-      (add-to-list 'org-babel-load-languages (cons (intern lang) t))
-      (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
-    ;; this is some special symbol provided by defadvice
-    ad-do-it))
+(advice-add 'org-babel-execute-src-block :around #'self/org-babel-execute-src-block-lazy-load)
 
 ;; see: https://github.com/hlissner/doom-emacs/issues/3185
-;; TODO refactor to advice-add
-(defadvice! self/+org-inline-image-data-fn (_protocol link _description)
-  :override #'+org-inline-image-data-fn
-  "Interpret LINK as base64-encoded image data. Ignore all errors."
-  (with-demoted-errors "%S" (base64-decode-string link)))
+(advice-add '+org-inline-image-data-fn :override #'self/+org-inline-image-data-fn)
 
 ;; --------------------------------- quickrun ---------------------------------
 
