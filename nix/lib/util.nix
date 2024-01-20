@@ -4,7 +4,7 @@
   ...
 }:
 with builtins;
-with lib; {
+with lib; rec {
   mkOpt = type: default: mkOption {inherit type default;};
 
   mkOptDesc = type: default: description:
@@ -37,6 +37,21 @@ with lib; {
     else "";
 
   mkAssert = assertion: message: {inherit assertion message;};
+
+  mkEnableSubmodule = {
+    default,
+    description ? "Enables this option",
+  }:
+    types.submodule {
+      options = {
+        enable = mkOption {
+          inherit default description;
+          type = types.bool;
+        };
+      };
+    };
+
+  attrsOfMkEnableSubmodule = args: types.attrsOf (mkEnableSubmodule args);
 
   sum = builtins.foldl' (x: y: x + y) 0;
 

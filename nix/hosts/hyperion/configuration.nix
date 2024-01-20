@@ -30,16 +30,17 @@
       nushell = {
         enable = true;
         setDefault = true;
+        zoxide.enable = true;
+        carapace.enable = true;
       };
       direnv.enable = true;
-      carapace.enable = true;
     };
     services = {
       docker.enable = true;
       samba-mount = {
         enable = true;
         mounts."${config.user.home}/calibre" = {
-          domain = "192.168.0.2";
+          domain = "192.168.0.3";
           host = "calibre";
         };
       };

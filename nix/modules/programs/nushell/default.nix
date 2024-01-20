@@ -4,7 +4,8 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+with lib.my; let
   cfg = config.modules.programs.nushell;
   mkNuString = str: "'${str}'";
 in {
@@ -15,10 +16,17 @@ in {
       default = false;
       type = types.bool;
     };
-    useZoxide = mkOption {
-      description = "Enables Zoxide configuration with Nushell.";
-      default = true;
-      type = types.bool;
+    zoxide = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+      };
+    };
+    carapace = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+      };
     };
   };
 
@@ -36,9 +44,12 @@ in {
         };
       };
 
-      zoxide = mkIf cfg.useZoxide {
+      zoxide = mkIf cfg.zoxide.enable {
         enable = true;
-        enableNushellIntegration = true;
+      };
+
+      carapace = mkIf cfg.carapace.enable {
+        enable = true;
       };
     };
 

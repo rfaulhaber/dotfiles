@@ -95,7 +95,7 @@
 
       # TODO make deployment nodes their own files
       deploy.nodes = {
-      # run with: nix run '.#deploy-rs' '.#atlas'
+        # run with: nix run '.#deploy-rs' '.#atlas'
         atlas = {
           hostname = "atlas";
           sshUser = "ryan";

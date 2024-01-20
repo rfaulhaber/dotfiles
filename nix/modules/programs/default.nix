@@ -1,7 +1,6 @@
 {
   imports = [
     ./1password
-    ./carapace
     ./direnv
     ./emacs
     ./eza
