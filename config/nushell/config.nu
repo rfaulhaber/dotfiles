@@ -396,5 +396,9 @@ match $nu.os-info.name {
 match (sys | get host.hostname) {
       "hyperion" => { source "./hosts/config/hyperion.nu" },
       "eos" => { source "./hosts/config/eos.nu" },
-       $x if $x =~ "ponos*" => { source "./hosts/config/ponos.nu" }
+      "ponos" => { source "./hosts/config/ponos.nu" },
+}
+
+if ('/proc/version' | path exists) and (open '/proc/version' | find -i "microsoft" | length) > 0 {
+  source "./hosts/config/wsl.nu"
 }
