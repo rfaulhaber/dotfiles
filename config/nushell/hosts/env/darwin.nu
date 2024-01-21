@@ -7,7 +7,7 @@ $env.PATH = (
 )
 
 # this is a port of the nix-daemon.sh script that's supposed to get autoloaded
-let nix_link = $"/nix/var/nix/profiles/default"
+let nix_link = "/nix/var/nix/profiles/default"
 $env.NIX_LINK = $nix_link
 $env.NIX_LINK_NEW = $nix_link
 
