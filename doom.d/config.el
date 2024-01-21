@@ -344,4 +344,4 @@ Used in loading config specific to those systems.")
 (quickrun-add-command "nushell"
   '((:command . "nu"))
   :default "nushell"
-  :mode 'nushell-mode)
+  :mode 'nushell-ts-mode)
