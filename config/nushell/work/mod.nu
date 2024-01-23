@@ -1,1 +1,1 @@
-export use sf
+export use ./sf.nu
