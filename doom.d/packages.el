@@ -59,13 +59,6 @@
 (package! org-cliplink)
 (package! pollen-mode)
 (package! prettier)
-(package! fzf)
-
-;; fixes the issue detailed in these:
-;; - https://github.com/seagle0128/doom-modeline/issues/687
-;; - https://discord.com/channels/406534637242810369/1191226198425088020/1191331227224002610
-(package! doom-modeline
-  :pin "cfc7bcf1494cb0634a1464dc40a4a1a1e337cb37")
 
 ;; (package! hyperbole)
 
@@ -80,11 +73,6 @@
            :repo "rfaulhaber/nix-local-buffer"
            :build t))
 
-(package! ox-agora
-  :recipe (:host gitlab
-           :repo "ngm/ox-agora"
-           :build t))
-
 (package! screenshot
   :recipe (:host github
            :repo "tecosaur/screenshot"
@@ -94,11 +82,6 @@
   :recipe (:host github
            :repo "tecosaur/org-pandoc-import"
            :files ("*.el" "filters" "preprocessors")))
-
-(package! zoxide.el
-  :recipe (:host gitlab
-           :repo "Vonfry/zoxide.el"
-           :branch "master"))
 
 (package! nushell-ts-mode)
 
