@@ -6,7 +6,7 @@
       src = final.fetchFromGitHub {
         owner = "awesomeWM";
         repo = "awesome";
-        rev = "375d9d723550023f75ff0066122aba99fdbb2a93";
+        rev = "e6f5c7980862b7c3ec6c50c643b15ff2249310cc";
         sha256 = "sha256-9cIQvuXUPu8io2Qs3Q8n2WkF9OstdaGUt/+0FMrRkXk=";
         fetchSubmodules = false;
       };
