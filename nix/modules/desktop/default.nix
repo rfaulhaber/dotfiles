@@ -48,8 +48,10 @@ in {
     ];
     services.xserver = {
       enable = true;
-      layout = "us";
-      xkbOptions = "eurosign:e";
+      xkb = {
+        options = "eurosign:e";
+        layout = "us";
+      };
       videoDrivers = mkIf ((length cfg.videoDrivers) > 0) cfg.videoDrivers;
     };
 
