@@ -9,6 +9,7 @@
     ./kitty
     ./neovim
     ./nushell
+    ./wezterm
     ./zsh
   ];
 }
