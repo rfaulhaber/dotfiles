@@ -82,6 +82,9 @@
   };
 
   boot = {
+    # use the latest kernel
+    kernelPackages = pkgs.linuxPackages_latest;
+
     tmp = {
       useTmpfs = true;
       cleanOnBoot = true;
