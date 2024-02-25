@@ -248,6 +248,17 @@ hello world
     (delete-duplicate-lines (point-min) (point-max))
     (widen)))
 
+(defun self/projectile-open-project-in-new-workspace (&optional arg)
+  (interactive "P")
+  (if-let ((projects (projectile-relevant-known-projects))
+           (selected-project (completing-read "Select a project: " projects))
+           (selected-project-name (f-filename selected-project)))
+      (progn
+        (+workspace-switch selected-project-name t)
+        (projectile-switch-project-by-name selected-project)
+        (+workspace/display))
+    (user-error "Something is wrong with projectile config!")))
+
 ;; ----------------------------- utility functions -----------------------------
 
 ;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el
