@@ -94,32 +94,30 @@
       # nixosConfigurations = mapHosts ./nix/hosts { };
 
       # TODO make deployment nodes their own files
-      deploy.nodes = {
-        # run with: nix run '.#deploy-rs' '.#atlas'
-        atlas = {
-          hostname = "atlas";
-          sshUser = "ryan";
-          sshOpts = ["-t"];
-          autoRollback = true;
-          magicRollback = false;
-          profiles.system = {
-            user = "root";
-            path =
-              deploy-rs.lib.x86_64-linux.activate.nixos
-              self.nixosConfigurations.atlas;
+      deploy = {
+        sshUser = "ryan";
+        autoRollback = true;
+        magicRollback = true;
+        interactiveSudo = true;
+        nodes = {
+          # run with: nix run '.#deploy-rs' '.#atlas'
+          atlas = {
+            hostname = "atlas";
+            profiles.system = {
+              user = "root";
+              path =
+                deploy-rs.lib.x86_64-linux.activate.nixos
+                self.nixosConfigurations.atlas;
+            };
           };
-        };
-        pallas = {
-          hostname = "pallas";
-          sshUser = "ryan";
-          sshOpts = ["-t"];
-          autoRollback = true;
-          magicRollback = false;
-          profiles.system = {
-            user = "root";
-            path =
-              deploy-rs.lib.aarch64-linux.activate.nixos
-              self.nixosConfigurations.pallas;
+          pallas = {
+            hostname = "pallas";
+            profiles.system = {
+              user = "root";
+              path =
+                deploy-rs.lib.aarch64-linux.activate.nixos
+                self.nixosConfigurations.pallas;
+            };
           };
         };
       };

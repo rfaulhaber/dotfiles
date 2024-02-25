@@ -63,9 +63,10 @@ in {
     };
 
     # TODO support multiple users?
+    # TODO make more secure, see https://github.com/NixOS/nixpkgs/issues/31611
     user.openssh.authorizedKeys.keys = mkIf cfg.server.enable cfg.server.keys;
 
-    security.pam.enableSSHAgentAuth = mkIf cfg.server.enable true;
+    security.pam.sshAgentAuth.enable = mkIf cfg.server.enable true;
 
     # TODO define hosts externally?
     home.programs.ssh = mkIf cfg.client.enable {
