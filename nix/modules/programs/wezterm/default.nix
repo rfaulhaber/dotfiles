@@ -1,8 +1,11 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.programs.wezterm;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.programs.wezterm;
   colors = config.modules.themes.colors;
 in {
   options.modules.programs.wezterm = {
@@ -36,8 +39,8 @@ in {
         ];
 
         background = colors.bg;
-        cursor_bg = colors.bg-alt;
-        cursor_fg = colors.fg-alt;
+        cursor_bg = colors.black;
+        cursor_fg = colors.white;
         foreground = colors.fg;
         # cursor_border = colors.grey;
         # selection_bg = "#444444";
@@ -49,7 +52,7 @@ in {
                font = wezterm.font("Hack Nerd Font Mono"),
                font_size = 20.0,
         }
-'';
+      '';
     };
   };
 }
