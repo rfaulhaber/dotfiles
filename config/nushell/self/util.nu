@@ -1,13 +1,13 @@
-export def prepend-paths [paths: ...string] {
+export def prepend-paths [...paths: string]: list<string> -> list<string> {
     $env.PATH
         | split row (char esep)
-        | prepend paths
+        | prepend $paths
 }
 
-export def append-paths [paths: ...string] {
+export def append-paths [...paths: string]: list<string> -> list<string> {
     $env.PATH
         | split row (char esep)
-        | append paths
+        | append $paths
 }
 
 export def is-wsl [] -> bool {
