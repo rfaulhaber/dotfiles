@@ -174,6 +174,7 @@
       devShells.luaDev = pkgs.mkShell {
         buildInputs = with pkgs; [
           lua-language-server
+          luajitPackages.fennel
           luajitPackages.luasocket
           stylua
         ];
