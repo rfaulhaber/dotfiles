@@ -2,6 +2,7 @@
   imports = [
     ./desktop
     ./dotfiles.nix
+    ./globals.nix
     ./hardware
     ./options.nix
     ./programs
