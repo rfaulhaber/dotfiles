@@ -16,6 +16,9 @@ in {
     services.xserver.windowManager.awesome = {
       enable = true;
       package = pkgs.awesome-git;
+      luaModules = with pkgs; [
+        luajitPackages.fennel
+      ];
     };
 
     modules.desktop.lightdm = {
@@ -29,11 +32,7 @@ in {
       recursive = true;
     };
 
-    environment.systemPackages = with pkgs; [
-      lua-language-server
-      stylua
-    ];
-
+    # TODO statically generated theme information that awesome can load
     # home.file."globals.json" = {
     #   text =
     #     builtins.toJSON {
