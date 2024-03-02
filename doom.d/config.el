@@ -347,9 +347,12 @@ Used in loading config specific to those systems.")
   :mode 'nushell-ts-mode)
 
 ;; TODO implement error handling
-(quickrun-add-command "fennel"
-  '((:command . "fennel")
-    (:exec "%c -c %s | save -f %e"
-           "luajit %e"))
-  :default "fennel"
-  :mode 'fennel-mode)
+;; (quickrun-add-command "fennel"
+;;   '((:command . "fennel")
+;;     (:exec    (lambda ()
+;;                 (let* ((tmpfile (shell-command-to-string "mktemp -t quickrun-fennel.XXXX"))
+;;                        (save-cmd (concat "save -f " tmpfile)))
+;;                   `(,(concat "%c --compile %s | " save-cmd)
+;;                     ,(format "luajit %s" tmpfile))))))
+;;   :default "fennel"
+;;   :mode 'fennel-mode)
