@@ -3,6 +3,12 @@
 -- found (e.g. lgi). If LuaRocks is not installed, do nothing.
 pcall(require, "luarocks.loader")
 
+-- see: https://gist.github.com/christoph-frick/d3949076ffc8d23e9350d3ea3b6e00cb
+-- local fennel = require("fennel").install()
+-- fennel.path = fennel.path .. ";.config/awesome/?.fnl"
+
+-- require("config")
+
 -- Standard awesome library
 local gears = require("gears")
 local awful = require("awful")
@@ -21,6 +27,10 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 -- when client with a matching name is opened:
 require("awful.hotkeys_popup.keys")
 
+local constants = require("constants")
+
+local menu = require("components.menu")
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -36,19 +46,10 @@ end)
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
-beautiful.font = "Hack Nerd Font Mono 9"
-
--- This is used later as the default terminal and editor to run.
-terminal = "kitty"
-editor = os.getenv("EDITOR") or "nano"
-editor_cmd = terminal .. " -e " .. editor
-
-browser_cmd = "firefox-developer-edition"
-
-lock_exec = "dm-tool lock"
+beautiful.font = constants.font
 
 local function lock_screen()
-	awful.spawn(lock_exec)
+	awful.spawn(constants.lock_exec)
 end
 
 -- Default modkey.
@@ -56,47 +57,14 @@ end
 -- If you do not like this or do not have such a key,
 -- I suggest you to remap Mod4 to another key using xmodmap or other tools.
 -- However, you can use another modifier like Mod1, but it may interact with others.
-modkey = "Mod4"
-shift_key = "Shift"
-ctrl_key = "Control"
-alt_key = "Mod1"
 -- }}}
+
+modkey = constants.keys.modkey
 
 -- {{{ Menu
 -- Create a launcher widget and a main menu
-myawesomemenu = {
-	{
-		"hotkeys",
-		function()
-			hotkeys_popup.show_help(nil, awful.screen.focused())
-		end,
-	},
-	{ "manual", terminal .. " -e man awesome" },
-	{ "edit config", editor_cmd .. " " .. awesome.conffile },
-	{ "restart", awesome.restart },
-	{
-		"quit",
-		function()
-			awesome.quit()
-		end,
-	},
-}
-
-mymainmenu = awful.menu({
-	items = {
-		{ "awesome", myawesomemenu, beautiful.awesome_icon },
-		{ "open terminal", terminal },
-		{ "lock screen", lock_screen },
-	},
-})
-
-mylauncher = awful.widget.launcher({
-	image = beautiful.awesome_icon,
-	menu = mymainmenu,
-})
-
 -- Menubar configuration
-menubar.utils.terminal = terminal -- Set the terminal for applications that require it
+menubar.utils.terminal = constants.terminal -- Set the terminal for applications that require it
 -- }}}
 
 -- {{{ Tag layout
@@ -215,7 +183,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
 			layout = wibox.layout.align.horizontal,
 			{ -- Left widgets
 				layout = wibox.layout.fixed.horizontal,
-				mylauncher,
+				menu.launcher,
 				s.mytaglist,
 				s.mypromptbox,
 			},
@@ -236,7 +204,7 @@ end)
 -- {{{ Mouse bindings
 awful.mouse.append_global_mousebindings({
 	awful.button({}, 3, function()
-		mymainmenu:toggle()
+		menu.main_menu:toggle()
 	end),
 	awful.button({}, 4, awful.tag.viewprev),
 	awful.button({}, 5, awful.tag.viewnext),
