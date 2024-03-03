@@ -107,6 +107,7 @@ Used in loading config specific to those systems.")
       "TAB" #'evil-jump-item)
 
 (map! :leader "b o" #'self/new-buffer-with-mode)
+(map! :leader "TAB p" #'self/projectile-open-project-in-new-workspace)
 
 ;; common directories
 (setq self/common-directories '(("Downloads" . "~/Downloads")
