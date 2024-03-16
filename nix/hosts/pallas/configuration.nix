@@ -70,4 +70,7 @@
       '';
     };
   };
+
+  # temporary, make nix settings modular
+  nix.gc.automatic = lib.mkForce false;
 }
