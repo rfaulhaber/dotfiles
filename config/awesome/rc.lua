@@ -27,10 +27,6 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 -- when client with a matching name is opened:
 require("awful.hotkeys_popup.keys")
 
-local constants = require("constants")
-
-local menu = require("components.menu")
-
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -42,6 +38,13 @@ naughty.connect_signal("request::display_error", function(message, startup)
 	})
 end)
 -- }}}
+
+local constants = require("constants")
+
+local menu = require("components.top_bar.menu")
+
+local main_menu = menu.main_menu
+local launcher = menu.launcher
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
@@ -183,7 +186,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
 			layout = wibox.layout.align.horizontal,
 			{ -- Left widgets
 				layout = wibox.layout.fixed.horizontal,
-				menu.launcher,
+				launcher,
 				s.mytaglist,
 				s.mypromptbox,
 			},
@@ -204,7 +207,7 @@ end)
 -- {{{ Mouse bindings
 awful.mouse.append_global_mousebindings({
 	awful.button({}, 3, function()
-		menu.main_menu:toggle()
+		main_menu:toggle()
 	end),
 	awful.button({}, 4, awful.tag.viewprev),
 	awful.button({}, 5, awful.tag.viewnext),
@@ -229,7 +232,7 @@ awful.keyboard.append_global_keybindings({
 		})
 	end, { description = "lua execute prompt", group = "awesome" }),
 	awful.key({ modkey }, "Return", function()
-		awful.spawn(terminal, { tag = "3", maximized = true })
+		awful.spawn(constants.terminal, { tag = "3", maximized = true })
 	end, { description = "open a terminal", group = "launcher" }),
 	awful.key({ modkey }, "r", function()
 		awful.screen.focused().mypromptbox:run()
@@ -247,7 +250,7 @@ awful.keyboard.append_global_keybindings({
 		})
 	end, { description = "start emacs", group = "client" }),
 	awful.key({ modkey }, "b", function()
-		awful.spawn(browser_cmd, {
+		awful.spawn(constants.browser_cmd, {
 			tag = "1",
 			maximized = true,
 		})
