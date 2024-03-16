@@ -22,7 +22,6 @@ in {
     programs.gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
-      pinentryFlavor = "gnome3";
     };
 
     # adding this in to resolve an issue where "pass" doesn't work
