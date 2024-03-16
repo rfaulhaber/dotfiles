@@ -88,7 +88,7 @@ $env.NU_PLUGIN_DIRS = [
 ]
 
 # use bat as the default pager and manpager
-$env.PAGER = "bat bat -p"
+$env.PAGER = "bat -p"
 # thank you https://www.reddit.com/r/Nushell/comments/15jul5o/comment/jv3fe9h/
 $env.MANPAGER = "sh -c 'col -bx | bat -l man -p'"
 # bat documentation recommends setting this variable as well if the above is set
