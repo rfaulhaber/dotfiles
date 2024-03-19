@@ -23,10 +23,8 @@ local awesome_menu = {
 	},
 }
 
-local lock_exec = "dm-tool lock"
-
 local function lock_screen()
-	awful.spawn(lock_exec)
+	awful.spawn(constants.lock_exec)
 end
 
 local main_menu = awful.menu({
@@ -42,7 +40,4 @@ local launcher = awful.widget.launcher({
 	menu = main_menu,
 })
 
-return {
-	main_menu = main_menu,
-	launcher = launcher,
-}
+return launcher
