@@ -74,6 +74,7 @@
       enable = true;
       videoDrivers = ["nvidia"];
       awesome.enable = true;
+      # i3.enable = true;
       sound.enable = true;
       random-wallpaper.enable = true;
       firefox.enable = true;

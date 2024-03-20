@@ -27,7 +27,7 @@ in {
         background = cfg.background;
       };
 
-      defaultSession = cfg.defaultSession;
+      defaultSession = mkIf (cfg.defaultSession != null) cfg.defaultSession;
     };
   };
 }

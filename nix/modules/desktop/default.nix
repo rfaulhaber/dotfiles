@@ -13,6 +13,7 @@ in {
     ./awesome
     ./bspwm
     ./firefox
+    ./i3
     ./lightdm
     ./polybar
     ./random-wallpaper.nix
@@ -39,6 +40,7 @@ in {
       desktops = [
         cfg.bspwm.enable
         cfg.awesome.enable
+        cfg.i3.enable
       ];
     in [
       {
