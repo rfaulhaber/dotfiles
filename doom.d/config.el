@@ -317,6 +317,10 @@ Used in loading config specific to those systems.")
   ;; set LSP location
   (setq lsp-clients-lua-language-server-bin (executable-find "lua-language-server")))
 
+(after! (:and elixir-mode eglot)
+  (add-to-list 'eglot-server-programs
+               '(elixir-mode . ("elixir-ls"))))
+
 ;; nushell-ts-mode
 (if (treesit-language-available-p 'nu)
     (add-to-list 'auto-mode-alist '("\\.nu\\'" . nushell-ts-mode))
