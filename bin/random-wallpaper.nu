@@ -6,7 +6,7 @@ def main [query?: string] {
 
     let url = if query == null { $base_url } else { $"($base_url)&query=($query)" }
 
-    let log_file = "~/.wallpaper-log.txt"
+    let log_file = "~/.wallpaper-log.json" | path expand
 
     let tmpdir = (mktemp -d)
 
@@ -30,7 +30,7 @@ def main [query?: string] {
         | update description { |r| if $r.description == null { $r.alt_description } else { $r.description } }
         | reject alt_description
 
-    open $log_file | from json | append $log_record | to json | save -f $log_file
+    open $log_file | append $log_record | to json | save -f $log_file
 
     feh --bg-fill $filename
 }
