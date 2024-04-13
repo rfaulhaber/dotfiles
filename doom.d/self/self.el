@@ -251,7 +251,7 @@ hello world
 (defun self/projectile-open-project-in-new-workspace (&optional arg)
   (interactive "P")
   (if-let ((projects (projectile-relevant-known-projects))
-           (selected-project (completing-read "Select a project: " projects))
+           (selected-project (completing-read "Select a project: " projects nil t))
            (selected-project-name (f-filename selected-project)))
       (progn
         (+workspace-switch selected-project-name t)
