@@ -40,6 +40,7 @@
         };
       };
     };
+    themes.active = "moonlight";
   };
 
   boot = {

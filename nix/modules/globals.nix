@@ -12,6 +12,11 @@ in {
     home.configFile."globals.json" = {
       text = builtins.toJSON {
         inherit colors;
+        bin = {
+          randomWallpaper = {
+            logFile = "~/.wallpaper-log.json";
+          };
+        };
       };
     };
   };

@@ -10,7 +10,7 @@ let
   bspcExec = "${pkgs.bspwm}/bin/bspc";
   polybarMsgExec = "${pkgs.polybar}/bin/polybar-msg";
   emacsclientExec = "${pkgs.emacs}/bin/emacsclient";
-  firefoxExec = "${pkgs.firefox-devedition-bin}/bin/firefox-devedition";
+  firefoxExec = "${pkgs.firefox-devedition-bin}/bin/firefox-developer-edition";
   lockExec = "${pkgs.lightdm}/bin/dm-tool lock";
 in {
   # terminal

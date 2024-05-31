@@ -167,17 +167,22 @@
       # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
       apps.deploy-rs = deploy-rs.defaultApp."${system}";
 
-      devShells.deploy-rs = pkgs.mkShell {
-        buildInputs = [deploy-rs.defaultPackage."${system}"];
-      };
+      devShells = {
+        deploy-rs = pkgs.mkShell {
+          buildInputs = [deploy-rs.defaultPackage."${system}"];
+        };
 
-      devShells.luaDev = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          lua-language-server
-          luajitPackages.fennel
-          luajitPackages.luasocket
-          stylua
-        ];
+        luaDev = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            lua-language-server
+            luajitPackages.fennel
+            luajitPackages.luasocket
+            stylua
+            fnlfmt
+          ];
+        };
+
+        default = self.devShells.${system}.luaDev;
       };
     });
 }

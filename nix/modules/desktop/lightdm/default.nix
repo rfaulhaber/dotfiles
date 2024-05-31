@@ -21,13 +21,15 @@ in {
   };
 
   config = mkIf cfg.enable {
-    services.xserver.displayManager = {
-      lightdm = {
-        enable = true;
-        background = cfg.background;
+    services = {
+      xserver.displayManager = {
+        lightdm = {
+          enable = true;
+          background = cfg.background;
+        };
       };
 
-      defaultSession = mkIf (cfg.defaultSession != null) cfg.defaultSession;
+      displayManager.defaultSession = mkIf (cfg.defaultSession != null) cfg.defaultSession;
     };
   };
 }

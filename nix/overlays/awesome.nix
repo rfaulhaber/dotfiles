@@ -6,8 +6,8 @@
       src = final.fetchFromGitHub {
         owner = "awesomeWM";
         repo = "awesome";
-        rev = "e6f5c7980862b7c3ec6c50c643b15ff2249310cc";
-        sha256 = "sha256-afviu5b86JDWd5F12Ag81JPTu9qbXi3fAlBp9tv58fI=";
+        rev = "8b1f8958b46b3e75618bc822d512bb4d449a89aa";
+        sha256 = "sha256-ZGZ53IWfQfNU8q/hKexFpb/2mJyqtK5M9t9HrXoEJCg=";
         fetchSubmodules = false;
       };
       patches = [];

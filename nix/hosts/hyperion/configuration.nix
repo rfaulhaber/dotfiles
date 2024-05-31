@@ -73,7 +73,14 @@
     desktop = {
       enable = true;
       videoDrivers = ["nvidia"];
-      awesome.enable = true;
+      bspwm = {
+        enable = true;
+        extraStartupPrograms = ["keybase-gui" "discord" "1password" "telegram-desktop"];
+        monitors = ["DP-0"];
+      };
+      polybar.enable = true;
+      rofi.enable = true;
+      # awesome.enable = true;
       # i3.enable = true;
       sound.enable = true;
       random-wallpaper.enable = true;

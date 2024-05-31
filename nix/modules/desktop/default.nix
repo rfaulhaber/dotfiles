@@ -64,7 +64,7 @@ in {
         (nerdfonts.override {fonts = ["Hack"];})
         lato
         merriweather
-        corefonts
+        # corefonts
       ];
       fontconfig.defaultFonts = {
         serif = ["Merriweather"];
