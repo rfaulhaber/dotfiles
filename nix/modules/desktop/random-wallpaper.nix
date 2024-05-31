@@ -39,7 +39,7 @@ in {
       systemd.user.services.random-wallpaper = {
         inherit description;
         path = with pkgs; [nushell pass feh];
-        after = ["graphical-session-pre.target"];
+        after = ["graphical-session-pre.target" "network-online.target"];
         partOf = ["graphical-session.target"];
         wantedBy = ["graphical-session.target"];
         serviceConfig = {
