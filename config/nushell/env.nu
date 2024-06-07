@@ -110,7 +110,7 @@ match $nu.os-info.name {
       "linux" => { source "./hosts/env/linux.nu" },
 }
 
-match (sys | get host.hostname) {
+match (sys host | get hostname) {
       "hyperion" => { source "./hosts/env/hyperion.nu" },
       "eos" => { source "./hosts/env/eos.nu" },
       "ponos" => { source "./hosts/env/ponos.nu" }

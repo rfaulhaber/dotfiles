@@ -39,6 +39,9 @@ $env.config = {
     }
   }
 
+
+  error_style: "fancy" # "fancy" or "plain" for screen reader-friendly error messages
+
   # datetime_format determines what a datetime rendered in the shell would look like.
   # Behavior without this configuration point will be to "humanize" the datetime display,
   # showing something like "a day ago."
@@ -115,7 +118,7 @@ $env.config = {
     case_sensitive: false # set to true to enable case-sensitive completions
     quick: true  # set this to false to prevent auto-selecting completions when only one remains
     partial: true  # set this to false to prevent partial filling of the prompt
-    algorithm: "fuzzy"  # prefix or fuzzy
+    algorithm: "prefix"  # prefix or fuzzy
     external: {
       enable: true # set to false to prevent nushell looking into $env.PATH to find more suggestions, `false` recommended for WSL users as this look up may be very slow
       max_results: 100 # setting it lower can improve completion performance at the cost of omitting some options
@@ -139,8 +142,55 @@ $env.config = {
   use_ansi_coloring: true
   bracketed_paste: true # enable bracketed paste, currently useless on windows
   edit_mode: vi # emacs, vi
-  shell_integration: false # enables terminal shell integration. Off by default, as some terminals have issues with this.
+  shell_integration: {
+          # osc2 abbreviates the path if in the home_dir, sets the tab/window title, shows the running command in the tab/window title
+          osc2: true
+          # osc7 is a way to communicate the path to the terminal, this is helpful for spawning new tabs in the same directory
+          osc7: true
+          # osc8 is also implemented as the deprecated setting ls.show_clickable_links, it shows clickable links in ls output if your terminal supports it. show_clickable_links is deprecated in favor of osc8
+          osc8: true
+          # osc9_9 is from ConEmu and is starting to get wider support. It's similar to osc7 in that it communicates the path to the terminal
+          osc9_9: false
+          # osc133 is several escapes invented by Final Term which include the supported ones below.
+          # 133;A - Mark prompt start
+          # 133;B - Mark prompt end
+          # 133;C - Mark pre-execution
+          # 133;D;exit - Mark execution finished with exit code
+          # This is used to enable terminals to know where the prompt is, the command is, where the command finishes, and where the output of the command is
+          osc133: true
+          # osc633 is closely related to osc133 but only exists in visual studio code (vscode) and supports their shell integration features
+          # 633;A - Mark prompt start
+          # 633;B - Mark prompt end
+          # 633;C - Mark pre-execution
+          # 633;D;exit - Mark execution finished with exit code
+          # 633;E - NOT IMPLEMENTED - Explicitly set the command line with an optional nonce
+          # 633;P;Cwd=<path> - Mark the current working directory and communicate it to the terminal
+          # and also helps with the run recent menu in vscode
+          osc633: true
+          # reset_application_mode is escape \x1b[?1l and was added to help ssh work better
+          reset_application_mode: true
+  }
   render_right_prompt_on_last_line: false # true or false to enable or disable right prompt to be rendered on last line of the prompt.
+  use_kitty_protocol: true # enables keyboard enhancement protocol implemented by kitty console, only if your terminal support this.
+  highlight_resolved_externals: true # true enables highlighting of external commands in the repl resolved by which.
+  recursion_limit: 50 # the maximum number of times nushell allows recursion before stopping it
+
+  plugins: {} # Per-plugin configuration. See https://www.nushell.sh/contributor-book/plugins.html#configuration.
+
+  plugin_gc: {
+      # Configuration for plugin garbage collection
+      default: {
+          enabled: true # true to enable stopping of inactive plugins
+          stop_after: 10sec # how long to wait after a plugin is inactive to stop it
+      }
+      plugins: {
+          # alternate configuration for specific plugins, by name, for example:
+          #
+          # gstat: {
+          #     enabled: false
+          # }
+      }
+  }
 
   hooks: {
     pre_prompt: [{||
@@ -393,7 +443,7 @@ match $nu.os-info.name {
       "linux" => { source "./hosts/config/linux.nu" },
 }
 
-match (sys | get host.hostname) {
+match (sys host | get hostname) {
       "hyperion" => { source "./hosts/config/hyperion.nu" },
       "eos" => { source "./hosts/config/eos.nu" },
       "ponos" => { source "./hosts/config/ponos.nu" },
