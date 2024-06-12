@@ -107,6 +107,5 @@ in {
   #
 
   # change wallpaper
-  #"super + alt + b" = "~/Projects/dotfiles/bin/random-wallpaper";
   "super + alt + b" = "${config.dotfiles.binDir}/random-wallpaper";
 }

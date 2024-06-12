@@ -19,7 +19,18 @@
           theme = "agnoster";
         };
       };
-      emacs.enable = true;
+      emacs = {
+        enable = true;
+        package = pkgs.emacs-git.overrideAttrs (old: {
+          src = pkgs.fetchFromSavannah {
+            repo = "emacs";
+            # using a pinned version to prevent recompiling emacs every time we update
+            # 06/12/2024  https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=e00af96c0691b749932756e47f48a53f5e92a00f
+            rev = "e00af96c0691b749932756e47f48a53f5e92a00f";
+            sha256 = "sha256-u09csCGi5ZRn7rHvYFCy1kcB4aroVxW2Lx6FrN8UX6U=";
+          };
+        });
+      };
       neovim.enable = true;
       kitty.enable = true;
       wezterm.enable = true;

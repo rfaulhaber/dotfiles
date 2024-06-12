@@ -16,8 +16,12 @@ in rec {
 
   # thank you hlissner
   # https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix#L7
-  mkHost = path: attrs @ {system, ...}: let
-    pkgs = mkPkgs system nixpkgs [];
+  mkHost = path: attrs @ {
+    system,
+    overlays ? [],
+    ...
+  }: let
+    pkgs = mkPkgs system nixpkgs overlays;
   in {
     inherit system;
     modules = [

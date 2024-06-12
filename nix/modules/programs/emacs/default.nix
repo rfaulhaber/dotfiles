@@ -7,13 +7,21 @@
 with lib; let
   cfg = config.modules.programs.emacs;
 in {
-  options.modules.programs.emacs.enable = mkEnableOption false;
+  options.modules.programs.emacs = {
+    enable = mkEnableOption false;
+    package = mkOption {
+      description = "Emacs package to use.";
+      type = types.package;
+      default = pkgs.emacs29;
+    };
+  };
+
   config = mkIf cfg.enable {
     services.emacs = {
       enable = true;
       install = true;
       defaultEditor = true;
-      package = with pkgs; ((emacsPackagesFor emacs29).emacsWithPackages
+      package = with pkgs; ((emacsPackagesFor cfg.package).emacsWithPackages
         (epkgs: with epkgs; [pdf-tools prettier vterm]));
     };
 

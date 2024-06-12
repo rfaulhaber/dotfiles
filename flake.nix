@@ -23,6 +23,7 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
     # nixos-aarch64-images.url = "github:Mic92/nixos-aarch64-images";
   };
 
@@ -35,6 +36,7 @@
     flake-utils,
     nixos-generators,
     nix-darwin,
+    emacs-overlay,
     ...
   }: let
     inherit (lib.my) mapModules mkPkgs;
@@ -62,8 +64,7 @@
 
       # TODO utilize top-level nixosModules
 
-      overlays =
-        mapModules ./nix/overlays import;
+      overlays = {emacs-overlay = import emacs-overlay;} // (mapModules ./nix/overlays import);
 
       # these are the actual system configurations
       # any particular system can be build with nixos-rebuild of course, but also:
