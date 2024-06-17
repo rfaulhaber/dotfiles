@@ -3,6 +3,7 @@
 # - refactor modules to not depend on pkgs
 # - refactor configurations to be platform independent
 # - refactor to allow the same host to be built for different targets, e.g. hyperion on a vm
+# - allow the flake itself to be more command-based, e.g. "build a vm image of hyperion"
 {
   description = "My Nix system configurations.";
 
@@ -23,8 +24,10 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    emacs-overlay.url = "github:nix-community/emacs-overlay";
-    # nixos-aarch64-images.url = "github:Mic92/nixos-aarch64-images";
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
