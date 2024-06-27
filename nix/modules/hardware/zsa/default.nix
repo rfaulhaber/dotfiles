@@ -15,6 +15,6 @@ in {
       SUBSYSTEM=="usb", ATTR{idVendor}=="3297", ATTR{idProduct}=="1969", GROUP="plugdev"
     '';
 
-    environment.systemPackages = with pkgs; [wally-cli];
+    environment.systemPackages = with pkgs; [keymapp];
   };
 }
