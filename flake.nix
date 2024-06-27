@@ -66,7 +66,7 @@
       };
 
       # TODO utilize top-level nixosModules
-
+      # TODO remove from flake-level overlays, pass into hosts in a different manner
       overlays = {emacs-overlay = import emacs-overlay;} // (mapModules ./nix/overlays import);
 
       # these are the actual system configurations
