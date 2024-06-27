@@ -11,12 +11,9 @@ in {
 
   config = mkIf cfg.enable {
     location = {
+      inherit (config.userInfo.location) latitude longitude;
       provider = "manual";
-      latitude = 41.45866;
-      longitude = -81.787132;
     };
-
-    environment.systemPackages = with pkgs; [redshift];
 
     services.redshift = {
       enable = true;

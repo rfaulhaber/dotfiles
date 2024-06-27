@@ -6,6 +6,10 @@
 }:
 with lib; let
   cfg = config.modules.programs.emacs;
+  shellAliases = {
+    ec = "emacsclient";
+    eo = "emacsclient -n"; # "emacs open"
+  };
 in {
   options.modules.programs.emacs = {
     enable = mkEnableOption false;
@@ -49,7 +53,6 @@ in {
       graphviz
       imagemagick
       languagetool
-      nixfmt
       nodePackages.mermaid-cli
       pass
       ripgrep
@@ -69,9 +72,8 @@ in {
       '';
     };
 
-    programs.zsh.shellAliases = {
-      ec = "emacsclient";
-      eo = "emacsclient -n"; # "emacs open"
-    };
+    programs.zsh.shellAliases = shellAliases;
+
+    home.programs.nushell.shellAliases = shellAliases;
   };
 }
