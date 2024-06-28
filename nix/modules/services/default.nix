@@ -1,5 +1,6 @@
 {
   imports = [
+    ./doas
     ./docker
     ./gpg
     ./keybase

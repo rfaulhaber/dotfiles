@@ -12,13 +12,6 @@
 
   modules = {
     programs = {
-      zsh = {
-        enable = true;
-        ohMyZsh = {
-          enable = true;
-          theme = "agnoster";
-        };
-      };
       emacs = {
         enable = true;
         # package = pkgs.emacs-git.overrideAttrs (_old: {
@@ -33,7 +26,6 @@
       };
       neovim.enable = true;
       kitty.enable = true;
-      wezterm.enable = true;
       _1password.enable = true;
       git = {
         enable = true;
@@ -46,8 +38,10 @@
         carapace.enable = true;
       };
       direnv.enable = true;
+      pijul.enable = true;
     };
     services = {
+      doas.enable = true;
       docker.enable = true;
       samba-mount = {
         enable = true;
