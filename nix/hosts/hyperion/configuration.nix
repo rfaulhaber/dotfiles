@@ -144,4 +144,7 @@
     enable = true;
     allowReboot = true;
   };
+
+  # TODO messy, clean up
+  nix.gc.automatic = lib.mkDefault false;
 }

@@ -23,5 +23,10 @@ in {
       };
       sudo.enable = false;
     };
+
+    environment.systemPackages = with pkgs; [
+      doas
+      doas-sudo-shim
+    ];
   };
 }
