@@ -6,6 +6,7 @@
 }:
 with lib; let
   cfg = config.modules.services.passwords;
+  lightdm = config.modules.desktop.lightdm;
 in {
   options.modules.services.passwords = {enable = mkEnableOption false;};
 
@@ -19,7 +20,7 @@ in {
 
     programs.seahorse.enable = true;
 
-    security.pam.services.lightdm.enableGnomeKeyring = true;
+    security.pam.services.lightdm.enableGnomeKeyring = mkIf lightdm.enable true;
 
     home.services.gnome-keyring = {
       enable = true;

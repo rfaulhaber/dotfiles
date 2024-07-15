@@ -10,7 +10,6 @@ in {
   options.modules.desktop.sound = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
-    sound.enable = true;
     hardware.pulseaudio = {
       enable = true;
       package = pkgs.pulseaudioFull;

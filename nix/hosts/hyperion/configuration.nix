@@ -80,7 +80,7 @@
       videoDrivers = ["nvidia"];
       bspwm = {
         enable = true;
-        extraStartupPrograms = ["keybase-gui" "discord" "1password" "telegram-desktop"];
+        extraStartupPrograms = ["discord" "1password" "telegram-desktop" "mullvad-gui"];
         monitors = ["DP-0"];
       };
       polybar.enable = true;

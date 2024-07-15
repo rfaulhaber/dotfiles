@@ -16,7 +16,7 @@ in {
     package = mkOption {
       description = "Emacs package to use.";
       type = types.package;
-      default = pkgs.emacs29;
+      default = pkgs.emacs;
     };
   };
 
