@@ -59,6 +59,7 @@
 (package! org-cliplink)
 (package! pollen-mode)
 (package! prettier)
+(package! kurecolor)
 
 ;; (package! hyperbole)
 
