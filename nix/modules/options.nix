@@ -37,6 +37,8 @@ with lib.my; {
         mkOptDesc attrs {} "Wayland settings managed from home-manager";
       xdg =
         mkOptDesc attrs {} "XDG config files to write to directly.";
+      dconf.settings =
+        mkOptDesc attrs {} "dconf config from home-manager";
     };
 
     env = mkOption {
@@ -106,6 +108,7 @@ with lib.my; {
         programs = mkAliasDefinitions options.home.programs;
         services = mkAliasDefinitions options.home.services;
         xsession = mkAliasDefinitions options.home.xsession;
+        dconf.settings = mkAliasDefinitions options.home.dconf.settings;
 
         xdg = {
           configFile = mkAliasDefinitions options.home.configFile;

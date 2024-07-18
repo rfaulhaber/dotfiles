@@ -57,6 +57,7 @@ in {
       videoDrivers = mkIf ((length cfg.videoDrivers) > 0) cfg.videoDrivers;
     };
 
+    # TODO make configurable
     fonts = {
       fontDir.enable = true;
       enableGhostscriptFonts = true;
@@ -73,6 +74,15 @@ in {
       };
     };
 
+    # sets desktop to dark theme
+    programs.dconf.enable = true;
+    home.dconf.settings = {
+      "org/gnome/desktop/interface" = {
+        color-scheme = "prefer-dark";
+      };
+    };
+
+    # TODO create pdf module
     programs.evince.enable = true;
 
     # TODO put these somewhere better
@@ -81,10 +91,10 @@ in {
       chromium
       discord
       evince
-      feh
       gnome-screenshot
       openvpn
       python3
+      signal-desktop
       spotify
       tdesktop
     ];
