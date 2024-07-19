@@ -71,6 +71,7 @@
         enable = true;
         enableGUI = true;
       };
+      tailscale.enable = true;
     };
     hardware = {
       zsa.enable = true;

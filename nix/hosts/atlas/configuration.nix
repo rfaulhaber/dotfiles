@@ -11,17 +11,22 @@
 
   modules = {
     programs = {
-      zsh = {
+      # zsh = {
+      #   enable = true;
+      #   setDefault = true;
+      #   ohMyZsh = {
+      #     enable = true;
+      #     theme = "agnoster";
+      #   };
+      # };
+      nushell = {
         enable = true;
         setDefault = true;
-        ohMyZsh = {
-          enable = true;
-          theme = "agnoster";
-        };
+        zoxide.enable = true;
+        carapace.enable = true;
       };
       neovim.enable = true;
       git.enable = true;
-      eza.enable = true;
     };
     services = {
       docker.enable = true;
@@ -73,6 +78,7 @@
         dockerWhitelist = [8089];
         sharedNetworkInterface = "ztbto5nphs";
       };
+      tailscale.enable = true;
     };
     themes.active = "city-lights";
   };

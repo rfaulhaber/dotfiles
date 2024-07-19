@@ -16,6 +16,7 @@
     ./ssh.nix
     ./syncthing
     ./systemd
+    ./tailscale
     ./virt
     ./wireguard
     ./zerotier

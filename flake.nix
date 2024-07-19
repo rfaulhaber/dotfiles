@@ -67,7 +67,11 @@
 
       # TODO utilize top-level nixosModules
       # TODO remove from flake-level overlays, pass into hosts in a different manner
-      overlays = {emacs-overlay = import emacs-overlay;} // (mapModules ./nix/overlays import);
+      overlays = {
+        # very silly way of specifying this, but will throw very bizarre error when you run nix flake check
+        # this should be the same as just: `import emacs-overlay`
+        emacs-overlay = (final: prev: import emacs-overlay final prev);
+      } // (mapModules ./nix/overlays import);
 
       # these are the actual system configurations
       # any particular system can be build with nixos-rebuild of course, but also:
