@@ -21,12 +21,6 @@ in {
       recursive = true;
     };
 
-    home.file.nushell_config = {
-      source = "${config.dotfiles.configDir}/nushell";
-      target = "${config.user.home}/.config/nushell/link";
-      recursive = true;
-    };
-
     # TODO allow writing of dotfiles from other places
     # like how home-manager and etc allows for writing files directly
   };

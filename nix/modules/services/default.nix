@@ -1,5 +1,6 @@
 {
   imports = [
+    ./cachix
     ./doas
     ./docker
     ./gpg

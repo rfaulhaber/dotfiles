@@ -35,8 +35,8 @@ in {
     home.programs = {
       nushell = {
         enable = true;
-        configFile.text = "source ${config.dotfiles.configDir}/nushell/config.nu";
-        envFile.text = "source ${config.dotfiles.configDir}/nushell/env.nu";
+        configFile.text = builtins.readFile "${config.dotfiles.configDir}/nushell/config.nu";
+        envFile.text = builtins.readFile "${config.dotfiles.configDir}/nushell/env.nu";
 
         shellAliases = {
           pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
