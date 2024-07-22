@@ -33,10 +33,12 @@ in {
   config = mkIf cfg.enable {
     # TODO import config into nu configuration from here
     home.programs = {
-      nushell = {
+      nushell = let
+        configDir = "${config.home.file.dotfiles.target}/config/nushell";
+      in {
         enable = true;
-        configFile.text = "source ${config.dotfiles.configDir}/nushell/config.nu";
-        envFile.text = "source ${config.dotfiles.configDir}/nushell/env.nu";
+        configFile.text = "source ${configDir}/config.nu";
+        envFile.text = "source ${configDir}/env.nu";
 
         shellAliases = mkIf pkgs.stdenv.isLinux {
           pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
