@@ -71,7 +71,6 @@
         enable = true;
         enableGUI = true;
       };
-      tailscale.enable = true;
       cachix.enable = true;
     };
     hardware = {

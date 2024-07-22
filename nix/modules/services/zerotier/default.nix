@@ -33,38 +33,48 @@ in {
       # TODO for some reason this won't build without a default value
       default = "zt+";
     };
+
+    sharedNetworkConfig = mkOption {
+      description = "Shared networks and their per-network config.";
+      type = types.attrsOf (types.submodule {
+        options = {
+          dockerWhitelist = mkOption {
+            description = "Docker ports to allow access to on the ZeroTier network. All others are blocked.";
+            type = types.listOf types.int;
+            default = [];
+          };
+        };
+      });
+      default = {};
+    };
   };
 
   config = mkIf cfg.enable {
-    assertions = [
-      {
-        assertion =
-          if ((length cfg.dockerWhitelist) > 0)
-          then cfg.sharedNetworkInterface != null
-          else true;
-        message = "sharedNetworkInterface is required.";
-      }
-    ];
-
     services.zerotierone = {
       enable = true;
       joinNetworks = cfg.networks;
       port = cfg.port;
     };
 
-    networking.firewall = mkIf (cfg.sharedNetworkInterface != "") {
+    networking.firewall = mkIf ((length (attrNames cfg.sharedNetworkConfig)) > 0) {
       extraCommands = let
         # a thousand thanks to this ServerFault answer:
         # https://serverfault.com/questions/704643/steps-for-limiting-outside-connections-to-docker-container-with-iptables/933803
-        mkRule = port: "iptables -I DOCKER-USER -i ${cfg.sharedNetworkInterface} -p tcp -m conntrack --ctorigdstport ${
-          toString port
-        } --ctdir ORIGINAL -j ACCEPT";
-        whitelist = map mkRule cfg.dockerWhitelist;
-        blockAll = [
-          "iptables -I DOCKER-USER -i ${cfg.sharedNetworkInterface} -j DROP"
-        ];
+        mkRulesForInterface = interface: interfaceAttrs: map (port: mkRule interface port) interfaceAttrs.dockerWhitelist;
+        mkRule = interface: port: "iptables -I DOCKER-USER -i ${interface} -p tcp -m conntrack --ctorigdstport ${toString port} --ctdir ORIGINAL -j ACCEPT";
+        whitelist =
+          if (cfg.sharedNetworkConfig != null)
+          then flatten (attrValues (mapAttrs mkRulesForInterface cfg.sharedNetworkConfig))
+          else [];
+        blockAll =
+          if (cfg.sharedNetworkConfig != null)
+          then map (interface: "iptables -I DOCKER-USER -i ${interface} -j DROP") (attrNames cfg.sharedNetworkConfig)
+          else [];
       in
-        concatStringsSep "\n" (blockAll ++ whitelist);
+        ''
+          # DEBUG: custom zerotier rules:
+          ${concatStringsSep "\n" (blockAll ++ whitelist)}
+'';
     };
   };
 }

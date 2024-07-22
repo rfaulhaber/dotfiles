@@ -35,14 +35,20 @@ in {
     home.programs = {
       nushell = {
         enable = true;
-        configFile.text = builtins.readFile "${config.dotfiles.configDir}/nushell/config.nu";
-        envFile.text = builtins.readFile "${config.dotfiles.configDir}/nushell/env.nu";
+        configFile.text = "source ${config.dotfiles.configDir}/nushell/config.nu";
+        envFile.text = "source ${config.dotfiles.configDir}/nushell/env.nu";
 
-        shellAliases = {
+        shellAliases = mkIf pkgs.stdenv.isLinux {
           pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
           pbpaste = "${pkgs.xclip}/bin/xclip -selection clipboard -o";
         };
       };
+
+      # home.file.nushell_config = {
+      #     source = "${config.dotfiles.configDir}/nushell";
+      #     target = "${config.user.home}/.config/nushell";
+      #     recursive = true;
+      # };
 
       zoxide = mkIf cfg.zoxide.enable {
         enable = true;

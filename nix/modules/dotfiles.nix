@@ -15,9 +15,10 @@ in {
         message = "config.dotfiles.dir does not exist";
       }
     ];
+
     home.file.dotfiles = {
-      source = config.dotfiles.binDir;
-      target = "${config.user.home}/.config/dotfiles/bin";
+      source = config.dotfiles.dir;
+      target = "${config.user.home}/.config/dotfiles";
       recursive = true;
     };
 
