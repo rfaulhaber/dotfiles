@@ -70,11 +70,10 @@ in {
           if (cfg.sharedNetworkConfig != null)
           then map (interface: "iptables -I DOCKER-USER -i ${interface} -j DROP") (attrNames cfg.sharedNetworkConfig)
           else [];
-      in
-        ''
-          # DEBUG: custom zerotier rules:
-          ${concatStringsSep "\n" (blockAll ++ whitelist)}
-'';
+      in ''
+        # DEBUG: custom zerotier rules:
+        ${concatStringsSep "\n" (blockAll ++ whitelist)}
+      '';
     };
   };
 }

@@ -1,8 +1,11 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.services.tailscale;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.services.tailscale;
 in {
   options.modules.services.tailscale = {
     enable = mkEnableOption false;
