@@ -14,11 +14,31 @@ with lib; let
     };
   };
 in {
+  # refer to https://jellyfin.org/docs/general/networking/nginx/
+  # example usage:
+  # {
+  #   reverseProxy = {
+  #     enable = true;
+  #     localDomain = "home.lan";
+  #     localAddress = "192.168.0.2";
+  #     locations = {
+  #       "jellyfin" = { # should resolve to both jellyfin.home.lan and jellyfin.3679.space
+  #         target = "192.168.0.3:8086";
+  #         remoteDomains = [ "3679.space" ];
+  #         whitelist = [
+  #           # external ip addresses to whitelist
+  #           # TODO load whitelist IPs from secrets
+  #         ];
+  #       };
+  #     };
+  #   }
+  # }
   options.modules.services.reverseProxy = {
     enable = mkEnableOption false;
     localAddress = mkOption {
       description = "IP address of local server.";
       type = types.str;
+      required = true;
     };
     localDomain = mkOption {
       description = "Local domain.";
@@ -26,7 +46,7 @@ in {
       default = "home.lan";
     };
     locations = mkOption {
-      description = "Mapping of ports to domains.";
+      description = "Mapping of addresses to domains.";
       type = types.attrsOf (types.submodule {
         options = {
           hostPort = mkOption {
