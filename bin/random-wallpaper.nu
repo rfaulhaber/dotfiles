@@ -25,8 +25,8 @@ def main [query?: string] {
 
     let log_record = $res
         | select id urls.full description alt_description links.html
-        | rename -c {urls_full: download_url}
-        | rename -c {links_html: html_link}
+        | rename -c {urls.full: download_url}
+        | rename -c {links.html: html_link}
         | update description { |r| if $r.description == null { $r.alt_description } else { $r.description } }
         | reject alt_description
 
