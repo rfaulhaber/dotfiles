@@ -19,6 +19,7 @@
       nushell = {
         enable = true;
         setDefault = true;
+        carapace.enable = true;
       };
       neovim.enable = true;
       git.enable = true;
