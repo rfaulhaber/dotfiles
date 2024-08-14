@@ -40,6 +40,7 @@ in rec {
     specialArgs = {
       inherit lib inputs system;
       platform = system;
+      hostDir = dirOf path;
     };
   };
 

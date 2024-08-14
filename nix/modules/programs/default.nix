@@ -1,6 +1,7 @@
 {
   imports = [
     ./1password
+    ./age
     ./direnv
     ./emacs
     ./eza

@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 with lib; let
@@ -21,6 +22,9 @@ in {
   };
 
   config = mkIf cfg.enable {
+    nixpkgs.overlays = [
+      (import inputs.emacs-overlay)
+    ];
     services.emacs = {
       enable = true;
       install = true;

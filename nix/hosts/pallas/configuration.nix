@@ -11,6 +11,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules
+    inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 
   modules = {
@@ -33,27 +34,41 @@
         server = {
           enable = true;
           keys = [
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvwfQy4U/GVd5S2JhNnaQvuKizbavuUWihmr/89fjZo ryan@hyperion"
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDCYJHzbywNiBt3tQGf8Xoi670NU/Gv77Bhzeemr98ro ryan@eos"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGl7rrcCvWXaq4yDf8YbpYNYszZX8YQr/Yftr8EdxLbd ryan@hyperion"
           ];
-          port = 11689;
+          port = 12981;
         };
       };
     };
+
     themes.active = "moonlight";
   };
 
   boot = {
+    kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
+    initrd.availableKernelModules = ["xhci_pci" "usbhid" "usb_storage"];
     loader = {
       grub.enable = false;
-      # Enables the generation of /boot/extlinux/extlinux.conf
       generic-extlinux-compatible.enable = true;
     };
-
-    # necessary for libre computer board
-    kernelParams = ["console=tty1" "console=ttyS2,1500000n8"];
-    kernelPackages = pkgs.linuxPackages_latest;
   };
+
+  # raspberry pi hardware configuration
+  hardware = {
+    raspberry-pi."4" = {
+      fkms-3d.enable = true;
+      apply-overlays-dtmerge.enable = true;
+    };
+
+    enableRedistributableFirmware = true;
+  };
+
+  console.enable = false;
+
+  environment.systemPackages = with pkgs; [
+    libraspberrypi
+    raspberrypi-eeprom
+  ];
 
   networking = {
     hostName = "pallas";

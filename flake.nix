@@ -28,6 +28,10 @@
       url = "github:nix-community/emacs-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -40,6 +44,7 @@
     nixos-generators,
     nix-darwin,
     emacs-overlay,
+    agenix,
     ...
   }: let
     inherit (lib.my) mapModules mkPkgs;
@@ -66,14 +71,8 @@
       };
 
       # TODO utilize top-level nixosModules
-      # TODO remove from flake-level overlays, pass into hosts in a different manner
-      overlays =
-        {
-          # very silly way of specifying this, but will throw very bizarre error when you run nix flake check
-          # this should be the same as just: `import emacs-overlay`
-          emacs-overlay = final: prev: import emacs-overlay final prev;
-        }
-        // (mapModules ./nix/overlays import);
+
+      overlays = mapModules ./nix/overlays import;
 
       # these are the actual system configurations
       # any particular system can be build with nixos-rebuild of course, but also:
@@ -103,12 +102,10 @@
       # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix
       # nixosConfigurations = mapHosts ./nix/hosts { };
 
-      # TODO make deployment nodes their own files
       deploy = {
         sshUser = "ryan";
         autoRollback = true;
         magicRollback = true;
-        interactiveSudo = true;
         nodes = {
           # run with: nix run '.#deploy-rs' '.#atlas'
           atlas = {
@@ -121,9 +118,10 @@
             };
           };
           pallas = {
-            hostname = "pallas";
+            hostname = "pallas2";
             profiles.system = {
               user = "root";
+              fastConnection = true;
               path =
                 deploy-rs.lib.aarch64-linux.activate.nixos
                 self.nixosConfigurations.pallas;
@@ -131,6 +129,7 @@
           };
         };
       };
+      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     }
     # x86_64-linux-specific packages
     # TODO custom packages should be added to pkgs, made available globally
@@ -148,8 +147,8 @@
         };
 
         # run with:
-        # nix build .#arm-installer --system aarch64-linux
-        arm-installer = nixos-generators.nixosGenerate {
+        # nix build .#arm-roc-installer
+        arm-roc-installer = nixos-generators.nixosGenerate {
           system = "aarch64-linux";
           modules = [
             ./nix/installers/aarch64-linux/configuration.nix
@@ -157,11 +156,22 @@
           specialArgs = {
             inherit inputs;
           };
-          customFormats.aarch64-linux-roc = import ./nix/formats/aarch64-linux-roc/configuration.nix {
+          customFormats.aarch64-linux-roc = import ./nix/formats/aarch64/linux/renegade-roc/configuration.nix {
             inherit pkgs;
             bootloader = self.packages.x86_64-linux.roc-rk3328-cc-bootloader;
           };
           format = "aarch64-linux-roc";
+        };
+
+        arm-installer-generic = nixos-generators.nixosGenerate {
+          system = "aarch64-linux";
+          modules = [
+            ./nix/installers/aarch64-linux/configuration.nix
+          ];
+          specialArgs = {
+            inherit inputs;
+          };
+          format = "sd-aarch64-installer";
         };
       };
     }

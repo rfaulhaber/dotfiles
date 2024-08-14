@@ -9,6 +9,7 @@ with lib; let
   _1passwordEnable = config.modules.programs._1password.enable;
 in {
   # TODO create hostnames on ZeroTier network for mobile devices
+  # TODO split into separate modules, ssh.server and ssh.client
   options.modules.services.ssh = {
     enable = mkEnableOption false;
 
@@ -53,7 +54,7 @@ in {
       enable = true;
       settings = {
         PasswordAuthentication = false;
-        PermitRootLogin = "no";
+        PermitRootLogin = lib.mkDefault "no";
       };
       extraConfig = ''
         PermitEmptyPasswords no
@@ -66,7 +67,11 @@ in {
     # TODO make more secure, see https://github.com/NixOS/nixpkgs/issues/31611
     user.openssh.authorizedKeys.keys = mkIf cfg.server.enable cfg.server.keys;
 
-    security.pam.sshAgentAuth.enable = mkIf cfg.server.enable true;
+    security.pam = mkIf cfg.server.enable {
+    # TODO are both necessary?
+      sshAgentAuth.enable = true;
+      services.${config.user.name}.sshAgentAuth = true;
+    };
 
     # TODO define hosts externally?
     home.programs.ssh = mkIf cfg.client.enable {
@@ -85,7 +90,10 @@ in {
           identityFile = "${sshPath}/id_atlas";
           user = config.user.name;
           port = 10222;
-          extraOptions = {"AddKeysToAgent" = "yes";};
+          extraOptions = {
+            "AddKeysToAgent" = "yes";
+            "ForwardAgent" = "yes";
+          };
         };
 
         "github.com" = {
@@ -118,8 +126,19 @@ in {
           hostname = mkLocalHostname "2";
           identityFile = "${sshPath}/id_pallas";
           user = "ryan";
-          extraOptions = {"AddKeysToAgent" = "yes";};
           port = 11689;
+        };
+
+        # temprorary
+        "pallas2" = {
+          hostname = mkLocalHostname "190";
+          identityFile = "${sshPath}/id_pallas_new";
+          user = "ryan";
+          extraOptions = {
+            "AddKeysToAgent" = "yes";
+            "ForwardAgent" = "yes";
+          };
+          port = 12981;
         };
       };
     };

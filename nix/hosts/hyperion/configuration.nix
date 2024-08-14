@@ -14,14 +14,6 @@
     programs = {
       emacs = {
         enable = true;
-        # package = pkgs.emacs-git.overrideAttrs (_old: {
-        #   src = pkgs.fetchFromGitHub {
-        #     owner = "emacs-mirror";
-        #     repo = "emacs";
-        #     rev = "b9da5ee06f2e4ae807336dd6a641ae797831d097";
-        #     sha256 = "sha256-uOgX7X3yn4L7ahHuZ9opffmRELZ4+Ibdw2u7yZoOz1U=";
-        #   };
-        # });
         package = pkgs.emacs-git;
       };
       neovim.enable = true;
@@ -39,6 +31,7 @@
       };
       direnv.enable = true;
       pijul.enable = true;
+      age.enable = true;
     };
     services = {
       doas.enable = true;
@@ -86,8 +79,6 @@
       };
       polybar.enable = true;
       rofi.enable = true;
-      # awesome.enable = true;
-      # i3.enable = true;
       sound.enable = true;
       random-wallpaper.enable = true;
       firefox.enable = true;

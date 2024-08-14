@@ -1,0 +1,3 @@
+#+title: Installers
+
+This directory is for custom NixOS installers, i.e. the live bootable environment in which to install Nix.
