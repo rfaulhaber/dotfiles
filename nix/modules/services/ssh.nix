@@ -49,98 +49,100 @@ in {
     };
   };
 
-  config = mkIf cfg.enable {
-    services.openssh = mkIf cfg.server.enable {
-      enable = true;
-      settings = {
-        PasswordAuthentication = false;
-        PermitRootLogin = lib.mkDefault "no";
+  config = mkIf cfg.enable (mkMerge [
+    (mkIf (cfg.server.enable) {
+      services.openssh = {
+        enable = true;
+        settings = {
+          PasswordAuthentication = false;
+          PermitRootLogin = lib.mkDefault "no";
+        };
+        extraConfig = ''
+          PermitEmptyPasswords no
+          AllowTcpForwarding yes
+        '';
+        ports = [cfg.server.port];
       };
-      extraConfig = ''
-        PermitEmptyPasswords no
-        AllowTcpForwarding yes
-      '';
-      ports = [cfg.server.port];
-    };
 
-    # TODO support multiple users?
-    # TODO make more secure, see https://github.com/NixOS/nixpkgs/issues/31611
-    user.openssh.authorizedKeys.keys = mkIf cfg.server.enable cfg.server.keys;
+      security.pam = {
+        # TODO are both necessary?
+        sshAgentAuth.enable = true;
+        services.${config.user.name}.sshAgentAuth = true;
+      };
+    })
+    (mkIf (cfg.client.enable) {
+      # TODO support multiple users?
+      # TODO make more secure, see https://github.com/NixOS/nixpkgs/issues/31611
+      user.openssh.authorizedKeys.keys = cfg.server.keys;
 
-    security.pam = mkIf cfg.server.enable {
-    # TODO are both necessary?
-      sshAgentAuth.enable = true;
-      services.${config.user.name}.sshAgentAuth = true;
-    };
+      home.programs.ssh = {
+        enable = true;
+        compression = true;
+        hashKnownHosts = true;
 
-    # TODO define hosts externally?
-    home.programs.ssh = mkIf cfg.client.enable {
-      enable = true;
-      compression = true;
-      hashKnownHosts = true;
+        matchBlocks = let
+          mkLocalHostname = n: "192.168.0.${n}";
+          sshPath = cfg.client.sshPath;
+        in {
+          "*".identitiesOnly = true;
 
-      matchBlocks = let
-        mkLocalHostname = n: "192.168.0.${n}";
-        sshPath = cfg.client.sshPath;
-      in {
-        "*".identitiesOnly = true;
-
-        "atlas" = {
-          hostname = mkLocalHostname "3";
-          identityFile = "${sshPath}/id_atlas";
-          user = config.user.name;
-          port = 10222;
-          extraOptions = {
-            "AddKeysToAgent" = "yes";
-            "ForwardAgent" = "yes";
+          "atlas" = {
+            hostname = mkLocalHostname "3";
+            identityFile = "${sshPath}/id_atlas";
+            user = config.user.name;
+            port = 10222;
+            extraOptions = {
+              "AddKeysToAgent" = "yes";
+              "ForwardAgent" = "yes";
+            };
           };
-        };
 
-        "github.com" = {
-          hostname = "github.com";
-          identityFile = "${sshPath}/id_github";
-          extraOptions = {
-            "PreferredAuthentications" = "publickey";
-            "AddKeysToAgent" = "yes";
+          "github.com" = {
+            hostname = "github.com";
+            identityFile = "${sshPath}/id_github";
+            extraOptions = {
+              "PreferredAuthentications" = "publickey";
+              "AddKeysToAgent" = "yes";
+            };
           };
-        };
 
-        "gitlab.com" = {
-          hostname = "github.com";
-          identityFile = "${sshPath}/id_gitlab";
-          extraOptions = {
-            "PreferredAuthentications" = "publickey";
-            "AddKeysToAgent" = "yes";
+          "gitlab.com" = {
+            hostname = "github.com";
+            identityFile = "${sshPath}/id_gitlab";
+            extraOptions = {
+              "PreferredAuthentications" = "publickey";
+              "AddKeysToAgent" = "yes";
+            };
           };
-        };
 
-        "pi" = {
-          hostname = mkLocalHostname "70";
-          identityFile = "${sshPath}/id_pi";
-          user = "pi";
-          extraOptions = {"AddKeysToAgent" = "yes";};
-          port = 2222;
-        };
-
-        "pallas" = {
-          hostname = mkLocalHostname "2";
-          identityFile = "${sshPath}/id_pallas";
-          user = "ryan";
-          port = 11689;
-        };
-
-        # temprorary
-        "pallas2" = {
-          hostname = mkLocalHostname "190";
-          identityFile = "${sshPath}/id_pallas_new";
-          user = "ryan";
-          extraOptions = {
-            "AddKeysToAgent" = "yes";
-            "ForwardAgent" = "yes";
+          "pi" = {
+            hostname = mkLocalHostname "70";
+            identityFile = "${sshPath}/id_pi";
+            user = "pi";
+            extraOptions = {"AddKeysToAgent" = "yes";};
+            port = 2222;
           };
-          port = 12981;
+
+          "pallas" = {
+            hostname = mkLocalHostname "2";
+            identityFile = "${sshPath}/id_pallas";
+            user = "ryan";
+            port = 11689;
+          };
+
+          # temprorary
+          "pallas2" = {
+            hostname = mkLocalHostname "190";
+            identityFile = "${sshPath}/id_pallas_new";
+            user = "ryan";
+            extraOptions = {
+              "AddKeysToAgent" = "yes";
+              "ForwardAgent" = "yes";
+            };
+            port = 12981;
+          };
         };
       };
-    };
-  };
+    })
+  ]);
 }
