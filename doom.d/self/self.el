@@ -554,6 +554,18 @@ of line, moves cursor to the end of LINE."
   (let ((choice (abs (random (length lst)))))
     (nth choice lst)))
 
+(defun self/rotn (str n)
+  "Like rot13, except variable. Rotate STR by N % 26."
+  (apply #'string (mapcar (lambda (char)
+                            (self/translate-char char n))
+                          (mapcar #'string-to-char (string-split str)))))
+
+(defun self/translate-char (char n)
+  "Rotates CHAR by N"
+  (let* ((base (if (>= char ?a) ?a ?A))
+         (offset (mod (+ (- char base) n) 26)))
+    (+ base offset)))
+
 ;; NOTE doesn't quite work?
 (defun self/org-babel-execute-src-block-lazy-load (original-fn &rest args)
   (let ((lang (org-element-property :language (org-element-at-point))))
