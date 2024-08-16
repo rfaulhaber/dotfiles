@@ -9,7 +9,7 @@ with lib; let
   cfg = config.modules.programs.age;
   agenix = inputs.agenix;
 in {
-  imports = [ inputs.agenix.nixosModules.default ];
+  imports = [inputs.agenix.nixosModules.default];
   options.modules.programs.age = {
     enable = mkEnableOption false;
     secrets = mkOption {

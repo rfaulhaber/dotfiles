@@ -7,7 +7,6 @@
 with lib;
 with lib.my; let
   cfg = config.modules.programs.nushell;
-  mkNuString = str: "'${str}'";
 in {
   options.modules.programs.nushell = {
     enable = mkEnableOption false;
@@ -25,7 +24,7 @@ in {
     carapace = {
       enable = mkOption {
         type = types.bool;
-        default = false;
+        default = true;
       };
     };
   };

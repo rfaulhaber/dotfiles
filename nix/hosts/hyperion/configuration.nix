@@ -138,5 +138,5 @@
   };
 
   # TODO messy, clean up
-  nix.gc.automatic = lib.mkDefault false;
+  # nix.gc.automatic = lib.mkDefault false;
 }
