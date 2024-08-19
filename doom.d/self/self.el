@@ -558,7 +558,7 @@ of line, moves cursor to the end of LINE."
   "Like rot13, except variable. Rotate STR by N % 26."
   (apply #'string (mapcar (lambda (char)
                             (self/translate-char char n))
-                          (mapcar #'string-to-char (string-split str)))))
+                          (mapcar #'string-to-char (string-split str "" t)))))
 
 (defun self/translate-char (char n)
   "Rotates CHAR by N"
