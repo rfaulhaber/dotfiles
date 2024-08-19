@@ -50,7 +50,14 @@ in {
   };
 
   config = mkIf cfg.enable (mkMerge [
+    # ssh server config
     (mkIf (cfg.server.enable) {
+      assertions = [
+        {
+          assertion = (builtins.length cfg.server.keys) > 0;
+          message = "SSH client must have at least one authorized key";
+        }
+      ];
       services.openssh = {
         enable = true;
         settings = {
@@ -64,21 +71,26 @@ in {
         ports = [cfg.server.port];
       };
 
+      # TODO support multiple users?
+      # TODO make more secure, see https://github.com/NixOS/nixpkgs/issues/31611
+      user.openssh.authorizedKeys.keys = cfg.server.keys;
+
       security.pam = {
         # TODO are both necessary?
         sshAgentAuth.enable = true;
         services.${config.user.name}.sshAgentAuth = true;
       };
     })
+    # ssh client config
     (mkIf (cfg.client.enable) {
-      # TODO support multiple users?
-      # TODO make more secure, see https://github.com/NixOS/nixpkgs/issues/31611
-      user.openssh.authorizedKeys.keys = cfg.server.keys;
+      # TODO
+      # programs.ssh.startAgent = true;
 
       home.programs.ssh = {
         enable = true;
         compression = true;
         hashKnownHosts = true;
+        addKeysToAgent = "yes";
 
         matchBlocks = let
           mkLocalHostname = n: "192.168.0.${n}";
@@ -91,9 +103,9 @@ in {
             identityFile = "${sshPath}/id_atlas";
             user = config.user.name;
             port = 10222;
+            forwardAgent = true;
             extraOptions = {
               "AddKeysToAgent" = "yes";
-              "ForwardAgent" = "yes";
             };
           };
 
@@ -134,12 +146,21 @@ in {
           "pallas2" = {
             hostname = mkLocalHostname "190";
             identityFile = "${sshPath}/id_pallas_new";
+            forwardAgent = true;
             user = "ryan";
             extraOptions = {
               "AddKeysToAgent" = "yes";
-              "ForwardAgent" = "yes";
             };
             port = 12981;
+          };
+
+          "nix-installer" = {
+            hostname = mkLocalHostname "190";
+            identityFile = "${sshPath}/nixos-installer";
+            user = "nixos";
+            extraOptions = {
+              "AddKeysToAgent" = "yes";
+            };
           };
         };
       };
