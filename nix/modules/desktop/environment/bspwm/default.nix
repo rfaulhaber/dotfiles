@@ -29,8 +29,8 @@ in {
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = monitors != null;
-        meessage = "Property displayName cannot be null.";
+        assertion = (length monitors) > 0;
+        meessage = "Must provide at least one monitor";
       }
     ];
 

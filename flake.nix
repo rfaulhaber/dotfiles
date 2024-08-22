@@ -202,6 +202,12 @@
           ];
         };
 
+        generate = pkgs.mkShell {
+          buildInputs = [
+            nixos-generators.packages.${system}.default
+          ];
+        };
+
         default = self.devShells.${system}.luaDev;
       };
     });
