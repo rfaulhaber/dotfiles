@@ -6,11 +6,15 @@
 }:
 # NOTE: this module is a disaster and needs cleaned up
 with lib; let
-  cfg = config.modules.desktop.bspwm;
-  videoDrivers = config.modules.desktop.videoDrivers;
+  cfg = config.modules.desktop.environment.bspwm;
+  desktop = config.modules.desktop;
+  monitors = desktop.monitors;
   keybindings = import ./sxhkd.nix {inherit pkgs config;};
 in {
-  options.modules.desktop.bspwm = {
+  imports = [
+    ../../xserver
+  ];
+  options.modules.desktop.environment.bspwm = {
     enable = mkOption {
       default = false;
       type = types.bool;
@@ -21,34 +25,41 @@ in {
       type = types.listOf types.str;
       description = "Extra programs to start upon launch.";
     };
-    monitors = mkOption {
-      description = "Name of monitors for bspwm.";
-      type = types.listOf types.str;
-      default = null;
-    };
   };
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = cfg.monitors != null;
+        assertion = monitors != null;
         meessage = "Property displayName cannot be null.";
       }
     ];
 
+    # enables custom module: modules.desktop.environment.xserver
+    # and common xserver configs
+    modules.desktop.xserver.enable = true;
+
     services.xserver.windowManager.bspwm.enable = true;
 
-    modules.desktop.lightdm = {
-      enable = true;
-      defaultSession = "none+bspwm";
+    modules.desktop = {
+      lightdm = {
+        enable = true;
+        defaultSession = "none+bspwm";
+      };
+      polybar.enable = true;
+      rofi.enable = true;
     };
 
     home.xsession = {
+      # NOTE: the following angry comment was written when I was just starting
+      # to use NixOS, and I did not realize that it was convention to explicitly
+      # enable modules. I now know better. I have left this comment in for
+      # amusement and historical purposes:
+
       # NB: IN ORDER FOR ANY OF THIS TO WORK YOU NEED THIS SET!!
       # I WASTED MOST OF A SUNDAY TRYING TO FIGURE THIS OUT!!!
       # IT SURE WOULD HAVE BEEN GREAT TO KNOW THAT SOMEWHERE!!!!
       enable = true;
       windowManager.bspwm = let
-        monitors = cfg.monitors;
         bspwmConfig = import ./bspwm.nix {inherit config lib monitors;};
       in {
         inherit (bspwmConfig) monitors settings rules;

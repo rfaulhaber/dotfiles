@@ -71,14 +71,12 @@
     };
     desktop = {
       enable = true;
-      videoDrivers = ["nvidia"];
-      bspwm = {
+      environment.bspwm = {
         enable = true;
         extraStartupPrograms = ["discord" "1password" "telegram-desktop" "mullvad-gui"];
-        monitors = ["DP-0"];
       };
-      polybar.enable = true;
-      rofi.enable = true;
+      videoDrivers = ["nvidia"];
+      monitors = ["DP-0"];
       sound.enable = true;
       random-wallpaper.enable = true;
       firefox.enable = true;

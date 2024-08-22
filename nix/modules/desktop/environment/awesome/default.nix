@@ -5,9 +5,9 @@
   ...
 }:
 with lib; let
-  cfg = config.modules.desktop.awesome;
+  cfg = config.modules.desktop.environment.awesome;
 in {
-  options.modules.desktop.awesome = {
+  options.modules.desktop.environment.awesome = {
     enable = mkEnableOption false;
     # writeConfig = mkEnableOption false;
   };

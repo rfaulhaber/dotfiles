@@ -78,7 +78,7 @@
       };
       rofi.enable = true;
       random-wallpaper.enable = true;
-      useLaptopSettings = true;
+      laptop.enable = true;
       firefox = {
         enable = true;
         setDefaultBrowser = true;

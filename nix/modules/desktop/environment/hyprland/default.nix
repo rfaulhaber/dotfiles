@@ -5,14 +5,14 @@
   ...
 }:
 with lib; let
-  cfg = config.modules.desktop.hyprland;
+  cfg = config.modules.desktop.environment.hyprland;
   hyprConfig = import ./config.nix {inherit config lib pkgs;};
 in {
   imports = [
     ./hyprconf.nix
   ];
 
-  options.modules.desktop.hyprland = {
+  options.modules.desktop.environment.hyprland = {
     enable = mkEnableOption false;
     extraStartupPrograms = mkOption {
       default = [];

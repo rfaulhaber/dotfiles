@@ -10,10 +10,8 @@ with lib.my; let
   cfg = config.modules.desktop;
 in {
   imports = [
-    ./awesome
-    ./bspwm
+    ./environment
     ./firefox
-    ./i3
     ./lightdm
     ./polybar
     ./random-wallpaper.nix
@@ -24,38 +22,41 @@ in {
   options.modules.desktop = {
     # TODO rewrite such that you don't need this
     enable = mkEnableOption false;
-    videoDrivers = mkOption {
-      description = "Passthrough property for services.xserver.videoDrivers. All desktop configurations use xserver at the moment.";
+    monitors = mkOption {
+      description = "List of monitors.";
       type = types.listOf types.str;
       default = [];
     };
-    useLaptopSettings = mkOption {
-      description = "If enabled, turns on various laptop settings, such as the battery module in Polybar.";
-      type = types.bool;
-      default = false;
+    videoDrivers = mkOption {
+      description = "Passthrough property for services.xserver.videoDrivers.";
+      type = types.listOf types.str;
+      default = []; # TODO change
+    };
+    laptop = mkOption {
+      description = "Laptop-specific settings.";
+      type = types.submodule {
+        options = {
+          enable = mkOption {
+            type = types.bool;
+            description = "Enables laptop settings.";
+            default = false;
+          };
+        };
+      };
+      default = { enable = false; };
     };
   };
+
   config = mkIf cfg.enable {
     assertions = let
-      desktops = [
-        cfg.bspwm.enable
-        cfg.awesome.enable
-        cfg.i3.enable
-      ];
+      foldPred = (acc: item: if item.value.enable then acc ++ [item.name] else acc);
+      desktopsEnabled = foldl foldPred [] (attrsToList config.modules.desktop.environment);
     in [
       {
-        assertion = (count (x: x) desktops) == 1;
-        message = "You cannot have more than one desktop enabled.";
+        assertion = (length desktopsEnabled) == 1;
+        message = "You must have one desktop environment selected if the desktop module is enabled. You have ${toString (length desktopsEnabled)} (${toString desktopsEnabled})";
       }
     ];
-    services.xserver = {
-      enable = true;
-      xkb = {
-        options = "eurosign:e";
-        layout = "us";
-      };
-      videoDrivers = mkIf ((length cfg.videoDrivers) > 0) cfg.videoDrivers;
-    };
 
     # TODO make configurable
     fonts = {

@@ -64,7 +64,7 @@ in {
               "memory"
               "pulseaudio"
               (
-                if desktopCfg.useLaptopSettings
+                if desktopCfg.laptop.enable
                 then "battery"
                 else ""
               )

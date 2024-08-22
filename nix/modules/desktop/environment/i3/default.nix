@@ -5,9 +5,9 @@
   ...
 }:
 with lib; let
-  cfg = config.modules.desktop.i3;
+  cfg = config.modules.desktop.environment.i3;
 in {
-  options.modules.desktop.i3 = {enable = mkEnableOption false;};
+  options.modules.desktop.environment.i3 = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     # TODO fill me out!
