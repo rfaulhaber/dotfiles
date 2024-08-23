@@ -7,3 +7,5 @@ I use [[https://nixos.org/][NixOS]]. This is my system configuration.
 - =lib= is my Nix code library, mostly lifted from other places.
 - =modules= are my actual system modules.
 - =templates= are Nix templates used by =nix flake init=.
+- =overlays= contains personal overlays for nixpkgs. I don't have many of those.
+- =formats= and =installers= are for nixos-generate.

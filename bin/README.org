@@ -1,0 +1,6 @@
+#+title: bin
+
+This is to house any bespoke executable programs or scripts.
+
+I'm unsure of how useful this directory is anymore. Since I use nushell now, this might be superflous, as I could just make
+plugins or modules.
