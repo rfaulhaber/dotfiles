@@ -326,6 +326,10 @@ Used in loading config specific to those systems.")
     (add-to-list 'auto-mode-alist '("\\.nu\\'" . nushell-ts-mode))
   (message "treesit language unavailable for nu!"))
 
+(after! (:and nushell-ts-mode eglot)
+  (add-to-list 'eglot-server-programs
+               '(nushell-ts-mode . ("nu" "--lsp"))))
+
 ;; ---------------------------------- treesit ----------------------------------
 
 (setq treesit-language-source-alist '((nu . ("https://github.com/nushell/tree-sitter-nu" "main"))))
