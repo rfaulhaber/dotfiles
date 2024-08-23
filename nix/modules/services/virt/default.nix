@@ -29,10 +29,14 @@ in {
 
   config = mkIf cfg.enable (mkMerge [
     {
-      virtualisation.libvirtd.enable = true;
+      virtualisation.libvirtd = {
+        enable = true;
+      };
+
+      environment.systemPackages = with pkgs; [ qemu ];
     }
     (mkIf (cfg.client.enable) {
-      environment.systemPackages = with pkgs; [virt-manager kvm];
+      environment.systemPackages = with pkgs; [virt-manager virsh];
     })
     (mkIf (cfg.server.enable) {
       boot.kernelModules = ["kvm-intel" "kvm-amd"];
@@ -46,8 +50,6 @@ in {
           interfaces = ["${cfg.libvert.ethInterface}"];
         };
       };
-
-      environment.systemPackages = with pkgs; [kvm];
     })
   ]);
 }
