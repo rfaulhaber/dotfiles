@@ -60,6 +60,8 @@
 (package! pollen-mode)
 (package! prettier)
 (package! kurecolor)
+(package! nushell-ts-mode)
+(package! realgud-lldb)
 
 ;; (package! hyperbole)
 
@@ -83,8 +85,6 @@
   :recipe (:host github
            :repo "tecosaur/org-pandoc-import"
            :files ("*.el" "filters" "preprocessors")))
-
-(package! nushell-ts-mode)
 
 ;; org roam ui
 (package! websocket)
