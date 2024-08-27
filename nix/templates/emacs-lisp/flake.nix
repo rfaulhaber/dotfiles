@@ -13,7 +13,9 @@
     ...
   }:
     flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+      };
       projectName = "package";
     in rec {
       defaultPackage = pkgs.stdenv.mkDerivation {};
@@ -22,7 +24,7 @@
       devShell = pkgs.mkShell {
         buildInputs = with pkgs; [
           emacs
-          nodejs-19_x
+          nodejs-22_x
           nodePackages_latest.eask
         ];
       };
