@@ -137,14 +137,6 @@ in {
 
           "pallas" = {
             hostname = mkLocalHostname "2";
-            identityFile = "${sshPath}/id_pallas";
-            user = "ryan";
-            port = 11689;
-          };
-
-          # temprorary
-          "pallas2" = {
-            hostname = mkLocalHostname "190";
             identityFile = "${sshPath}/id_pallas_new";
             forwardAgent = true;
             user = "ryan";
