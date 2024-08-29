@@ -33,7 +33,7 @@ in {
         enable = true;
       };
 
-      environment.systemPackages = with pkgs; [ qemu ];
+      environment.systemPackages = with pkgs; [qemu];
     }
     (mkIf (cfg.client.enable) {
       environment.systemPackages = with pkgs; [virt-manager virsh];
