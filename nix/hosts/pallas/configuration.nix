@@ -40,6 +40,11 @@
           port = 12981;
         };
       };
+
+      zerotier = {
+        enable = true;
+        networks = ["12ac4a1e719ca283" "b6079f73c6986bc2"];
+      };
     };
 
     themes.active = "moonlight";
@@ -79,7 +84,7 @@
     firewall = {
       enable = true;
       # required for pihole
-      allowedTCPPorts = [8085 80 53 67];
+      allowedTCPPorts = [8085 80 53 67 443];
       allowedUDPPorts = [53 67 68 546 547];
       extraCommands = ''
         iptables -I INPUT 1 -p tcp -m tcp --dport 4711 -i lo -j ACCEPT

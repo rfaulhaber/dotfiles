@@ -66,11 +66,11 @@
     };
     desktop = {
       enable = true;
-      bspwm = {
+      environment.bspwm = {
         enable = true;
         extraStartupPrograms = ["keybase-gui" "discord"];
-        monitors = ["eDP"];
       };
+      monitors = ["eDP"];
       sound.enable = true;
       polybar = {
         enable = true;

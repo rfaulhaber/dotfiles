@@ -118,7 +118,7 @@
             };
           };
           pallas = {
-            hostname = "pallas2";
+            hostname = "pallas";
             profiles.system = {
               user = "root";
               fastConnection = true;

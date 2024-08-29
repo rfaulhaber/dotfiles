@@ -43,13 +43,16 @@ in {
           };
         };
       };
-      default = { enable = false; };
+      default = {enable = false;};
     };
   };
 
   config = mkIf cfg.enable {
     assertions = let
-      foldPred = (acc: item: if item.value.enable then acc ++ [item.name] else acc);
+      foldPred = acc: item:
+        if item.value.enable
+        then acc ++ [item.name]
+        else acc;
       desktopsEnabled = foldl foldPred [] (attrsToList config.modules.desktop.environment);
     in [
       {
