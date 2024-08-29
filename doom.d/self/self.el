@@ -259,6 +259,12 @@ hello world
         (+workspace/display))
     (user-error "Something is wrong with projectile config!")))
 
+(defun self/open-current-buffer-in-browser ()
+  (interactive)
+  (if-let ((filename (buffer-file-name)))
+      (browse-url filename)
+    (user-error "Buffer is not associated with a file")))
+
 ;; ----------------------------- utility functions -----------------------------
 
 ;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el
