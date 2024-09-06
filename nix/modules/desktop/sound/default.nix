@@ -17,7 +17,7 @@ in {
 
     environment.systemPackages = with pkgs; [
       pulsemixer
-      gnome.gnome-bluetooth
+      gnome-bluetooth
     ];
   };
 }

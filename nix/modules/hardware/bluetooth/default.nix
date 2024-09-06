@@ -17,6 +17,6 @@ in {
 
     services.blueman.enable = true;
 
-    environment.systemPackages = with pkgs; [gnome.gnome-bluetooth];
+    environment.systemPackages = with pkgs; [gnome-bluetooth];
   };
 }
