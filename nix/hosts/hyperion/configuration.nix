@@ -126,7 +126,10 @@
 
   hardware = {
     graphics.enable = true;
-    nvidia.modesetting.enable = true;
+    nvidia = {
+      modesetting.enable = true;
+      open = true;
+    };
     cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   };
 
