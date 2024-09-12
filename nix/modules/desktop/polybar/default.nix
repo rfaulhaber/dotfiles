@@ -62,7 +62,7 @@ in {
               "wttr"
               "cpu"
               "memory"
-              "pulseaudio"
+              # "pulseaudio"
               (
                 if desktopCfg.laptop.enable
                 then "battery"
@@ -103,7 +103,7 @@ in {
         "module/cpu" = modules.cpu;
         "module/battery" = modules.battery;
         "module/memory" = modules.memory;
-        "module/pulseaudio" = modules.pulseaudio;
+        # "module/pulseaudio" = modules.pulseaudio;
       };
     };
   };

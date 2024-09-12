@@ -1,3 +1,4 @@
+# for outputting global static config for use in non-delcarative applications
 {
   config,
   lib,
