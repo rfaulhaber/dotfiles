@@ -75,6 +75,7 @@
         enable = true;
         extraStartupPrograms = ["discord" "1password" "telegram-desktop" "mullvad-gui"];
       };
+      # environment.sway.enable = true;
       videoDrivers = ["nvidia"];
       monitors = ["DP-0"];
       sound.enable = true;
@@ -140,4 +141,9 @@
 
   # TODO messy, clean up
   # nix.gc.automatic = lib.mkDefault false;
+
+  # for use when making a vm
+  # TODO make able to detect when building for a vm
+  # TODO use agenix
+  # user.initialHashedPassword = "$6$ucPFz/HD9WLviVXr$t8tpRtNT649hIJV7W5gaR.HeTidipk6wGAiT0rLOQYeX6YDurg7GZ3gR8EX/tByq2mmy1U5L/5RJIjr1oglpE."; # "test"
 }

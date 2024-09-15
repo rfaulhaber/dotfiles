@@ -183,9 +183,12 @@
     in {
       formatter = pkgs.alejandra;
 
-      # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
-      # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
-      apps.deploy-rs = deploy-rs.defaultApp."${system}";
+      apps = {
+        # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
+        # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
+        deploy-rs = deploy-rs.defaultApp."${system}";
+        generate = nixos-generators.apps.${system}.default;
+      };
 
       devShells = {
         deploy-rs = pkgs.mkShell {

@@ -10,21 +10,17 @@ with lib; let
 in {
   options.modules.services.passwords = {enable = mkEnableOption false;};
 
-  config = mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = config.services.xserver.enable;
-        message = "This module must be used with xserver";
-      }
-    ];
+  config = mkIf cfg.enable (mkMerge [
+    (mkIf config.modules.desktop.xserver.enable {
+      programs.seahorse.enable = true;
 
-    programs.seahorse.enable = true;
-
-    security.pam.services.lightdm.enableGnomeKeyring = mkIf lightdm.enable true;
-
-    home.services.gnome-keyring = {
-      enable = true;
-      components = ["ssh" "secrets" "pkcs11"];
-    };
-  };
+      security.pam.services.lightdm.enableGnomeKeyring = mkIf lightdm.enable true;
+    })
+    {
+      home.services.gnome-keyring = {
+        enable = true;
+        components = ["ssh" "secrets" "pkcs11"];
+      };
+    }
+  ]);
 }

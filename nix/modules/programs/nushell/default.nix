@@ -7,6 +7,7 @@
 with lib;
 with lib.my; let
   cfg = config.modules.programs.nushell;
+  desktopCfg = config.modules.desktop;
 in {
   options.modules.programs.nushell = {
     enable = mkEnableOption false;
@@ -39,10 +40,16 @@ in {
         configFile.text = "source ${configDir}/config.nu";
         envFile.text = "source ${configDir}/env.nu";
 
-        shellAliases = mkIf pkgs.stdenv.isLinux {
-          pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
-          pbpaste = "${pkgs.xclip}/bin/xclip -selection clipboard -o";
-        };
+        shellAliases = mkIf pkgs.stdenv.isLinux (mkMerge [
+          (mkIf desktopCfg.wayland.enable {
+            pbcopy = "${pkgs.wl-clipboard}/bin/wl-copy";
+            pbpaste = "${pkgs.wl-clipboard}/bin/wl-paste";
+          })
+          (mkIf desktopCfg.xserver.enable {
+            pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
+            pbpaste = "${pkgs.xclip}/bin/xclip -selection clipboard -o";
+          })
+        ]);
       };
 
       # home.file.nushell_config = {
