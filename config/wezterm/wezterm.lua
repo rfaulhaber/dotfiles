@@ -3,7 +3,7 @@ local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 
 -- deduce host information
-local hostname = wezterm.hostname()
+local hostname = string.gsub(wezterm.hostname(), '.lan', '')
 local host_info = {}
 
 for v in string.gmatch(wezterm.target_triple, "[^-]+") do
@@ -25,6 +25,9 @@ end
 local hosts = {
   hyperion = function()
     return require 'hyperion'
+  end,
+  ponos = function()
+    return require 'ponos'
   end,
 }
 
