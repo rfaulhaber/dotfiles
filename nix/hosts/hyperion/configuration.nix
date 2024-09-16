@@ -18,6 +18,7 @@
       };
       neovim.enable = true;
       kitty.enable = true;
+      wezterm.enable = true;
       _1password.enable = true;
       git = {
         enable = true;
