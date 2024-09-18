@@ -9,7 +9,8 @@
 # And here is the theme collection
 # https://github.com/nushell/nu_scripts/tree/main/themes
 
-let theme = (source "./themes/dark.nu")
+use themes
+let theme = (themes tokyo-night)
 
 # External completer example
 # let carapace_completer = {|spans|
@@ -135,7 +136,7 @@ $env.config = {
     vi_normal: underscore # block, underscore, line, blink_block, blink_underscore, blink_line (underscore is the default)
   }
   color_config: $theme   # if you want a light theme, replace `$dark_theme` to `$light_theme`
-  use_grid_icons: true
+  #use_grid_icons: true
   footer_mode: "25" # always, never, number_of_rows, auto
   float_precision: 2 # the precision for displaying floats in tables
   # buffer_editor: "emacs" # command that will be used to edit the current line buffer with ctrl+o, if unset fallback to $env.EDITOR and $env.VISUAL
@@ -433,6 +434,8 @@ $env.config = {
     }
   ]
 }
+
+source "./themes/tokyo-night.nu"
 
 # aliases
 alias l = ls -la

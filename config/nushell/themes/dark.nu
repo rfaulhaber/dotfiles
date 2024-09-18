@@ -1,4 +1,5 @@
-{
+export def main [] {
+  return {
     # color for nushell primitives
     separator: white
     leading_trailing_space_bg: { attr: n } # no fg, no bg, attr none effectively turns this off
@@ -81,4 +82,6 @@
     shape_table: blue_bold
     shape_variable: purple
     shape_vardecl: purple
+}
+
 }
