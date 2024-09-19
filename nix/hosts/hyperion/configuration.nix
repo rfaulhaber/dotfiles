@@ -77,13 +77,14 @@
         extraStartupPrograms = ["discord" "1password" "telegram-desktop" "mullvad-gui"];
       };
       # environment.sway.enable = true;
+      # environment.hyprland.enable = true;
       videoDrivers = ["nvidia"];
       monitors = ["DP-0"];
       sound.enable = true;
       random-wallpaper.enable = true;
       firefox.enable = true;
     };
-    themes.active = "moonlight";
+    themes.active = "tokyo-night";
   };
 
   boot = {
@@ -140,11 +141,21 @@
     allowReboot = true;
   };
 
-  # TODO messy, clean up
-  # nix.gc.automatic = lib.mkDefault false;
+  # for use when making a vm using nixos-rebuild build-vm
+  # note that these options aren't respected when using nixos-generate
+  virtualisation.vmVariant = {
+    user.initialHashedPassword = "$6$GNqgrpQokCNs9sfr$vjVC5sv1rfLElOCY/czFKLR7gcoQQgoLR/l0X7I7KhgCKqaoYuUWlgyfCdFeRdFJtkckDFoiEkDoBIflMIEQR1"; # "test" lol
 
-  # for use when making a vm
-  # TODO make able to detect when building for a vm
-  # TODO use agenix
-  # user.initialHashedPassword = "$6$ucPFz/HD9WLviVXr$t8tpRtNT649hIJV7W5gaR.HeTidipk6wGAiT0rLOQYeX6YDurg7GZ3gR8EX/tByq2mmy1U5L/5RJIjr1oglpE."; # "test"
+    # the vm will try using DHCP for an interface that doesn't exist
+    networking.interfaces.enp5s0.useDHCP = lib.mkForce false;
+    networking.interfaces.eth0.useDHCP = true;
+    networking.interfaces.br0.useDHCP = true;
+    networking.bridges = {
+      "br0" = {
+        interfaces = [ "eth0" ];
+      };
+    };
+
+    networking.networkmanager.enable = lib.mkForce false;
+  };
 }
