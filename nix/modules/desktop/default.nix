@@ -61,7 +61,7 @@ in {
       }
     ];
 
-    # TODO make configurable
+    # TODO make fonts module
     fonts = {
       fontDir.enable = true;
       enableGhostscriptFonts = true;
@@ -75,6 +75,16 @@ in {
         serif = ["Merriweather"];
         sansSerif = ["Lato"];
         monospace = ["Hack Nerd Font Mono"];
+      };
+    };
+
+    # despite the name, this is set for either X or wayland desktops
+    services.xserver = {
+      enable = true;
+      videoDrivers = mkIf ((length cfg.videoDrivers) > 0) cfg.videoDrivers;
+      xkb = {
+        options = "eurosign:e";
+        layout = "us";
       };
     };
 

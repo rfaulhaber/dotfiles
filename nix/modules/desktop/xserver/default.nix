@@ -8,7 +8,6 @@
 }:
 with lib; let
   cfg = config.modules.desktop.xserver;
-  videoDrivers = config.modules.desktop.videoDrivers;
 in {
   options.modules.desktop.xserver = {
     enable = mkEnableOption false;
@@ -21,7 +20,6 @@ in {
         options = "eurosign:e";
         layout = "us";
       };
-      videoDrivers = mkIf ((length videoDrivers) > 0) videoDrivers;
     };
   };
 }

@@ -71,7 +71,8 @@ in {
 
     environment.systemPackages = with pkgs; [
       bat # bat is used as nushell's pager
-      xclip
+      (mkIf desktopCfg.xserver.enable xclip)
+      (mkIf desktopCfg.wayland.enable wl-clipboard)
     ];
   };
 }

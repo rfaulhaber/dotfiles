@@ -143,19 +143,19 @@
 
   # for use when making a vm using nixos-rebuild build-vm
   # note that these options aren't respected when using nixos-generate
-  virtualisation.vmVariant = {
-    user.initialHashedPassword = "$6$GNqgrpQokCNs9sfr$vjVC5sv1rfLElOCY/czFKLR7gcoQQgoLR/l0X7I7KhgCKqaoYuUWlgyfCdFeRdFJtkckDFoiEkDoBIflMIEQR1"; # "test" lol
+  # virtualisation.vmVariant = {
+  #   user.initialHashedPassword = "$6$GNqgrpQokCNs9sfr$vjVC5sv1rfLElOCY/czFKLR7gcoQQgoLR/l0X7I7KhgCKqaoYuUWlgyfCdFeRdFJtkckDFoiEkDoBIflMIEQR1"; # "test" lol
 
-    # the vm will try using DHCP for an interface that doesn't exist
-    networking.interfaces.enp5s0.useDHCP = lib.mkForce false;
-    networking.interfaces.eth0.useDHCP = true;
-    networking.interfaces.br0.useDHCP = true;
-    networking.bridges = {
-      "br0" = {
-        interfaces = [ "eth0" ];
-      };
-    };
+  #   # the vm will try using DHCP for an interface that doesn't exist
+  #   networking.interfaces.enp5s0.useDHCP = lib.mkForce false;
+  #   networking.interfaces.eth0.useDHCP = true;
+  #   networking.interfaces.br0.useDHCP = true;
+  #   networking.bridges = {
+  #     "br0" = {
+  #       interfaces = ["eth0"];
+  #     };
+  #   };
 
-    networking.networkmanager.enable = lib.mkForce false;
-  };
+  #   networking.networkmanager.enable = lib.mkForce false;
+  # };
 }

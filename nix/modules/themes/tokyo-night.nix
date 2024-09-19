@@ -38,9 +38,7 @@
   bright-yellow = "#ebbf83";
   bright-blue = "#414868";
 }
-
 # from doom-tokyo-night:
-
 # ;; name        default   256       16
 # ((bg         '("#1a1b26" nil       nil            ))
 #  (bg-alt     '("#13141c" nil       nil            ))
@@ -55,7 +53,6 @@
 #  (base8      '("#c0caf5" "#c0caf5" "white"        ))
 #  (fg-alt     '("#c0caf5" "#c0caf5" "brightwhite"  ))
 #  (fg         '("#a9b1d6" "#a9b1d6" "white"        ))
-
 #  (grey       base4)
 #  (red        '("#f7768e" "#f7768e" "red"          ))
 #  (orange     '("#ff9e64" "#ff9e64" "brightred"    ))
@@ -71,3 +68,4 @@
 #  ; Additional custom colors
 #  (dark-green '("#9ece6a" "#9ece6a" "green"        ))
 #  (brown      '("#cfc9c2" "#cfc9c2" "yellow"       ))
+
