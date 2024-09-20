@@ -435,8 +435,6 @@ $env.config = {
   ]
 }
 
-source "./themes/tokyo-night.nu"
-
 # aliases
 alias l = ls -la
 

@@ -51,11 +51,11 @@ export def main [] {
         shape_closure: { fg: '#7dcfff' attr: 'b' }
         shape_custom: '#9ece6a'
         shape_datetime: { fg: '#7dcfff' attr: 'b' }
-        shape_directory: '#7dcfff'
+        shape_directory: { fg:  '#9ece6a' attr: 'b' }
         shape_external: '#7dcfff'
-        shape_external_resolved: '#7dcfff'
+        shape_external_resolved: { fg: '#e0af68' attr: 'b' }
         shape_externalarg: { fg: '#9ece6a' attr: 'b' }
-        shape_filepath: '#7dcfff'
+        shape_filepath: { fg:  '#7dcfff' attr: 'b' }
         shape_flag: { fg: '#7aa2f7' attr: 'b' }
         shape_float: { fg: '#f7768e' attr: 'b' }
         shape_garbage: { fg: '#FFFFFF' bg: '#FF0000' attr: 'b' }
