@@ -6,20 +6,21 @@ local config = wezterm.config_builder()
 local hostname = string.gsub(wezterm.hostname(), '.lan', '')
 local host_info = {}
 
+-- this is not perfect, but this should be good enough to match all the target
+-- triples for machines I currently use
 for v in string.gmatch(wezterm.target_triple, "[^-]+") do
   table.insert(host_info, v)
 end
 
 if #host_info == 3 then
   host_info.arch = host_info[1]
-  host_info.vendor = host_info[2]
+  host_info.vendor = {host_info[2]}
   host_info.os = host_info[3]
 else
   host_info.arch = host_info[1]
-  host_info.vendor = host_info[2] .. host_info[3]
+  host_info.vendor = {host_info[2], host_info[3]}
   host_info.os = host_info[4]
 end
-
 
 -- host-specific config locations
 local hosts = {
@@ -28,6 +29,9 @@ local hosts = {
   end,
   ponos = function()
     return require 'ponos'
+  end,
+  eos = function()
+    return require 'eos'
   end,
 }
 
