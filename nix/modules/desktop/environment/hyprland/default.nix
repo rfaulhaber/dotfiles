@@ -22,22 +22,21 @@ in {
     security.polkit.enable = true;
 
     programs = {
-      hyprland = {
-        enable = true;
-        # maybe not necessary?
-        xwayland.enable = true;
-      };
+      hyprland.enable = true;
       waybar.enable = true;
     };
 
-    services.greetd = {
-      enable = true;
-      settings = {
-        default_session = {
-          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd hyprland";
-        };
-      };
-    };
+    # TODO avoid
+    services.xserver.displayManager.lightdm.enable = false;
+
+    # services.greetd = {
+    #   enable = true;
+    #   settings = {
+    #     default_session = {
+    #       command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd hyprland";
+    #     };
+    #   };
+    # };
 
     # TODO can I make this a function?
     home.file.hyprconf = {
