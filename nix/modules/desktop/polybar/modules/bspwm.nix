@@ -32,15 +32,15 @@
   label-empty-foreground = "${colors.grey}";
   label-empty-padding = "1";
 
-  label-monocle = "%{T3}喝 %{T-}";
+  label-monocle = "%{T3}󰍉 %{T-}";
   label-monocle-foreground = "${colors.cyan}";
-  label-fullscreen = "%{T4} %{T-}";
+  label-fullscreen = "%{T4}󰊓 %{T-}";
   label-fullscreen-foreground = "${colors.cyan}";
   label-locked = "%{T3} %{T-}";
   label-locked-foreground = "${colors.yellow}";
-  label-sticky = "%{T3}𢡊 %{T-}";
+  label-sticky = "%{T3} %{T-}";
   label-sticky-foreground = "${colors.yellow}";
-  label-private = "%{T3}廬 %{T-}";
+  label-private = "%{T3}󰜺 %{T-}";
   label-private-foreground = "${colors.red}";
   label-marked = "%{T3} %{T-}";
   label-marked-foreground = "${colors.green}";

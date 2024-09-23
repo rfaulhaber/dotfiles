@@ -21,11 +21,11 @@
   bar-used-foreground-3 = "${colors.yellow}";
   bar-used-foreground-4 = "${colors.red}";
 
-  ramp-used-0 = "%{T3}﬙%{T-}";
-  ramp-used-1 = "%{T3}﬙%{T-}";
-  ramp-used-2 = "%{T3}﬙%{T-}";
-  ramp-used-3 = "%{T3}﬙%{T-}";
-  ramp-used-4 = "%{T3}﬙%{T-}";
+  ramp-used-0 = "%{T3}󰘚%{T-}";
+  ramp-used-1 = "%{T3}󰘚%{T-}";
+  ramp-used-2 = "%{T3}󰘚%{T-}";
+  ramp-used-3 = "%{T3}󰘚%{T-}";
+  ramp-used-4 = "%{T3}󰘚%{T-}";
   ramp-used-0-foreground = "${colors.dark-cyan}";
   ramp-used-1-foreground = "${colors.cyan}";
   ramp-used-2-foreground = "${colors.green}";

@@ -21,12 +21,12 @@
   bar-load-foreground-3 = "${colors.yellow}";
   bar-load-foreground-4 = "${colors.red}";
 
-  ramp-load-0 = "%{T3}%{T-}";
-  ramp-load-1 = "%{T3}%{T-}";
-  ramp-load-2 = "%{T3}%{T-}";
-  ramp-load-3 = "%{T3}%{T-}";
-  ramp-load-4 = "%{T3}%{T-}";
-  ramp-load-5 = "%{T3}%{T-}";
+  ramp-load-0 = "%{T3}%{T-}";
+  ramp-load-1 = "%{T3}%{T-}";
+  ramp-load-2 = "%{T3}%{T-}";
+  ramp-load-3 = "%{T3}%{T-}";
+  ramp-load-4 = "%{T3}%{T-}";
+  ramp-load-5 = "%{T3}%{T-}";
   ramp-load-0-foreground = "${colors.dark-cyan}";
   ramp-load-1-foreground = "${colors.cyan}";
   ramp-load-2-foreground = "${colors.green}";

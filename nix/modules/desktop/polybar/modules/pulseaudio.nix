@@ -9,7 +9,7 @@
   label-volume-padding = "1";
 
   format-muted-padding = "1";
-  label-muted = "%{T3}ﱝ%{T-}";
+  label-muted = "%{T3}%{T-}";
   label-muted-foreground = "${colors.red}";
 
   bar-volume-empty = "";
@@ -23,8 +23,8 @@
   bar-volume-foreground-2 = "${colors.cyan}";
   bar-volume-foreground-3 = "${colors.yellow}";
 
-  ramp-volume-0 = "%{T3}奄%{T-}";
-  ramp-volume-1 = "%{T3}奔%{T-}";
+  ramp-volume-0 = "%{T3}%{T-}";
+  ramp-volume-1 = "%{T3}%{T-}";
   ramp-volume-2 = "%{T3}%{T-}";
   ramp-volume-0-foreground = "${colors.dark-cyan}";
   ramp-volume-1-foreground = "${colors.cyan}";
