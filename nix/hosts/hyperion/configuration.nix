@@ -131,7 +131,8 @@
     graphics.enable = true;
     nvidia = {
       modesetting.enable = true;
-      open = true;
+      # don't want to use the open source driver... yet
+      open = false;
     };
     cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   };
