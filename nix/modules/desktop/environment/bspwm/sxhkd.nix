@@ -6,6 +6,7 @@
 # TODO: assert that all of these programs are installed somehow
 let
   kittyExec = "${pkgs.kitty}/bin/kitty";
+  weztermExec = "${pkgs.wezterm}/bin/wezterm";
   rofiExec = "${pkgs.rofi}/bin/rofi";
   bspcExec = "${pkgs.bspwm}/bin/bspc";
   polybarMsgExec = "${pkgs.polybar}/bin/polybar-msg";
@@ -14,7 +15,7 @@ let
   lockExec = "${pkgs.lightdm}/bin/dm-tool lock";
 in {
   # terminal
-  "super + Return" = kittyExec;
+  "super + Return" = weztermExec;
   #rofu apps
   "super + alt + d" = "${rofiExec} -show drun -modi drun,run -show-icons";
   # rofi run
