@@ -1,0 +1,3 @@
+#+title: helios
+
+helios is an [[https://www.lenovo.com/us/en/p/laptops/thinkpad/thinkpadt/t495s/22tp2tt495s][old thinkpad]].
