@@ -1,1 +1,1 @@
-{require = [./bluetooth ./zsa];}
+{imports = [./bluetooth ./nvidia ./zsa];}

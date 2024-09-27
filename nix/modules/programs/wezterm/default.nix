@@ -12,7 +12,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [wezterm];
+    user.packages = with pkgs; [wezterm];
 
     home.file.wezterm_config = {
       source = "${config.dotfiles.configDir}/wezterm";

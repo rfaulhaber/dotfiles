@@ -69,6 +69,7 @@
     };
     hardware = {
       zsa.enable = true;
+      nvidia.enable = true;
     };
     desktop = {
       enable = true;
@@ -78,7 +79,6 @@
       };
       # environment.sway.enable = true;
       # environment.hyprland.enable = true;
-      videoDrivers = ["nvidia"];
       monitors = ["DP-0"];
       sound.enable = true;
       random-wallpaper.enable = true;
@@ -127,15 +127,7 @@
     networkmanager.enable = true;
   };
 
-  hardware = {
-    graphics.enable = true;
-    nvidia = {
-      modesetting.enable = true;
-      # don't want to use the open source driver... yet
-      open = false;
-    };
-    cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  };
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   system.autoUpgrade = {
     enable = true;

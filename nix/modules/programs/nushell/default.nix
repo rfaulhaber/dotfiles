@@ -41,11 +41,11 @@ in {
         envFile.text = "source ${configDir}/env.nu";
 
         shellAliases = mkIf pkgs.stdenv.isLinux (mkMerge [
-          (mkIf desktopCfg.wayland.enable {
+          (mkIf ( desktopCfg.environment.type == "x11" ) {
             pbcopy = "${pkgs.wl-clipboard}/bin/wl-copy";
             pbpaste = "${pkgs.wl-clipboard}/bin/wl-paste";
           })
-          (mkIf desktopCfg.xserver.enable {
+          (mkIf ( desktopCfg.environment.type == "wayland" ) {
             pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
             pbpaste = "${pkgs.xclip}/bin/xclip -selection clipboard -o";
           })
@@ -62,6 +62,8 @@ in {
         enable = true;
       };
 
+      # TODO there is an issue where if carapace is not enabled the
+      # configuration cannot load correctly. carapace should be optional
       carapace = mkIf cfg.carapace.enable {
         enable = true;
       };
@@ -69,10 +71,10 @@ in {
 
     user.shell = mkIf cfg.setDefault pkgs.nushell;
 
-    environment.systemPackages = with pkgs; [
+    user.packages = with pkgs; [
       bat # bat is used as nushell's pager
-      (mkIf desktopCfg.xserver.enable xclip)
-      (mkIf desktopCfg.wayland.enable wl-clipboard)
+      (mkIf ( desktopCfg.environment.type == "x11" ) xclip)
+      (mkIf ( desktopCfg.environment.type == "wayland" ) wl-clipboard)
     ];
   };
 }

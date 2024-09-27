@@ -34,6 +34,8 @@ in {
       }
     ];
 
+    modules.desktop.environment.type = "x11";
+
     # enables custom module: modules.desktop.environment.xserver
     # and common xserver configs
     modules.desktop.xserver.enable = true;

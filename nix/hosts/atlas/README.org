@@ -1,6 +1,6 @@
 #+TITLE: Atlas
 
-~atlas~ is my home server. It runs a minimal installation of NixOS.
+~atlas~ is my home server. It runs a minimal, non-GUI installation of this NixOS configuration.
 
 My home server has three components:
 
@@ -9,4 +9,4 @@ My home server has three components:
 - Docker
 
 The services hosted by my server are essentially one big Docker Compose file
-(not hosted).
+(not hosted). NixOS handles all the underlying hardware and system configuration.

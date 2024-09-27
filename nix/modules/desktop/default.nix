@@ -27,11 +27,6 @@ in {
       type = types.listOf types.str;
       default = [];
     };
-    videoDrivers = mkOption {
-      description = "Passthrough property for services.xserver.videoDrivers.";
-      type = types.listOf types.str;
-      default = []; # TODO change
-    };
     laptop = mkOption {
       description = "Laptop-specific settings.";
       type = types.submodule {
@@ -49,8 +44,10 @@ in {
 
   config = mkIf cfg.enable {
     assertions = let
+      envType = cfg.environment.type;
       foldPred = acc: item:
-        if item.value.enable
+        # TODO probably a more elegant way to do this
+        if (item.name != "type" && item.value.enable)
         then acc ++ [item.name]
         else acc;
       desktopsEnabled = foldl foldPred [] (attrsToList config.modules.desktop.environment);
@@ -81,7 +78,7 @@ in {
     # despite the name, this is set for either X or wayland desktops
     services.xserver = {
       enable = true;
-      videoDrivers = mkIf ((length cfg.videoDrivers) > 0) cfg.videoDrivers;
+      videoDrivers = mkIf config.modules.hardware.nvidia.enable [ "nvidia" ];
       xkb = {
         options = "eurosign:e";
         layout = "us";
