@@ -1,3 +1,3 @@
 #+title: pallas
 
-Pallas is a [[https://libre.computer/products/roc-rk3328-cc/][Libre Computer Renegade ROC]] that hosts my PiHole and other networking applications.
+Pallas is a [[https://www.raspberrypi.com/products/raspberry-pi-4-model-b/][Raspberry Pi 4B]] that hosts my PiHole and other networking applications via Docker.
