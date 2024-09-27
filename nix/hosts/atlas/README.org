@@ -4,9 +4,17 @@
 
 My home server has three components:
 
-- SnapRAID
-- MergerFS
+- SnapRAID (for pooly-utilized backup)
+- MergerFS (for creating a data pool from the 8 hard drives)
 - Docker
 
 The services hosted by my server are essentially one big Docker Compose file
 (not hosted). NixOS handles all the underlying hardware and system configuration.
+
+* Specs
+| CPU         | Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz |
+| RAM         | DDR4 32GB (4x8GB)                       |
+| Motherboard | SuperMicro C7Z97-OCE                    |
+| Graphics    | N/A                                     |
+| NVME        | Samsung 970 Evo 500 GB M.2              |
+| HDD         | 8x8TB (64TB total) SAS 7200 RPM         |

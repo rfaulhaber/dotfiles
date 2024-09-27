@@ -1,11 +1,11 @@
 #+TITLE: Hyperion
 
-Hyperion is the Linux partition of my PC. It is my daily driver.
+Hyperion is the Linux partition of my PC. It is my daily driver. Dual boots into Windows for gaming.
 
 * Specs
 | CPU         | AMD Ryzen 9 3900X 3.8 GHz, 12-core processor         |
 | RAM         | DDR4 32GB (2x16GB)                                   |
 | Motherboard | Asus PRIME X570-PRO ATX AM4 Motherboard              |
 | Graphics    | Gigabyte GeForce RTX 2070 SUPER 8 GB WINDFORCE OC 3X |
-| SD          | Samsung 970 Evo 500 GB M.2                           |
+| NVME        | 2x Samsung 970 Evo 500 GB M.2                        |
 | HDD         | 3TB 7200 RPM                                         |
