@@ -11,14 +11,6 @@
 
   modules = {
     programs = {
-      # zsh = {
-      #   enable = true;
-      #   setDefault = true;
-      #   ohMyZsh = {
-      #     enable = true;
-      #     theme = "agnoster";
-      #   };
-      # };
       nushell = {
         enable = true;
         setDefault = true;
@@ -68,7 +60,7 @@
       samba-serve = {
         enable = true;
         shares.calibre = {
-          path = /data/calibre;
+          path = "/data/calibre";
           comment = "Calibre share.";
         };
       };
