@@ -1,9 +1,7 @@
 {lib, ...}:
-
-with lib;
-let cfg = config.modules.desktop.environment;
-    in
-{
+with lib; let
+  cfg = config.modules.desktop.environment;
+in {
   imports = [
     ./awesome
     ./bspwm
@@ -15,7 +13,8 @@ let cfg = config.modules.desktop.environment;
   options.modules.desktop.environment = {
     type = mkOption {
       description = "Desktop environment type.";
-      type = types.enum [ "x11" "wayland" ];
+      type = types.enum ["x11" "wayland" "none"];
+      default = "none";
     };
   };
 }

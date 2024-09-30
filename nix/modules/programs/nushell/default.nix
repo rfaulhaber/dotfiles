@@ -40,12 +40,12 @@ in {
         configFile.text = "source ${configDir}/config.nu";
         envFile.text = "source ${configDir}/env.nu";
 
-        shellAliases = mkIf pkgs.stdenv.isLinux (mkMerge [
-          (mkIf ( desktopCfg.environment.type == "x11" ) {
+        shellAliases = mkIf (pkgs.stdenv.isLinux && desktopCfg.enable) (mkMerge [
+          (mkIf (desktopCfg.environment.type == "x11") {
             pbcopy = "${pkgs.wl-clipboard}/bin/wl-copy";
             pbpaste = "${pkgs.wl-clipboard}/bin/wl-paste";
           })
-          (mkIf ( desktopCfg.environment.type == "wayland" ) {
+          (mkIf (desktopCfg.environment.type == "wayland") {
             pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
             pbpaste = "${pkgs.xclip}/bin/xclip -selection clipboard -o";
           })
@@ -73,8 +73,8 @@ in {
 
     user.packages = with pkgs; [
       bat # bat is used as nushell's pager
-      (mkIf ( desktopCfg.environment.type == "x11" ) xclip)
-      (mkIf ( desktopCfg.environment.type == "wayland" ) wl-clipboard)
+      (mkIf (desktopCfg.environment.type == "x11") xclip)
+      (mkIf (desktopCfg.environment.type == "wayland") wl-clipboard)
     ];
   };
 }

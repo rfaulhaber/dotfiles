@@ -44,9 +44,8 @@ in {
 
   config = mkIf cfg.enable {
     assertions = let
-      envType = cfg.environment.type;
       foldPred = acc: item:
-        # TODO probably a more elegant way to do this
+      # TODO probably a more elegant way to do this
         if (item.name != "type" && item.value.enable)
         then acc ++ [item.name]
         else acc;
@@ -55,6 +54,10 @@ in {
       {
         assertion = (length desktopsEnabled) == 1;
         message = "You must have one desktop environment selected if the desktop module is enabled. You have ${toString (length desktopsEnabled)} (${toString desktopsEnabled})";
+      }
+      {
+        assertion = cfg.environment.type != "none";
+        message = "Desktop type cannot be 'none' if a desktop is enabled.";
       }
     ];
 
@@ -78,7 +81,7 @@ in {
     # despite the name, this is set for either X or wayland desktops
     services.xserver = {
       enable = true;
-      videoDrivers = mkIf config.modules.hardware.nvidia.enable [ "nvidia" ];
+      videoDrivers = mkIf config.modules.hardware.nvidia.enable ["nvidia"];
       xkb = {
         options = "eurosign:e";
         layout = "us";
