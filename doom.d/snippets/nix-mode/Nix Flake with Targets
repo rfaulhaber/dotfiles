@@ -1,0 +1,37 @@
+# -*- mode: snippet -*-
+# name: Nix Flake with Targets
+# key: flkt
+# --
+
+{
+  description = "$1";
+
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+  };
+
+  outputs = {
+    self,
+    nixpkgs,
+  }: let
+    projectName = "$2";
+    supportedSystems = ["x86_64-linux" $3];
+    forSystems = systems: f:
+      nixpkgs.lib.genAttrs systems
+      (system: f system (import nixpkgs {inherit system;}));
+    forAllSystems = forSystems supportedSystems;
+  in {
+    packages = forAllSystems (system: pkgs: {
+        \${projectName} = {};
+        default = self.packages.${system}.${projectName};
+    });
+
+    formatter = forAllSystems (system: pkgs: pkgs.alejandra);
+
+    devShells = forAllSystems (system: pkgs: {
+      default = pkgs.mkShell {
+        buildInputs = with pkgs; [ ];
+      };
+    });
+  };
+}
