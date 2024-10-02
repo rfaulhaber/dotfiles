@@ -2,8 +2,17 @@ local wezterm = require 'wezterm'
 
 local config = wezterm.config_builder()
 
+local getHostname = function(hostname)
+  local domains = {'.lan', '.local', '.attlocalnet'}
+  for _, pattern in ipairs(domains) do
+    hostname = string.gsub(hostname, pattern, '')
+  end
+
+  return hostname
+end
+
 -- deduce host information
-local hostname = string.gsub(wezterm.hostname(), '.lan', '')
+local hostname = getHostname(wezterm.hostname())
 local host_info = {}
 
 -- this is not perfect, but this should be good enough to match all the target

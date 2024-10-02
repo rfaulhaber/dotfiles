@@ -2,7 +2,7 @@
 
 (defvar config/work-computer-p nil "If t, is a work computer.")
 (defvar config/font-size 16 "Font size. Should be specified by a host.")
-(defvar self/system-name (string-trim-right (system-name) (rx (or "\.lan" "\.attlocal.net")))
+(defvar self/system-name (string-trim-right (system-name) (rx (or "\.lan" "\.attlocal.net" "\.local")))
   "System name. Used in loading init scripts.")
 (defvar self/system-type (pcase system-type
                            ('gnu/linux "linux")
