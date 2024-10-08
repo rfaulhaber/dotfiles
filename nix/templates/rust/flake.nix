@@ -1,38 +1,35 @@
-# barebones Rust project template with Nix flakes
 {
-  description = "Nix Rust flake template";
+  description = "Rust project template";
+
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
 
   outputs = {
     self,
-    nixpkgs,
-    flake-utils,
-  }:
-    flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-      };
-      projectName = "project";
-    in rec {
+      nixpkgs,
+  }: let
+    projectName = "Rust project template";
+    supportedSystems = ["x86_64-linux" ];
+    forSystems = systems: f:
+      nixpkgs.lib.genAttrs systems
+        (system: f system (import nixpkgs {inherit system;}));
+    forAllSystems = forSystems supportedSystems;
+  in {
+    packages = forAllSystems (system: pkgs: {
       packages.${projectName} = pkgs.rustPlatform.buildRustPackage {
         pname = projectName;
         version = "0.1.0";
         src = ./.;
-        # NOTE: make sure Cargo.lock is not in .gitignore
         cargoLock.lockFile = ./Cargo.lock;
       };
+      default = self.packages.${system}.projectName;
+    });
 
-      packages.default = self.packages.${system}.${projectName};
+    formatter = forAllSystems (system: pkgs: pkgs.alejandra);
 
-      apps.${projectName} =
-        flake-utils.lib.mkApp {drv = packages.${projectName};};
-
-      apps.default = self.apps.${system}.${projectName};
-
-      devShells.default = pkgs.mkShell {
+    devShells = forAllSystems (system: pkgs: {
+      default = pkgs.mkShell {
         buildInputs = with pkgs; [
           cargo
           rustc
@@ -43,4 +40,5 @@
         ];
       };
     });
+  };
 }
