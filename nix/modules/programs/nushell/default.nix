@@ -41,11 +41,11 @@ in {
         envFile.text = "source ${configDir}/env.nu";
 
         shellAliases = mkIf (pkgs.stdenv.isLinux && desktopCfg.enable) (mkMerge [
-          (mkIf (desktopCfg.environment.type == "x11") {
+          (mkIf (desktopCfg.environment.type == "wayland") {
             pbcopy = "${pkgs.wl-clipboard}/bin/wl-copy";
             pbpaste = "${pkgs.wl-clipboard}/bin/wl-paste";
           })
-          (mkIf (desktopCfg.environment.type == "wayland") {
+          (mkIf (desktopCfg.environment.type == "x11") {
             pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
             pbpaste = "${pkgs.xclip}/bin/xclip -selection clipboard -o";
           })

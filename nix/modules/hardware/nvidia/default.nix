@@ -6,6 +6,7 @@
 }:
 with lib; let
   cfg = config.modules.hardware.nvidia;
+  desktopCfg = config.modules.desktop;
 in {
   options.modules.hardware.nvidia = {enable = mkEnableOption false;};
 
@@ -16,7 +17,14 @@ in {
         modesetting.enable = true;
         # don't want to use the open source driver... yet
         open = false;
+
+        powerManagement = {
+          enable = false;
+          finegrained = false;
+        };
       };
     };
+
+    services.xserver.videoDrivers = mkIf desktopCfg.enable ["nvidia"];
   };
 }

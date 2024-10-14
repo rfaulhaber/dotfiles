@@ -22,6 +22,10 @@ in {
   config = mkIf cfg.enable {
     age = {
       inherit (cfg) secrets;
+
+      identityPaths = [
+        "${config.user.home}/.ssh/id_host"
+      ];
     };
 
     environment.systemPackages = with pkgs; [

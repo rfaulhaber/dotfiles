@@ -32,7 +32,12 @@
       };
       direnv.enable = true;
       pijul.enable = true;
-      age.enable = true;
+      age = {
+        enable = true;
+        secrets = {
+          samba.file = ./secrets/samba.age;
+        };
+      };
     };
     services = {
       doas.enable = true;
@@ -42,6 +47,7 @@
         mounts."${config.user.home}/calibre" = {
           domain = "192.168.0.3";
           host = "calibre";
+          secrets = config.age.secrets.samba.path;
         };
       };
       keybase.enable = true;
@@ -73,19 +79,28 @@
     };
     desktop = {
       enable = true;
-      environment.bspwm = {
+      environment.bspwm = lib.mkDefault {
         enable = true;
         extraStartupPrograms = ["discord" "1password" "telegram-desktop" "mullvad-gui"];
       };
-      # environment.sway.enable = true;
-      # environment.hyprland.enable = true;
+      random-wallpaper.enable = lib.mkDefault true;
       monitors = ["DP-0"];
       sound.enable = true;
-      random-wallpaper.enable = true;
       firefox.enable = true;
     };
     themes.active = "tokyo-night";
   };
+
+  # specialisation = {
+  #   hyprland.configuration = {
+  #     modules.desktop = {
+  #       enable = true;
+  #       environment.bspwm.enable = false;
+  #       environment.hyprland.enable = true;
+  #       random-wallpaper.enable = false;
+  #     };
+  #   };
+  # };
 
   boot = {
     # use the latest kernel

@@ -7,13 +7,13 @@
 
   outputs = {
     self,
-      nixpkgs,
+    nixpkgs,
   }: let
     projectName = "Rust project template";
-    supportedSystems = ["x86_64-linux" ];
+    supportedSystems = ["x86_64-linux"];
     forSystems = systems: f:
       nixpkgs.lib.genAttrs systems
-        (system: f system (import nixpkgs {inherit system;}));
+      (system: f system (import nixpkgs {inherit system;}));
     forAllSystems = forSystems supportedSystems;
   in {
     packages = forAllSystems (system: pkgs: {
