@@ -40,11 +40,11 @@ in {
       waybar.enable = true;
     };
 
-    home.wayland.windowManager.hyprland = {
-      enable = true;
-      package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-      xwayland.enable = true;
-    };
+    # home.wayland.windowManager.hyprland = {
+    #   enable = true;
+    #   package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    #   xwayland.enable = true;
+    # };
 
     # TODO avoid, I'm not sure why this is necessary
     services.xserver.displayManager.lightdm.enable = false;

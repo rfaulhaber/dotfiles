@@ -34,9 +34,6 @@
       pijul.enable = true;
       age = {
         enable = true;
-        secrets = {
-          samba.file = ./secrets/samba.age;
-        };
       };
     };
     services = {
@@ -47,7 +44,6 @@
         mounts."${config.user.home}/calibre" = {
           domain = "192.168.0.3";
           host = "calibre";
-          secrets = config.age.secrets.samba.path;
         };
       };
       keybase.enable = true;
@@ -91,16 +87,16 @@
     themes.active = "tokyo-night";
   };
 
-  # specialisation = {
-  #   hyprland.configuration = {
-  #     modules.desktop = {
-  #       enable = true;
-  #       environment.bspwm.enable = false;
-  #       environment.hyprland.enable = true;
-  #       random-wallpaper.enable = false;
-  #     };
-  #   };
-  # };
+  specialisation = {
+    hyprland.configuration = {
+      modules.desktop = {
+        enable = true;
+        environment.bspwm.enable = false;
+        environment.hyprland.enable = true;
+        random-wallpaper.enable = false;
+      };
+    };
+  };
 
   boot = {
     # use the latest kernel

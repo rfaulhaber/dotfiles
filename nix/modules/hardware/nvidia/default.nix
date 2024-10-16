@@ -22,6 +22,8 @@ in {
           enable = false;
           finegrained = false;
         };
+
+        package = config.boot.kernelPackages.nvidiaPackages.stable;
       };
     };
 
