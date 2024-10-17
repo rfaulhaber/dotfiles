@@ -32,5 +32,7 @@ export def tokei-summary [] {
 
 # Export English dictionary from ^aspell
 export def words [] {
-  ^aspell -d en dump master | ^aspell -l en expand
+  ^aspell -d en dump master
+  | ^aspell -l en expand
+  | lines
 }
