@@ -29,3 +29,8 @@ export def tokei-summary [] {
 
   $lang_stats
 }
+
+# Export English dictionary from ^aspell
+export def words [] {
+  ^aspell -d en dump master | ^aspell -l en expand
+}
