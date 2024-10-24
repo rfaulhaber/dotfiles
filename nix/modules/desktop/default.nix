@@ -40,6 +40,11 @@ in {
       };
       default = {enable = false;};
     };
+    extraPackages = mkOption {
+      description = "List of extra packages to install for the default user.";
+      type = types.listOf types.package;
+      default = [];
+    };
   };
 
   config = mkIf cfg.enable {
@@ -101,16 +106,6 @@ in {
 
     # TODO put these somewhere better
     # necessary utilities for desktop
-    environment.systemPackages = with pkgs; [
-      chromium
-      discord
-      evince
-      gnome-screenshot
-      openvpn
-      python3
-      signal-desktop
-      spotify
-      tdesktop
-    ];
+    user.packages = cfg.extraPackages;
   };
 }

@@ -95,6 +95,7 @@ in {
         matchBlocks = let
           mkLocalHostname = n: "192.168.0.${n}";
           sshPath = cfg.client.sshPath;
+          defaultIdentityFile = "${sshPath}/id_host";
         in {
           "*".identitiesOnly = true;
 

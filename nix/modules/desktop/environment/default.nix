@@ -7,6 +7,7 @@ in {
     ./bspwm
     ./hyprland
     ./i3
+    ./retroarch
     ./sway
   ];
 

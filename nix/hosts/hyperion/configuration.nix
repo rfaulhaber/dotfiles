@@ -83,6 +83,17 @@
       monitors = ["DP-0"];
       sound.enable = true;
       firefox.enable = true;
+      extraPackages = with pkgs; [
+      chromium
+      discord
+      evince
+      gnome-screenshot
+      openvpn
+      python3
+      signal-desktop
+      spotify
+      tdesktop
+      ];
     };
     themes.active = "tokyo-night";
   };
@@ -95,6 +106,7 @@
         environment.hyprland.enable = true;
         random-wallpaper.enable = false;
       };
+      hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
     };
   };
 

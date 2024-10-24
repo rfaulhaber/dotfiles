@@ -99,6 +99,9 @@
         pallas = mkHost ./nix/hosts/pallas/configuration.nix {
           system = "aarch64-linux";
         };
+        nike = mkHost ./nix/hosts/nike/configuration.nix {
+          system = "aarch64-linux";
+        };
       };
 
       # TODO add darwin configurations

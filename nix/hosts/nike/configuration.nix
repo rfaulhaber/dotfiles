@@ -11,11 +11,22 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules
-    inputs.nixos-hardware.nixosModules.raspberry-pi-4
+    inputs.nixos-hardware.nixosModules.raspberry-pi-3
   ];
 
   modules = {
+    desktop = {
+      enable = true;
+      environment.retroarch.enable = true;
+    };
     programs = {
+      age = {
+        enable = true;
+        secrets = {
+          userPasswd.file = ./secrets/passwd.age;
+          samba.file = ./secrets/samba.age;
+        };
+      };
       nushell = {
         enable = true;
         setDefault = true;
@@ -25,27 +36,24 @@
       git.enable = true;
     };
     services = {
-      docker.enable = true;
       gpg.enable = true;
-      systemd.modules = {
-        dockerCleanup.enable = true;
-      };
       ssh = {
         enable = true;
         server = {
           enable = true;
           keys = [
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGl7rrcCvWXaq4yDf8YbpYNYszZX8YQr/Yftr8EdxLbd ryan@hyperion"
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaqafz5v22MEyVTmDolh0E/7k7O6KJOyZAF36lldGgW ryan@eos"
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZQ6dhGnjyJ+SBMeN5IRHcpV6ERR+a/WPmvD7o2TM90 ryan@hyperion"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ2W7QJTJ5LtlPoEVK3o6S45+7wfn4ECnt7UNRUACRYU ryan@hyperion"
           ];
-          port = 12981;
+          port = 14625;
         };
       };
-
-      zerotier = {
+      samba-mount = {
         enable = true;
-        networks = ["12ac4a1e719ca283" "b6079f73c6986bc2"];
+        mounts."${config.user.home}/games" = {
+          domain = "192.168.0.3";
+          host = "games";
+          secrets = config.age.secrets.samba.path;
+        };
       };
     };
 
@@ -53,22 +61,12 @@
   };
 
   boot = {
-    kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
+    kernelPackages = pkgs.linuxKernel.packages.linux_rpi3;
     initrd.availableKernelModules = ["xhci_pci" "usbhid" "usb_storage"];
     loader = {
       grub.enable = false;
       generic-extlinux-compatible.enable = true;
     };
-  };
-
-  # raspberry pi hardware configuration
-  hardware = {
-    raspberry-pi."4" = {
-      fkms-3d.enable = true;
-      apply-overlays-dtmerge.enable = true;
-    };
-
-    enableRedistributableFirmware = true;
   };
 
   console.enable = false;
@@ -79,22 +77,15 @@
   ];
 
   networking = {
-    hostName = "pallas";
+    hostName = "nike";
     useDHCP = true;
     interfaces.end0.useDHCP = true;
-
-    firewall = {
-      enable = true;
-      # required for pihole
-      allowedTCPPorts = [8085 80 53 67 443];
-      allowedUDPPorts = [53 67 68 546 547];
-      extraCommands = ''
-        iptables -I INPUT 1 -p tcp -m tcp --dport 4711 -i lo -j ACCEPT
-        iptables -I INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-      '';
-    };
   };
 
   # temporary, make nix settings modular
   nix.gc.automatic = lib.mkForce false;
+
+  nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
+
+  user.hashedPasswordFile = config.age.secrets.userPasswd.path;
 }
