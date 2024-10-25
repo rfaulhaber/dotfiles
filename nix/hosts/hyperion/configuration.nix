@@ -84,15 +84,15 @@
       sound.enable = true;
       firefox.enable = true;
       extraPackages = with pkgs; [
-      chromium
-      discord
-      evince
-      gnome-screenshot
-      openvpn
-      python3
-      signal-desktop
-      spotify
-      tdesktop
+        chromium
+        discord
+        evince
+        gnome-screenshot
+        openvpn
+        python3
+        signal-desktop
+        spotify
+        tdesktop
       ];
     };
     themes.active = "tokyo-night";

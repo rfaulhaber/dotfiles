@@ -46,6 +46,12 @@ in {
         default = 10222;
         type = types.int;
       };
+
+      extraConfig = mkOption {
+        description = "Extra config for this host.";
+        type = types.str;
+        default = "";
+      };
     };
   };
 
@@ -64,10 +70,12 @@ in {
           PasswordAuthentication = false;
           PermitRootLogin = lib.mkDefault "no";
         };
-        extraConfig = ''
-          PermitEmptyPasswords no
-          AllowTcpForwarding yes
-        '';
+        extraConfig =
+          ''
+            PermitEmptyPasswords no
+            AllowTcpForwarding yes
+          ''
+          + cfg.server.extraConfig;
         ports = [cfg.server.port];
       };
 
@@ -97,11 +105,13 @@ in {
           sshPath = cfg.client.sshPath;
           defaultIdentityFile = "${sshPath}/id_host";
         in {
-          "*".identitiesOnly = true;
+          "*" = {
+            identitiesOnly = true;
+            identityFile = defaultIdentityFile;
+          };
 
           "atlas" = {
             hostname = mkLocalHostname "3";
-            identityFile = "${sshPath}/id_atlas";
             user = config.user.name;
             port = 10222;
             forwardAgent = true;
@@ -128,17 +138,8 @@ in {
             };
           };
 
-          "pi" = {
-            hostname = mkLocalHostname "70";
-            identityFile = "${sshPath}/id_pi";
-            user = "pi";
-            extraOptions = {"AddKeysToAgent" = "yes";};
-            port = 2222;
-          };
-
           "pallas" = {
             hostname = mkLocalHostname "2";
-            identityFile = "${sshPath}/id_pallas_new";
             forwardAgent = true;
             user = "ryan";
             extraOptions = {
@@ -149,7 +150,6 @@ in {
 
           "nix-installer" = {
             hostname = mkLocalHostname "190";
-            identityFile = "${sshPath}/nixos-installer";
             user = "nixos";
             extraOptions = {
               "AddKeysToAgent" = "yes";

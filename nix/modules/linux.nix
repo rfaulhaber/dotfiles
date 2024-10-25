@@ -1,8 +1,10 @@
 # linux system defaults
-
-{ config, lib, pkgs, ... }:
-
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   config = lib.mkIf pkgs.stdenv.targetPlatform.isLinux {
     environment.systemPackages = with pkgs; [
       bat

@@ -10,6 +10,6 @@
   services.sshd.enable = true;
 
   users.extraUsers.nixos.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA3oh1zeSI2tjCGtIFIj5H4qvf4tPph3O3mguYVcVCC9 ryan@hyperion"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZQ6dhGnjyJ+SBMeN5IRHcpV6ERR+a/WPmvD7o2TM90 ryan@hyperion"
   ];
 }

@@ -32,11 +32,11 @@
         server = {
           enable = true;
           keys = [
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJHGYKXsTAHFyfjUzynjFd1XcfnL3tO90v/2BzSBq3yK ryf@sent.as"
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJV6DYWf3PwOlEvVPoW2FEeVw6tHdeWIW9o2/qqWsNJE ryf@sent.as"
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGYKKNyV03Nv4Bgx/I93OuNR6vYCxwUIEcHpgpZlqmQJ ryf@sent.as"
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZQ6dhGnjyJ+SBMeN5IRHcpV6ERR+a/WPmvD7o2TM90 ryan@hyperion"
           ];
+          extraConfig = ''
+            MaxStartups 30:30:60
+          '';
         };
       };
       snapraid = {

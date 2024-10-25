@@ -35,7 +35,6 @@
         server = {
           enable = true;
           keys = [
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGl7rrcCvWXaq4yDf8YbpYNYszZX8YQr/Yftr8EdxLbd ryan@hyperion"
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIaqafz5v22MEyVTmDolh0E/7k7O6KJOyZAF36lldGgW ryan@eos"
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZQ6dhGnjyJ+SBMeN5IRHcpV6ERR+a/WPmvD7o2TM90 ryan@hyperion"
           ];
