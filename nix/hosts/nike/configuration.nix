@@ -9,7 +9,7 @@
   ...
 }: {
   imports = [
-    ./hardware-configuration.nix
+    # ./hardware-configuration.nix
     ../../modules
     inputs.nixos-hardware.nixosModules.raspberry-pi-3
   ];
@@ -42,7 +42,7 @@
         server = {
           enable = true;
           keys = [
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ2W7QJTJ5LtlPoEVK3o6S45+7wfn4ECnt7UNRUACRYU ryan@hyperion"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZQ6dhGnjyJ+SBMeN5IRHcpV6ERR+a/WPmvD7o2TM90 ryan@hyperion"
           ];
           port = 14625;
         };
