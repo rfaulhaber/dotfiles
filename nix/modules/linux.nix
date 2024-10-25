@@ -1,21 +1,17 @@
+# linux system defaults
+
+{ config, lib, pkgs, ... }:
+
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
-  config = {
-    # bare minimum required packages
+  config = lib.mkIf pkgs.stdenv.targetPlatform.isLinux {
     environment.systemPackages = with pkgs; [
       bat
       binutils
       coreutils-full
-      croc
       curl
       fd
       fzf
       htop
-      jq
       pandoc
       pass
       ripgrep

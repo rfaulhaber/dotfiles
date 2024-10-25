@@ -4,6 +4,7 @@
     ./dotfiles.nix
     ./globals.nix
     ./hardware
+    ./linux.nix
     ./options.nix
     ./programs
     ./services
