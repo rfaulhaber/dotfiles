@@ -1,7 +1,7 @@
 $env.PATH = (
 	$env.PATH
 	| split row (char esep)
-	| prepend "/nix/var/nix/profiles/default/bin/nix"
+	| prepend "/nix/var/nix/profiles/default/bin"
 	| prepend "/home/ryan/.nix-profile/bin"
 )
 
