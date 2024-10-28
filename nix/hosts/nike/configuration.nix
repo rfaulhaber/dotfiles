@@ -9,7 +9,7 @@
   ...
 }: {
   imports = [
-    # ./hardware-configuration.nix
+    ./hardware-configuration.nix
     ../../modules
     inputs.nixos-hardware.nixosModules.raspberry-pi-3
   ];
@@ -20,13 +20,6 @@
       environment.retroarch.enable = true;
     };
     programs = {
-      age = {
-        enable = true;
-        secrets = {
-          userPasswd.file = ./secrets/passwd.age;
-          samba.file = ./secrets/samba.age;
-        };
-      };
       nushell = {
         enable = true;
         setDefault = true;
@@ -53,7 +46,7 @@
         mounts."${config.user.home}/games" = {
           domain = "192.168.0.3";
           host = "games";
-          secrets = config.age.secrets.samba.path;
+          secrets = "/etc/samba/secrets";
         };
       };
     };
@@ -80,13 +73,11 @@
   networking = {
     hostName = "nike";
     useDHCP = true;
-    interfaces.end0.useDHCP = true;
+    interfaces.enu1u1u1.useDHCP = lib.mkDefault true;
   };
 
   # temporary, make nix settings modular
   nix.gc.automatic = lib.mkForce false;
 
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
-
-  user.hashedPasswordFile = config.age.secrets.userPasswd.path;
 }
