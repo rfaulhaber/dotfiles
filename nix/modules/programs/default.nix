@@ -2,6 +2,7 @@
   imports = [
     ./1password
     ./age
+    ./aspell
     ./direnv
     ./emacs
     ./eza
