@@ -137,6 +137,7 @@
             profiles.system = {
               user = "root";
               fastConnection = true;
+              activationTimeout = 600;
               path =
                 deploy-rs.lib.aarch64-linux.activate.nixos
                 self.nixosConfigurations.nike;
