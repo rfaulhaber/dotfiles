@@ -15,7 +15,6 @@
     };
     deploy-rs.url = "github:serokell/deploy-rs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    flake-utils.url = "github:numtide/flake-utils";
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,7 +43,6 @@
     home-manager,
     deploy-rs,
     nixos-hardware,
-    flake-utils,
     nixos-generators,
     nix-darwin,
     emacs-overlay,
@@ -192,22 +190,21 @@
         };
       };
     }
-    # cross-platform applications and packages
-    // flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-      };
+    // (let
+      supportedSystems = ["x86_64-linux"];
+      forSystems = systems: f:
+        nixpkgs.lib.genAttrs systems
+        (system: f system (import nixpkgs {inherit system;}));
+      forAllSystems = forSystems supportedSystems;
     in {
-      formatter = pkgs.alejandra;
-
-      apps = {
+      formatter = forAllSystems (system: pkgs: pkgs.alejandra);
+      apps = forAllSystems (system: pkgs: {
         # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
         # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
         deploy-rs = deploy-rs.defaultApp."${system}";
         generate = nixos-generators.apps.${system}.default;
-      };
-
-      devShells = {
+      });
+      devShells = forAllSystems (system: pkgs: {
         deploy-rs = pkgs.mkShell {
           buildInputs = [deploy-rs.defaultPackage."${system}"];
         };
@@ -229,6 +226,6 @@
         };
 
         default = self.devShells.${system}.luaDev;
-      };
+      });
     });
 }
