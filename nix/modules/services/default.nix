@@ -4,6 +4,7 @@
     ./doas
     ./docker
     ./gpg
+    ./guac
     ./keybase
     ./mail
     ./mergerfs

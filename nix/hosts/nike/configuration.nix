@@ -49,6 +49,7 @@
           secrets = "/etc/samba/secrets";
         };
       };
+      guac.enable = true;
     };
 
     themes.active = "moonlight";
