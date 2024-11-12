@@ -39,17 +39,17 @@ in {
       environment.systemPackages = with pkgs; [virt-manager virsh];
     })
     (mkIf (cfg.server.enable) {
-      boot.kernelModules = ["kvm-intel" "kvm-amd"];
+      # boot.kernelModules = ["kvm-intel" "kvm-amd"];
 
-      virtualisation.libvirtd.allowedBridges = ["${cfg.libvert.bridgeInterface}"];
+      # virtualisation.libvirtd.allowedBridges = ["${cfg.libvert.bridgeInterface}"];
 
-      networking.interfaces."${cfg.libvert.bridgeInterface}".useDHCP = true;
+      # networking.interfaces."${cfg.libvert.bridgeInterface}".useDHCP = true;
 
-      networking.bridges = {
-        "${cfg.libvert.bridgeInterface}" = {
-          interfaces = ["${cfg.libvert.ethInterface}"];
-        };
-      };
+      # networking.bridges = {
+      #   "${cfg.libvert.bridgeInterface}" = {
+      #     interfaces = ["${cfg.libvert.ethInterface}"];
+      #   };
+      # };
     })
   ]);
 }

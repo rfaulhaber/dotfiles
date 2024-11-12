@@ -62,10 +62,13 @@ with lib; rec {
       else acc)
     0;
 
+  # compose :: [functions] -> a -> <return type of last of functions>
+  compose = flip pipe;
+
   # thank you hlissner
   # mapFilterAttrs ::
   #   (name -> value -> bool)
   #   (name -> value -> { name = any; value = any; })
   #   attrs
-  mapFilterAttrs = pred: f: attrs: filterAttrs pred (mapAttrs' f attrs);
+  mapFilterAttrs = pred: f: attrs: pipe attrs [(mapAttrs' f) (filterAttrs pred)];
 }

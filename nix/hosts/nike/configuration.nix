@@ -14,6 +14,8 @@
     inputs.nixos-hardware.nixosModules.raspberry-pi-3
   ];
 
+  # system = "aarch64-linux";
+
   modules = {
     desktop = {
       enable = true;

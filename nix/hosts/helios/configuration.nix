@@ -15,6 +15,8 @@
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t495
   ];
 
+  # system = "x86_64-linux";
+
   modules = {
     programs = {
       zsh = {

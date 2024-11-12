@@ -10,6 +10,8 @@
 }: {
   imports = [../../modules ./hardware-configuration.nix];
 
+  # system = "x86_64-linux";
+
   modules = {
     programs = {
       emacs = {
@@ -106,7 +108,6 @@
         environment.hyprland.enable = true;
         random-wallpaper.enable = false;
       };
-      hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
     };
   };
 

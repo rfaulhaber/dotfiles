@@ -53,7 +53,7 @@ in {
         if (item.name != "type" && item.value.enable)
         then acc ++ [item.name]
         else acc;
-      desktopsEnabled = foldl foldPred [] (attrsToList config.modules.desktop.environment);
+      desktopsEnabled = pipe config.modules.desktop.environment [attrsToList (foldl foldPred [])];
     in [
       {
         assertion = (length desktopsEnabled) == 1;

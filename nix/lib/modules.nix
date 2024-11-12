@@ -11,12 +11,14 @@ with lib; let
 in {
   # thank you hlissner
   mapModules = dir: fn:
-    mapFilterAttrs (n: v: v != null && !(hasPrefix "_" n)) (n: v: let
+    let pred = n: v: v != null && !(hasPrefix "_" n);
+        f = n: v: let
       path = "${toString dir}/${n}";
     in
       if v == "directory" && pathExists "${path}/default.nix"
-      then nameValuePair n (fn path)
+      then pipe path [ fn nameValuePair ]
       else if v == "regular" && n != "default.nix" && hasSuffix ".nix" n
-      then nameValuePair (removeSuffix ".nix" n) (fn path)
-      else nameValuePair "" null) (readDir dir);
+      then pipe path [ fn (nameValuePair (removeSuffix ".nix" n)) ]
+      else nameValuePair "" null;
+    in pipe dir [readDir (mapFilterAttrs pred f)];
 }

@@ -265,6 +265,17 @@ hello world
       (browse-url filename)
     (user-error "Buffer is not associated with a file")))
 
+(defun self/reload-projectile-projects ()
+  "Reloads projectile projects from the ~/Projects directory"
+  (interactive)
+  (let ((projectile-projects (projectile-relevant-known-projects))
+        (projects-dir (read-dir-locals-file "~/Projects")))
+    (mapc (lambda (project-dir)
+            (unless (member project-dir projectile-projects)
+              (projectile-add-known-project project-dir)))
+          projects-dir)))
+
+
 ;; ----------------------------- utility functions -----------------------------
 
 ;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el

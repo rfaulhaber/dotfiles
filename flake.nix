@@ -50,6 +50,7 @@
     ...
   }: let
     inherit (lib.my) mapModules mkPkgs;
+
     pkgs = mkPkgs nixpkgs [];
 
     # TODO import lib functions that don't depend on pkgs
@@ -188,6 +189,17 @@
             inherit inputs;
           };
           format = "sd-aarch64-installer";
+        };
+
+        x86_64-installer-generic = nixos-generators.nixosGenerate {
+          system = "x86_64-linux";
+          modules = [
+            ./nix/installers/x86_64-linux/configuration.nix
+          ];
+          specialArgs = {
+            inherit inputs;
+          };
+          format = "install-iso";
         };
       };
     }
