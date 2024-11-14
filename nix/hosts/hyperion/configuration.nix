@@ -48,7 +48,6 @@
           host = "calibre";
         };
       };
-      keybase.enable = true;
       gpg.enable = true;
       mail.enable = true;
       redshift.enable = true;

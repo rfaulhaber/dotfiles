@@ -13,7 +13,7 @@
       curl
       fd
       fzf
-      htop
+      btop
       pandoc
       pass
       ripgrep
