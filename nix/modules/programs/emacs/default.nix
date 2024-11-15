@@ -78,5 +78,10 @@ in {
     programs.zsh.shellAliases = mkIf config.modules.programs.zsh.enable shellAliases;
 
     home.programs.nushell.shellAliases = mkIf config.modules.programs.nushell.enable shellAliases;
+
+    home.file.doomconfig = {
+      source = config.dotfiles.emacsDir;
+      target = "${config.user.home}/.config/doom";
+    };
   };
 }
