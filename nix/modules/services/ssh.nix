@@ -122,7 +122,6 @@ in {
 
           "github.com" = {
             hostname = "github.com";
-            identityFile = "${sshPath}/id_github";
             extraOptions = {
               "PreferredAuthentications" = "publickey";
               "AddKeysToAgent" = "yes";
@@ -131,7 +130,6 @@ in {
 
           "gitlab.com" = {
             hostname = "github.com";
-            identityFile = "${sshPath}/id_gitlab";
             extraOptions = {
               "PreferredAuthentications" = "publickey";
               "AddKeysToAgent" = "yes";
