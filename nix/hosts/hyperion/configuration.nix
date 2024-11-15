@@ -111,8 +111,8 @@
   };
 
   boot = {
-    # use the latest kernel
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages;
+    kernelParams = [ "nohibernate" ];
 
     tmp = {
       useTmpfs = true;
@@ -135,11 +135,17 @@
     };
 
     binfmt.emulatedSystems = ["aarch64-linux"];
+
+    zfs = {
+      extraPools = [ "zroot" ];
+    };
   };
 
   # TODO move, set defaults
   networking = {
     hostName = "hyperion";
+    hostId = "836be91c";
+
     # The global useDHCP flag is deprecated, therefore explicitly set to false here.
     # Per-interface useDHCP will be mandatory in the future, so this generated config
     # replicates the default behaviour.

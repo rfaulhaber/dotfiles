@@ -27,16 +27,21 @@
           };
         };
       };
+    };
       zpool = {
         zroot = {
           type = "zpool";
-          mountpoint = "none";
           rootFsOptions = {
-            ashift = 12;
             atime = "off";
             xattr = "sa";
           };
+          options.ashift = "12";
           datasets = {
+            "root" = {
+              type = "zfs_fs";
+              mountpoint = "/";
+              options.mountpoint = "legacy";
+            };
             "nix" = {
               type = "zfs_fs";
               mountpoint = "/nix";
@@ -45,34 +50,13 @@
                 mountpoint = "legacy";
               };
             };
-            "root" = {
-              type = "zfs_fs";
-              mountpoint = "/root";
-              options.mountpoint = "legacy";
-            };
             "home" = {
               type = "zfs_fs";
               mountpoint = "/home";
               options.mountpoint = "legacy";
-              encryption = "aes-256-gcm";
-              keyformat = "passphrase";
-              keylocation = "file:///tmp/secret.key";
-              postCreateHook = ''
-                zfs set keylocation="prompt" "zroot/home";
-              '';
-            };
-
-            "home/cache" = {
-              type = "zfs_fs";
-              mountpoint = "/home/.cache";
-              options = {
-                mountpoint = "legacy";
-                compression = "lz4";
-              };
             };
           };
         };
       };
     };
-  };
 }
