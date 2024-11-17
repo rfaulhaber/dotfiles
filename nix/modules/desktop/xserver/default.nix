@@ -21,5 +21,10 @@ in {
         layout = "us";
       };
     };
+
+    environment.systemPackages = with pkgs; [
+      feh
+    ];
   };
+
 }

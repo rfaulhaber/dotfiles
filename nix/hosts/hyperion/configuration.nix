@@ -39,6 +39,7 @@
       };
     };
     services = {
+      zfs.enable = true;
       doas.enable = true;
       docker.enable = true;
       samba-mount = {

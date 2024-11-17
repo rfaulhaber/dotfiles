@@ -22,5 +22,6 @@
     ./virt
     ./wireguard
     ./zerotier
+    ./zfs
   ];
 }
