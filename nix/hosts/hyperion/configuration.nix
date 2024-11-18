@@ -40,7 +40,6 @@
     };
     services = {
       zfs.enable = true;
-      doas.enable = true;
       docker.enable = true;
       samba-mount = {
         enable = true;
@@ -60,6 +59,7 @@
         client.enable = true;
       };
       passwords.enable = true;
+      yubikey.enable = true;
       zerotier = {
         enable = true;
         networks = ["b6079f73c6986bc2"];
