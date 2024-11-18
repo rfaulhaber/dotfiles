@@ -113,7 +113,7 @@
 
   boot = {
     kernelPackages = pkgs.linuxPackages;
-    kernelParams = [ "nohibernate" ];
+    kernelParams = ["nohibernate"];
 
     tmp = {
       useTmpfs = true;
@@ -138,7 +138,7 @@
     binfmt.emulatedSystems = ["aarch64-linux"];
 
     zfs = {
-      extraPools = [ "zroot" ];
+      extraPools = ["zroot"];
     };
   };
 

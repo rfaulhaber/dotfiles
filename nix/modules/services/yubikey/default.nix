@@ -1,8 +1,11 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.services.yubikey;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.services.yubikey;
 in {
   options.modules.services.yubikey = {
     enable = mkEnableOption false;
@@ -10,7 +13,7 @@ in {
 
   config = mkIf cfg.enable {
     # services.pcscd.enable = true;
-    services.udev.packages = with pkgs; [ yubikey-personalization libu2f-host ];
+    services.udev.packages = with pkgs; [yubikey-personalization libu2f-host];
 
     security.pam.u2f = {
       enable = true;

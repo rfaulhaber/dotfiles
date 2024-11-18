@@ -28,35 +28,35 @@
         };
       };
     };
-      zpool = {
-        zroot = {
-          type = "zpool";
-          rootFsOptions = {
-            atime = "off";
-            xattr = "sa";
+    zpool = {
+      zroot = {
+        type = "zpool";
+        rootFsOptions = {
+          atime = "off";
+          xattr = "sa";
+        };
+        options.ashift = "12";
+        datasets = {
+          "root" = {
+            type = "zfs_fs";
+            mountpoint = "/";
+            options.mountpoint = "legacy";
           };
-          options.ashift = "12";
-          datasets = {
-            "root" = {
-              type = "zfs_fs";
-              mountpoint = "/";
-              options.mountpoint = "legacy";
+          "nix" = {
+            type = "zfs_fs";
+            mountpoint = "/nix";
+            options = {
+              compression = "lz4";
+              mountpoint = "legacy";
             };
-            "nix" = {
-              type = "zfs_fs";
-              mountpoint = "/nix";
-              options = {
-                compression = "lz4";
-                mountpoint = "legacy";
-              };
-            };
-            "home" = {
-              type = "zfs_fs";
-              mountpoint = "/home";
-              options.mountpoint = "legacy";
-            };
+          };
+          "home" = {
+            type = "zfs_fs";
+            mountpoint = "/home";
+            options.mountpoint = "legacy";
           };
         };
       };
     };
+  };
 }

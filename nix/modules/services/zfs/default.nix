@@ -1,10 +1,13 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.services.zfs;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.services.zfs;
 in {
-  options.modules.services.zfs = { enable = mkEnableOption false; };
+  options.modules.services.zfs = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     services.zfs = {
