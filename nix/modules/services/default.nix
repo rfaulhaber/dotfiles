@@ -21,6 +21,7 @@
     ./tailscale
     ./virt
     ./wireguard
+    ./yubikey
     ./zerotier
     ./zfs
   ];
