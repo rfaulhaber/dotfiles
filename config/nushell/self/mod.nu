@@ -23,7 +23,7 @@ export def tokei-summary [] {
         code: $code,
         comments: $comments,
         blanks: $blanks,
-        percentage: ($lines / $total),
+        percentage: ($code / $total),
     }
   } );
 
