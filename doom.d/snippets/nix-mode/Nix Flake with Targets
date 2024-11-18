@@ -23,7 +23,7 @@
   in {
     packages = forAllSystems (system: pkgs: {
         \${projectName} = {};
-        default = self.packages.${system}.${projectName};
+        default = self.packages.\${system}.\${projectName};
     });
 
     formatter = forAllSystems (system: pkgs: pkgs.alejandra);
