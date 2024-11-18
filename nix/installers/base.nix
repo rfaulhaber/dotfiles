@@ -5,9 +5,10 @@
   inputs,
   ...
 }: {
-  services.openssh.enable = true;
-
-  services.sshd.enable = true;
+  services = {
+    openssh.enable = true;
+    sshd.enable = true;
+  };
 
   users.extraUsers.nixos = {
     openssh.authorizedKeys.keys = [
@@ -17,5 +18,13 @@
     ];
 
     shell = pkgs.nushell;
+
+    userPackages = with pkgs; [
+      neovim
+    ];
   };
+
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+  '';
 }
