@@ -22,6 +22,8 @@ let
   devices8tb = ["sdb" "sdc" "sdd" "sde" "sdf" "sdg" "sdh" "sdi"];
   devices16tb = [];
   devices12tb = [];
+  logSSD = "";
+  cacheSSD = "";
   devices = lib.flatten [devices8tb devices16tb devices12tb];
   disks = lib.pipe devices [
     (builtins.map mkDataDevice)
@@ -82,7 +84,10 @@ in {
           topology = {
             vdev = [
               {
-                members = ["/dev/nvme0n1"];
+                members = [
+                  "/dev/sda"
+                  "/dev/nvme0n1"
+                ];
               }
             ];
           };
@@ -114,6 +119,22 @@ in {
           "var" = {
             type = "zfs_fs";
             mountpoint = "/var";
+            options = {
+              compression = "lz4";
+              mountpoint = "legacy";
+            };
+          };
+          "config" = {
+            type = "zfs_fs";
+            mountpoint = "/config";
+            options = {
+              compression = "lz4";
+              mountpoint = "legacy";
+            };
+          };
+          "downloads" = {
+            type = "zfs_fs";
+            mountpoint = "/downloads";
             options.mountpoint = "legacy";
           };
         };
@@ -125,10 +146,24 @@ in {
             type = "topology";
             vdev = [
               {
+                members = builtins.map (device: "/dev/${device}") devices8tb;
                 mode = "raidz2";
-                members = devices;
+              }
+              {
+                members = builtins.map (device: "/dev/${device}") devices12tb;
+                mode = "raidz2";
+              }
+              {
+                members = builtins.map (device: "/dev/${device}") devices16tb;
+                mode = "raidz2";
               }
             ];
+            log = [
+              {
+                members = [logSSD];
+              }
+            ];
+            cache = [cacheSSD];
           };
         };
         rootFsOptions = {
