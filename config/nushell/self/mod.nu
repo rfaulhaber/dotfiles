@@ -32,7 +32,20 @@ export def tokei-summary [] {
 
 # Export English dictionary from ^aspell
 export def words [] {
+  if (which aspell | length < 1) {
+     error make {msg: "Aspell is not present in the PATH." help: "Install Aspell and/or add it to the PATH."}
+  }
+
   ^aspell -d en dump master
   | ^aspell -l en expand
   | lines
+}
+
+# Returns a random element from a list.
+export def "get random" []: list<any> -> any {
+  let count = ($in | length)
+
+  let idx = (..($count - 1) | collect | shuffle | first)
+
+  $in | get $idx
 }
