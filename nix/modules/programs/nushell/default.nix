@@ -37,6 +37,10 @@ in {
         configDir = "${config.home.file.dotfiles.target}/config/nushell";
       in {
         enable = true;
+
+        # given the way nushell loads, this causes all the sourced files in the
+        # dotfiles to not load correctly. so the way we avoid that is to have
+        # home manager's config load the config from the dotfiles like so
         configFile.text = "source ${configDir}/config.nu";
         envFile.text = "source ${configDir}/env.nu";
 
@@ -51,12 +55,6 @@ in {
           })
         ]);
       };
-
-      # home.file.nushell_config = {
-      #     source = "${config.dotfiles.configDir}/nushell";
-      #     target = "${config.user.home}/.config/nushell";
-      #     recursive = true;
-      # };
 
       zoxide = mkIf cfg.zoxide.enable {
         enable = true;

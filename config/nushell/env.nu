@@ -90,10 +90,14 @@ $env.MANROFFOPT = "-c"
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
 
 # add doom bin to path
+# TODO should this exist somewhere else?
 let emacs_bin_path = $'($env.HOME)/.emacs.d/bin'
+let emacs_config_path = $'($env.HOME)/.config/emacs/bin'
 
-if ($emacs_bin_path | path exists) {
-    $env.PATH = ($env.PATH | split row (char esep) | prepend $emacs_bin_path)
+let emacs_config_paths = [ $emacs_bin_path $emacs_config_path ]
+
+if ([$emacs_bin_path $emacs_config_path] | path exists | any { |v| $v == true } ) {
+    $env.PATH = ($env.PATH | split row (char esep) | prepend $emacs_config_paths)
 }
 
 # nushell can't source files dynamically, so we have to do this

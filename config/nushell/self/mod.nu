@@ -32,7 +32,7 @@ export def tokei-summary [] {
 
 # Export English dictionary from ^aspell
 export def words [] {
-  if (which aspell | length < 1) {
+  if (which aspell | length) < 1 {
      error make {msg: "Aspell is not present in the PATH." help: "Install Aspell and/or add it to the PATH."}
   }
 

@@ -1,3 +1,5 @@
+# this module is not very, well, /modular/. it's pretty specific to my extremely
+# specific emacs configuration I would like to change that!
 {
   config,
   lib,
