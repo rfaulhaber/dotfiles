@@ -19,7 +19,7 @@
 
     shell = pkgs.nushell;
 
-    userPackages = with pkgs; [
+    packages = with pkgs; [
       neovim
     ];
   };

@@ -12,13 +12,12 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # services.pcscd.enable = true;
     services.udev.packages = with pkgs; [yubikey-personalization libu2f-host];
+    services.pcscd.enable = true;
 
     security.pam.u2f = {
       enable = true;
       settings = {
-        # interactive = true;
         cue = true;
         openasuser = true;
         origin = "pam://yubi";
