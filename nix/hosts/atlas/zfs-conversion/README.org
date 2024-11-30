@@ -1,0 +1,14 @@
+#+title: Moving atlas to ZFS
+
+At the time of writing this, I'm working on converting =atlas= to utilize ZFS and raidz2 parity rather than SnapRAID and MergerFS.
+This should result in a more fault-tolerant system.
+
+This process will utilize [[https://github.com/nix-community/disko][disko]] for expediency and consistency.
+
+* Phases
+** Phase 1
+- Format 12TB disks, root
+- Manually move =/data= to new pool
+** Phase 2
+- Format existing 8TB disks
+- Add to pool
