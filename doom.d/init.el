@@ -98,7 +98,7 @@
        ;;prodigy           ; FIXME managing external services & code builders
        ;;terraform         ; infrastructure as code
        ;;tmux              ; an API for interacting with tmux
-       ;;tree-sitter
+       tree-sitter
        ;;upload            ; map local to remote projects via ssh/ftp
 
        :lang

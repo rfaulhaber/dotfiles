@@ -36,6 +36,9 @@
       pijul.enable = true;
       age = {
         enable = true;
+        # secrets = {
+        #   samba.file = ./secrets/samba.age;
+        # };
       };
     };
     services = {
@@ -46,6 +49,7 @@
         mounts."${config.user.home}/calibre" = {
           domain = "192.168.0.3";
           host = "calibre";
+          # secrets = config.age.secrets.samba.path;
         };
       };
       gpg.enable = true;

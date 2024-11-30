@@ -28,7 +28,7 @@ in {
       ];
     };
 
-    environment.systemPackages = with pkgs; [
+    user.packages = with pkgs; [
       age
       agenix.packages.${pkgs.system}.default
     ];
