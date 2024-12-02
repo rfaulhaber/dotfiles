@@ -50,7 +50,6 @@
 (unpin! org-roam)
 
 ;; *elpa packages
-(package! calibredb)
 (package! deadgrep)
 (package! mermaid-mode)
 (package! nov)
@@ -99,3 +98,14 @@
 (package! json-process-client
   :recipe (:host github
            :repo "emacsmirror/json-process-client"))
+
+
+(package! janet-ts-mode
+  :recipe (:host github
+           :repo "sogaiu/janet-ts-mode"
+           :build t))
+
+(package! ajrepl
+  :recipe (:host github
+           :repo "sogaiu/ajrepl"
+           :build t))

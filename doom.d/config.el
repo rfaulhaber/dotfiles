@@ -133,14 +133,15 @@ Used in loading config specific to those systems.")
 (setq wdired-allow-to-change-permissions t)
 
 ;; GPG key used by org-crypt
-(setq org-crypt-key "14257505076A838EC94A5DC81A2E1BC205B0B6D2")
+(setq org-crypt-key "A90BC7B722983F6BB8EAC1DA144A6B5FBB68FC9D")
 
 ;; use rust-analyzer for rust lsp server
 (setq rustic-lsp-server 'rust-analyzer)
 
 ;; org
 (after! org
-  (load! "./self/org-templates.el"))
+  (load! "./self/org-templates.el")
+  (org-crypt-use-before-save-magic))
 
 ;; for org mode, set the fill column to 130
 (add-hook 'org-mode-hook (lambda ()
