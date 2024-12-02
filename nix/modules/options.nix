@@ -82,7 +82,7 @@ with lib.my; {
     userInfo = {
       fullName = "Ryan Faulhaber";
       primaryEmail = "ryf@sent.as";
-      primaryGPGKey = "14257505076A838EC94A5DC81A2E1BC205B0B6D2";
+      primaryGPGKey = "A90BC7B722983F6BB8EAC1DA144A6B5FBB68FC9D";
       location = {
         city = "Cleveland";
         state = "Ohio";

@@ -22,6 +22,7 @@ in {
     programs.gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
+      enableBrowserSocket = true;
     };
 
     # adding this in to resolve an issue where "pass" doesn't work
