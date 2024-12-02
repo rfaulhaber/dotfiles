@@ -70,11 +70,11 @@ in {
       fontDir.enable = true;
       enableGhostscriptFonts = true;
       packages = with pkgs; [
-        (nerdfonts.override {fonts = ["Hack"];})
         lato
         merriweather
-        # corefonts
-      ];
+      ] ++ (with pkgs.nerd-fonts; [
+        hack
+      ]);
       fontconfig.defaultFonts = {
         serif = ["Merriweather"];
         sansSerif = ["Lato"];
