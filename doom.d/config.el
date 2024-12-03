@@ -159,7 +159,7 @@ Used in loading config specific to those systems.")
       (mapcar
        (lambda (str)
          (concat org-directory "/" str))
-       (list "todo.org" "habits.org" "projects.org" "blog.org")))
+       (list "todo.org" "habits.org" "projects.org" "blog.org" "todo")))
 
 ;; org-roam
 (setq
