@@ -34,15 +34,14 @@ in {
       defaultEditor = true;
       package = with pkgs; ((emacsPackagesFor cfg.package).withPackages
         (epkgs:
-          with epkgs;
-            [
-              pdf-tools
-              prettier
-              vterm
-              tree-sitter
-              tree-sitter-langs
-              treesit-grammars.with-all-grammars # probably overkill but works for now
-            ]));
+          with epkgs; [
+            pdf-tools
+            prettier
+            vterm
+            tree-sitter
+            tree-sitter-langs
+            treesit-grammars.with-all-grammars # probably overkill but works for now
+          ]));
     };
 
     # emacs dependency

@@ -15,8 +15,12 @@ in {
     # it is unclear to me how to automatically unlock gnome keyring upon login, so
     # I'm taking the shotgun approach
     services = {
-      dbus.packages = with pkgs; [gnome-keyring gcr dconf];
-      gnome = {gnome-keyring.enable = true;};
+      dbus.packages = with pkgs; [
+        # gnome-keyring
+        gcr
+        dconf
+      ];
+      # gnome = {gnome-keyring.enable = true;};
     };
 
     programs.gnupg.agent = {

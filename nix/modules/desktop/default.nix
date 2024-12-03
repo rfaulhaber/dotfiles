@@ -69,12 +69,14 @@ in {
     fonts = {
       fontDir.enable = true;
       enableGhostscriptFonts = true;
-      packages = with pkgs; [
-        lato
-        merriweather
-      ] ++ (with pkgs.nerd-fonts; [
-        hack
-      ]);
+      packages = with pkgs;
+        [
+          lato
+          merriweather
+        ]
+        ++ (with pkgs.nerd-fonts; [
+          hack
+        ]);
       fontconfig.defaultFonts = {
         serif = ["Merriweather"];
         sansSerif = ["Lato"];

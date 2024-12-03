@@ -62,7 +62,7 @@
         enable = true;
         client.enable = true;
       };
-      passwords.enable = true;
+      # passwords.enable = true;
       yubikey.enable = true;
       zerotier = {
         enable = true;
