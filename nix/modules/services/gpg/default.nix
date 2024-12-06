@@ -16,11 +16,11 @@ in {
     # I'm taking the shotgun approach
     services = {
       dbus.packages = with pkgs; [
-        # gnome-keyring
+        gnome-keyring
         gcr
         dconf
       ];
-      # gnome = {gnome-keyring.enable = true;};
+      gnome = {gnome-keyring.enable = true;};
     };
 
     programs.gnupg.agent = {
