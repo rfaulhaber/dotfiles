@@ -26,6 +26,11 @@ in {
       description = "Optional query to pass to random wallpaper endpoint";
       default = "";
     };
+
+    token = mkOption {
+      description = "API token for wallpaper API.";
+      type = types.either types.str types.path;
+    };
   };
 
   config = mkIf cfg.enable (mkMerge [
@@ -36,15 +41,19 @@ in {
           message = "Cannot use random-wallpaper without xserver.";
         }
       ];
-      systemd.user.services.random-wallpaper = {
+      systemd.user.services.random-wallpaper = let
+        scriptPath = "${config.dotfiles.binDir}/random-wallpaper.nu";
+        nuExec = "${pkgs.nushell}/bin/nu";
+        exec = "${nuExec} -c '${scriptPath} --token (open ${cfg.token}) ${cfg.query}'";
+      in {
         inherit description;
-        path = with pkgs; [nushell pass feh];
+        path = with pkgs; [nushell feh];
         after = ["graphical-session-pre.target" "network-online.target"];
         partOf = ["graphical-session.target"];
         wantedBy = ["graphical-session.target"];
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${config.dotfiles.binDir}/random-wallpaper.nu ${cfg.query}";
+          ExecStart = "${exec}";
           IOSchedulingClass = "idle";
         };
       };

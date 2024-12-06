@@ -36,9 +36,7 @@
       pijul.enable = true;
       age = {
         enable = true;
-        # secrets = {
-        #   samba.file = ./secrets/samba.age;
-        # };
+        secretsDir = ./secrets;
       };
     };
     services = {
@@ -85,7 +83,10 @@
         enable = true;
         extraStartupPrograms = ["discord" "1password" "telegram-desktop" "mullvad-gui"];
       };
-      random-wallpaper.enable = lib.mkDefault true;
+      random-wallpaper = {
+        enable = true;
+        token = config.age.secrets.unsplash.path;
+      };
       monitors = ["DP-0"];
       sound.enable = true;
       firefox.enable = true;
@@ -110,7 +111,7 @@
         enable = true;
         environment.bspwm.enable = false;
         environment.hyprland.enable = true;
-        random-wallpaper.enable = false;
+        random-wallpaper.enable = lib.mkDefault false;
       };
     };
   };

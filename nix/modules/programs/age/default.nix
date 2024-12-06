@@ -3,6 +3,7 @@
   lib,
   pkgs,
   inputs,
+  hostDir,
   ...
 }:
 with lib; let
@@ -12,24 +13,37 @@ in {
   imports = [inputs.agenix.nixosModules.default];
   options.modules.programs.age = {
     enable = mkEnableOption false;
-    secrets = mkOption {
-      description = "Secrets for this config.";
-      type = types.attrs;
-      default = {};
+    secretsDir = mkOption {
+      description = "Secrets dir for this config.";
+      type = types.either types.str types.path;
+      default = "${hostDir}/secrets";
     };
   };
 
   config = mkIf cfg.enable {
     age = {
-      inherit (cfg) secrets;
-
       identityPaths = [
         "${config.user.home}/.ssh/id_host"
+      ];
+
+      secrets = lib.pipe "${cfg.secretsDir}/secrets.nix" [
+        import
+        lib.attrNames
+        (map (name: let
+          nameWithoutSuffix = lib.removeSuffix ".age" name;
+        in {
+          "${nameWithoutSuffix}" = {
+            file = "${cfg.secretsDir}/${name}";
+            owner = config.user.name;
+          };
+        }))
+        (foldl (x: y: x // y) {})
       ];
     };
 
     user.packages = with pkgs; [
       age
+      # rage
       agenix.packages.${pkgs.system}.default
     ];
   };

@@ -54,7 +54,6 @@
     nixos-generators,
     nix-darwin,
     emacs-overlay,
-    agenix,
     ...
   }: let
     inherit (lib.my) mapModules mkPkgs;

@@ -1,8 +1,18 @@
 #!/usr/bin/env nu
 
-def main [query?: string] {
-    let key = (pass wallpaper)
-    let base_url = $"https://api.unsplash.com/photos/random/?client_id=($key)&orientation=landscape"
+def main [--token: string, query?: string] {
+    let key = if $token == null {
+        $in
+    } else {
+      $token
+    }
+
+    if $key == null {
+      print -e "No token value passed in."
+      exit 1
+    }
+
+    let base_url = $"https://api.unsplash.com/photos/random/?client_id=($token)&orientation=landscape"
 
     let url = if query == null { $base_url } else { $"($base_url)&query=($query)" }
 
