@@ -24,6 +24,11 @@ in {
     age = {
       identityPaths = [
         "${config.user.home}/.ssh/id_host"
+        # NB: make sure this actually exists!!!
+        # I would try and assert it, but...
+        # NB again: this is necessary because /home is mounted after agenix
+        # starts
+        "/etc/ssh/ssh_host_ed25519_key"
       ];
 
       secrets = lib.pipe "${cfg.secretsDir}/secrets.nix" [
