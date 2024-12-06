@@ -27,6 +27,9 @@
       url = "github:nix-community/emacs-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # agenix is super busted. doesn't work for network deployments, and doesn't
+    # work when trying to set a secret credential in /etc/fstab. Look into using
+    # ragenix
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";

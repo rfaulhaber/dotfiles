@@ -4,4 +4,5 @@ let
   ];
 in {
   "unsplash.age".publicKeys = keys;
+  # "samba.age".publicKeys = keys;
 }
