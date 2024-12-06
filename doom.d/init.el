@@ -159,6 +159,11 @@
        web               ; the tubes
        yaml              ; JSON, but readable
 
+       ;; temp, for advent of code
+       raku
+       janet
+       fsharp
+
        :email
        (mu4e +gmail)
        ;;notmuch

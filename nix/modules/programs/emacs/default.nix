@@ -21,6 +21,16 @@ in {
       type = types.package;
       default = pkgs.emacs;
     };
+    mutableConfg = mkOption {
+      description = "If enabled, links ~/Project/dotfiles/doom.d to .config rather than from /nix/store.";
+      type = types.bool;
+      default = false;
+    };
+    doomUnstraightened = mkOption {
+      description = "If enabled, uses Nix Doom Unstraightened.";
+      type = types.bool;
+      default = false;
+    };
   };
 
   config = mkIf cfg.enable {

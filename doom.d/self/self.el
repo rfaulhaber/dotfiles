@@ -275,6 +275,14 @@ hello world
               (projectile-add-known-project project-dir)))
           projects-dir)))
 
+(defun self/paste-to-file (name)
+  (interactive "FName? ")
+  (get-buffer-create name)
+  (with-current-buffer name
+    (insert (pop kill-ring))
+    (write-region (point-min) (point-max) name)
+    (switch-to-buffer (current-buffer))))
+
 
 ;; ----------------------------- utility functions -----------------------------
 

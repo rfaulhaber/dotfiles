@@ -99,7 +99,7 @@
   :recipe (:host github
            :repo "emacsmirror/json-process-client"))
 
-
+;; janet config
 (package! janet-ts-mode
   :recipe (:host github
            :repo "sogaiu/janet-ts-mode"
