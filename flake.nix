@@ -46,6 +46,14 @@
       url = "github:nix-community/disko/latest";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # TODO consider using stylix
+    # currently, a wallpaper is required with stylix. this is problematic
+    # because I do not need to set a wallpaper in my config
+    base16.url = "github:SenchoPens/base16.nix";
+    tt-schemes = {
+      url = "github:tinted-theming/schemes";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {

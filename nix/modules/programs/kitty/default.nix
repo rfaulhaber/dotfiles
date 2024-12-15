@@ -6,7 +6,7 @@
 }:
 with lib; let
   cfg = config.modules.programs.kitty;
-  colors = config.modules.themes.colors;
+  colors = config.modules.themes.colors.withHashtag;
 in {
   options.modules.programs.kitty = {
     enable = mkEnableOption false;
@@ -20,46 +20,46 @@ in {
   config = mkIf cfg.enable {
     home.programs.kitty = {
       enable = true;
-      settings = {
+      settings = with colors; {
         # colors
-        background = colors.bg;
-        foreground = colors.fg;
+        background = base00;
+        foreground = base07;
 
         # normal
         # black
-        color0 = colors.black;
+        color0 = base00;
         # red
-        color1 = colors.red;
+        color1 = red;
         # green
-        color2 = colors.green;
+        color2 = green;
         # yellow
-        color3 = colors.yellow;
+        color3 = yellow;
         # blue
-        color4 = colors.blue;
+        color4 = blue;
         # magenta
-        color5 = colors.magenta;
+        color5 = magenta;
         # cyan
-        color6 = colors.cyan;
+        color6 = cyan;
         # white
-        color7 = colors.white;
+        color7 = base07;
 
         # bright
         # black
-        color8 = colors.bright-black;
+        color8 = base08;
         # red
-        color9 = colors.bright-red;
+        color9 = bright-red;
         # green
-        color10 = colors.bright-green;
+        color10 = bright-green;
         # yellow
-        color11 = colors.bright-yellow;
+        color11 = base09;
         # blue
-        color12 = colors.bright-blue;
+        color12 = bright-blue;
         # magenta
-        color13 = colors.bright-magenta;
+        color13 = bright-magenta;
         # cyan
-        color14 = colors.bright-cyan;
+        color14 = bright-cyan;
         # white
-        color15 = colors.bright-white;
+        color15 = base0F;
 
         font_size = cfg.fontSize;
       };

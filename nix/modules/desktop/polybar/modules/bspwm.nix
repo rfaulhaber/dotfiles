@@ -1,4 +1,4 @@
-{colors}: {
+{colors}: with colors; {
   type = "internal/bspwm";
 
   ws-icon-0 = "I;1";
@@ -16,32 +16,32 @@
   format-padding = "1";
 
   label-focused = "%{T4}%icon%%{T-}";
-  label-focused-foreground = "${colors.blue}";
-  label-focused-background = "${colors.grey}";
+  label-focused-foreground = "${blue}";
+  label-focused-background = "${base00}";
   label-focused-padding = "1";
 
   label-occupied = "%{T4}%icon%%{T-}";
-  label-occupied-foreground = "${colors.magenta}";
+  label-occupied-foreground = "${magenta}";
   label-occupied-padding = "1";
 
   label-urgent = "%{T4}%icon%%{T-}";
-  label-urgent-background = "${colors.red}";
+  label-urgent-background = "${red}";
   label-urgent-padding = "1";
 
   label-empty = "%{T4}%icon%%{T-}";
-  label-empty-foreground = "${colors.grey}";
+  label-empty-foreground = "${base07}";
   label-empty-padding = "1";
 
   label-monocle = "%{T3}󰍉 %{T-}";
-  label-monocle-foreground = "${colors.cyan}";
+  label-monocle-foreground = "${cyan}";
   label-fullscreen = "%{T4}󰊓 %{T-}";
-  label-fullscreen-foreground = "${colors.cyan}";
+  label-fullscreen-foreground = "${cyan}";
   label-locked = "%{T3} %{T-}";
-  label-locked-foreground = "${colors.yellow}";
+  label-locked-foreground = "${yellow}";
   label-sticky = "%{T3} %{T-}";
-  label-sticky-foreground = "${colors.yellow}";
+  label-sticky-foreground = "${yellow}";
   label-private = "%{T3}󰜺 %{T-}";
-  label-private-foreground = "${colors.red}";
+  label-private-foreground = "${red}";
   label-marked = "%{T3} %{T-}";
-  label-marked-foreground = "${colors.green}";
+  label-marked-foreground = "${green}";
 }

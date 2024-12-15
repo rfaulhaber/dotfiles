@@ -102,7 +102,7 @@
         tdesktop
       ];
     };
-    themes.active = "tokyo-night";
+    themes.active = "tokyo-night-dark";
   };
 
   specialisation = {

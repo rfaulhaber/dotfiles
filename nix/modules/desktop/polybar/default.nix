@@ -7,7 +7,7 @@
 with lib; let
   cfg = config.modules.desktop.polybar;
   desktopCfg = config.modules.desktop;
-  colors = config.modules.themes.colors;
+  colors = config.modules.themes.colors.withHashtag;
   modules = (import ./modules) {inherit colors config pkgs;};
 in {
   options.modules.desktop.polybar = {
@@ -35,10 +35,10 @@ in {
       in {
         "bar/main" = {
           enable-ipc = true;
-          background = "${colors.bg}";
-          background-alt = "${colors.bg-alt}";
-          foreground = "${colors.fg}";
-          foreground-alt = "${colors.fg-alt}";
+          background = "${colors.base00}";
+          background-alt = "${colors.base01}";
+          foreground = "${colors.base07}";
+          foreground-alt = "${colors.base08}";
 
           # size
           width = "100%";
