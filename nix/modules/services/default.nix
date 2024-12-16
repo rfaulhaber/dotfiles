@@ -11,6 +11,7 @@
     ./mullvad
     ./passwords
     ./proxy
+    ./pueue
     ./redshift
     ./samba-mount
     ./samba-serve

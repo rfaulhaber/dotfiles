@@ -72,6 +72,7 @@
         enableGUI = true;
       };
       cachix.enable = true;
+      pueue.enable = true;
     };
     hardware = {
       zsa.enable = true;
