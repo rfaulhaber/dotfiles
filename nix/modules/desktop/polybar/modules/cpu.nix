@@ -1,4 +1,5 @@
-{colors}: with colors; {
+{colors}:
+with colors; {
   type = "internal/cpu";
   interval = "1";
 
