@@ -66,7 +66,7 @@
         };
       };
     };
-    themes.active = "city-lights";
+    themes.active = "tokyo-night-dark";
   };
 
   boot = {
@@ -80,6 +80,10 @@
       efi.canTouchEfiVariables = true;
       grub.device = "nodev";
     };
+
+    # kernel settings for zfs
+    kernelPackages = pkgs.linuxPackages;
+    kernelParams = ["nohibernate"];
 
     zfs = {
       extraPools = ["system" "data"];
