@@ -256,7 +256,7 @@
           ];
         };
 
-        default = self.devShells.${system}.luaDev;
+        default = self.devShells.${system}.generate;
       });
     });
 }
