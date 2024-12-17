@@ -21,12 +21,14 @@
       git.enable = true;
     };
     services = {
+      zfs.enable = true;
       docker.enable = true;
       gpg.enable = true;
       systemd.modules = {
         updatedb.enable = true;
         dockerCleanup.enable = true;
       };
+      pueue.enable = true;
       ssh = {
         enable = true;
         server = {
@@ -41,38 +43,19 @@
           '';
         };
       };
-      snapraid = {
-        enable = true;
-        parityFiles = ["/diskp/snapraid.parity"];
-        dataDisks = {
-          disk1 = "/disk1/";
-          disk2 = "/disk2/";
-          disk3 = "/disk3/";
-          disk4 = "/disk4/";
-          disk5 = "/disk5/";
-          disk6 = "/disk6/";
-          disk7 = "/disk7/";
-        };
-        contentFiles = ["/var/snapraid/snapraid.content" "/diskp/snapraid.content"];
-      };
-      mergerfs = {
-        enable = true;
-        branches = ["/disk1" "/disk2" "/disk3" "/disk4" "/disk5" "/disk6" "/disk7"];
-        target = "/data";
-      };
-      samba-serve = {
-        enable = true;
-        shares = {
-          calibre = {
-            path = "/data/calibre";
-            comment = "Calibre share.";
-          };
-          games = {
-            path = "/data/games";
-            comment = "Retroarch roms";
-          };
-        };
-      };
+      # samba-serve = {
+      #   enable = true;
+      #   shares = {
+      #     calibre = {
+      #       path = "/data/calibre";
+      #       comment = "Calibre share.";
+      #     };
+      #     games = {
+      #       path = "/data/games";
+      #       comment = "Retroarch roms";
+      #     };
+      #   };
+      # };
       zerotier = {
         enable = true;
         networks = ["12ac4a1e719ca283" "b6079f73c6986bc2"];
@@ -97,10 +80,15 @@
       efi.canTouchEfiVariables = true;
       grub.device = "nodev";
     };
+
+    zfs = {
+      extraPools = ["system" "data"];
+    };
   };
 
   networking = {
     hostName = "atlas";
+    hostId = "d6acc614";
 
     useDHCP = false;
 
