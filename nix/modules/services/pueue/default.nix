@@ -1,6 +1,10 @@
-{ config, lib, pkgs, ... }:
-
-let cfg = config.modules.services.pueue;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.modules.services.pueue;
 in {
   options.modules.services.pueue = {
     enable = lib.mkEnableOption false;
@@ -16,7 +20,7 @@ in {
   # - create wrapper for pueue executable
 
   config = lib.mkIf cfg.enable {
-    user.packages = with pkgs; [ pueue ];
+    user.packages = with pkgs; [pueue];
 
     # taken from https://github.com/Nukesor/pueue/blob/main/utils/pueued.service
     # I don't like it being user-only, should find a way to make it available
