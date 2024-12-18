@@ -42,14 +42,14 @@
     services = {
       zfs.enable = true;
       docker.enable = true;
-      samba-mount = {
-        enable = true;
-        mounts."${config.user.home}/calibre" = {
-          domain = "192.168.0.3";
-          host = "calibre";
-          # secrets = config.age.secrets.samba.path;
-        };
-      };
+      # samba-mount = {
+      #   enable = true;
+      #   mounts."${config.user.home}/calibre" = {
+      #     domain = "192.168.0.3";
+      #     host = "calibre";
+      #     # secrets = config.age.secrets.samba.path;
+      #   };
+      # };
       gpg.enable = true;
       mail.enable = true;
       redshift.enable = true;
