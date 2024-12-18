@@ -49,3 +49,24 @@ export def "get random" []: list<any> -> any {
 
   $in | get $idx
 }
+
+# Rotates chars in string by n.
+export def rotn [n: int]: string -> string {
+  let min = 'a' | into binary | into int
+  let max = ('z' | into binary | into int) + 1
+
+  $in | str downcase | split chars | each {
+    into binary
+    | into int
+    | do {
+        let c = ($in + $n)
+            if $c > $max {
+                $min + $c mod $max
+            } else {
+                $c
+            }
+        }
+    | char -i $in
+    | str join
+  }
+}
