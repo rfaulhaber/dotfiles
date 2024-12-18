@@ -67,6 +67,6 @@ export def rotn [n: int]: string -> string {
             }
         }
     | char -i $in
-    | str join
   }
+    | str join
 }
