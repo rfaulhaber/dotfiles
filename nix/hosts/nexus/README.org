@@ -1,0 +1,7 @@
+#+title: nexus
+
+"nexus" is the generic host for a node in my Kubernetes cluster. A nexus is a node in the cluster. For main the main node, see "hestia".
+
+| Host    | Hardware                    |
+|---------+-----------------------------|
+| nexus-1 | [[https://libre.computer/products/roc-rk3328-cc/][Libre Computer Renegade ROC]] |
