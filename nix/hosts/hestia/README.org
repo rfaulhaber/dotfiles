@@ -1,0 +1,3 @@
+#+title: hestia
+
+The main node of my Kubernetes cluster. A Libre Computer Renegade ROC.

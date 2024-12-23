@@ -119,6 +119,9 @@
         nike = mkHost ./nix/hosts/nike/configuration.nix {
           system = "aarch64-linux";
         };
+        hestia = mkHost ./nix/hosts/hestia/configuration.nix {
+          system = "aarch64-linux";
+        };
       };
 
       # TODO add darwin configurations
@@ -160,6 +163,17 @@
               path =
                 deploy-rs.lib.aarch64-linux.activate.nixos
                 self.nixosConfigurations.nike;
+            };
+          };
+          hestia = {
+            hostname = "hestia";
+            profiles.system = {
+              user = "root";
+              fastConnection = true;
+              activationTimeout = 600;
+              path =
+                deploy-rs.lib.aarch64-linux.activate.nixos
+                self.nixosConfigurations.hestia;
             };
           };
         };

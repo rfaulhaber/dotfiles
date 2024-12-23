@@ -7,9 +7,15 @@
 }:
 with lib; let
   cfg = config.modules.programs.wezterm;
+  toTOML = pkgs.formatters.toml {};
 in {
   options.modules.programs.wezterm = {
     enable = mkEnableOption false;
+    useSystemTheme = mkOption {
+      description = "Generates a color scheme file based on config.theme.active.";
+      type = types.bool;
+      default = false;
+    };
   };
 
   config = mkIf cfg.enable {

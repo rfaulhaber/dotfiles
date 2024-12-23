@@ -8,7 +8,7 @@ pkgs.stdenv.mkDerivation rec {
   pname = name;
   src = pkgs.fetchurl {
     url = "http://boot.libre.computer/release/roc-rk3328-cc/roc-rk3328-cc-boot.bin";
-    sha256 = "1ip6y6i59klqkkalncdy64crp9vlxb8xrw8ig6cy1h9bpicrc16f";
+    sha256 = "1q5m2y04wm05z87vq80z0nmvikq4x60asbyyid4wbj6b9ycqr733";
   };
 
   phases = ["buildPhase"];
