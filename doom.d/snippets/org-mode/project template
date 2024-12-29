@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: project todo
+# key: ptodo
+# --
+
+#+title: $1
+
+$2
+
+* Tasks [/]
+:PROPERTIES:
+:LOGGING:  DONE(!) [X](!) STRT(!) [-](!) logdone logstart
+:COOKIE_DATA: todo recursive
+:END:
+** Now [/]
+** Later [/]
+** Brainstorm
