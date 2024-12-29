@@ -86,7 +86,7 @@
         setDefaultBrowser = true;
       };
     };
-    themes.active = "city-lights";
+    themes.active = "tokyo-night";
   };
 
   boot = {
