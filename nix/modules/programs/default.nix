@@ -6,6 +6,7 @@
     ./direnv
     ./emacs
     ./eza
+    ./ghostty
     ./git
     ./keychain
     ./kitty

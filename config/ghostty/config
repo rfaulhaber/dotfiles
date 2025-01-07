@@ -1,0 +1,4 @@
+font-family = Hack Nerd Font Mono
+theme = tokyonight_night
+font-size = 20
+command = /etc/profiles/per-user/ryan/bin/nu --login
