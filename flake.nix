@@ -254,7 +254,11 @@
       supportedSystems = ["x86_64-linux" "aarch64-darwin"];
       forSystems = systems: f:
         nixpkgs.lib.genAttrs systems
-        (system: f system (import nixpkgs {inherit system;}));
+        (system:
+          f system (import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          }));
       forAllSystems = forSystems supportedSystems;
     in {
       formatter = forAllSystems (system: pkgs: pkgs.alejandra);
@@ -280,8 +284,10 @@
         };
 
         generate = pkgs.mkShell {
-          buildInputs = [
+          buildInputs = with pkgs; [
             nixos-generators.packages.${system}.default
+            ansible
+            terraform
           ];
         };
 

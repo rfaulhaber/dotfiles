@@ -9,7 +9,7 @@
 }: {
   imports = [
     # Include the results of the hardware scan.
-    ./hardware-configuration.nix
+    # ./hardware-configuration.nix
     ../../modules
   ];
 
@@ -43,7 +43,7 @@
       };
     };
 
-    themes.active = "moonlight";
+    themes.active = "tokyo-night";
   };
 
   boot = {
