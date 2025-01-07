@@ -1,10 +1,13 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.programs.ghostty;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.programs.ghostty;
 in {
-  options.modules.programs.ghostty = { enable = mkEnableOption false; };
+  options.modules.programs.ghostty = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     user.packages = with pkgs; [ghostty];
