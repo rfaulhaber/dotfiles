@@ -119,7 +119,7 @@
         nike = mkHost ./nix/hosts/nike/configuration.nix {
           system = "aarch64-linux";
         };
-        hestia = mkHost ./nix/hosts/hestia/configuration.nix {
+        nexus = mkHost ./nix/hosts/nexus/configuration.nix {
           system = "aarch64-linux";
         };
       };
@@ -165,20 +165,12 @@
                 self.nixosConfigurations.nike;
             };
           };
-          hestia = {
-            hostname = "hestia";
-            profiles.system = {
-              user = "root";
-              fastConnection = true;
-              activationTimeout = 600;
-              path =
-                deploy-rs.lib.aarch64-linux.activate.nixos
-                self.nixosConfigurations.hestia;
-            };
-          };
         };
       };
       checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+      nixosModules.nixosGenerateFormats = {
+
+      };
     }
     # x86_64-linux-specific packages
     # TODO custom packages should be added to pkgs, made available globally
@@ -224,19 +216,19 @@
           format = "sd-aarch64-installer";
         };
 
-        arm-installer-rpi5 = nixos-generators.nixosGenerate {
-          system = "aarch64-linux";
-          modules = [
-            ./nix/installers/aarch64-linux/configuration.nix
-          ];
-          specialArgs = {
-            inherit inputs;
-          };
-          customFormats.aarch64-linux-rpi5 = import ./nix/formats/aarch64/linux/raspberry-pi/5/configuration.nix {
-            inherit pkgs inputs;
-          };
-          format = "aarch64-linux-rpi5";
-        };
+        # arm-installer-rpi5 = nixos-generators.nixosGenerate {
+        #   system = "aarch64-linux";
+        #   modules = [
+        #     ./nix/installers/aarch64-linux/configuration.nix
+        #   ];
+        #   specialArgs = {
+        #     inherit inputs;
+        #   };
+        #   customFormats.aarch64-linux-rpi5 = import ./nix/formats/aarch64/linux/raspberry-pi/5/configuration.nix {
+        #     inherit pkgs inputs;
+        #   };
+        #   format = "aarch64-linux-rpi5";
+        # };
 
         x86_64-installer-generic = nixos-generators.nixosGenerate {
           system = "x86_64-linux";
@@ -249,8 +241,7 @@
           format = "install-iso";
         };
       };
-    }
-    // (let
+    } // (let
       supportedSystems = ["x86_64-linux" "aarch64-darwin"];
       forSystems = systems: f:
         nixpkgs.lib.genAttrs systems
@@ -288,6 +279,7 @@
             nixos-generators.packages.${system}.default
             ansible
             terraform
+            # vagrant
           ];
         };
 

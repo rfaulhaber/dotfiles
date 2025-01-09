@@ -5,12 +5,14 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: {
   imports = [
     # Include the results of the hardware scan.
     # ./hardware-configuration.nix
     ../../modules
+    inputs.nixos-generators.nixosModules.all-formats
   ];
 
   modules = {
@@ -43,7 +45,7 @@
       };
     };
 
-    themes.active = "tokyo-night";
+    themes.active = "tokyo-night-dark";
   };
 
   boot = {
@@ -54,7 +56,7 @@
   };
 
   networking = {
-    hostname = "nexus";
+    hostName = "nexus";
     useDHCP = true;
     interfaces.end0.useDHCP = true;
   };

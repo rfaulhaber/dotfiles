@@ -8,9 +8,11 @@
   inputs,
   ...
 }: {
-  imports = [../../modules ./hardware-configuration.nix];
-
-  # system = "x86_64-linux";
+  imports = [
+    ../../modules
+    ./hardware-configuration.nix
+    inputs.nixos-generators.nixosModules.all-formats
+  ];
 
   modules = {
     programs = {
