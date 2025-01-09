@@ -68,6 +68,11 @@ Version 2016-07-13"
                                              (not
                                               (string-match-p (rx (seq any "_archive")) file)))))
 
+(defun self/find-org-file-dir ()
+  "Find file or folder in `org-directory'"
+  (interactive)
+  (find-file org-directory))
+
 ;; TODO refactor next two functions
 (defun self/org-roam-find-files-created-today ()
   "Returns a list of files under the org roam directory that were created today."
