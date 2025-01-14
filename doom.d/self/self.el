@@ -316,335 +316,335 @@ hello world
                     ("--*" . "-")                   ;; remove sequential underscores
                     ("^-" . "")                     ;; remove starting underscore
                     ("-$" . "")))                   ;; remove ending underscore (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
-           (downcase slug))))
+           (downcase slug)))))
 
 
-  ;; stolen from https://gitlab.com/ngm/commonplace/-/blob/master/publish-agora.el
-  ;; thank you Neil
-  (defun self/get-title (file)
-    "For a given file, get its TITLE keyword."
-    (with-current-buffer
-        (get-file-buffer file)
-      (cadar (org-collect-keywords '("TITLE")))))
+;; stolen from https://gitlab.com/ngm/commonplace/-/blob/master/publish-agora.el
+;; thank you Neil
+(defun self/get-title (file)
+  "For a given file, get its TITLE keyword."
+  (with-current-buffer
+      (get-file-buffer file)
+    (cadar (org-collect-keywords '("TITLE")))))
 
-  ;; stolen from https://gitlab.com/ngm/commonplace/-/blob/master/publish-agora.el
-  ;; with one minor change
-  ;; thank you Neil
-  ;; TODO refactor into ox-agora fork
-  (defun self/slugify-export-output-file-name (output-file)
-    "Gets the title of the org file and uses this (slugified) for the output
+;; stolen from https://gitlab.com/ngm/commonplace/-/blob/master/publish-agora.el
+;; with one minor change
+;; thank you Neil
+;; TODO refactor into ox-agora fork
+(defun self/slugify-export-output-file-name (output-file)
+  "Gets the title of the org file and uses this (slugified) for the output
 filename. This is mainly to override org-roam's default filename convention of
 `timestamp-title_of_your_note` which doesn't work well with Agora."
-    (if (org-roam-file-p)
-        (let* ((title (self/get-title (buffer-file-name (buffer-base-buffer))))
-               (directory (file-name-directory output-file))
-               (slug (self/slugify-title title))
-               (ext (url-file-extension output-file)))
-          (concat directory slug ext))
-      output-file))
+  (if (org-roam-file-p)
+      (let* ((title (self/get-title (buffer-file-name (buffer-base-buffer))))
+             (directory (file-name-directory output-file))
+             (slug (self/slugify-title title))
+             (ext (url-file-extension output-file)))
+        (concat directory slug ext))
+    output-file))
 
 
-  ;; this comes from reddit. thank you r/emacs!
-  (defun self/org-md-paragraph-unfill (&rest args)
-    "Unfill CONTENTS, the `cadr' in ARGS."
-    (let* ((actual-args (car args))
-           (org-el (nth 0 actual-args))
-           (contents (nth 1 actual-args))
-           (info (nth 2 actual-args)))
-      ;; Unfill contents
-      (unless (eq (car org-el) 'src-block)
-        (setq contents (concat (mapconcat 'identity (split-string contents) " ") "\n")))
-      (list org-el contents info)))
+;; this comes from reddit. thank you r/emacs!
+(defun self/org-md-paragraph-unfill (&rest args)
+  "Unfill CONTENTS, the `cadr' in ARGS."
+  (let* ((actual-args (car args))
+         (org-el (nth 0 actual-args))
+         (contents (nth 1 actual-args))
+         (info (nth 2 actual-args)))
+    ;; Unfill contents
+    (unless (eq (car org-el) 'src-block)
+      (setq contents (concat (mapconcat 'identity (split-string contents) " ") "\n")))
+    (list org-el contents info)))
 
-  (defun self/capture-insert-file-link ()
-    "Imitation of org-insert-link but for use in org-capture template"
-    (let* ((file-path (read-file-name "File: "))
-           (file-name (read-from-minibuffer "Description: ")))
-      (format "[[%s][%s]]" file-path file-name)))
+(defun self/capture-insert-file-link ()
+  "Imitation of org-insert-link but for use in org-capture template"
+  (let* ((file-path (read-file-name "File: "))
+         (file-name (read-from-minibuffer "Description: ")))
+    (format "[[%s][%s]]" file-path file-name)))
 
-  (defun self/pick-random-word (word-count)
-    "Picks WORD-COUNT number of random words from the system dictionary."
-    (if (and
-         (boundp 'self/dict)
-         (file-exists-p self/dict)
-         (not (eq self/dict nil)))
-        (let* ((lines (s-split "\n" (self/slurp self/dict) t))
-               (line-len (length lines))
-               (words '()))
-          (dotimes (i word-count)
-            (let ((num (random (- line-len 1))))
-              (push (nth num lines) words)))
-          words)
-      (user-error "self/dict is not defined")))
+(defun self/pick-random-word (word-count)
+  "Picks WORD-COUNT number of random words from the system dictionary."
+  (if (and
+       (boundp 'self/dict)
+       (file-exists-p self/dict)
+       (not (eq self/dict nil)))
+      (let* ((lines (s-split "\n" (self/slurp self/dict) t))
+             (line-len (length lines))
+             (words '()))
+        (dotimes (i word-count)
+          (let ((num (random (- line-len 1))))
+            (push (nth num lines) words)))
+        words)
+    (user-error "self/dict is not defined")))
 
-  ;; thank you github: https://github.com/bcbcarl/emacs-wttrin/issues/16#issuecomment-658987903
-  (defun self/wttrin-fetch-raw-string (query)
-    "Get the weather information based on your QUERY."
-    (let ((url-user-agent "curl"))
-      (add-to-list 'url-request-extra-headers wttrin-default-accept-language)
-      (with-current-buffer
-          (url-retrieve-synchronously
-           (concat "http://wttr.in/" query "?A")
-           (lambda (status) (switch-to-buffer (current-buffer))))
-        (decode-coding-string (buffer-string) 'utf-8))))
+;; thank you github: https://github.com/bcbcarl/emacs-wttrin/issues/16#issuecomment-658987903
+(defun self/wttrin-fetch-raw-string (query)
+  "Get the weather information based on your QUERY."
+  (let ((url-user-agent "curl"))
+    (add-to-list 'url-request-extra-headers wttrin-default-accept-language)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         (concat "http://wttr.in/" query "?A")
+         (lambda (status) (switch-to-buffer (current-buffer))))
+      (decode-coding-string (buffer-string) 'utf-8))))
 
-  ;; thank you doom emacs discord user zzamboni
-  ;; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
-  (defun self/org-md-src-block (src-block _contents info)
-    "Transcode SRC-BLOCK element into Markdown format.
+;; thank you doom emacs discord user zzamboni
+;; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
+(defun self/org-md-src-block (src-block _contents info)
+  "Transcode SRC-BLOCK element into Markdown format.
 CONTENTS is nil.  INFO is a plist used as a communication
 channel."
-    (let ((lang (or (org-element-property :language src-block) "")))
-      (format "```%s\n%s```\n"
-              lang
-              (org-remove-indentation
-               (org-export-format-code-default src-block info)))))
+  (let ((lang (or (org-element-property :language src-block) "")))
+    (format "```%s\n%s```\n"
+            lang
+            (org-remove-indentation
+             (org-export-format-code-default src-block info)))))
 
-  ;; TODO write more generic roam exporter that extends org publishing
-  (defun self/org-export-preprocessor (_backend)
-    "For org-roam files, this will append all backlinks to a file to the end."
-    (when (org-roam-file-p)
-      (let ((links (mapcar
-                    (lambda (backlink)
-                      (let* ((source-node (org-roam-backlink-source-node backlink))
-                             (source-title (org-roam-node-title source-node))
-                             (source-id (org-roam-node-id source-node)))
-                        (format " - [[id:%s][%s]]\n" source-id source-title)))
-                    (org-roam-backlinks-get (org-roam-node-at-point)))))
-        (unless (eq (length links) 0)
-          (save-excursion
-            (goto-char (point-max))
-            (insert (concat "\n* Backlinks\n") (apply 'concat links)))))))
+;; TODO write more generic roam exporter that extends org publishing
+(defun self/org-export-preprocessor (_backend)
+  "For org-roam files, this will append all backlinks to a file to the end."
+  (when (org-roam-file-p)
+    (let ((links (mapcar
+                  (lambda (backlink)
+                    (let* ((source-node (org-roam-backlink-source-node backlink))
+                           (source-title (org-roam-node-title source-node))
+                           (source-id (org-roam-node-id source-node)))
+                      (format " - [[id:%s][%s]]\n" source-id source-title)))
+                  (org-roam-backlinks-get (org-roam-node-at-point)))))
+      (unless (eq (length links) 0)
+        (save-excursion
+          (goto-char (point-max))
+          (insert (concat "\n* Backlinks\n") (apply 'concat links)))))))
 
-  ;; TODO see above todo
-  (defun self/org-roam-export-refs (_backend)
-    "For org-roam files, exports the ROAM_REF property as a section at the bottom
+;; TODO see above todo
+(defun self/org-roam-export-refs (_backend)
+  "For org-roam files, exports the ROAM_REF property as a section at the bottom
 of the file as an unordered list."
-    (save-excursion
+  (save-excursion
+    (goto-char (point-min))
+    (when (and
+           (org-roam-file-p)
+           (not (eq (assoc "ROAM_REFS" (org-entry-properties)) nil)))
       (goto-char (point-min))
-      (when (and
-             (org-roam-file-p)
-             (not (eq (assoc "ROAM_REFS" (org-entry-properties)) nil)))
-        (goto-char (point-min))
-        (let* ((file-refs (split-string (cdr (assoc "ROAM_REFS" (org-entry-properties))) " "))
-               (refs-as-bullet-links (mapcar
-                                      (lambda (link)
-                                        (format "- [[%s]]\n" link))
-                                      file-refs)))
-          (unless (or
-                   (eq refs-as-bullet-links nil)
-                   (eq (length refs-as-bullet-links) 0))
-            (goto-char (point-max))
-            (insert (concat "\n* Refs\n") (apply 'concat refs-as-bullet-links)))))))
+      (let* ((file-refs (split-string (cdr (assoc "ROAM_REFS" (org-entry-properties))) " "))
+             (refs-as-bullet-links (mapcar
+                                    (lambda (link)
+                                      (format "- [[%s]]\n" link))
+                                    file-refs)))
+        (unless (or
+                 (eq refs-as-bullet-links nil)
+                 (eq (length refs-as-bullet-links) 0))
+          (goto-char (point-max))
+          (insert (concat "\n* Refs\n") (apply 'concat refs-as-bullet-links)))))))
 
-  ;; thank you stackoverflow
-  (defun self/slurp (f)
-    "Like Clojure's slurp; reads a file to a value."
-    (with-temp-buffer
-      (insert-file-contents f)
-      (buffer-substring-no-properties
-       (point-min)
-       (point-max))))
+;; thank you stackoverflow
+(defun self/slurp (f)
+  "Like Clojure's slurp; reads a file to a value."
+  (with-temp-buffer
+    (insert-file-contents f)
+    (buffer-substring-no-properties
+     (point-min)
+     (point-max))))
 
-  (cl-defun self/find-file-non-recursive (dir &key prompt filter-fn exclude-directories show-hidden)
-    "Like `counsel-find-file' for DIR, but excludes directories and their
+(cl-defun self/find-file-non-recursive (dir &key prompt filter-fn exclude-directories show-hidden)
+  "Like `counsel-find-file' for DIR, but excludes directories and their
 children. PROMPT sets the `completing-read' prompt. FILTER-FN is a function to
 filter the list of retrieved files from the directory. EXCLUDE-DIRECTORIES, if
 non-nil, will remove any directories from the list. If SHOW-HIDDEN is non-nil,
 will include any files that begin with ."
-    (let* ((dir (concat (string-trim-right dir (rx (one-or-more "/"))) "/"))
-           (filter (rx line-start (not ".") (zero-or-more any) eol)) ; ^[^.].*$
-           (files (directory-files dir nil (if show-hidden nil filter)))
-           (filtered-files (if filter-fn (seq-filter filter-fn files) files))
-           (non-dir-files (if exclude-directories (seq-filter (lambda (file)
-                                                                (not
-                                                                 (file-directory-p
-                                                                  (concat dir "/" file))))
-                                                              filtered-files)))
-           (selection (completing-read (or prompt "Find file: ") non-dir-files))
-           (file-name (concat dir selection)))
-      (find-file file-name)))
+  (let* ((dir (concat (string-trim-right dir (rx (one-or-more "/"))) "/"))
+         (filter (rx line-start (not ".") (zero-or-more any) eol)) ; ^[^.].*$
+         (files (directory-files dir nil (if show-hidden nil filter)))
+         (filtered-files (if filter-fn (seq-filter filter-fn files) files))
+         (non-dir-files (if exclude-directories (seq-filter (lambda (file)
+                                                              (not
+                                                               (file-directory-p
+                                                                (concat dir "/" file))))
+                                                            filtered-files)))
+         (selection (completing-read (or prompt "Find file: ") non-dir-files))
+         (file-name (concat dir selection)))
+    (find-file file-name)))
 
-  (defun self/org-insert-modified-timestamp ()
-    "Inserts inactive timestamp to bottom of file."
-    (when (org-roam--org-roam-file-p)
-      (save-excursion
-        (goto-char (point-max))
-        (insert "Updated: ")
-        (org-time-stamp '(16) 'inactive))))
+(defun self/org-insert-modified-timestamp ()
+  "Inserts inactive timestamp to bottom of file."
+  (when (org-roam--org-roam-file-p)
+    (save-excursion
+      (goto-char (point-max))
+      (insert "Updated: ")
+      (org-time-stamp '(16) 'inactive))))
 
-  (defun self/choose-date-format ()
-    "Provides user with options from `self/date-format-options'."
-    (completing-read "Select a format: " (mapcar 'car self/date-format-options)))
+(defun self/choose-date-format ()
+  "Provides user with options from `self/date-format-options'."
+  (completing-read "Select a format: " (mapcar 'car self/date-format-options)))
 
-  (defun self/format-date-from-option (option)
-    "Formats current date according to selected date option."
-    (format-time-string (cdr (assoc option self/date-format-options))))
+(defun self/format-date-from-option (option)
+  "Formats current date according to selected date option."
+  (format-time-string (cdr (assoc option self/date-format-options))))
 
-  (defun self/org-filter-headings (filter-func)
-    (let ((headings nil))
-      (org-map-entries
-       (lambda ()
-         (when (funcall filter-func (org-heading-components))
-           (push (org-heading-components) headings))))
-      headings))
+(defun self/org-filter-headings (filter-func)
+  (let ((headings nil))
+    (org-map-entries
+     (lambda ()
+       (when (funcall filter-func (org-heading-components))
+         (push (org-heading-components) headings))))
+    headings))
 
-  (defun self/org-property-filter (data types pred)
-    "Like `org-element-map', but a filter function. Applies DATA, TYPES, and PRED
+(defun self/org-property-filter (data types pred)
+  "Like `org-element-map', but a filter function. Applies DATA, TYPES, and PRED
 to `org-element-map'"
-    (let ((col nil))
-      (org-element-map seq types (lambda (el)
-                                   (when (funcall pred el)
-                                     (push el col))))
-      col))
+  (let ((col nil))
+    (org-element-map seq types (lambda (el)
+                                 (when (funcall pred el)
+                                   (push el col))))
+    col))
 
-  (defun self/get-file-hierarchy-names (path level)
-    "Given a PATH, gets the nth name up in the file hierarchy."
-    (if (or (eq path nil)
-            (not (file-name-absolute-p path)))
-        (user-error "%s is nil or not an absolute path!" path)
-      (let* ((file-name-components (seq-filter
-                                    (lambda (str)
-                                      (not (string= "" str)))
-                                    (split-string (file-name-directory path) "/")))
-             (up (- (length file-name-components) level)))
-        (nth up file-name-components))))
+(defun self/get-file-hierarchy-names (path level)
+  "Given a PATH, gets the nth name up in the file hierarchy."
+  (if (or (eq path nil)
+          (not (file-name-absolute-p path)))
+      (user-error "%s is nil or not an absolute path!" path)
+    (let* ((file-name-components (seq-filter
+                                  (lambda (str)
+                                    (not (string= "" str)))
+                                  (split-string (file-name-directory path) "/")))
+           (up (- (length file-name-components) level)))
+      (nth up file-name-components))))
 
-  (defun self/swap-lines (left right)
-    "Swaps line at line number LEFT with RIGHT."
-    (let ((left-line-contents (self/get-line-contents left))
-          (right-line-contents (self/get-line-contents right)))
-      (self/goto-line-non-interactive left)
-      (kill-line)
-      (insert right-line-contents)
-      (self/goto-line-non-interactive right)
-      (kill-line)
-      (insert left-line-contents)))
+(defun self/swap-lines (left right)
+  "Swaps line at line number LEFT with RIGHT."
+  (let ((left-line-contents (self/get-line-contents left))
+        (right-line-contents (self/get-line-contents right)))
+    (self/goto-line-non-interactive left)
+    (kill-line)
+    (insert right-line-contents)
+    (self/goto-line-non-interactive right)
+    (kill-line)
+    (insert left-line-contents)))
 
-  (defun self/get-line-contents (line-number)
-    "Returns the contents of a line on LINE-NUMBER."
-    (self/goto-line-non-interactive line-number)
-    (buffer-substring (line-beginning-position) (line-end-position)))
+(defun self/get-line-contents (line-number)
+  "Returns the contents of a line on LINE-NUMBER."
+  (self/goto-line-non-interactive line-number)
+  (buffer-substring (line-beginning-position) (line-end-position)))
 
-  (defun self/goto-line-non-interactive (line-number)
-    "Helper for going to a line at LINE-NUMBER without invoking `goto-line'."
-    (forward-line (- line-number (line-number-at-pos))))
+(defun self/goto-line-non-interactive (line-number)
+  "Helper for going to a line at LINE-NUMBER without invoking `goto-line'."
+  (forward-line (- line-number (line-number-at-pos))))
 
-  (defun self/goto-col-non-interactive (col-number)
-    "Helper for going to a col at COL-NUMBER without invoking `goto-char' or
+(defun self/goto-col-non-interactive (col-number)
+  "Helper for going to a col at COL-NUMBER without invoking `goto-char' or
 `move-to-column'."
-    (forward-char (- col-number (current-column))))
+  (forward-char (- col-number (current-column))))
 
-  ;; thank you http://stackoverflow.com/questions/6158990/generating-randoms-numbers-in-a-certain-range-for-common-lisp
-  (defun self/random-in-range (start end)
-    "Returns a random number n where START <= n <= END."
-    (+ start (random (+ 1 (- end start)))))
+;; thank you http://stackoverflow.com/questions/6158990/generating-randoms-numbers-in-a-certain-range-for-common-lisp
+(defun self/random-in-range (start end)
+  "Returns a random number n where START <= n <= END."
+  (+ start (random (+ 1 (- end start)))))
 
-  (defun self/org-publish-before-advice (&rest args)
-    (org-roam-update-org-id-locations))
+(defun self/org-publish-before-advice (&rest args)
+  (org-roam-update-org-id-locations))
 
-  (defun self/lookup-open-link-like-object (lookup-fn &rest args)
-    "Advice for LOOKUP-FN. Opens a link-like object: a file, URL, etc."
-    (let ((identifier (nth 0 args))
-          (url-pattern (rx line-start (seq "http" (? "s") "://")))
-          (file-path-pattern (rx line-start (group (one-or-more any)) "/" (group (one-or-more (not "/"))) line-end)))
-      (cond
-       ((string-match-p url-pattern identifier) (browse-url identifier))
-       ((and
-         (string-match-p file-path-pattern identifier)
-         (string-match-p ":" identifier))
-        (self/open-path-with-line-and-col identifier))
-       ((file-directory-p identifier) (dired identifier))
-       ((file-exists-p identifier) (switch-to-buffer (find-file-noselect identifier)))
-       (t (apply lookup-fn args)))))
+(defun self/lookup-open-link-like-object (lookup-fn &rest args)
+  "Advice for LOOKUP-FN. Opens a link-like object: a file, URL, etc."
+  (let ((identifier (nth 0 args))
+        (url-pattern (rx line-start (seq "http" (? "s") "://")))
+        (file-path-pattern (rx line-start (group (one-or-more any)) "/" (group (one-or-more (not "/"))) line-end)))
+    (cond
+     ((string-match-p url-pattern identifier) (browse-url identifier))
+     ((and
+       (string-match-p file-path-pattern identifier)
+       (string-match-p ":" identifier))
+      (self/open-path-with-line-and-col identifier))
+     ((file-directory-p identifier) (dired identifier))
+     ((file-exists-p identifier) (switch-to-buffer (find-file-noselect identifier)))
+     (t (apply lookup-fn args)))))
 
-  (defun self/open-path-with-line-and-col (path)
-    (seq-let (file-name line col) (split-string path ":")
-      (self/open-file-at-line-number file-name (string-to-number line) (string-to-number col))))
+(defun self/open-path-with-line-and-col (path)
+  (seq-let (file-name line col) (split-string path ":")
+    (self/open-file-at-line-number file-name (string-to-number line) (string-to-number col))))
 
-  (defun self/open-file-at-line-number (path line &optional col)
-    "Opens file at PATH at line number LINE, and optionally COL. If COL > length
+(defun self/open-file-at-line-number (path line &optional col)
+  "Opens file at PATH at line number LINE, and optionally COL. If COL > length
 of line, moves cursor to the end of LINE."
-    (when current-prefix-arg
-      (select-window (split-window (selected-window) nil (pcase current-prefix-arg
-                                                           ((or '(4) 4) 'right)
-                                                           (1 'down)
-                                                           (2 'up)
-                                                           (3 'left)))))
-    (switch-to-buffer (find-file-noselect path))
-    (self/goto-line-non-interactive line)
-    (when col
-      (if (< (- (line-end-position) (point)) col)
-          (end-of-line)
-        (self/goto-col-non-interactive col))))
+  (when current-prefix-arg
+    (select-window (split-window (selected-window) nil (pcase current-prefix-arg
+                                                         ((or '(4) 4) 'right)
+                                                         (1 'down)
+                                                         (2 'up)
+                                                         (3 'left)))))
+  (switch-to-buffer (find-file-noselect path))
+  (self/goto-line-non-interactive line)
+  (when col
+    (if (< (- (line-end-position) (point)) col)
+        (end-of-line)
+      (self/goto-col-non-interactive col))))
 
-  (defun self/shuffle (lst)
-    "Shuffles a list LST."
-    (let ((n (length lst)))
-      (dotimes (i (length lst))
-        (let ((j (+ i (random (- n i)))))
-          (when (/= i j)
-            (cl-rotatef (elt lst i) (elt lst j))))))
-    lst)
+(defun self/shuffle (lst)
+  "Shuffles a list LST."
+  (let ((n (length lst)))
+    (dotimes (i (length lst))
+      (let ((j (+ i (random (- n i)))))
+        (when (/= i j)
+          (cl-rotatef (elt lst i) (elt lst j))))))
+  lst)
 
-  (defun self/pick (lst)
-    "Randomly chooses an item from a list."
-    (let ((choice (abs (random (length lst)))))
-      (nth choice lst)))
+(defun self/pick (lst)
+  "Randomly chooses an item from a list."
+  (let ((choice (abs (random (length lst)))))
+    (nth choice lst)))
 
-  (defun self/rotn (str n)
-    "Like rot13, except variable. Rotate STR by N % 26."
-    (apply #'string (mapcar (lambda (char)
-                              (self/translate-char char n))
-                            (mapcar #'string-to-char (string-split str "" t)))))
+(defun self/rotn (str n)
+  "Like rot13, except variable. Rotate STR by N % 26."
+  (apply #'string (mapcar (lambda (char)
+                            (self/translate-char char n))
+                          (mapcar #'string-to-char (string-split str "" t)))))
 
-  (defun self/translate-char (char n)
-    "Rotates CHAR by N"
-    (let* ((base (if (>= char ?a) ?a ?A))
-           (offset (mod (+ (- char base) n) 26)))
-      (+ base offset)))
+(defun self/translate-char (char n)
+  "Rotates CHAR by N"
+  (let* ((base (if (>= char ?a) ?a ?A))
+         (offset (mod (+ (- char base) n) 26)))
+    (+ base offset)))
 
-  ;; NOTE doesn't quite work?
-  (defun self/org-babel-execute-src-block-lazy-load (original-fn &rest args)
-    (let ((lang (org-element-property :language (org-element-at-point))))
-      (when (or (string= lang "bash") (string= lang "sh"))
-        (setq lang "shell"))
-      (unless (or (not (boundp 'org-babel-load-languages)) (cdr (assoc (intern lang) org-babel-load-languages)))
-        (add-to-list 'org-babel-load-languages (cons (intern lang) t))
-        (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
-      (apply original-fn args)))
+;; NOTE doesn't quite work?
+(defun self/org-babel-execute-src-block-lazy-load (original-fn &rest args)
+  (let ((lang (org-element-property :language (org-element-at-point))))
+    (when (or (string= lang "bash") (string= lang "sh"))
+      (setq lang "shell"))
+    (unless (or (not (boundp 'org-babel-load-languages)) (cdr (assoc (intern lang) org-babel-load-languages)))
+      (add-to-list 'org-babel-load-languages (cons (intern lang) t))
+      (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
+    (apply original-fn args)))
 
-  (defun self/+org-inline-image-data-fn (_original-fn &rest args)
-    (cl-destructuring-bind (_ link) args
-      (with-demoted-errors "%S" (base64-decode-string link))))
+(defun self/+org-inline-image-data-fn (_original-fn &rest args)
+  (cl-destructuring-bind (_ link) args
+    (with-demoted-errors "%S" (base64-decode-string link))))
 
-  ;; --------------------------- custom evil operators ---------------------------
+;; --------------------------- custom evil operators ---------------------------
 
-  (evil-define-operator self/evil-write-temp (beg end &optional prefix)
-    "Like evil-write, but creates a new temporary file and writes to that."
-    :motion nil
-    :move-point nil
-    :type line
-    :repeat nil
-    (interactive "<r><a>")
-    (let ((s (or beg (point-min)))
-          (f (or end (point-max)))
-          (bufname (buffer-file-name (buffer-base-buffer))))
-      (cond
-       ((null bufname) (let ((filename (make-temp-file prefix)))
-                         (write-file filename)))
-       (t (let ((tmpfile (make-temp-file prefix))
-                (write-region s f tmpfile)))))))
+(evil-define-operator self/evil-write-temp (beg end &optional prefix)
+  "Like evil-write, but creates a new temporary file and writes to that."
+  :motion nil
+  :move-point nil
+  :type line
+  :repeat nil
+  (interactive "<r><a>")
+  (let ((s (or beg (point-min)))
+        (f (or end (point-max)))
+        (bufname (buffer-file-name (buffer-base-buffer))))
+    (cond
+     ((null bufname) (let ((filename (make-temp-file prefix)))
+                       (write-file filename)))
+     (t (let ((tmpfile (make-temp-file prefix))
+              (write-region s f tmpfile)))))))
 
-  (evil-define-operator self/evil-write-suspend (beg end type file-or-append &optional bang)
-    "Like evil-write, but quickly changes the buffer to `text-mode' first.
+(evil-define-operator self/evil-write-suspend (beg end type file-or-append &optional bang)
+  "Like evil-write, but quickly changes the buffer to `text-mode' first.
 This is meant to skip any kind of automatic formatting."
-    :motion nil
-    :move-point nil
-    :type line
-    :repeat nil
-    (interactive "<r><fsh><!>")
-    (major-mode-suspend)
-    (text-mode)
-    (evil-write beg end type file-or-append bang)
-    (major-mode-restore))
+  :motion nil
+  :move-point nil
+  :type line
+  :repeat nil
+  (interactive "<r><fsh><!>")
+  (major-mode-suspend)
+  (text-mode)
+  (evil-write beg end type file-or-append bang)
+  (major-mode-restore))
