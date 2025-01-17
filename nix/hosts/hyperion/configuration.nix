@@ -122,7 +122,7 @@
   };
 
   boot = {
-    kernelPackages = pkgs.linuxPackages;
+    kernelPackages = pkgs.linuxPackages_6_12;
     kernelParams = ["nohibernate"];
 
     tmp = {

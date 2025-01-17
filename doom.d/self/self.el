@@ -297,6 +297,18 @@ hello world
     (write-region (point-min) (point-max) name)
     (switch-to-buffer (current-buffer))))
 
+(defun self/nix-fmt-current-buffer ()
+  (interactive)
+  (when (not (file-exists-p (format "%s/flake.nix" (projectile-project-root))))
+    (user-error "not in a project with a flake!"))
+
+  (when (not buffer-file-name)
+    (user-error "this buffer is not visiting a file!"))
+
+  (start-process "nix fmt" "*nix fmt*" (format "nix fmt %s" buffer-file-name))
+
+  (revert-buffer nil t t))
+
 
 ;; ----------------------------- utility functions -----------------------------
 

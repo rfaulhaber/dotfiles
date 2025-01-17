@@ -24,6 +24,12 @@ in {
   };
 
   config = mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = config.boot.kernelPackages.zfs.meta.broken == false;
+        message = "ZFS is marked as broken in this kernel package. Please address.";
+      }
+    ];
     services.zfs = {
       autoScrub.enable = true;
       trim.enable = true;

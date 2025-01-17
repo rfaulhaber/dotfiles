@@ -39,14 +39,25 @@
         };
       };
 
-      zerotier = {
-        enable = true;
-        networks = ["b6079f73c6986bc2"];
-      };
+      # zerotier = {
+      #   enable = true;
+      #   networks = ["b6079f73c6986bc2"];
+      # };
     };
 
     themes.active = "tokyo-night-dark";
   };
+
+  virtualisation.vmVariant = {
+    virtualisation.forwardPorts = [
+      {
+        from = "host";
+        host.port = 14557;
+        guest.port = 14557;
+      }
+    ];
+  };
+
 
   boot = {
     loader = {
@@ -58,6 +69,8 @@
   networking = {
     hostName = "nexus";
     useDHCP = true;
-    interfaces.end0.useDHCP = true;
+    interfaces.eth0.useDHCP = true;
   };
+
+  user.initialHashedPassword = "$2b$05$DHs2w8s5PkPPDbbjeNWWSO.98pOyBVSdv2b.eP1M.MXOM5eEkmGAS";
 }

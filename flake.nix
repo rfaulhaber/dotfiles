@@ -42,6 +42,9 @@
       url = "github:wez/wezterm?dir=nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ghostty = {
+      url = "github:ghostty-org/ghostty";
+    };
     disko = {
       url = "github:nix-community/disko/latest";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -120,9 +123,10 @@
           system = "aarch64-linux";
         };
         nexus = mkHost ./nix/hosts/nexus/configuration.nix {
-          system = "aarch64-linux";
+          system = "x86_64-linux";
         };
       };
+      #// lib.my.mkNixOSK8sNodes 4 ./nix/hosts/nexus/configuration.nix { system = "x86_64-linux"; masterAddress = "10.0.0.1"; };
 
       # TODO add darwin configurations
 
@@ -169,7 +173,6 @@
       };
       checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
       nixosModules.nixosGenerateFormats = {
-
       };
     }
     # x86_64-linux-specific packages
@@ -241,7 +244,8 @@
           format = "install-iso";
         };
       };
-    } // (let
+    }
+    // (let
       supportedSystems = ["x86_64-linux" "aarch64-darwin"];
       forSystems = systems: f:
         nixpkgs.lib.genAttrs systems
