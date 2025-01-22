@@ -1,5 +1,6 @@
 {
   imports = [
+    ./astal
     ./cachix
     ./doas
     ./docker
@@ -10,6 +11,7 @@
     ./mergerfs
     ./mullvad
     ./passwords
+    ./printing
     ./proxy
     ./pueue
     ./redshift

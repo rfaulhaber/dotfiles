@@ -91,9 +91,6 @@ in {
     })
     # ssh client config
     (mkIf (cfg.client.enable) {
-      # TODO
-      # programs.ssh.startAgent = true;
-
       home.programs.ssh = {
         enable = true;
         compression = true;

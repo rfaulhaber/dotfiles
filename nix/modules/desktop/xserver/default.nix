@@ -16,6 +16,7 @@ in {
   config = mkIf cfg.enable {
     services.xserver = {
       enable = true;
+      videoDrivers = mkIf config.modules.hardware.nvidia.enable ["nvidia"];
       xkb = {
         options = "eurosign:e";
         layout = "us";

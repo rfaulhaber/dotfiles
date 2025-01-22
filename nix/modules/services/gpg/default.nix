@@ -29,6 +29,8 @@ in {
       enableBrowserSocket = true;
     };
 
+    security.pam.services.login.enableGnomeKeyring = true;
+
     # adding this in to resolve an issue where "pass" doesn't work
     environment.systemPackages = with pkgs; [pinentry];
   };

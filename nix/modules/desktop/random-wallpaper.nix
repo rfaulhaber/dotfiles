@@ -6,6 +6,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 with lib; let
@@ -35,19 +36,24 @@ in {
 
   config = mkIf cfg.enable (mkMerge [
     {
-      assertions = [
-        {
-          assertion = config.services.xserver.enable;
-          message = "Cannot use random-wallpaper without xserver.";
-        }
-      ];
       systemd.user.services.random-wallpaper = let
         scriptPath = "${config.dotfiles.binDir}/random-wallpaper.nu";
         nuExec = "${pkgs.nushell}/bin/nu";
-        exec = "${nuExec} -c '${scriptPath} --token (open ${cfg.token}) ${cfg.query}'";
+        desktop =
+          if config.modules.desktop.environment.hyprland.enable
+          then "hyprland"
+          else if config.modules.desktop.wayland.enable
+          then "wayland"
+          else "xserver";
+        exec = "${nuExec} -c '${scriptPath} --desktop ${desktop} --token (open ${cfg.token}) ${cfg.query}'";
       in {
         inherit description;
-        path = with pkgs; [nushell feh];
+        path = with pkgs;
+          [nushell]
+          ++ lib.optionals (desktop == "hyprland") [
+            inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland
+            inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
+          ];
         after = ["graphical-session-pre.target" "network-online.target"];
         partOf = ["graphical-session.target"];
         wantedBy = ["graphical-session.target"];

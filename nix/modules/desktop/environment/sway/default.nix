@@ -15,7 +15,7 @@ in {
 
   config = mkIf cfg.enable {
     modules.desktop.wayland.enable = true;
-    # modules.desktop.environment.sway.waybar.enable = true;
+    modules.desktop.environment.type = "wayland";
 
     security.polkit.enable = true;
 
@@ -28,22 +28,18 @@ in {
     };
 
     home = {
-      # wayland.windowManager.sway = {
-      #   enable = true;
-      #   config = {
-      #     modifier = "Mod4";
-      #     terminal = "kitty"; # TODO figure out automatically
-      #     startup = [
-      #       {command = "${pkgs.kitty}/bin/kitty";}
-      #     ];
-      #     systemd.enable = true;
-      #     wrapperFeatures.gtk = true;
-      #     keybindings = mkOptionDefault {
-      #       "$mod+Return" = "exec ${pkgs.kitty}/bin/kitty";
-      #       "$mod+b" = "exec ${pkgs.firefox-devedition-bin}/bin/firefox-developer-edition";
-      #     };
-      #   };
-      # };
+      wayland.windowManager.sway = {
+        enable = true;
+        config = {
+          modifier = "Mod4";
+          terminal = "kitty"; # TODO figure out automatically
+          wrapperFeatures.gtk = true;
+          keybindings = mkOptionDefault {
+            "$mod+Return" = "exec ${pkgs.kitty}/bin/kitty";
+            "$mod+b" = "exec ${pkgs.firefox-devedition-bin}/bin/firefox-developer-edition";
+          };
+        };
+      };
 
       programs = {
         fuzzel = {
@@ -54,9 +50,7 @@ in {
             };
           };
         };
-        swaylock = {
-          enable = true;
-        };
+        swaylock.enable = true;
       };
     };
 
@@ -68,6 +62,8 @@ in {
         };
       };
     };
+
+    hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.latest;
 
     environment.systemPackages = with pkgs; [
       # grim # screenshot functionality

@@ -14,8 +14,6 @@
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 
-  # system = "aarch64-linux";
-
   modules = {
     programs = {
       nushell = {

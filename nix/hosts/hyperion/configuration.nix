@@ -24,7 +24,6 @@
       # how many terminals does a guy need?
       kitty.enable = true;
       wezterm.enable = true;
-      ghostty.enable = true;
       _1password.enable = true;
       git = {
         enable = true;
@@ -84,9 +83,9 @@
     };
     desktop = {
       enable = true;
-      environment.bspwm = lib.mkDefault {
+      environment.hyprland = lib.mkDefault {
         enable = true;
-        extraStartupPrograms = ["discord" "1password" "telegram-desktop" "mullvad-gui"];
+        extraStartupPrograms = ["1password"];
       };
       random-wallpaper = {
         enable = true;
@@ -94,7 +93,10 @@
       };
       monitors = ["DP-0"];
       sound.enable = true;
-      firefox.enable = true;
+      firefox = {
+        enable = true;
+        setDefaultPDFViewer = true;
+      };
       extraPackages = with pkgs; [
         chromium
         discord
@@ -110,16 +112,21 @@
     themes.active = "tokyo-night-dark";
   };
 
-  specialisation = {
-    hyprland.configuration = {
-      modules.desktop = {
-        enable = true;
-        environment.bspwm.enable = false;
-        environment.hyprland.enable = true;
-        random-wallpaper.enable = lib.mkDefault false;
-      };
-    };
-  };
+  # specialisation = {
+  #   hyprland.configuration = {
+  #     modules.desktop = {
+  #       environment.bspwm.enable = false;
+  #       environment.hyprland.enable = true;
+  #     };
+  #   };
+  #   sway.configuration = {
+  #     modules.desktop = {
+  #       environment.bspwm.enable = false;
+  #       environment.sway.enable = true;
+  #       random-wallpaper.enable = lib.mkForce false;
+  #     };
+  #   };
+  # };
 
   boot = {
     kernelPackages = pkgs.linuxPackages_6_12;

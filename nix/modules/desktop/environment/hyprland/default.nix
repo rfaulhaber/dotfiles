@@ -8,7 +8,10 @@
 with lib; let
   cfg = config.modules.desktop.environment.hyprland;
   primaryMonitor = config.modules.desktop.monitors;
+  hyprlandPkg = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
 in {
+  imports = [./swww.nix];
+
   options.modules.desktop.environment.hyprland = {
     enable = mkEnableOption false;
     extraStartupPrograms = mkOption {
@@ -22,6 +25,10 @@ in {
     modules.desktop.wayland.enable = true;
     modules.desktop.environment.type = "wayland";
 
+    modules.desktop.environment.hyprland.swww.enable = true;
+
+    modules.services.astal.enable = mkDefault true;
+
     security.polkit.enable = true;
 
     nix.settings = {
@@ -33,31 +40,10 @@ in {
       hyprland = {
         enable = true;
         # we use the flake package for hyprland
-        package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+        package = hyprlandPkg;
         portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
-        xwayland.enable = true;
       };
-      waybar.enable = true;
     };
-
-    # home.wayland.windowManager.hyprland = {
-    #   enable = true;
-    #   package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-    #   xwayland.enable = true;
-    # };
-
-    # TODO avoid, I'm not sure why this is necessary
-    services.xserver.displayManager.lightdm.enable = false;
-
-    # TODO use gdm or regreet (https://github.com/rharish101/ReGreet)
-    # services.greetd = {
-    #   enable = true;
-    #   settings = {
-    #     default_session = {
-    #       command = "${pkgs.greetd.regreet}/bin/regreet";
-    #     };
-    #   };
-    # };
 
     # TODO write configuration defaults to a file, import in config
 
@@ -78,6 +64,7 @@ in {
 
     environment.systemPackages = with pkgs; [
       fuzzel
+      inputs.swww.packages.${pkgs.system}.swww
     ];
   };
 }

@@ -10,7 +10,6 @@ in {
   options.modules.desktop.wayland = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
-    # TODO fill me out!
     environment.systemPackages = with pkgs; [
       wl-clipboard
       mako

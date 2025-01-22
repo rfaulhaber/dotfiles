@@ -84,16 +84,6 @@ in {
       };
     };
 
-    # despite the name, this is set for either X or wayland desktops
-    services.xserver = {
-      enable = true;
-      videoDrivers = mkIf config.modules.hardware.nvidia.enable ["nvidia"];
-      xkb = {
-        options = "eurosign:e";
-        layout = "us";
-      };
-    };
-
     # sets desktop to dark theme
     programs.dconf.enable = true;
     home.dconf.settings = {

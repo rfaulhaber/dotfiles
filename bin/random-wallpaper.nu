@@ -1,6 +1,6 @@
 #!/usr/bin/env nu
 
-def main [--token: string, query?: string] {
+def main [--token: string, --desktop: string, --monitor: string, query?: string] {
     let key = if $token == null {
         $in
     } else {
@@ -42,5 +42,18 @@ def main [--token: string, query?: string] {
 
     open $log_file | append $log_record | to json | save -f $log_file
 
-    feh --bg-fill $filename
+    match $desktop {
+        "hyprland" => {
+            let display = if $monitor == null {
+              hyprctl monitors -j | from json | first | get name
+            } else {
+              $monitor
+            }
+            swww img $filename
+        },
+        "xserver" => {
+            feh --bg-fill $filename
+        }
+    }
+
 }
