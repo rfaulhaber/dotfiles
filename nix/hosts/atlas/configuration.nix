@@ -29,6 +29,7 @@
         dockerCleanup.enable = true;
       };
       pueue.enable = true;
+      printing.enable = true;
       ssh = {
         enable = true;
         server = {
