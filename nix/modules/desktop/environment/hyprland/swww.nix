@@ -15,7 +15,6 @@ in {
       swwwPkg = inputs.swww.packages.${pkgs.system}.swww;
     in {
       path = [swwwPkg];
-      after = ["graphical-session.target"];
       serviceConfig = {
         ExecStart = "${swwwPkg}/bin/swww-daemon";
         ExecStop = "${swwwPkg}/bin/swww kill";

@@ -54,9 +54,10 @@ in {
             inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland
             inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
           ];
-        after = ["graphical-session-pre.target" "network-online.target"];
+        after = ["graphical-session-pre.target" "network-online.target"] ++ lib.optional (desktop == "hyprland") "swww.service";
         partOf = ["graphical-session.target"];
         wantedBy = ["graphical-session.target"];
+        requiredBy = lib.optional (desktop == "hyprland") "swww.service";
         serviceConfig = {
           Type = "oneshot";
           ExecStart = "${exec}";
