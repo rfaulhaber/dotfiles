@@ -10,7 +10,10 @@ with lib; let
   primaryMonitor = config.modules.desktop.monitors;
   hyprlandPkg = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
 in {
-  imports = [./swww.nix];
+  imports = [
+    ./swww.nix
+    ../../wayland
+  ];
 
   options.modules.desktop.environment.hyprland = {
     enable = mkEnableOption false;
@@ -22,12 +25,16 @@ in {
   };
 
   config = mkIf cfg.enable {
-    modules.desktop.wayland.enable = true;
-    modules.desktop.environment.type = "wayland";
-
-    modules.desktop.environment.hyprland.swww.enable = true;
-
-    modules.services.astal.enable = mkDefault true;
+    modules = {
+      desktop = {
+        wayland.enable = true;
+        environment = {
+          type = "wayland";
+          hyprland.swww.enable = true;
+        };
+      };
+      services.astal.enable = true;
+    };
 
     security.polkit.enable = true;
 
@@ -39,32 +46,34 @@ in {
     programs = {
       hyprland = {
         enable = true;
-        # we use the flake package for hyprland
-        package = hyprlandPkg;
+        package = hyprlandPkg; # we use the flake package for hyprland
         portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+        withUWSM = true;
       };
+      hyprlock.enable = true;
     };
 
-    # TODO write configuration defaults to a file, import in config
-
-    # TODO can I make this a function?
+    # TODO write configuration in nix
     home.file.hyprconf = {
       source = "${config.dotfiles.configDir}/hypr/hyprland.conf";
       target = "${config.user.home}/.config/hypr/hyprland.conf";
     };
 
-    environment.sessionVariables = {
-      # required to fix issue where mouse is invisible
-      WLR_NO_HARDWARE_CURSORS = "1";
-      GBM_BACKEND = "nvidia-drm";
-      LIBVA_DRIVER_NAME = "nvidia"; # hardware acceleration
-      __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-      NIXOS_OZONE_WL = "1";
+    environment = {
+      sessionVariables = {
+        # required to fix issue where mouse is invisible
+        WLR_NO_HARDWARE_CURSORS = "1";
+        GBM_BACKEND = "nvidia-drm";
+        LIBVA_DRIVER_NAME = "nvidia"; # hardware acceleration
+        __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+        NIXOS_OZONE_WL = "1";
+      };
+
+      systemPackages = with pkgs; [
+        inputs.swww.packages.${pkgs.system}.swww
+      ];
     };
 
-    environment.systemPackages = with pkgs; [
-      fuzzel
-      inputs.swww.packages.${pkgs.system}.swww
-    ];
+    user.packages = with pkgs; [fuzzel];
   };
 }

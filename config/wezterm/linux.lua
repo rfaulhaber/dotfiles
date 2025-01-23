@@ -6,24 +6,19 @@ return {
   }
   keys = {
     {
-      key = '|',
-      mods = 'LEADER',
-      action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
+        key = "p",
+        mods = "SUPER",
+        action = wezterm.action.ActivateCommandPalette,
     },
     {
-      key = '-',
-      mods = 'LEADER',
-      action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
+      key = "v",
+      mods = "SUPER|ALT",
+      action = wezterm.action.SplitVertical {domain="CurrentPaneDomain"},
     },
     {
-      key = 'c',
-      mods = 'LEADER',
-      action = wezterm.action.ActivateCommandPalette,
+      key = "h",
+      mods = "SUPER|ALT",
+      action = wezterm.action.SplitHorizontal {domain="CurrentPaneDomain"}
     },
-    {
-      key = 'p',
-      mods = 'LEADER',
-      action = wezterm.action.PaneSelect,
-    }
   }
 }
