@@ -57,7 +57,7 @@ in {
         after = ["graphical-session-pre.target" "network-online.target"] ++ lib.optional (desktop == "hyprland") "swww.service";
         partOf = ["graphical-session.target"];
         wantedBy = ["graphical-session.target"];
-        requiredBy = lib.optional (desktop == "hyprland") "swww.service";
+        requires = lib.optional (desktop == "hyprland") "swww.service";
         serviceConfig = {
           Type = "oneshot";
           ExecStart = "${exec}";

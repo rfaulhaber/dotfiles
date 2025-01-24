@@ -49,14 +49,6 @@
       url = "github:nix-community/disko/latest";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    astal = {
-      url = "github:aylur/astal";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    ags = {
-      url = "github:aylur/ags";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     swww.url = "github:LGFae/swww";
     # TODO consider using stylix
     # currently, a wallpaper is required with stylix. this is problematic
@@ -66,6 +58,7 @@
       url = "github:tinted-theming/schemes";
       flake = false;
     };
+    # murex.url = "github:rfaulhaber/murex";
   };
 
   outputs = inputs @ {
@@ -77,8 +70,6 @@
     nixos-generators,
     nix-darwin,
     emacs-overlay,
-    astal,
-    ags,
     ...
   }: let
     inherit (lib.my) mapModules mkPkgs;
@@ -254,30 +245,6 @@
           };
           format = "install-iso";
         };
-
-        astal-hyprland-shell = let
-          name = "astal-hyprland-shell";
-        in
-          pkgs.stdenvNoCC.mkDerivation {
-            inherit name;
-            src = ./config/astal/hyprland;
-
-            nativeBuildInputs = with pkgs; [
-              ags.packages.${pkgs.system}.default
-              wrapGAppsHook
-              gobject-introspection
-            ];
-
-            buildInputs = with astal.packages.x86_64-linux; [
-              astal3
-              io
-            ];
-
-            installPhase = ''
-              mkdir -p $out/bin
-              ags bundle app.ts $out/bin/${name}
-            '';
-          };
       };
     }
     // (let
@@ -325,30 +292,6 @@
           buildInputs = with pkgs; [
             nixos-generators.packages.${system}.default
           ];
-        };
-
-        astal = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            (ags.packages.${system}.default.override {
-              extraPackages = with ags.packages.${system}; [
-                hyprland
-                io
-                network
-              ];
-            })
-            (with astal.packages.${system}; [
-              astal4
-              hyprland
-              network
-              io
-            ])
-
-            nodejs_23
-            nodePackages_latest.pnpm
-            nodePackages_latest.prettier
-            nodePackages_latest.typescript-language-server
-          ];
-
         };
 
         default = self.devShells.${system}.generate;
