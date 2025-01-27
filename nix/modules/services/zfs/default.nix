@@ -26,7 +26,7 @@ in {
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = config.boot.kernelPackages.zfs.meta.broken == false;
+        assertion = config.boot.kernelPackages.${pkgs.zfs.kernelModuleAttribute}.meta.broken == false;
         message = "ZFS is marked as broken in this kernel package. Please address.";
       }
     ];

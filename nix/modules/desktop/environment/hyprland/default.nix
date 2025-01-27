@@ -33,7 +33,7 @@ in {
           hyprland.swww.enable = true;
         };
       };
-      services.astal.enable = true;
+      # services.astal.enable = true;
     };
 
     security.polkit.enable = true;
