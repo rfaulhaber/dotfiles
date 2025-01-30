@@ -53,6 +53,14 @@ in {
       hyprlock.enable = true;
     };
 
+    services.greetd = {
+      enable = true;
+      settings.default_session = {
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd 'uwsm start default'";
+        user = "greeter";
+      };
+    };
+
     # TODO write configuration in nix
     home.file.hyprconf = {
       source = "${config.dotfiles.configDir}/hypr/hyprland.conf";
