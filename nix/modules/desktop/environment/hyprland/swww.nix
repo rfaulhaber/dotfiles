@@ -15,6 +15,7 @@ in {
       swwwPkg = inputs.swww.packages.${pkgs.system}.swww;
     in {
       path = [swwwPkg];
+      wantedBy = ["random-wallpaper.service"];
       serviceConfig = {
         ExecStart = "${swwwPkg}/bin/swww-daemon";
         ExecStop = "${swwwPkg}/bin/swww kill";

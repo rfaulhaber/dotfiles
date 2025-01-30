@@ -42,9 +42,6 @@
       url = "github:wez/wezterm?dir=nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ghostty = {
-      url = "github:ghostty-org/ghostty";
-    };
     disko = {
       url = "github:nix-community/disko/latest";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -58,7 +55,7 @@
       url = "github:tinted-theming/schemes";
       flake = false;
     };
-    # murex.url = "github:rfaulhaber/murex";
+    murex.url = "github:rfaulhaber/murex";
   };
 
   outputs = inputs @ {

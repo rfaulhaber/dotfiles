@@ -63,6 +63,7 @@ in {
     # TODO can I rewrite this such that they're not all globally available?
     user.packages = with pkgs; [
       (mkIf (config.modules.services.mail.enable) mu)
+      ast-grep
       clang # unfortunately we need a C compiler for various dependencies
       cmake
       direnv

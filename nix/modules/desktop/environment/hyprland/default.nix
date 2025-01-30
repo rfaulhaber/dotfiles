@@ -74,6 +74,9 @@ in {
       ];
     };
 
-    user.packages = with pkgs; [fuzzel];
+    user.packages = with pkgs; [
+      fuzzel
+      inputs.murex.packages.${pkgs.system}.default
+    ];
   };
 }
