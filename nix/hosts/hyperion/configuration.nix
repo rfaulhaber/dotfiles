@@ -55,7 +55,6 @@
       # };
       gpg.enable = true;
       mail.enable = true;
-      redshift.enable = true;
       systemd.modules = {
         sshAgent.enable = true;
       };

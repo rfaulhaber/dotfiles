@@ -56,7 +56,7 @@ in {
     services.greetd = {
       enable = true;
       settings.default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd 'uwsm start default'";
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd 'uwsm start hyprland-uwsm.desktop'";
         user = "greeter";
       };
     };
@@ -65,6 +65,11 @@ in {
     home.file.hyprconf = {
       source = "${config.dotfiles.configDir}/hypr/hyprland.conf";
       target = "${config.user.home}/.config/hypr/hyprland.conf";
+    };
+
+    home.file.toficonf = {
+      source = "${config.dotfiles.configDir}/tofi/config";
+      target = "${config.user.home}/.config/tofi/config";
     };
 
     environment = {
@@ -83,8 +88,8 @@ in {
     };
 
     user.packages = with pkgs; [
-      fuzzel
       inputs.murex.packages.${pkgs.system}.default
+      tofi
     ];
   };
 }
