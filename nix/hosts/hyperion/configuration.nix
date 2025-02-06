@@ -57,6 +57,7 @@
       mail.enable = true;
       systemd.modules = {
         sshAgent.enable = true;
+        tmp-downloads.enable = true;
       };
       ssh = {
         enable = true;
