@@ -34,6 +34,10 @@
         setDefault = true;
         zoxide.enable = true;
         carapace.enable = true;
+        plugins = with pkgs.nushellPlugins; [
+          polars
+          highlight
+        ];
       };
       direnv.enable = true;
       pijul.enable = true;

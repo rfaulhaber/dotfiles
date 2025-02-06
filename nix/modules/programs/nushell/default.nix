@@ -8,6 +8,8 @@ with lib;
 with lib.my; let
   cfg = config.modules.programs.nushell;
   desktopCfg = config.modules.desktop;
+  isX11 = desktopCfg.environment.type == "x11";
+  isWayland = desktopCfg.environment.type == "wayland";
 in {
   options.modules.programs.nushell = {
     enable = mkEnableOption false;
@@ -28,6 +30,11 @@ in {
         default = true;
       };
     };
+    plugins = mkOption {
+      type = types.listOf types.package;
+      description = "Nushell plugins to include.";
+      default = [  ];
+    };
   };
 
   config = mkIf cfg.enable {
@@ -45,34 +52,33 @@ in {
         envFile.text = "source ${configDir}/env.nu";
 
         shellAliases = mkIf (pkgs.stdenv.isLinux && desktopCfg.enable) (mkMerge [
-          (mkIf (desktopCfg.environment.type == "wayland") {
+          (mkIf isWayland {
             pbcopy = "${pkgs.wl-clipboard}/bin/wl-copy";
             pbpaste = "${pkgs.wl-clipboard}/bin/wl-paste";
           })
-          (mkIf (desktopCfg.environment.type == "x11") {
+          (mkIf isX11 {
             pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
             pbpaste = "${pkgs.xclip}/bin/xclip -selection clipboard -o";
           })
         ]);
+
+        plugins = cfg.plugins;
       };
 
-      zoxide = mkIf cfg.zoxide.enable {
-        enable = true;
-      };
+      zoxide.enable = mkIf cfg.zoxide.enable;
 
       # TODO there is an issue where if carapace is not enabled the
       # configuration cannot load correctly. carapace should be optional
-      carapace = mkIf cfg.carapace.enable {
-        enable = true;
-      };
+      carapace.enable = mkIf cfg.carapace.enable;
     };
 
     user.shell = mkIf cfg.setDefault pkgs.nushell;
 
-    user.packages = with pkgs; [
-      bat # bat is used as nushell's pager
-      (mkIf (desktopCfg.environment.type == "x11") xclip)
-      (mkIf (desktopCfg.environment.type == "wayland") wl-clipboard)
-    ];
+    user.packages = with pkgs;
+      [
+        bat # bat is used as nushell's pager. see config/nushell/env.nu
+      ]
+      ++ lib.optional isX11 xclip
+      ++ lib.optional isWayland wl-clipboard;
   };
 }
