@@ -65,11 +65,11 @@ in {
         plugins = cfg.plugins;
       };
 
-      zoxide.enable = mkIf cfg.zoxide.enable;
+      zoxide.enable = cfg.zoxide.enable;
 
       # TODO there is an issue where if carapace is not enabled the
       # configuration cannot load correctly. carapace should be optional
-      carapace.enable = mkIf cfg.carapace.enable;
+      carapace.enable = cfg.carapace.enable;
     };
 
     user.shell = mkIf cfg.setDefault pkgs.nushell;

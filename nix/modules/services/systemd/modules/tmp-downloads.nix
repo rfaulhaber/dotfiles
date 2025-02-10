@@ -29,7 +29,7 @@ in {
         Type = "oneshot";
         RemainAfterExit = "yes";
         ExecStartPre = "${pkgs.coreutils}/bin/mkdir ${userRunDir}";
-        ExecStart = "${pkgs.coreutils}/bin/ln -sf ${cfg.targetDir} ${userRunDir}";
+        ExecStart = "${pkgs.coreutils}/bin/ln -sf ${userRunDir} ${cfg.targetDir}";
         ExecStop = "${pkgs.coreutils}/bin/rm ${cfg.targetDir} && ${pkgs.coreutils}/bin/rm -rf ${userRunDir}";
       };
     };
