@@ -20,7 +20,12 @@ in {
     systemd.user.services.tmp-downloads = let
       inherit (config.user) name uid;
       userRunDir = "/run/user/${toString uid}/downloads";
+      nuExec = "${pkgs.nushell}/bin/nu";
+      scriptPath = "${config.dotfiles.binDir}/tmp-downloads.nu";
+      baseCmd = "${nuExec} ${scriptPath}";
+      cmd = "${baseCmd} --target ${userRunDir} --link ${cfg.targetDir}";
     in {
+      path = [pkgs.nushell];
       after = ["local-fs.target"];
       wants = ["local-fs.target"];
       wantedBy = ["default.target"];
@@ -28,9 +33,7 @@ in {
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = "yes";
-        ExecStartPre = "${pkgs.coreutils}/bin/mkdir ${userRunDir}";
-        ExecStart = "${pkgs.coreutils}/bin/ln -sf ${userRunDir} ${cfg.targetDir}";
-        ExecStop = "${pkgs.coreutils}/bin/rm ${cfg.targetDir} && ${pkgs.coreutils}/bin/rm -rf ${userRunDir}";
+        ExecStart = cmd;
       };
     };
   };
