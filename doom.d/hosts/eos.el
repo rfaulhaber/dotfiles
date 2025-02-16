@@ -20,3 +20,7 @@
            (add-to-list 'exec-path el))
 
   (setenv "PATH" (string-join path-elements ":")))
+
+;; for some reason projectile can't find fd
+(when (not projectile-fd-executable)
+  (setq projectile-fd-executable (executable-find "fd")))
