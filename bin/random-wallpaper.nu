@@ -44,11 +44,7 @@ def main [--token: string, --desktop: string, --monitor: string, query?: string]
 
     match $desktop {
         "hyprland" => {
-            let display = if $monitor == null {
-              hyprctl monitors -j | from json | first | get name
-            } else {
-              $monitor
-            }
+            # TODO handle multiple displays when it becomes relevant
             swww img $filename
         },
         "xserver" => {
