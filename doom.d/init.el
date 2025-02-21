@@ -15,18 +15,12 @@
 ;;      directory (for easy access to its source code).
 
 (doom! :input
-       ;;chinese
-       ;;japanese
 
        :completion
        company           ; the ultimate code completion backend
-       ;; helm              ; the *other* search engine for love and life
-       ;; ido               ; the other *other* search engine...
-       ;; ivy               ; a search engine for love and life
        vertico           ; the search engine of the future
 
        :ui
-       ;; deft              ; notational velocity for Emacs
        doom              ; what makes DOOM look the way it does
        doom-dashboard    ; a nifty splash screen for Emacs
        doom-quit         ; DOOM quit-message prompts when you quit Emacs
@@ -34,12 +28,8 @@
        indent-guides     ; highlighted indent columns
        modeline          ; snazzy, Atom-inspired modeline, plus API
        nav-flash         ; blink cursor line after big motions
-       ;;neotree           ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
        (popup +defaults)   ; tame sudden yet inevitable temporary windows
-       ;;pretty-code       ; ligatures or substitute text with pretty symbols
-       ;;tabs              ; an tab bar for Emacs
-       ;;treemacs          ; a project drawer, like neotree but cooler
        unicode           ; extended unicode support for various languages
        vc-gutter         ; vcs diff in the fringe
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
@@ -52,129 +42,62 @@
        (evil +everywhere); come to the dark side, we have cookies
        file-templates    ; auto-snippets for empty files
        fold              ; (nigh) universal code folding
-       (format +onsave)  ; automated prettiness
-       ;;god               ; run Emacs commands without modifier keys
-       ;;lispy             ; vim for lisp, for people who don't like vim
-       ;;multiple-cursors  ; editing in many places at once
-       ;;objed             ; text object editing for the innocent
-       ;;parinfer          ; turn lisp into python, sort of
-       ;;rotate-text       ; cycle region at point between text candidates
+       (format +onsave +lsp)  ; automated prettiness
+       rotate-text       ; cycle region at point between text candidates
        snippets          ; my elves. They type so I don't have to
-       ;;word-wrap         ; soft wrapping with language-aware indent
 
        :emacs
-       dired             ; making dired pretty [functional]
+       (dired +dirvish +icons)            ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
        ibuffer         ; interactive buffer management
        undo              ; persistent, smarter undo for your inevitable mistakes
        vc                ; version-control and Emacs, sitting in a tree
 
        :term
-       eshell            ; the elisp shell that works everywhere
-                                        ;shell             ; simple shell REPL for Emacs
-       term              ; basic terminal emulator for Emacs
        vterm             ; the best terminal emulation in Emacs
 
        :checkers
-       syntax              ; tasing you for every semicolon you forget
+       (syntax +flymake +icons)              ; tasing you for every semicolon you forget
        (spell +flyspell +aspell +everywhere)            ; tasing you for misspelling mispelling
        grammar           ; tasing grammar mistake every you make
 
        :tools
-       ;;ansible
        debugger          ; FIXME stepping through code, to help you add bugs
        direnv
        docker
        editorconfig      ; let someone else argue about tabs vs spaces
-       ;;ein               ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
-       ;;gist              ; interacting with github gists
        (lookup +dictionary +offline +docsets)              ; navigate your code and its documentation
-       (lsp +eglot)
+       (lsp +eglot +peek)
        magit             ; a git porcelain for Emacs
-       ;;make              ; run make tasks from Emacs
-       pass              ; password manager for nerds
        pdf               ; pdf enhancements
-       ;;prodigy           ; FIXME managing external services & code builders
-       ;;terraform         ; infrastructure as code
-       ;;tmux              ; an API for interacting with tmux
        tree-sitter
-       ;;upload            ; map local to remote projects via ssh/ftp
 
        :lang
-       ;;agda              ; types of types of types of types...
-       cc                ; C/C++/Obj-C madness
-       ;; clojure           ; java with a lisp
        common-lisp       ; if you've seen one lisp, you've seen them all
-       ;;coq               ; proofs-as-programs
-       ;;crystal           ; ruby at the speed of c
-       ;;csharp            ; unity, .NET, and mono shenanigans
        data              ; config/data formats
-       ;;(dart +flutter)   ; paint ui and not much else
        (elixir +lsp +tree-sitter)           ; erlang done right
-       ;;elm               ; care for a cup of TEA?
        emacs-lisp        ; drown in parentheses
-       ;;erlang            ; an elegant language for a more civilized age
-       ;;ess               ; emacs speaks statistics
-       ;;faust             ; dsp, but you get to keep your soul
-       ;;fsharp           ; ML stands for Microsoft's Language
-       ;;fstar             ; (dependent) types and (monadic) effects and Z3
-       ;; (go +lsp)         ; the hipster dialect
-       (haskell +lsp)  ; a language that's lazier than I am
-       ;;hy                ; readability of scheme w/ speed of python
-       ;; idris             ;
-       json              ; At least it ain't XML
-       ;;(java +meghanada) ; the poster child for carpal tunnel syndrome
-       (javascript +lsp)          ; all(hope(abandon(ye(who(enter(here))))))
-       ;; julia             ; a better, faster MATLAB
-       ;;kotlin            ; a better, slicker Java(Script)
+       (json +lsp +tree-sitter)              ; At least it ain't XML
+       (javascript +lsp +tree-sitter)          ; all(hope(abandon(ye(who(enter(here))))))
        latex             ; writing papers in Emacs has never been so fun
-       ;;lean
-       ;;factor
-       ;;ledger            ; an accounting system in Emacs
-       (lua +fennel +lsp +tree-sitter)               ; one-based indices? one-based indices
        markdown            ; writing docs for people to ignore
-       ;;nim               ; python + lisp at the speed of c
-       nix               ; I hereby declare "nix geht mehr!"
-       ;;ocaml             ; an objective camel
+       (nix +lsp +tree-sitter)              ; I hereby declare "nix geht mehr!"
        (org +hugo +journal +pandoc +present +roam2 +noter +dragndrop +pretty +pomodoro)               ; organize your plain life in plain text
-       ;;perl              ; write code no one else can comprehend
-       ;;php               ; perl's insecure younger brother
-       ;;plantuml          ; diagrams for confusing people more
-       ;;purescript        ; javascript, but functional
        (python +lsp +pyright +tree-sitter)           ; beautiful is better than ugly
-       ;;qt                ; the 'cutest' gui framework ever
-       (racket +lsp)        ; a DSL for DSLs
        rest              ; Emacs as a REST client
-       ;;rst               ; ReST in peace
-       ;;(ruby +rails)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
-       (rust +lsp)               ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
-       ;;scala             ; java, but good
+       (rust +lsp +tree-sitter)               ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        scheme            ; a fully conniving family of lisps
-       (sh +lsp)         ; she sells {ba,z,fi}sh shells on the C xor
-       ;;sml
-       ;;solidity          ; do you need a blockchain? No.
-       ;;swift             ; who asked for emoji variables?
-       ;;terra             ; Earth and Moon in alignment for performance.
-       web               ; the tubes
+       (sh +lsp +tree-sitter)         ; she sells {ba,z,fi}sh shells on the C xor
+       (web +lsp +tree-sitter)               ; the tubes
        yaml              ; JSON, but readable
 
-       ;; temp, for advent of code
-       raku
-       janet
-       fsharp
-
        :email
-       (mu4e +gmail)
-       ;;notmuch
-       ;;(wanderlust +gmail)
+       ;; (mu4e +gmail)
 
        :app
        everywhere
        calendar
-       ;;irc               ; how neckbeards socialize
-       ;; (rss +org)        ; emacs as an RSS reader
-       ;;twitter           ; twitter client https://twitter.com/vnought
 
        :os
        (:if IS-MAC macos)             ; MacOS-specific commands
