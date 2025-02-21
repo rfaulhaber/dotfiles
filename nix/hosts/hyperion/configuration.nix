@@ -102,20 +102,19 @@
         setDefaultPDFViewer = true;
       };
       extraPackages = with pkgs; [
-        chromium
         discord
         evince
-        gnome-screenshot
         openvpn
         python3
         signal-desktop
         spotify
-        tdesktop
+        ungoogled-chromium
       ];
     };
     themes.active = "tokyo-night-dark";
   };
 
+  # TODO create specialisation modules?
   # specialisation = {
   #   hyprland.configuration = {
   #     modules.desktop = {
@@ -179,6 +178,30 @@
   };
 
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  services.printing = {
+    enable = true;
+    drivers = with pkgs; [brlaser brgenml1lpr brgenml1cupswrapper];
+  };
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+  hardware.printers = {
+    ensurePrinters = [
+      {
+        name = "Brother";
+        location = "Home";
+        deviceUri = "http://192.168.0.3:631/printers/Brother";
+        model = "drv:///brlaser.drv/brl2320d.ppd";
+        ppdOptions = {
+          PageSize = "A4";
+        };
+      }
+    ];
+    ensureDefaultPrinter = "Brother";
+  };
 
   system.autoUpgrade = {
     enable = true;

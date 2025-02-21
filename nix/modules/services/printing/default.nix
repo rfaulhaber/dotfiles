@@ -14,18 +14,28 @@ in {
       default = [];
       description = "Printers available to the system.";
     };
+    server = mkOption {
+      type = types.bool;
+      description = "If enabled, enables print server.";
+      default = false;
+    };
+    client = mkOption {
+      type = types.bool;
+      description = "If enabled, configures system to connect to print server.";
+      default = false;
+    };
   };
 
   config = mkIf cfg.enable {
-    # services.avahi = {
-    #   enable = true;
-    #   nssmdns4 = true;
-    #   openFirewall = true;
-    #   publish = {
-    #     enable = true;
-    #     userServices = true;
-    #   };
-    # };
+    services.avahi = {
+      enable = true;
+      nssmdns4 = true;
+      openFirewall = true;
+      publish = {
+        enable = true;
+        userServices = true;
+      };
+    };
     services.printing = {
       enable = true;
       listenAddresses = ["*:631"];
@@ -35,32 +45,32 @@ in {
       openFirewall = true;
       drivers = with pkgs; [brlaser brgenml1lpr brgenml1cupswrapper];
     };
-    # services.samba = {
-    #   enable = true;
-    #   package = pkgs.sambaFull;
-    #   openFirewall = true;
-    #   settings = {
-    #     global = {
-    #       "load printers" = "yes";
-    #       "printing" = "cups";
-    #       "printcap name" = "cups";
-    #     };
-    #     "printers" = {
-    #       "comment" = "All Printers";
-    #       "path" = "/var/spool/samba";
-    #       "public" = "yes";
-    #       "browseable" = "yes";
-    #       # to allow user 'guest account' to print.
-    #       "guest ok" = "yes";
-    #       "writable" = "no";
-    #       "printable" = "yes";
-    #       "create mode" = 0700;
-    #     };
-    #   };
-    # };
-    # systemd.tmpfiles.rules = [
-    #   "d /var/spool/samba 1777 root root -"
-    # ];
+    services.samba = {
+      enable = true;
+      package = pkgs.sambaFull;
+      openFirewall = true;
+      settings = {
+        global = {
+          "load printers" = "yes";
+          "printing" = "cups";
+          "printcap name" = "cups";
+        };
+        "printers" = {
+          "comment" = "All Printers";
+          "path" = "/var/spool/samba";
+          "public" = "yes";
+          "browseable" = "yes";
+          # to allow user 'guest account' to print.
+          "guest ok" = "yes";
+          "writable" = "no";
+          "printable" = "yes";
+          "create mode" = 0700;
+        };
+      };
+    };
+    systemd.tmpfiles.rules = [
+      "d /var/spool/samba 1777 root root -"
+    ];
 
     hardware.printers = {
       ensurePrinters = [
