@@ -36,6 +36,7 @@ in {
   config = mkIf cfg.enable {
     nixpkgs.overlays = [
       (import inputs.emacs-overlay)
+      inputs.nix-doom-emacs-unstraightened.overlays.default
     ];
 
     services.emacs = {
