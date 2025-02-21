@@ -299,10 +299,6 @@ Used in loading config specific to those systems.")
 ;; set default clone directory. This is the same on all machines
 (setq magit-clone-default-directory "~/Projects/")
 
-;; lsp haskell
-(after! lsp-haskell
-  (setq lsp-haskell-formatting-provider "brittany"))
-
 ;; nix mode
 ;; set formatter to alejandra
 (set-formatter! 'alejandra '("alejandra" "--quiet") :modes '(nix-mode))
@@ -314,6 +310,10 @@ Used in loading config specific to those systems.")
 
   ;; set nix to use alejandra rather than nixfmt
   (setf (alist-get 'nix apheleia-mode-alist) 'alejandra))
+
+(after! (:and nix-mode eglot)
+  (add-to-list 'eglot-server-programs '(nix-mode . ("nil" :initializationOptions
+                                                    (:formatting (:command ["alejandra" "--quiet" "-"]))))))
 
 ;; lua mode
 (after! lua-mode
