@@ -77,8 +77,8 @@ in {
       graphviz
       imagemagick
       languagetool
+      nil
       nodePackages.mermaid-cli
-      pass
       ripgrep
       sqlite
       texlive.combined.scheme-medium

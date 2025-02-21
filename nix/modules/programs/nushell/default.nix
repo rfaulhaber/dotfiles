@@ -33,7 +33,7 @@ in {
     plugins = mkOption {
       type = types.listOf types.package;
       description = "Nushell plugins to include.";
-      default = [  ];
+      default = [];
     };
   };
 
