@@ -59,9 +59,8 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     nix-doom-emacs-unstraightened = {
       url = "github:marienz/nix-doom-emacs-unstraightened";
-inputs.nixpkgs.follows = "";
+      inputs.nixpkgs.follows = "";
     };
-
   };
 
   outputs = inputs @ {

@@ -53,7 +53,12 @@ in {
         if (item.name != "type" && item.value.enable)
         then acc ++ [item.name]
         else acc;
-      desktopsEnabled = pipe config.modules.desktop.environment [attrsToList (foldl foldPred [])];
+      desktopsEnabled = pipe config.modules.desktop.environment [
+        (filterAttrs
+          (_: v: typeOf v == "set" && hasAttr "enable" v))
+        attrsToList
+        (foldl foldPred [])
+      ];
     in [
       {
         assertion = (length desktopsEnabled) == 1;
@@ -62,6 +67,10 @@ in {
       {
         assertion = cfg.environment.type != "none";
         message = "Desktop type cannot be 'none' if a desktop is enabled.";
+      }
+      {
+        assertion = cfg.environment.isX11 || cfg.environment.isWayland;
+        message = "Desktop should be either X11 or Wayland, got ${toString cfg.environment.isX11} ${toString cfg.environment.isWayland}";
       }
     ];
 
