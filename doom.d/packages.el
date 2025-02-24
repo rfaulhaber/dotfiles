@@ -46,6 +46,9 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;;(package! builtin-package :recipe (:branch "develop"))
 
+;; NOTE many of these packages that pull from github repos are pinned to satisfy
+;; the requirements of nix-doom-emacs-unstraightened
+
 ;; unpinned packages
 (unpin! org-roam)
 
@@ -65,22 +68,24 @@
 ;; (package! hyperbole)
 
 ;; non-*elpa packages
-(package! caseconv
+(package! caseconv 
+  :pin "b5395df6a734b70acf5cc76b9d64039ce5305009"
   :recipe (:host github
-           :repo "rfaulhaber/caseconv.el"
-           :build t))
+           :repo "rfaulhaber/caseconv.el"))
 
 (package! nix-local-buffer
+  :pin "3cfc659c1e3ff95e03321462a3e12e04622174f2"
   :recipe (:host github
-           :repo "rfaulhaber/nix-local-buffer"
-           :build t))
+           :repo "rfaulhaber/nix-local-buffer"))
 
 (package! screenshot
+  :pin "2770c0cfefe1cc09d55585f4f2f336a1b26e610e"
   :recipe (:host github
            :repo "tecosaur/screenshot"
            :branch "master"))
 
-(package! org-pandoc-import
+(package! org-pandoc-import 
+  :pin "db308f1a05be26ce5b287633637ce554599b1377"
   :recipe (:host github
            :repo "tecosaur/org-pandoc-import"
            :files ("*.el" "filters" "preprocessors")))
@@ -88,6 +93,7 @@
 ;; org roam ui
 (package! websocket)
 (package! org-roam-ui
+  :pin "5ac74960231db0bf7783c2ba7a19a60f582e91ab"
   :recipe (:host github
            :repo "org-roam/org-roam-ui"
            :build t
@@ -96,16 +102,6 @@
 ;; this is to get around the fact that the package version of this file is
 ;; hosted on a server that sometimes goes down
 (package! json-process-client
+  :pin "c4385859ada9b7803698a1f0199fea7fc8880214"
   :recipe (:host github
            :repo "emacsmirror/json-process-client"))
-
-;; janet config
-(package! janet-ts-mode
-  :recipe (:host github
-           :repo "sogaiu/janet-ts-mode"
-           :build t))
-
-(package! ajrepl
-  :recipe (:host github
-           :repo "sogaiu/ajrepl"
-           :build t))

@@ -6,10 +6,9 @@
 }:
 with lib;
 with lib.my; let
+  inherit (config.modules.desktop.environment) isX11 isWayland;
   cfg = config.modules.programs.nushell;
   desktopCfg = config.modules.desktop;
-  isX11 = desktopCfg.environment.type == "x11";
-  isWayland = desktopCfg.environment.type == "wayland";
 in {
   options.modules.programs.nushell = {
     enable = mkEnableOption false;

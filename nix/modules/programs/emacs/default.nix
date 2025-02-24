@@ -9,10 +9,68 @@
 }:
 with lib; let
   cfg = config.modules.programs.emacs;
+  inherit (config.modules.desktop.environment) isX11;
   shellAliases = {
     ec = "emacsclient";
     eo = "emacsclient -n"; # "emacs open"
   };
+  emacsPackages = epkgs:
+    with epkgs; [
+      pdf-tools
+      prettier
+      vterm
+      tree-sitter
+      tree-sitter-langs
+      treesit-grammars.with-all-grammars # probably overkill but works for now
+    ];
+
+  # dependencies for my very specific configuration of doom
+  # see doom.d/init.el for more
+  # we need to include every program either directly or indirectly referenced in config
+  # TODO can I rewrite this such that they're not all globally available?
+  userPackages = with pkgs;
+    [
+      alejandra
+      ast-grep
+      clang # unfortunately we need a C compiler for various dependencies
+      cmake
+      direnv
+      djvulibre
+      editorconfig-core-c
+      fd
+      fzf
+      git
+      gnumake
+      gnutls
+      graphviz
+      imagemagick
+      languagetool
+      nil
+      nodePackages.mermaid-cli
+      ripgrep
+      sqlite
+      texlive.combined.scheme-medium
+      wordnet
+      zstd
+    ]
+    ++ lib.optionals isX11 [
+      xdotool
+      xorg.xprop
+      xorg.xwininfo
+    ]
+    ++ lib.optional config.modules.services.mail.enable mu;
+
+  # TODO make unstraightened work lol
+  unstraightenedPackage = pkgs.emacsWithDoom {
+    emacs = cfg.package;
+    doomDir = config.dotfiles.emacsDir;
+    doomLocalDir = "${config.user.home}/.local/share/nix-doom";
+    extraPackages = emacsPackages;
+    extraBinPackages = userPackages;
+    experimentalFetchTree = true;
+  };
+
+  normalPackage = with pkgs; ((emacsPackagesFor cfg.package).withPackages emacsPackages);
 in {
   options.modules.programs.emacs = {
     enable = mkEnableOption false;
@@ -35,7 +93,7 @@ in {
 
   config = mkIf cfg.enable {
     nixpkgs.overlays = [
-      (import inputs.emacs-overlay)
+      inputs.emacs-overlay.overlays.default
       inputs.nix-doom-emacs-unstraightened.overlays.default
     ];
 
@@ -43,53 +101,15 @@ in {
       enable = true;
       install = true;
       defaultEditor = true;
-      package = with pkgs; ((emacsPackagesFor cfg.package).withPackages
-        (epkgs:
-          with epkgs; [
-            pdf-tools
-            prettier
-            vterm
-            tree-sitter
-            tree-sitter-langs
-            treesit-grammars.with-all-grammars # probably overkill but works for now
-          ]));
+      package = mkIf (!cfg.doomUnstraightened) normalPackage;
     };
 
     # emacs dependency
     modules.programs.aspell.enable = true;
 
-    # dependencies for my very specific configuration of doom
-    # see doom.d/init.el for more
-    # we need to include every program either directly or indirectly referenced in config
-    # TODO can I rewrite this such that they're not all globally available?
-    user.packages = with pkgs; [
-      (mkIf (config.modules.services.mail.enable) mu)
-      alejandra
-      ast-grep
-      clang # unfortunately we need a C compiler for various dependencies
-      cmake
-      direnv
-      djvulibre
-      editorconfig-core-c
-      fd
-      fzf
-      git
-      gnumake
-      gnutls
-      graphviz
-      imagemagick
-      languagetool
-      nil
-      nodePackages.mermaid-cli
-      ripgrep
-      sqlite
-      texlive.combined.scheme-medium
-      wordnet
-      xdotool
-      xorg.xprop
-      xorg.xwininfo
-      zstd
-    ];
+    user.packages =
+      userPackages
+      ++ lib.optional cfg.doomUnstraightened unstraightenedPackage;
 
     environment.etc."xdg/mimeapps.list" = {
       text = ''
