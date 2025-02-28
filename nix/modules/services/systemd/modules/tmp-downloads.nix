@@ -19,11 +19,10 @@ in {
   config = mkIf cfg.enable {
     systemd.user.services.tmp-downloads = let
       inherit (config.user) name uid;
-      userRunDir = "/run/user/${toString uid}/downloads";
       nuExec = "${pkgs.nushell}/bin/nu";
       scriptPath = "${config.dotfiles.binDir}/tmp-downloads.nu";
       baseCmd = "${nuExec} ${scriptPath}";
-      cmd = "${baseCmd} --target ${userRunDir} --link ${cfg.targetDir}";
+      cmd = "${baseCmd} --link ${cfg.targetDir}";
     in {
       path = [pkgs.nushell];
       after = ["local-fs.target"];

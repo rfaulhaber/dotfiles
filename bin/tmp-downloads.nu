@@ -1,7 +1,5 @@
-def main [--target: path, --link: path] {
-  if not ($target | path exists) {
-    mkdir $target
-  }
+def main [--link: path] {
+  let target = (mktemp -d -p /tmp)
 
   ^ln -sfT $target $link
 }
