@@ -56,11 +56,11 @@
       flake = false;
     };
     murex.url = "github:rfaulhaber/murex";
-    flake-parts.url = "github:hercules-ci/flake-parts";
     nix-doom-emacs-unstraightened = {
       url = "github:marienz/nix-doom-emacs-unstraightened";
       inputs.nixpkgs.follows = "";
     };
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
   outputs = inputs @ {
@@ -72,6 +72,7 @@
     nixos-generators,
     nix-darwin,
     emacs-overlay,
+    flake-parts,
     ...
   }: let
     inherit (lib.my) mapModules mkPkgs;
@@ -176,8 +177,6 @@
         };
       };
       checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
-      nixosModules.nixosGenerateFormats = {
-      };
     }
     # x86_64-linux-specific packages
     # TODO custom packages should be added to pkgs, made available globally
@@ -291,7 +290,7 @@
         };
 
         generate = pkgs.mkShell {
-          buildInputs = with pkgs; [
+          buildInputs =  [
             nixos-generators.packages.${system}.default
           ];
         };

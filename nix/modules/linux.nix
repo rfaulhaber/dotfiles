@@ -1,6 +1,5 @@
 # linux system defaults
 {
-  config,
   lib,
   pkgs,
   ...

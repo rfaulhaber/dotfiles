@@ -24,19 +24,12 @@ in {
     isX11 = mkOption {
       description = "If true, `type` is an X11 desktop.";
       type = types.bool;
-      default = false;
+      default = cfg.type == "x11";
     };
     isWayland = mkOption {
       description = "If true, `type` is a Wayland desktop.";
       type = types.bool;
-      default = false;
-    };
-  };
-
-  config = {
-    modules.desktop.environment = {
-      isX11 = cfg.type == "x11";
-      isWayland = cfg.type == "wayland";
+      default = cfg.type == "wayland";
     };
   };
 }

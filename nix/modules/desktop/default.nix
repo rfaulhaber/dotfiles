@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  home-manager,
   ...
 }:
 with lib;
@@ -50,7 +49,7 @@ in {
     assertions = let
       foldPred = acc: item:
       # TODO probably a more elegant way to do this
-        if (item.name != "type" && item.value.enable)
+        if (item.value.enable)
         then acc ++ [item.name]
         else acc;
       desktopsEnabled = pipe config.modules.desktop.environment [
