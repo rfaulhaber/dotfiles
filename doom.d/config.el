@@ -140,6 +140,13 @@ Used in loading config specific to those systems.")
 ;; use rust-analyzer for rust lsp server
 (setq rustic-lsp-server 'rust-analyzer)
 
+;; TODO: when moving to treesit vs emacs-tree-sitter, figure this out
+;; use treesit instead of emacs-tree-sitter for rust
+;; (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+;; (setq rust-mode-treesitter-derive t)
+;; (after! (:or rust-mode rust-ts-mode)
+;;   (rustic-mode))
+
 ;; org
 (after! org
   (load! "./self/org-templates.el")
@@ -311,9 +318,17 @@ Used in loading config specific to those systems.")
   ;; set nix to use alejandra rather than nixfmt
   (setf (alist-get 'nix apheleia-mode-alist) 'alejandra))
 
+;; TODO when moving to treesit mode, figure this out!
+;; (when (featurep 'nix-ts-mode)
+;;   (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-ts-mode)))
+;; (after! (:and nix-ts-mode eglot)
+;;   (add-to-list 'eglot-server-programs '(nix-ts-mode . ("nil" :initializationOptions
+;;                                                        (:formatting (:command ["alejandra" "--quiet" "-"]))))))
+
 (after! (:and nix-mode eglot)
   (add-to-list 'eglot-server-programs '(nix-mode . ("nil" :initializationOptions
                                                     (:formatting (:command ["alejandra" "--quiet" "-"]))))))
+
 
 ;; lua mode
 (after! lua-mode

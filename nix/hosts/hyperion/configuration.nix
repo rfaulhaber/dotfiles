@@ -19,7 +19,7 @@
       emacs = {
         enable = true;
         package = pkgs.emacs-git;
-        # doomUnstraightened = true;
+        doomUnstraightened.enable = true;
       };
       neovim.enable = true;
       # how many terminals does a guy need?

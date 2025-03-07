@@ -7,7 +7,6 @@
 }:
 with lib; let
   cfg = config.modules.programs.wezterm;
-  toTOML = pkgs.formatters.toml {};
 in {
   options.modules.programs.wezterm = {
     enable = mkEnableOption false;
@@ -19,7 +18,9 @@ in {
   };
 
   config = mkIf cfg.enable {
-    user.packages = [inputs.wezterm.packages.${pkgs.system}.default];
+    user.packages = [
+      inputs.wezterm.packages.${pkgs.system}.default
+    ];
 
     # NOTE: using home-manager for wezterm creates a single wezterm.lua file
     # this is undesirable because of my wezterm setup. instead we just link my

@@ -50,7 +50,7 @@
 ;; the requirements of nix-doom-emacs-unstraightened
 
 ;; unpinned packages
-(unpin! org-roam)
+;; (unpin! org-roam)
 
 ;; *elpa packages
 (package! deadgrep)
@@ -64,8 +64,15 @@
 (package! kurecolor)
 (package! nushell-ts-mode)
 (package! realgud-lldb)
+;; (package! nix-ts-mode)
 
 ;; (package! hyperbole)
+
+;; rustic isn't maintained anymore and doom still uses the main branch
+(package! rustic
+  :pin "1f5c47b87cded60bec6ccd3c0e7cb3c262709769"
+  :recipe (:host github
+           :repo "emacs-rustic/rustic"))
 
 ;; non-*elpa packages
 (package! caseconv 

@@ -61,14 +61,16 @@ with lib; let
     ++ lib.optional config.modules.services.mail.enable mu;
 
   # TODO make unstraightened work lol
-  unstraightenedPackage = pkgs.emacsWithDoom {
-    emacs = cfg.package;
-    doomDir = config.dotfiles.emacsDir;
-    doomLocalDir = "${config.user.home}/.local/share/nix-doom";
-    extraPackages = emacsPackages;
-    extraBinPackages = userPackages;
-    experimentalFetchTree = true;
-  };
+  unstraightenedPackage = emacsPkg:
+    emacsPkg {
+      emacs = cfg.package;
+      # TODO point to something else?
+      doomDir = ../../../../doom.d;
+      doomLocalDir = "${config.user.home}/.local/share/nix-doom";
+      extraPackages = emacsPackages;
+      extraBinPackages = userPackages;
+      experimentalFetchTree = true;
+    };
 
   normalPackage = with pkgs; ((emacsPackagesFor cfg.package).withPackages emacsPackages);
 in {
@@ -84,10 +86,13 @@ in {
       type = types.bool;
       default = false;
     };
-    doomUnstraightened = mkOption {
-      description = "If enabled, uses Nix Doom Unstraightened.";
-      type = types.bool;
-      default = false;
+    doomUnstraightened = {
+      enable = mkEnableOption false;
+      setDefault = mkOption {
+        description = "If true, sets Nix Doom Unstraightened as default Emacs package.";
+        type = types.bool;
+        default = false;
+      };
     };
   };
 
@@ -97,19 +102,27 @@ in {
       inputs.nix-doom-emacs-unstraightened.overlays.default
     ];
 
-    services.emacs = {
-      enable = true;
-      install = true;
-      defaultEditor = true;
-      package = mkIf (!cfg.doomUnstraightened) normalPackage;
-    };
+    services.emacs =
+      {
+        enable = true;
+        install = true;
+        defaultEditor = true;
+      }
+      // lib.optionalAttrs (!cfg.doomUnstraightened.setDefault) {
+        package = normalPackage;
+      };
 
     # emacs dependency
     modules.programs.aspell.enable = true;
 
-    user.packages =
+    user.packages = let
+      emacsPkg =
+        if cfg.doomUnstraightened.setDefault
+        then pkgs.emacsWithDoom
+        else pkgs.doomEmacs;
+    in
       userPackages
-      ++ lib.optional cfg.doomUnstraightened unstraightenedPackage;
+      ++ lib.optional cfg.doomUnstraightened.enable (unstraightenedPackage emacsPkg);
 
     environment.etc."xdg/mimeapps.list" = {
       text = ''

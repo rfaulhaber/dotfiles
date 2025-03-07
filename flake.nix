@@ -23,10 +23,9 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    emacs-overlay = {
-      url = "github:nix-community/emacs-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
+
     # agenix is super busted. doesn't work for network deployments, and doesn't
     # work when trying to set a secret credential in /etc/fstab. Look into using
     # ragenix
@@ -34,14 +33,11 @@
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    hyprland = {
-      url = "github:hyprwm/Hyprland";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    wezterm = {
-      url = "github:wez/wezterm?dir=nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+
+    hyprland.url = "github:hyprwm/Hyprland/v0.47.2-b";
+
+    wezterm.url = "github:wez/wezterm?dir=nix";
+
     disko = {
       url = "github:nix-community/disko/latest";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -290,7 +286,7 @@
         };
 
         generate = pkgs.mkShell {
-          buildInputs =  [
+          buildInputs = [
             nixos-generators.packages.${system}.default
           ];
         };
