@@ -137,15 +137,13 @@ Used in loading config specific to those systems.")
 ;; GPG key used by org-crypt
 (setq org-crypt-key "A90BC7B722983F6BB8EAC1DA144A6B5FBB68FC9D")
 
+;; rust/rustic
+
 ;; use rust-analyzer for rust lsp server
 (setq rustic-lsp-server 'rust-analyzer)
 
-;; TODO: when moving to treesit vs emacs-tree-sitter, figure this out
 ;; use treesit instead of emacs-tree-sitter for rust
-;; (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-;; (setq rust-mode-treesitter-derive t)
-;; (after! (:or rust-mode rust-ts-mode)
-;;   (rustic-mode))
+(setq rust-mode-treesitter-derive t)
 
 ;; org
 (after! org
@@ -275,11 +273,6 @@ Used in loading config specific to those systems.")
 ;; gnus
 (setq gnus-select-method '(nntp "us.newsdemon.com"))
 
-;; ix
-(setq
- ix-user "sys9"
- ix-token (string-trim (shell-command-to-string "pass ix")))
-
 ;; eshell
 (add-hook 'eshell-preoutput-filter-functions 'xterm-color-filter)
 (add-hook 'eshell-mode-hook
@@ -318,35 +311,34 @@ Used in loading config specific to those systems.")
   ;; set nix to use alejandra rather than nixfmt
   (setf (alist-get 'nix apheleia-mode-alist) 'alejandra))
 
-;; TODO when moving to treesit mode, figure this out!
-;; (when (featurep 'nix-ts-mode)
-;;   (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-ts-mode)))
-;; (after! (:and nix-ts-mode eglot)
-;;   (add-to-list 'eglot-server-programs '(nix-ts-mode . ("nil" :initializationOptions
-;;                                                        (:formatting (:command ["alejandra" "--quiet" "-"]))))))
-
-(after! (:and nix-mode eglot)
-  (add-to-list 'eglot-server-programs '(nix-mode . ("nil" :initializationOptions
-                                                    (:formatting (:command ["alejandra" "--quiet" "-"]))))))
-
+;; configure nix-ts-mode
+(add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-ts-mode))
 
 ;; lua mode
 (after! lua-mode
   ;; set LSP location
   (setq lsp-clients-lua-language-server-bin (executable-find "lua-language-server")))
 
-(after! (:and elixir-mode eglot)
-  (add-to-list 'eglot-server-programs
-               '(elixir-mode . ("elixir-ls"))))
-
 ;; nushell-ts-mode
 (if (treesit-language-available-p 'nu)
     (add-to-list 'auto-mode-alist '("\\.nu\\'" . nushell-ts-mode))
   (message "treesit language unavailable for nu!"))
 
-(after! (:and nushell-ts-mode eglot)
+;; eglot
+(after! eglot
   (add-to-list 'eglot-server-programs
-               '(nushell-ts-mode . ("nu" "--lsp"))))
+               '(nix-ts-mode . ("nil" :initializationOptions
+                                (:formatting (:command ["alejandra" "--quiet" "-"])))))
+
+  (add-to-list 'eglot-server-programs
+               '(nix-mode . ("nil" :initializationOptions
+                             (:formatting (:command ["alejandra" "--quiet" "-"])))))
+
+  (add-to-list 'eglot-server-programs
+               '(nushell-ts-mode . ("nu" "--lsp")))
+
+  (add-to-list 'eglot-server-programs
+               '(elixir-mode . ("elixir-ls"))))
 
 ;; ---------------------------------- treesit ----------------------------------
 

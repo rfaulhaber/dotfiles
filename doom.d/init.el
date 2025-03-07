@@ -17,6 +17,7 @@
 (doom! :input
 
        :completion
+       ;; (corfu +orderless)
        company           ; the ultimate code completion backend
        vertico           ; the search engine of the future
 
@@ -71,25 +72,24 @@
        (lsp +eglot +peek)
        magit             ; a git porcelain for Emacs
        pdf               ; pdf enhancements
-       tree-sitter
 
        :lang
        common-lisp       ; if you've seen one lisp, you've seen them all
        data              ; config/data formats
-       (elixir +lsp +tree-sitter)           ; erlang done right
+       (elixir +lsp)           ; erlang done right
        emacs-lisp        ; drown in parentheses
-       (json +lsp +tree-sitter)              ; At least it ain't XML
-       (javascript +lsp +tree-sitter)          ; all(hope(abandon(ye(who(enter(here))))))
+       (json +lsp)              ; At least it ain't XML
+       (javascript +lsp)          ; all(hope(abandon(ye(who(enter(here))))))
        latex             ; writing papers in Emacs has never been so fun
        markdown            ; writing docs for people to ignore
-       (nix +lsp +tree-sitter)              ; I hereby declare "nix geht mehr!"
+       (nix +lsp)              ; I hereby declare "nix geht mehr!"
        (org +hugo +journal +pandoc +present +roam2 +noter +dragndrop +pretty +pomodoro)               ; organize your plain life in plain text
-       (python +lsp +pyright +tree-sitter)           ; beautiful is better than ugly
+       (python +lsp +pyright)           ; beautiful is better than ugly
        rest              ; Emacs as a REST client
-       (rust +lsp +tree-sitter)               ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+       (rust +lsp)               ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        scheme            ; a fully conniving family of lisps
-       (sh +lsp +tree-sitter)         ; she sells {ba,z,fi}sh shells on the C xor
-       (web +lsp +tree-sitter)               ; the tubes
+       (sh +lsp)         ; she sells {ba,z,fi}sh shells on the C xor
+       (web +lsp)               ; the tubes
        yaml              ; JSON, but readable
 
        :email

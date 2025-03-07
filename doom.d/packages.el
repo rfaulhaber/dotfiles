@@ -64,7 +64,7 @@
 (package! kurecolor)
 (package! nushell-ts-mode)
 (package! realgud-lldb)
-;; (package! nix-ts-mode)
+(package! nix-ts-mode)
 
 ;; (package! hyperbole)
 
