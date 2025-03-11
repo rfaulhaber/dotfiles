@@ -10,6 +10,7 @@
   ...
 }:
 with lib; let
+  inherit (config.modules.desktop.environment) isX11 isWayland;
   cfg = config.modules.desktop.random-wallpaper;
   description = "Sets wallpaper using random-wallpaper script.";
 in {
@@ -36,13 +37,14 @@ in {
 
   config = mkIf cfg.enable (mkMerge [
     {
+      # TODO random-wallpaper should be a nix module
       systemd.user.services.random-wallpaper = let
         scriptPath = "${config.dotfiles.binDir}/random-wallpaper.nu";
         nuExec = "${pkgs.nushell}/bin/nu";
         desktop =
           if config.modules.desktop.environment.hyprland.enable
           then "hyprland"
-          else if config.modules.desktop.wayland.enable
+          else if isWayland
           then "wayland"
           else "xserver";
         exec = "${nuExec} -c '${scriptPath} --desktop ${desktop} --token (open ${cfg.token}) ${cfg.query}'";
@@ -50,14 +52,13 @@ in {
         inherit description;
         path = with pkgs;
           [nushell]
-          ++ lib.optionals (desktop == "hyprland") [
-            inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland
-            inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
-          ];
-        after = ["graphical-session-pre.target" "network-online.target"] ++ lib.optional (desktop == "hyprland") "swww.service";
+          ++ lib.optional isWayland inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
+          ++ lib.optional isX11 feh
+          ++ lib.optional (desktop == "hyprland") inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+        after = ["graphical-session-pre.target" "network-online.target"] ++ lib.optional isWayland "swww.service";
         partOf = ["graphical-session.target"];
         wantedBy = ["graphical-session.target"];
-        requires = lib.optional (desktop == "hyprland") "swww.service";
+        requires = lib.optional isWayland "swww.service";
         serviceConfig = {
           Type = "oneshot";
           ExecStart = "${exec}";

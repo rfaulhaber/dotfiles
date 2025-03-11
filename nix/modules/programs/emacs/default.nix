@@ -73,6 +73,13 @@ with lib; let
     };
 
   normalPackage = with pkgs; ((emacsPackagesFor cfg.package).withPackages emacsPackages);
+
+  resolvedEmacsPkg = let
+    emacsPkg =
+      if cfg.doomUnstraightened.setDefault
+      then pkgs.emacsWithDoom
+      else pkgs.doomEmacs;
+  in (unstraightenedPackage emacsPkg);
 in {
   options.modules.programs.emacs = {
     enable = mkEnableOption false;
@@ -102,27 +109,22 @@ in {
       inputs.nix-doom-emacs-unstraightened.overlays.default
     ];
 
-    services.emacs =
-      {
-        enable = true;
-        install = true;
-        defaultEditor = true;
-      }
-      // lib.optionalAttrs (!cfg.doomUnstraightened.setDefault) {
-        package = normalPackage;
-      };
+    services.emacs = {
+      enable = true;
+      install = true;
+      defaultEditor = true;
+      package =
+        if cfg.doomUnstraightened.setDefault
+        then resolvedEmacsPkg
+        else normalPackage;
+    };
 
     # emacs dependency
     modules.programs.aspell.enable = true;
 
-    user.packages = let
-      emacsPkg =
-        if cfg.doomUnstraightened.setDefault
-        then pkgs.emacsWithDoom
-        else pkgs.doomEmacs;
-    in
+    user.packages =
       userPackages
-      ++ lib.optional cfg.doomUnstraightened.enable (unstraightenedPackage emacsPkg);
+      ++ lib.optional cfg.doomUnstraightened.enable resolvedEmacsPkg;
 
     environment.etc."xdg/mimeapps.list" = {
       text = ''
@@ -135,7 +137,7 @@ in {
 
     home.programs.nushell.shellAliases = mkIf config.modules.programs.nushell.enable shellAliases;
 
-    home.file.doomconfig = {
+    home.file.doomconfig = mkIf (!cfg.doomUnstraightened.enable) {
       source = config.dotfiles.emacsDir;
       target = "${config.user.home}/.config/doom";
     };

@@ -45,10 +45,13 @@ def main [--token: string, --desktop: string, --monitor: string, query?: string]
     match $desktop {
         "hyprland" => {
             # TODO handle multiple displays when it becomes relevant
-            swww img $filename
+            ^swww img $filename
+        },
+        "wayland" => {
+            ^swww img $filename
         },
         "xserver" => {
-            feh --bg-fill $filename
+            ^feh --bg-fill $filename
         }
     }
 

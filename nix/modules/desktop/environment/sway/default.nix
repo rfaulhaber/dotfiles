@@ -2,13 +2,13 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 with lib; let
   cfg = config.modules.desktop.environment.sway;
 in {
   imports = [
-    ./waybar.nix
     ../../wayland
   ];
   options.modules.desktop.environment.sway = {enable = mkEnableOption false;};
@@ -32,11 +32,12 @@ in {
         enable = true;
         config = {
           modifier = "Mod4";
-          terminal = "kitty"; # TODO figure out automatically
+          terminal = "wezterm"; # TODO figure out automatically
           wrapperFeatures.gtk = true;
           keybindings = mkOptionDefault {
-            "$mod+Return" = "exec ${pkgs.kitty}/bin/kitty";
+            "$mod+Return" = "exec ${pkgs.kitty}/bin/wezterm";
             "$mod+b" = "exec ${pkgs.firefox-devedition-bin}/bin/firefox-developer-edition";
+            "$mod+e" = "exec emacsclient -c";
           };
         };
       };
@@ -46,7 +47,7 @@ in {
           enable = true;
           settings = {
             main = {
-              terminal = "${pkgs.kitty}/bin/kitty";
+              terminal = "${pkgs.kitty}/bin/wezterm";
             };
           };
         };
@@ -66,9 +67,7 @@ in {
     hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.latest;
 
     environment.systemPackages = with pkgs; [
-      # grim # screenshot functionality
-      # slurp # screenshot functionality
-      wl-clipboard # wl-copy and wl-paste for copy/paste from stdin / stdout
+      inputs.swww.packages.${pkgs.system}.swww
     ];
   };
 }

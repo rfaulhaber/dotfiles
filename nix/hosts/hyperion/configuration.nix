@@ -19,7 +19,10 @@
       emacs = {
         enable = true;
         package = pkgs.emacs-git;
-        doomUnstraightened.enable = true;
+        doomUnstraightened = {
+          enable = true;
+          # setDefault = true;
+        };
       };
       neovim.enable = true;
       # how many terminals does a guy need?
@@ -88,9 +91,11 @@
     };
     desktop = {
       enable = true;
-      environment.hyprland = lib.mkDefault {
+      environment.bspwm = lib.mkDefault {
         enable = true;
-        extraStartupPrograms = ["1password"];
+        extraStartupPrograms = [
+          "1password"
+        ];
       };
       random-wallpaper = {
         enable = true;
