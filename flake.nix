@@ -59,18 +59,76 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = inputs @ {
-    self,
-    nixpkgs,
-    home-manager,
-    deploy-rs,
-    nixos-hardware,
-    nixos-generators,
-    nix-darwin,
-    emacs-overlay,
-    flake-parts,
-    ...
-  }: let
+  outputs = inputs @ {flake-parts, ...}:
+  flake-parts.lib.mkFlake { inherit inputs; } (top@{ config, withSystem, moduleWithSystem, ... }: {
+    systems = [
+      # systems for which you want to build the `perSystem` attributes
+      "x86_64-linux"
+      "aarch64-linux"
+      "aarch64-darwin"
+    ];
+    imports = [
+    ];
+    flake = { config, inputs', ... }: {
+      templates = import ./nix/templates;
+
+      deploy = {
+        sshUser = "ryan";
+        autoRollback = true;
+        magicRollback = true;
+        nodes.atlas = import ./nix/hosts/atlas/deploy.nix {
+          inherit (inputs') deploy-rs;
+          inherit (config) nixosConfigurations;
+      };
+        nodes.pallas = import ./nix/hosts/pallas/deploy.nix {
+          inherit (inputs') deploy-rs;
+          inherit (config) nixosConfigurations;
+      };
+        };
+
+      nixosConfigurations = {
+        hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
+          system = "x86_64-linux";
+        };
+        atlas = mkHost ./nix/hosts/atlas/configuration.nix {
+          system = "x86_64-linux";
+        };
+        helios = mkHost ./nix/hosts/helios/configuration.nix {
+          system = "x86_64-linux";
+        };
+        pallas = mkHost ./nix/hosts/pallas/configuration.nix {
+          system = "aarch64-linux";
+        };
+        nike = mkHost ./nix/hosts/nike/configuration.nix {
+          system = "aarch64-linux";
+        };
+        nexus = mkHost ./nix/hosts/nexus/configuration.nix {
+          system = "x86_64-linux";
+        };
+      };
+
+      };
+    };
+    perSystem = { config, pkgs, system, inputs', ... }: {
+      formatter = pkgs.alejandra;
+
+      apps = {
+        deploy-rs =  inputs'.deploy-rs.apps.default;
+        generate = inputs'.nixos-generators.apps.default;
+      };
+
+
+
+      # Recommended: move all package definitions here.
+      # e.g. (assuming you have a nixpkgs input)
+      # packages.foo = pkgs.callPackage ./foo/package.nix { };
+      # packages.bar = pkgs.callPackage ./bar/package.nix {
+      #   foo = config.packages.foo;
+      # };
+    };
+  });
+
+let
     inherit (lib.my) mapModules mkPkgs;
 
     pkgs = mkPkgs nixpkgs [];
@@ -84,16 +142,6 @@
     });
   in
     {
-      templates = {
-        rust = {
-          path = ./nix/templates/rust;
-          description = "Rust project template";
-        };
-        emacs-lisp = {
-          path = ./nix/templates/emacs-lisp;
-          description = "Emacs Lisp template";
-        };
-      };
 
       # TODO utilize top-level nixosModules
 
@@ -174,124 +222,4 @@
       };
       checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     }
-    # x86_64-linux-specific packages
-    # TODO custom packages should be added to pkgs, made available globally
-    # right now, my custom aarch64 installer can only be built on x86_64 linux
-    // {
-      packages.x86_64-linux = let
-        system = "x86_64-linux";
-        pkgs = import nixpkgs {
-          inherit system;
-        };
-      in {
-        roc-rk3328-cc-bootloader = import ./nix/pkgs/roc-rk3328-cc-bootloader {
-          inherit pkgs;
-          lib = pkgs.lib;
-        };
-
-        # run with:
-        # nix build .#arm-roc-installer
-        arm-roc-installer = nixos-generators.nixosGenerate {
-          system = "aarch64-linux";
-          modules = [
-            ./nix/installers/aarch64-linux/configuration.nix
-          ];
-          specialArgs = {
-            inherit inputs;
-          };
-          customFormats.aarch64-linux-roc = import ./nix/formats/aarch64/linux/renegade-roc/configuration.nix {
-            inherit pkgs;
-            bootloader = self.packages.x86_64-linux.roc-rk3328-cc-bootloader;
-          };
-          format = "aarch64-linux-roc";
-        };
-
-        # supports raspberry pi up to version 4
-        arm-installer-generic = nixos-generators.nixosGenerate {
-          system = "aarch64-linux";
-          modules = [
-            ./nix/installers/aarch64-linux/configuration.nix
-          ];
-          specialArgs = {
-            inherit inputs;
-          };
-          format = "sd-aarch64-installer";
-        };
-
-        # arm-installer-rpi5 = nixos-generators.nixosGenerate {
-        #   system = "aarch64-linux";
-        #   modules = [
-        #     ./nix/installers/aarch64-linux/configuration.nix
-        #   ];
-        #   specialArgs = {
-        #     inherit inputs;
-        #   };
-        #   customFormats.aarch64-linux-rpi5 = import ./nix/formats/aarch64/linux/raspberry-pi/5/configuration.nix {
-        #     inherit pkgs inputs;
-        #   };
-        #   format = "aarch64-linux-rpi5";
-        # };
-
-        x86_64-installer-generic = nixos-generators.nixosGenerate {
-          system = "x86_64-linux";
-          modules = [
-            ./nix/installers/x86_64-linux/configuration.nix
-          ];
-          specialArgs = {
-            inherit inputs;
-          };
-          format = "install-iso";
-        };
-      };
-    }
-    // (let
-      supportedSystems = ["x86_64-linux" "aarch64-darwin"];
-      forSystems = systems: f:
-        nixpkgs.lib.genAttrs systems
-        (system:
-          f system (import nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-          }));
-      forAllSystems = forSystems supportedSystems;
-    in {
-      formatter = forAllSystems (system: pkgs: pkgs.alejandra);
-      apps = forAllSystems (system: pkgs: {
-        # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
-        # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
-        deploy-rs = deploy-rs.defaultApp."${system}";
-        generate = nixos-generators.apps.${system}.default;
-      });
-      devShells = forAllSystems (system: pkgs: {
-        deploy-rs = pkgs.mkShell {
-          buildInputs = [deploy-rs.defaultPackage."${system}"];
-        };
-
-        luaDev = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            lua-language-server
-            luajitPackages.fennel
-            luajitPackages.luasocket
-            stylua
-            fnlfmt
-          ];
-        };
-
-        cluster = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            ansible
-            terraform
-            vagrant
-          ];
-        };
-
-        generate = pkgs.mkShell {
-          buildInputs = [
-            nixos-generators.packages.${system}.default
-          ];
-        };
-
-        default = self.devShells.${system}.generate;
-      });
-    });
 }
