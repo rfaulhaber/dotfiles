@@ -102,6 +102,11 @@
       eno2.useDHCP = true;
     };
 
+    # should only get its static ip address from the pihole
+    dhcpcd.extraConfig = ''
+      blacklist 192.168.0.1
+    '';
+
     firewall = {
       enable = true;
       # required for pihole

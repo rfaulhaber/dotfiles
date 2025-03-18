@@ -181,6 +181,11 @@
     interfaces.enp5s0.useDHCP = true;
 
     networkmanager.enable = true;
+
+    # should only get its ip address from the pihole
+    dhcpcd.extraConfig = ''
+      blacklist 192.168.0.1
+    '';
   };
 
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
