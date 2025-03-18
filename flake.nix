@@ -60,166 +60,56 @@
   };
 
   outputs = inputs @ {flake-parts, ...}:
-  flake-parts.lib.mkFlake { inherit inputs; } (top@{ config, withSystem, moduleWithSystem, ... }: {
-    systems = [
-      # systems for which you want to build the `perSystem` attributes
-      "x86_64-linux"
-      "aarch64-linux"
-      "aarch64-darwin"
-    ];
-    imports = [
-    ];
-    flake = { config, inputs', ... }: {
-      templates = import ./nix/templates;
+    flake-parts.lib.mkFlake {inherit inputs;} (top @ {
+      config,
+      withSystem,
+      moduleWithSystem,
+      flake-parts-lib,
+      ...
+    }: {
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
+      imports = [
+      ];
+      flake = flakeArgs @ {
+        config,
+        inputs',
+        ...
+      }: let
+        inherit (flake-parts-lib) importApply;
+      in {
+        templates = import ./nix/templates;
 
-      deploy = {
-        sshUser = "ryan";
-        autoRollback = true;
-        magicRollback = true;
-        nodes.atlas = import ./nix/hosts/atlas/deploy.nix {
-          inherit (inputs') deploy-rs;
-          inherit (config) nixosConfigurations;
-      };
-        nodes.pallas = import ./nix/hosts/pallas/deploy.nix {
-          inherit (inputs') deploy-rs;
-          inherit (config) nixosConfigurations;
-      };
-        };
+        deploy = importApply ./nix/deploy/default.nix {inherit withSystem;};
 
-      nixosConfigurations = {
-        hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
-          system = "x86_64-linux";
-        };
-        atlas = mkHost ./nix/hosts/atlas/configuration.nix {
-          system = "x86_64-linux";
-        };
-        helios = mkHost ./nix/hosts/helios/configuration.nix {
-          system = "x86_64-linux";
-        };
-        pallas = mkHost ./nix/hosts/pallas/configuration.nix {
-          system = "aarch64-linux";
-        };
-        nike = mkHost ./nix/hosts/nike/configuration.nix {
-          system = "aarch64-linux";
-        };
-        nexus = mkHost ./nix/hosts/nexus/configuration.nix {
-          system = "x86_64-linux";
+        flakeModules = {
+          modules = importApply ./nix/modules/default.nix {inherit withSystem;};
+          hosts = importApply ./nix/hosts/default.nix {inherit withSystem;};
         };
       };
+      perSystem = {
+        config,
+        pkgs,
+        system,
+        inputs',
+        ...
+      }: {
+        formatter = pkgs.alejandra;
 
-      };
-    };
-    perSystem = { config, pkgs, system, inputs', ... }: {
-      formatter = pkgs.alejandra;
+        apps = {
+          deploy-rs = inputs'.deploy-rs.apps.default;
+          generate = inputs'.nixos-generators.apps.default;
+        };
 
-      apps = {
-        deploy-rs =  inputs'.deploy-rs.apps.default;
-        generate = inputs'.nixos-generators.apps.default;
-      };
-
-
-
-      # Recommended: move all package definitions here.
-      # e.g. (assuming you have a nixpkgs input)
-      # packages.foo = pkgs.callPackage ./foo/package.nix { };
-      # packages.bar = pkgs.callPackage ./bar/package.nix {
-      #   foo = config.packages.foo;
-      # };
-    };
-  });
-
-let
-    inherit (lib.my) mapModules mkPkgs;
-
-    pkgs = mkPkgs nixpkgs [];
-
-    # TODO import lib functions that don't depend on pkgs
-    lib = nixpkgs.lib.extend (self: super: {
-      my = import ./nix/lib {
-        inherit inputs pkgs;
-        lib = self;
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+            inputs'.nixos-generators.packages.default
+            # inputs'.deploy-rs.packages.default
+          ];
+        };
       };
     });
-  in
-    {
-
-      # TODO utilize top-level nixosModules
-
-      overlays = mapModules ./nix/overlays import;
-
-      # these are the actual system configurations
-      # any particular system can be build with nixos-rebuild of course, but also:
-      # nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel
-
-      # TODO refactor as packages, configurations can be built as packages
-      # like so: packages.<platform>.nixosConfigurations.<hostname>.config.system.build.toplevel
-      nixosConfigurations = let
-        mkHost = lib.my.mkNixOSHost;
-      in {
-        hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
-          system = "x86_64-linux";
-        };
-        atlas = mkHost ./nix/hosts/atlas/configuration.nix {
-          system = "x86_64-linux";
-        };
-        helios = mkHost ./nix/hosts/helios/configuration.nix {
-          system = "x86_64-linux";
-        };
-        pallas = mkHost ./nix/hosts/pallas/configuration.nix {
-          system = "aarch64-linux";
-        };
-        nike = mkHost ./nix/hosts/nike/configuration.nix {
-          system = "aarch64-linux";
-        };
-        nexus = mkHost ./nix/hosts/nexus/configuration.nix {
-          system = "x86_64-linux";
-        };
-      };
-      #// lib.my.mkNixOSK8sNodes 4 ./nix/hosts/nexus/configuration.nix { system = "x86_64-linux"; masterAddress = "10.0.0.1"; };
-
-      # TODO add darwin configurations
-
-      # TODO write a mapHosts function, like here: https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix
-      # nixosConfigurations = mapHosts ./nix/hosts { };
-
-      deploy = {
-        sshUser = "ryan";
-        autoRollback = true;
-        magicRollback = true;
-        nodes = {
-          # run with: nix run '.#deploy-rs' '.#atlas'
-          atlas = {
-            hostname = "atlas";
-            profiles.system = {
-              user = "root";
-              path =
-                deploy-rs.lib.x86_64-linux.activate.nixos
-                self.nixosConfigurations.atlas;
-            };
-          };
-          pallas = {
-            hostname = "pallas";
-            profiles.system = {
-              user = "root";
-              fastConnection = true;
-              path =
-                deploy-rs.lib.aarch64-linux.activate.nixos
-                self.nixosConfigurations.pallas;
-            };
-          };
-          nike = {
-            hostname = "nike";
-            profiles.system = {
-              user = "root";
-              fastConnection = true;
-              activationTimeout = 600;
-              path =
-                deploy-rs.lib.aarch64-linux.activate.nixos
-                self.nixosConfigurations.nike;
-            };
-          };
-        };
-      };
-      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
-    }
 }
