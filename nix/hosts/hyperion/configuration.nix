@@ -53,6 +53,10 @@
     services = {
       zfs.enable = true;
       docker.enable = true;
+      printing = {
+        enable = true;
+        client = true;
+      };
       # samba-mount = {
       #   enable = true;
       #   mounts."${config.user.home}/calibre" = {
@@ -189,30 +193,6 @@
   };
 
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-
-  services.printing = {
-    enable = true;
-    drivers = with pkgs; [brlaser brgenml1lpr brgenml1cupswrapper];
-  };
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
-  };
-  hardware.printers = {
-    ensurePrinters = [
-      {
-        name = "Brother";
-        location = "Home";
-        deviceUri = "http://192.168.0.3:631/printers/Brother";
-        model = "drv:///brlaser.drv/brl2320d.ppd";
-        ppdOptions = {
-          PageSize = "A4";
-        };
-      }
-    ];
-    ensureDefaultPrinter = "Brother";
-  };
 
   system.autoUpgrade = {
     enable = true;

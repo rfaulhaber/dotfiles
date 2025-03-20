@@ -81,7 +81,21 @@
   networking = {
     hostName = "pallas";
     useDHCP = true;
-    interfaces.end0.useDHCP = true;
+
+    interfaces.end0 = {
+      useDHCP = true;
+      ipv6.addresses = let
+        addresses = [
+          "2600:1702:6710:117F:C40A:AFB1:A677:52E4"
+          "2600:1702:6710:117F:DA3A:DDFF:FEDA:2B5"
+        ];
+      in
+        builtins.map (address: {
+          inherit address;
+          prefixLength = 64;
+        })
+        addresses;
+    };
 
     firewall = {
       enable = true;
