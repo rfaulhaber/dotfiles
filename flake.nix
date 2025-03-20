@@ -56,7 +56,7 @@
       url = "github:marienz/nix-doom-emacs-unstraightened";
       inputs.nixpkgs.follows = "";
     };
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    # flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
   outputs = inputs @ {
@@ -114,17 +114,8 @@
         atlas = mkHost ./nix/hosts/atlas/configuration.nix {
           system = "x86_64-linux";
         };
-        helios = mkHost ./nix/hosts/helios/configuration.nix {
-          system = "x86_64-linux";
-        };
         pallas = mkHost ./nix/hosts/pallas/configuration.nix {
           system = "aarch64-linux";
-        };
-        nike = mkHost ./nix/hosts/nike/configuration.nix {
-          system = "aarch64-linux";
-        };
-        nexus = mkHost ./nix/hosts/nexus/configuration.nix {
-          system = "x86_64-linux";
         };
       };
       #// lib.my.mkNixOSK8sNodes 4 ./nix/hosts/nexus/configuration.nix { system = "x86_64-linux"; masterAddress = "10.0.0.1"; };
@@ -157,17 +148,6 @@
               path =
                 deploy-rs.lib.aarch64-linux.activate.nixos
                 self.nixosConfigurations.pallas;
-            };
-          };
-          nike = {
-            hostname = "nike";
-            profiles.system = {
-              user = "root";
-              fastConnection = true;
-              activationTimeout = 600;
-              path =
-                deploy-rs.lib.aarch64-linux.activate.nixos
-                self.nixosConfigurations.nike;
             };
           };
         };
