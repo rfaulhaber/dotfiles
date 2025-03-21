@@ -66,7 +66,13 @@
       moduleWithSystem,
       flake-parts-lib,
       ...
-    }: {
+    }: let
+      inherit (flake-parts-lib) importApply;
+      flakeModules = {
+        modules = import ./nix/modules/default.nix;
+        hosts = importApply ./nix/hosts/default.nix {inherit withSystem;};
+      };
+    in {
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -74,21 +80,23 @@
       ];
       imports = [
       ];
-      flake = flakeArgs @ {
-        config,
-        inputs',
-        ...
-      }: let
-        inherit (flake-parts-lib) importApply;
-      in {
+      flake = {
         templates = import ./nix/templates;
 
         deploy = importApply ./nix/deploy/default.nix {inherit withSystem;};
 
-        flakeModules = {
-          modules = importApply ./nix/modules/default.nix {inherit withSystem;};
-          hosts = importApply ./nix/hosts/default.nix {inherit withSystem;};
-        };
+        nixosModules = let mapModules = builtins.readDir ./nix/modules
+
+        nixosModules.modules = moduleWithSystem (
+          perSystem @ {
+            config,
+            pkgs,
+            system,
+            inputs',
+          }: nixos @ {...}: {
+            imports = [./nix/modules/default.nix];
+          }
+        );
       };
       perSystem = {
         config,
