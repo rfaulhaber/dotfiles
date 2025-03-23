@@ -22,5 +22,9 @@
   (setenv "PATH" (string-join path-elements ":")))
 
 ;; for some reason projectile can't find fd
-(when (not projectile-fd-executable)
-  (setq projectile-fd-executable (executable-find "fd")))
+(let ((fd-exec (executable-find "fd")))
+  (when (not projectile-fd-executable)
+    (setq projectile-fd-executable fd-exec))
+
+  (when (null doom-fd-executable)
+    (setq doom-fd-executable fd-exec)))
