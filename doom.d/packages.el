@@ -70,7 +70,7 @@
 
 ;; rustic isn't maintained anymore and doom still uses the main branch
 (package! rustic
-  :pin "1f5c47b87cded60bec6ccd3c0e7cb3c262709769"
+  :pin "22a5ef8bfd5a34ced945c2722938eb29632371d4"
   :recipe (:host github
            :repo "emacs-rustic/rustic"))
 
