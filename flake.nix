@@ -89,6 +89,10 @@
           path = ./nix/templates/rust;
           description = "Rust project template";
         };
+        rust-overlay = {
+          path = ./nix/templates/rust-overlay;
+          description = "rust-overlay project template";
+        };
         emacs-lisp = {
           path = ./nix/templates/emacs-lisp;
           description = "Emacs Lisp template";
