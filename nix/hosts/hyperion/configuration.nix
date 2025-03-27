@@ -151,12 +151,12 @@
     };
 
     loader = {
-      grub = {
+      systemd-boot = {
         enable = true;
-        useOSProber = true;
-        efiSupport = true;
-        device = "nodev";
-        gfxmodeEfi = "1024x768";
+        windows."windows-11" = {
+          title = "Windows 11";
+          efiDeviceHandle = "HD0c";
+        };
       };
 
       efi = {
