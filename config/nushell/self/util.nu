@@ -10,6 +10,6 @@ export def append-paths [...paths: string]: list<string> -> list<string> {
         | append $paths
 }
 
-export def is-wsl [] -> bool {
+export def is-wsl []: nothing -> bool {
   ('/proc/version' | path exists) and (open '/proc/version' | find -i "microsoft" | length) > 0
 }
