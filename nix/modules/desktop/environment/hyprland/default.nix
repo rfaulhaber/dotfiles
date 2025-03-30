@@ -11,7 +11,7 @@ with lib; let
   hyprlandPkg = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
 in {
   imports = [
-    ./swww.nix
+    ../../swww
     ../../wayland
   ];
 
@@ -27,10 +27,10 @@ in {
   config = mkIf cfg.enable {
     modules = {
       desktop = {
+        swww.enable = true;
         wayland.enable = true;
         environment = {
           type = "wayland";
-          hyprland.swww.enable = true;
         };
       };
       # services.astal.enable = true;

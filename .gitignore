@@ -5,3 +5,4 @@ tmp/
 
 result
 .direnv
+.projectile-cache.eld

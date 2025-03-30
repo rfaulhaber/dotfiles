@@ -5,7 +5,7 @@
   ...
 }: {
   config = lib.mkIf pkgs.stdenv.targetPlatform.isLinux {
-    environment.systemPackages = with pkgs; [
+    user.packages = with pkgs; [
       bat
       binutils
       coreutils-full
@@ -14,7 +14,6 @@
       fzf
       btop
       pandoc
-      pass
       ripgrep
       rsync
       tokei

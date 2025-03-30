@@ -26,5 +26,9 @@ in {
     environment.systemPackages = with pkgs; [
       feh
     ];
+
+    user.packages = with pkgs; [
+      gnome-screenshot
+    ];
   };
 }

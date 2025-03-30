@@ -16,6 +16,7 @@ in {
     ./random-wallpaper.nix
     ./rofi
     ./sound
+    ./swww
   ];
   options.modules.desktop = {
     # TODO rewrite such that you don't need this
