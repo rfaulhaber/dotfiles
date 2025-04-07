@@ -50,6 +50,7 @@ in {
     assertions = let
       foldPred = acc: item:
       # TODO probably a more elegant way to do this
+      # only limit to one desktop if xserver. wayland can support more
         if (item.value.enable)
         then acc ++ [item.name]
         else acc;

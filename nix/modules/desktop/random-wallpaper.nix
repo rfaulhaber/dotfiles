@@ -64,6 +64,9 @@ in {
           ExecStart = "${exec}";
           IOSchedulingClass = "idle";
         };
+        environment = lib.optionalAttrs isWayland {
+          WAYLAND_DISPLAY = "wayland-1";
+        };
       };
     }
     (mkIf (cfg.interval != null) {

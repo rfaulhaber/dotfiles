@@ -22,6 +22,9 @@ in {
     in {
       path = [swwwPkg];
       wantedBy = ["random-wallpaper.service"];
+      environment = {
+        WAYLAND_DISPLAY = "wayland-1";
+      };
       serviceConfig = {
         ExecStart = "${swwwPkg}/bin/swww-daemon";
         ExecStop = "${swwwPkg}/bin/swww kill";

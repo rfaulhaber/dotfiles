@@ -95,11 +95,14 @@
     };
     desktop = {
       enable = true;
-      environment.bspwm = lib.mkDefault {
+      # environment.bspwm = lib.mkDefault {
+      #   enable = true;
+      #   extraStartupPrograms = [
+      #     "1password"
+      #   ];
+      # };
+      environment.sway = lib.mkDefault {
         enable = true;
-        extraStartupPrograms = [
-          "1password"
-        ];
       };
       random-wallpaper = {
         enable = true;
@@ -123,23 +126,6 @@
     };
     themes.active = "tokyo-night-dark";
   };
-
-  # TODO create specialisation modules?
-  # specialisation = {
-  #   hyprland.configuration = {
-  #     modules.desktop = {
-  #       environment.bspwm.enable = false;
-  #       environment.hyprland.enable = true;
-  #     };
-  #   };
-  #   sway.configuration = {
-  #     modules.desktop = {
-  #       environment.bspwm.enable = false;
-  #       environment.sway.enable = true;
-  #       random-wallpaper.enable = lib.mkForce false;
-  #     };
-  #   };
-  # };
 
   boot = {
     kernelPackages = pkgs.linuxPackages_6_12;

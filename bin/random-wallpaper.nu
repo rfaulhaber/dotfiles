@@ -43,16 +43,12 @@ def main [--token: string, --desktop: string, --monitor: string, query?: string]
     open $log_file | append $log_record | to json | save -f $log_file
 
     match $desktop {
-        "hyprland" => {
+        "hyprland" | "wayland" => {
             # TODO handle multiple displays when it becomes relevant
-            ^swww img $filename
-        },
-        "wayland" => {
             ^swww img $filename
         },
         "xserver" => {
             ^feh --bg-fill $filename
         }
     }
-
 }

@@ -11,6 +11,7 @@ in {
     ./bspwm
     ./hyprland
     ./i3
+    ./niri
     ./retroarch
     ./sway
   ];
@@ -31,5 +32,14 @@ in {
       type = types.bool;
       default = cfg.type == "wayland";
     };
+  };
+
+  config = {
+    assertions = [
+      {
+        assertion = !(cfg.isX11 && cfg.isWayland);
+        message = "You cannot have an x11 and wayland environment enabled at the same time.";
+      }
+    ];
   };
 }

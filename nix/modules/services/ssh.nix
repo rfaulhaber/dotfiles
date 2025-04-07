@@ -143,22 +143,22 @@ in {
             port = 12981;
           };
 
-          "nike" = {
-            hostname = mkLocalHostname "77";
-            forwardAgent = true;
-            user = "ryan";
-            extraOptions = {
-              "AddKeysToAgent" = "yes";
-            };
-            port = 14625;
-          };
-
           "nix-installer" = {
             hostname = mkLocalHostname "190";
             user = "nixos";
             extraOptions = {
               "AddKeysToAgent" = "yes";
             };
+          };
+
+          "steamdeck" = {
+            hostname = "steamdeck";
+            user = "deck";
+            forwardAgent = true;
+            extraOptions = {
+              "AddKeysToAgent" = "yes";
+            };
+            port = 27077;
           };
         };
       };

@@ -10,64 +10,48 @@ with lib; let
 in {
   imports = [
     ../../wayland
+    ../../swww
   ];
   options.modules.desktop.environment.sway = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
-    modules.desktop.wayland.enable = true;
-    modules.desktop.environment.type = "wayland";
+    modules = {
+      desktop = {
+        swww.enable = true;
+        wayland.enable = true;
+        environment.type = "wayland";
+      };
+    };
 
     security.polkit.enable = true;
+    services.gnome.gnome-keyring.enable = true;
 
     # TODO swaylock
     # TODO waybar
 
-    programs.sway = {
-      enable = true;
-      wrapperFeatures.gtk = true;
-    };
-
-    home = {
-      wayland.windowManager.sway = {
+    programs = {
+      sway = {
         enable = true;
-        config = {
-          modifier = "Mod4";
-          terminal = "wezterm"; # TODO figure out automatically
-          wrapperFeatures.gtk = true;
-          keybindings = mkOptionDefault {
-            "$mod+Return" = "exec ${pkgs.kitty}/bin/wezterm";
-            "$mod+b" = "exec ${pkgs.firefox-devedition-bin}/bin/firefox-developer-edition";
-            "$mod+e" = "exec emacsclient -c";
-          };
-        };
-      };
-
-      programs = {
-        fuzzel = {
-          enable = true;
-          settings = {
-            main = {
-              terminal = "${pkgs.kitty}/bin/wezterm";
-            };
-          };
-        };
-        swaylock.enable = true;
+        wrapperFeatures.gtk = true;
+        extraOptions = ["--unsupported-gpu"];
       };
     };
 
-    services.greetd = {
-      enable = true;
-      settings = {
-        default_session = {
-          command = "${pkgs.greetd.greetd}/bin/agreety --cmd ${pkgs.sway}/bin/sway";
-        };
+    services.xserver.displayManager = {
+      gdm = {
+        enable = true;
+        wayland = true;
       };
     };
 
-    hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.latest;
-
-    environment.systemPackages = with pkgs; [
-      inputs.swww.packages.${pkgs.system}.swww
+    user.packages = with pkgs; [
+      wmenu
+      sway-contrib.grimshot
     ];
+
+    home.file.swayconf = {
+      source = "${config.dotfiles.configDir}/sway/config";
+      target = "${config.user.home}/.config/sway/config";
+    };
   };
 }

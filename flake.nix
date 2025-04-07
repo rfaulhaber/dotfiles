@@ -56,6 +56,7 @@
       url = "github:marienz/nix-doom-emacs-unstraightened";
       inputs.nixpkgs.follows = "";
     };
+    niri.url = "github:YaLTeR/niri";
     # flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
