@@ -309,6 +309,22 @@ hello world
 
   (revert-buffer nil t t))
 
+(defun self/dired-diff-marked-files ()
+  (interactive)
+  (when (not (eq major-mode #'dired-mode))
+    (user-error "Can only be run in Dired mode"))
+
+  (let ((buffer (get-buffer-create "*dired diff*"))
+        (files (dired-get-marked-files)))
+
+    (when (> 2 (length files))
+      (kill-buffer buffer)
+      (user-error "Need at least two files to diff!"))
+
+    (with-current-buffer buffer
+      (erase-buffer)
+      (insert (shell-command-to-string (format "delta %s %s" (car files) (nth 1 files)))))))
+
 
 ;; ----------------------------- utility functions -----------------------------
 
