@@ -5,6 +5,7 @@
   ...
 }:
 with lib; let
+  inherit (config.modules.desktop.environment) isWayland;
   cfg = config.modules.services.gpg;
 in {
   options.modules.services.gpg = {
@@ -27,6 +28,7 @@ in {
       enable = true;
       enableSSHSupport = true;
       enableBrowserSocket = true;
+      pinentryPackage = lib.mkIf isWayland pkgs.pinentry-gnome3;
     };
 
     security.pam.services.login.enableGnomeKeyring = true;
