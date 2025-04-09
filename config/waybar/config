@@ -14,5 +14,11 @@
     "clock": {
         "format": "{:%a, %b %d %Y %I:%M:%S %p}",
         "interval": 1
+    },
+    "cpu": {
+        "interval": 1
+    },
+    "memory": {
+        "interval": 1
     }
 }

@@ -2,6 +2,44 @@
     /* `otf-font-awesome` is required to be installed for icons */
     font-family: Hack Nerd Font Mono;
     font-size: 20px;
+
+    --background: #1a1b26;
+    --base00: #1a1b26;
+    --base01: #16161e;
+    --base02: #2f3549;
+    --base03: #444b6a;
+    --base04: #787c99;
+    --base05: #a9b1d6;
+    --base06: #cbccd1;
+    --base07: #d5d6db;
+    --base08: #c0caf5;
+    --base09: #a9b1d6;
+    --base0A: #0db9d7;
+    --base0B: #9ece6a;
+    --base0C: #b4f9f8;
+    --base0D: #2ac3de;
+    --base0E: #bb9af7;
+    --base0F: #f7768e;
+    --base10: #1a1b26;
+    --base11: #1a1b26;
+    --base12: #c0caf5;
+    --base13: #a9b1d6;
+    --base14: #9ece6a;
+    --base15: #b4f9f8;
+    --base16: #2ac3de;
+    --base17: #bb9af7;
+    --blue: #2ac3de;
+    --cursorBg: #a9b1d6;
+    --cursorBorder: #a9b1d6;
+    --cursorFg: #1a1b26;
+    --cyan: #b4f9f8;
+    --foreground: #a9b1d6;
+    --green: #9ece6a;
+    --magenta: #bb9af7;
+    --red: #c0caf5;
+    --selectionBg: #a9b1d6;
+    --selectionFg: #1a1b26;
+    --yellow: #0db9d7;
 }
 
 window#waybar {
