@@ -1,0 +1,18 @@
+{
+    "height": 45,
+    "layer": "top",
+    "modules-left": ["niri/workspaces", "wlr/taskbar", "niri/window"],
+    "modules-center": [],
+    "modules-right": ["tray", "cpu", "memory", "clock"],
+    "wlr/taskbar": {
+        "format": "{icon}",
+        "tooltip-format": "{title} | {app_id}",
+        "on-click": "activate",
+        "on-click-middle": "close",
+        "icon-size": 28
+    },
+    "clock": {
+        "format": "{:%a, %b %d %Y %I:%M:%S %p}",
+        "interval": 1
+    }
+}

@@ -101,9 +101,10 @@
       #     "1password"
       #   ];
       # };
-      environment.sway = lib.mkDefault {
-        enable = true;
-      };
+      # environment.sway = lib.mkDefault {
+      #   enable = true;
+      # };
+      environment.niri = lib.mkDefault { enable = true; };
       random-wallpaper = {
         enable = true;
         token = config.age.secrets.unsplash.path;

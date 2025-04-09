@@ -34,11 +34,11 @@ in {
       }
     ];
 
-    modules.desktop.environment.type = "x11";
-
     # enables custom module: modules.desktop.environment.xserver
     # and common xserver configs
+    # TODO set by default
     modules.desktop.xserver.enable = true;
+    modules.desktop.environment.type = "x11";
 
     services.xserver.windowManager.bspwm.enable = true;
 

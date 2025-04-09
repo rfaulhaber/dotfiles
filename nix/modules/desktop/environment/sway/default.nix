@@ -44,6 +44,9 @@ in {
       };
     };
 
+    # the above uses gdm to login, so we have to also set enableGnomeKeyring here maybe
+    security.pam.services.gdm.enableGnomeKeyring = true;
+
     user.packages = with pkgs; [
       wmenu
       sway-contrib.grimshot

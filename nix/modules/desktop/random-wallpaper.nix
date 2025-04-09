@@ -55,8 +55,8 @@ in {
           ++ lib.optional isWayland inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
           ++ lib.optional isX11 feh
           ++ lib.optional (desktop == "hyprland") inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-        after = ["graphical-session-pre.target" "network-online.target"] ++ lib.optional isWayland "swww.service";
-        partOf = ["graphical-session.target"];
+        after = ["graphical-session.target" "network-online.target"] ++ lib.optional isWayland "swww.service" ++ lib.optional config.modules.desktop.environment.niri.enable "niri.service";
+        partOf = ["graphical-session.target"] ++ lib.optional config.modules.desktop.environment.niri.enable "niri.service";
         wantedBy = ["graphical-session.target"];
         requires = lib.optional isWayland "swww.service";
         serviceConfig = {

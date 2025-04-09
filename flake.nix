@@ -57,6 +57,7 @@
       inputs.nixpkgs.follows = "";
     };
     niri.url = "github:YaLTeR/niri";
+    # waybar.url = "github:Alexays/waybar";
     # flake-parts.url = "github:hercules-ci/flake-parts";
   };
 

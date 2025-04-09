@@ -26,8 +26,12 @@ in {
         swww.enable = true;
         wayland.enable = true;
         environment.type = "wayland";
+        fuzzel.enable = true;
       };
     };
+
+    security.polkit.enable = true;
+    services.gnome.gnome-keyring.enable = true;
 
     programs = {
       niri = {
@@ -35,11 +39,33 @@ in {
         package = inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.default;
       };
 
-      uwsm.waylandCompositors.niri = {
-        prettyName = "niri";
-        comment = "niri compositor for UWSM.";
-        binPath = "/run/current-system/sw/bin/niri";
+      xwayland.enable = true;
+    };
+
+    services.xserver.displayManager = {
+      gdm = {
+        enable = true;
+        wayland = true;
       };
+    };
+
+    # the above uses gdm to login, so we have to also set enableGnomeKeyring here maybe
+    security.pam.services.gdm.enableGnomeKeyring = true;
+
+    user.packages = with pkgs; [
+      fuzzel
+      swaylock
+      waybar
+    ];
+
+    environment.systemPackages = with pkgs; [
+      xdg-desktop-portal-gtk
+      xwayland-satellite
+    ];
+
+    home.file.niriconf = {
+      source = "${config.dotfiles.configDir}/niri/config.kdl";
+      target = "${config.user.home}/.config/niri/config.kdl";
     };
   };
 }

@@ -11,6 +11,7 @@ in {
   imports = [
     ./environment
     ./firefox
+    ./fuzzel
     ./lightdm
     ./polybar
     ./random-wallpaper.nix
@@ -62,7 +63,7 @@ in {
       ];
     in [
       {
-        assertion = (length desktopsEnabled) == 1;
+        assertion = (cfg.environment.isX11 && (length desktopsEnabled) == 1) || cfg.environment.isWayland;
         message = "You must have one desktop environment selected if the desktop module is enabled. You have ${toString (length desktopsEnabled)} (${toString desktopsEnabled})";
       }
       {
