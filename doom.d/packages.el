@@ -97,6 +97,12 @@
            :repo "tecosaur/org-pandoc-import"
            :files ("*.el" "filters" "preprocessors")))
 
+(package! kdl-ts-mode
+  :pin "3dbf116cd19261d8d70f456ae3385e1d20208452"
+  :recipe (:host github
+           :repo "dataphract/kdl-ts-mode"
+           :branch "main"))
+
 ;; org roam ui
 (package! websocket)
 (package! org-roam-ui
