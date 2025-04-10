@@ -12,13 +12,22 @@
         "icon-size": 28
     },
     "clock": {
-        "format": "{:%a, %b %d %Y %I:%M:%S %p}",
+        "format": "󰥔 {:%a, %b %d %Y %I:%M:%S %p}",
         "interval": 1
     },
     "cpu": {
-        "interval": 1
+        "interval": 1,
+        "format": " {usage}%",
+        "states": {
+            "low": 10,
+            "low-medium": 35,
+            "medium": 50,
+            "high": 70,
+            "max": 100
+        }
     },
     "memory": {
-        "interval": 1
+        "interval": 1,
+        "format": "󰘚 {percentage}% ({used}/{avail}/{total})"
     }
 }

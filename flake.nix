@@ -272,7 +272,7 @@
             ];
           };
 
-          default = self'.devShells.generate;
+          default = self'.devShells.gnomeDev;
         };
       };
     });

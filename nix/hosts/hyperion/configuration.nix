@@ -21,7 +21,7 @@
         package = pkgs.emacs-git;
         doomUnstraightened = {
           enable = true;
-          # setDefault = true;
+          setDefault = true;
         };
       };
       neovim.enable = true;
@@ -95,15 +95,6 @@
     };
     desktop = {
       enable = true;
-      # environment.bspwm = lib.mkDefault {
-      #   enable = true;
-      #   extraStartupPrograms = [
-      #     "1password"
-      #   ];
-      # };
-      # environment.sway = lib.mkDefault {
-      #   enable = true;
-      # };
       environment.niri = lib.mkDefault { enable = true; };
       random-wallpaper = {
         enable = true;
