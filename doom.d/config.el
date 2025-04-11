@@ -340,6 +340,9 @@ Used in loading config specific to those systems.")
   (add-to-list 'eglot-server-programs
                '(elixir-mode . ("elixir-ls"))))
 
+;; kdl mode
+(add-to-list 'auto-mode-alist '("\\.kdl\\'" . kdl-ts-mode))
+
 ;; ---------------------------------- treesit ----------------------------------
 
 (setq treesit-language-source-alist '((nu . ("https://github.com/nushell/tree-sitter-nu" "main"))))

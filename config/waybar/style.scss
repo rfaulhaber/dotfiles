@@ -1,58 +1,20 @@
-// this is based on YaLTeR's config
+// must be run with dart-sass and "-I"
+@use "theme.scss";
 
 $font-family: Hack Nerd Font Mono;
 $font-size: 20px;
-
-$background: #1a1b26;
-$base00: #1a1b26;
-$base01: #16161e;
-$base02: #2f3549;
-$base03: #444b6a;
-$base04: #787c99;
-$base05: #a9b1d6;
-$base06: #cbccd1;
-$base07: #d5d6db;
-$base08: #c0caf5;
-$base09: #a9b1d6;
-$base0A: #0db9d7;
-$base0B: #9ece6a;
-$base0C: #b4f9f8;
-$base0D: #2ac3de;
-$base0E: #bb9af7;
-$base0F: #f7768e;
-$base10: #1a1b26;
-$base11: #1a1b26;
-$base12: #c0caf5;
-$base13: #a9b1d6;
-$base14: #9ece6a;
-$base15: #b4f9f8;
-$base16: #2ac3de;
-$base17: #bb9af7;
-$blue: #2ac3de;
-$cursorBg: #a9b1d6;
-$cursorBorder: #a9b1d6;
-$cursorFg: #1a1b26;
-$cyan: #b4f9f8;
-$foreground: #a9b1d6;
-$green: #9ece6a;
-$magenta: #bb9af7;
-$red: #c0caf5;
-$selectionBg: #a9b1d6;
-$selectionFg: #1a1b26;
-$yellow: #0db9d7;
 
 * {
     font-family: $font-family;
     font-size: $font-size;
 }
 
-
 window#waybar {
-    background-color: $background;
-    border-bottom: 3px solid rgba($base04, 0.5);
-    color: $base07;
+    background-color: theme.$background;
+    border-bottom: 3px solid rgba(theme.$base04, 0.5);
+    color: theme.$base07;
     transition-property: background-color;
-    transition-duration: .5s;
+    transition-duration: 0.5s;
     font-size: $font-size;
     min-height: 45px;
 }
@@ -63,10 +25,19 @@ window#waybar.hidden {
 
 window#waybar.empty {
     background-color: transparent;
+    color: theme.$base00;
+
+    label.module {
+        color: theme.$base00;
+    }
+
+    #workspaces {
+        color: theme.$base00;
+    }
 }
 
 window#waybar.termite {
-    background-color: #3F3F3F;
+    background-color: #3f3f3f;
 }
 
 button {
@@ -80,14 +51,14 @@ button {
 /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
 button:hover {
     background: inherit;
-    box-shadow: inset 0 -3px $foreground;
+    box-shadow: inset 0 -3px theme.$foreground;
 }
 
 /* you can set a style on hover for any module like this */
 #workspaces button {
     padding: 0 5px;
     background-color: transparent;
-    color: $base07;
+    color: theme.$base07;
 }
 
 #workspaces button:hover {
@@ -95,8 +66,8 @@ button:hover {
 }
 
 #workspaces button.focused {
-    background-color: #64727D;
-    box-shadow: inset 0 -3px $foreground;
+    background-color: #64727d;
+    box-shadow: inset 0 -3px theme.$foreground;
 }
 
 #workspaces button.urgent {
@@ -104,8 +75,8 @@ button:hover {
 }
 
 #mode {
-    background-color: #64727D;
-    box-shadow: inset 0 -3px $foreground;
+    background-color: #64727d;
+    box-shadow: inset 0 -3px theme.$foreground;
 }
 
 #clock,
@@ -126,7 +97,7 @@ button:hover {
 #power-profiles-daemon,
 #mpd {
     padding: 0 10px;
-    color: $base07;
+    color: theme.$base07;
 }
 
 #window,
@@ -145,7 +116,7 @@ button:hover {
 }
 
 #clock {
-    background-color: #64727D;
+    background-color: theme.$background;
 }
 
 // #battery {
@@ -200,38 +171,36 @@ label:focus {
 }
 
 #cpu {
-    color: $base07;
+    color: theme.$base07;
 
     .low {
-        color: $blue;
+        color: theme.$blue;
     }
 
     .low-medium {
-        color: $cyan;
+        color: theme.$cyan;
     }
 
     .medium {
-        color: $green;
+        color: theme.$green;
     }
 
     .high {
-        color: $yellow;
+        color: theme.$yellow;
     }
 
     .max {
-        color: $red;
+        color: theme.$red;
     }
 }
 
-
-
 #memory {
     // background-color: #9b59b6;
-    color: $base07;
+    color: theme.$base07;
 }
 
 #disk {
-    background-color: #964B00;
+    background-color: #964b00;
 }
 
 #backlight {
@@ -269,7 +238,7 @@ label:focus {
 }
 
 #tray {
-    background-color: #2980b9;
+    background-color: theme.$background;
 }
 
 #tray > .passive {
@@ -336,7 +305,7 @@ label:focus {
 }
 
 #scratchpad.empty {
-	background-color: transparent;
+    background-color: transparent;
 }
 
 #privacy {

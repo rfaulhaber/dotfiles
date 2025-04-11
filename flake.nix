@@ -267,8 +267,9 @@
           # for doing any kind of dotfiles dev for gnome widgets/desktops
           gnomeDev = pkgs.mkShell {
             buildInputs = with pkgs; [
-              sass # lol
+              dart-sass # lol
               scss-lint
+              nodePackages_latest.prettier
             ];
           };
 

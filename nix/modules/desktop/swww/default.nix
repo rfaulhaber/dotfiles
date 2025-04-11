@@ -22,6 +22,8 @@ in {
     in {
       path = [swwwPkg];
       wantedBy = ["random-wallpaper.service"];
+      after = ["graphical-session.target"];
+      wants = ["graphical-session.target"];
       environment = {
         WAYLAND_DISPLAY = "wayland-1";
       };
