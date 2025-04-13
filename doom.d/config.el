@@ -282,7 +282,14 @@ Used in loading config specific to those systems.")
 
 ;; projectile
 (after! projectile
-  (setq projectile-switch-project-action 'projectile-dired))
+  (setq projectile-switch-project-action 'projectile-dired)
+  ;; for some reason projectile can't always find fd
+  (let ((fd-exec (executable-find "fd")))
+    (when (not projectile-fd-executable)
+      (setq projectile-fd-executable fd-exec))
+
+    (when (null doom-fd-executable)
+      (setq doom-fd-executable fd-exec))))
 
 ;; lisp mode
 (add-hook 'lisp-mode-hook #'rainbow-delimiters-mode)
@@ -342,6 +349,8 @@ Used in loading config specific to those systems.")
 
 ;; kdl mode
 (add-to-list 'auto-mode-alist '("\\.kdl\\'" . kdl-ts-mode))
+
+
 
 ;; ---------------------------------- treesit ----------------------------------
 
