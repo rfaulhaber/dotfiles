@@ -111,7 +111,7 @@
         evince
         openvpn
         python3
-        signal-desktop
+        signal-desktop-bin
         spotify
         ungoogled-chromium
       ];
