@@ -77,6 +77,8 @@
       config,
       withSystem,
       moduleWithSystem,
+      inputs,
+      system,
       ...
     }: {
       imports = [];
@@ -156,13 +158,13 @@
 
         packages.x86_64-linux = let
           system = "x86_64-linux";
-          pkgs = import nixpkgs {
+          pkgs = import inputs.nixpkgs {
             inherit system;
           };
+          lib = pkgs.lib;
         in {
           roc-rk3328-cc-bootloader = import ./nix/pkgs/roc-rk3328-cc-bootloader {
-            inherit pkgs;
-            lib = pkgs.lib;
+            inherit pkgs lib;
           };
 
           # run with:
