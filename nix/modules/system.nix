@@ -10,10 +10,9 @@ with lib; {
   config = mkIf pkgs.stdenv.targetPlatform.isLinux {
     # All my machines are in the same timezone
     # TODO should this be here?
-    time = {
-      timeZone = "America/New_York";
-      hardwareClockInLocalTime = true;
-    };
+
+      time.timeZone = "America/New_York";
+
 
     # TODO where should these live?
     i18n.defaultLocale = "en_US.UTF-8";
