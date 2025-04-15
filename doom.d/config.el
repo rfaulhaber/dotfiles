@@ -145,7 +145,7 @@ Used in loading config specific to those systems.")
 ;; use treesit instead of emacs-tree-sitter for rust
 (setq rust-mode-treesitter-derive t)
 
-;; org
+;; --------------------------------- org mode ---------------------------------
 (after! org
   (load! "./self/org-templates.el")
   (org-crypt-use-before-save-magic))
@@ -181,7 +181,21 @@ Used in loading config specific to those systems.")
   (setq org-roam-ui-sync-theme t
         org-roam-ui-follow t
         org-roam-ui-update-on-save t
-        org-roam-ui-open-on-start t))
+        org-roam-ui-open-on-start t)
+
+  ;; org-modern
+  (setq org-modern-list
+        '((?* . "•")
+          (?+ . "‣"))
+        org-modern-fold-stars
+        '(("◉" . "○")
+          ("◉" . "○")
+          ("" . "")
+          ("▸" . "▾"))
+        org-modern-checkbox
+        '((?X . "󱗼")
+          (?- . "┅")
+          (?\s . " "))))
 
 ;; org-journal
 (setq
@@ -224,6 +238,8 @@ Used in loading config specific to those systems.")
                                    :recursive t
                                    :headline-levels 4
                                    :with-toc nil)))
+
+;; ------------------------------- end org mode -------------------------------
 
 ;; nov
 (defun nov-setup ()
@@ -346,7 +362,6 @@ Used in loading config specific to those systems.")
 
   (add-to-list 'eglot-server-programs
                '(elixir-mode . ("elixir-ls"))))
-
 ;; kdl mode
 (add-to-list 'auto-mode-alist '("\\.kdl\\'" . kdl-ts-mode))
 
