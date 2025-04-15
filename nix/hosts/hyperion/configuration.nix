@@ -131,6 +131,7 @@
     loader = {
       systemd-boot = {
         enable = true;
+        configurationLimit = 5;
         windows."windows-11" = {
           title = "Windows 11";
           efiDeviceHandle = "HD0c";
