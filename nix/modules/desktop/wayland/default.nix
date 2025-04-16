@@ -11,6 +11,7 @@ in {
   options.modules.desktop.wayland = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
+    modules.desktop.mako.enable = true;
     security.polkit.enable = true;
 
     environment = {
@@ -29,7 +30,6 @@ in {
 
       systemPackages = with pkgs; [
         inputs.swww.packages.${pkgs.system}.swww
-        mako
         wl-clipboard
       ];
     };
