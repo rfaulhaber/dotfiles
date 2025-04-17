@@ -13,6 +13,7 @@ in {
     ./firefox
     ./fuzzel
     ./lightdm
+    ./mako
     ./polybar
     ./random-wallpaper.nix
     ./rofi

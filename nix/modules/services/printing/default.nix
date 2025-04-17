@@ -47,7 +47,7 @@ in {
             browsing = true;
             defaultShared = true;
             openFirewall = true;
-            drivers = with pkgs; [brlaser brgenml1lpr brgenml1cupswrapper];
+            drivers = with pkgs; [brlaser];
             logLevel = "debug";
           };
           samba = {
@@ -97,7 +97,7 @@ in {
       (mkIf (cfg.client) {
         services.printing = {
           enable = true;
-          drivers = with pkgs; [brlaser brgenml1lpr brgenml1cupswrapper];
+          drivers = with pkgs; [brlaser];
         };
         hardware.printers = {
           ensurePrinters = [
