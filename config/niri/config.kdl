@@ -249,9 +249,11 @@ layout {
 // See the binds section below for more spawn examples.
 // spawn-at-startup "alacritty" "-e" "fish"
 
-spawn-at-startup "waybar"
+// TODO take advice from above
 
+spawn-at-startup "waybar"
 spawn-at-startup "xwayland-satellite"
+spawn-at-startup "1password"
 
 environment {
     DISPLAY ":0"

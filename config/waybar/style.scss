@@ -11,12 +11,25 @@ $font-size: 20px;
 
 window#waybar {
     background-color: theme.$background;
-    border-bottom: 3px solid rgba(theme.$base04, 0.5);
     color: theme.$base07;
     transition-property: background-color;
     transition-duration: 0.5s;
     font-size: $font-size;
     min-height: 45px;
+
+    button {
+        /* Use box-shadow instead of border so the text isn't offset */
+        box-shadow: inset 0 -3px transparent;
+        /* Avoid rounded borders under each button name */
+        border: none;
+        border-radius: 0;
+    }
+
+    /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+    button:hover {
+        background: inherit;
+        box-shadow: inset 0 -3px theme.$foreground;
+    }
 }
 
 window#waybar.hidden {
@@ -25,58 +38,39 @@ window#waybar.hidden {
 
 window#waybar.empty {
     background-color: transparent;
-    color: theme.$base00;
-
-    label.module {
-        color: theme.$base00;
-    }
-
-    #workspaces {
-        color: theme.$base00;
-    }
-}
-
-window#waybar.termite {
-    background-color: #3f3f3f;
-}
-
-button {
-    /* Use box-shadow instead of border so the text isn't offset */
-    box-shadow: inset 0 -3px transparent;
-    /* Avoid rounded borders under each button name */
-    border: none;
-    border-radius: 0;
-}
-
-/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
-button:hover {
-    background: inherit;
-    box-shadow: inset 0 -3px theme.$foreground;
 }
 
 /* you can set a style on hover for any module like this */
-#workspaces button {
-    padding: 0 5px;
-    background-color: transparent;
-    color: theme.$base07;
-}
 
-#workspaces button:hover {
-    background: rgba(0, 0, 0, 0.2);
-}
+#workspaces {
+    button {
+        padding: 0 5px;
+        background-color: transparent;
+        color: theme.$magenta;
+    }
 
-#workspaces button.focused {
-    background-color: #64727d;
-    box-shadow: inset 0 -3px theme.$foreground;
-}
+    button.focused {
+        color: theme.$blue;
+        background-color: theme.$base00;
+        box-shadow: inset 0 -3px theme.$foreground;
+    }
 
-#workspaces button.urgent {
-    background-color: #eb4d4b;
+    button.urgent {
+        background-color: theme.$red;
+    }
+
+    button:hover {
+        background: rgba(0, 0, 0, 0.2);
+    }
 }
 
 #mode {
-    background-color: #64727d;
+    background-color: theme.$base07;
     box-shadow: inset 0 -3px theme.$foreground;
+}
+
+#days {
+    color: red;
 }
 
 #clock,
@@ -98,6 +92,9 @@ button:hover {
 #mpd {
     padding: 0 10px;
     color: theme.$base07;
+    background: theme.$background;
+    border-left: 1px solid theme.$base03;
+    border-right: 1px solid theme.$base03;
 }
 
 #window,
@@ -113,6 +110,14 @@ button:hover {
 /* If workspaces is the rightmost module, omit right margin */
 .modules-right > widget:last-child > #workspaces {
     margin-right: 0;
+}
+
+.modules-right > widget:last-child {
+    border-right: none;
+}
+
+window#waybar.modules-center {
+    background: transparent;
 }
 
 #clock {
@@ -171,36 +176,32 @@ label:focus {
 }
 
 #cpu {
-    color: theme.$base07;
-
-    .low {
-        color: theme.$blue;
-    }
-
-    .low-medium {
-        color: theme.$cyan;
-    }
-
-    .medium {
-        color: theme.$green;
-    }
-
-    .high {
-        color: theme.$yellow;
-    }
-
-    .max {
-        color: theme.$red;
-    }
+    color: theme.$green;
 }
 
 #memory {
-    // background-color: #9b59b6;
-    color: theme.$base07;
+    color: theme.$green;
 }
 
-#disk {
-    background-color: #964b00;
+// states used for both cpu and memory
+.low {
+    color: theme.$green;
+}
+
+.low-medium {
+    color: theme.$cyan;
+}
+
+.medium {
+    color: theme.$green;
+}
+
+.high {
+    color: theme.$yellow;
+}
+
+.max {
+    color: theme.$red;
 }
 
 #backlight {
@@ -239,6 +240,7 @@ label:focus {
 
 #tray {
     background-color: theme.$background;
+    border-radius: 0;
 }
 
 #tray > .passive {
@@ -259,72 +261,10 @@ label:focus {
     color: #2d3436;
 }
 
-#mpd {
-    background-color: #66cc99;
-    color: #2a5c45;
-}
-
-#mpd.disconnected {
-    background-color: #f53c3c;
-}
-
-#mpd.stopped {
-    background-color: #90b1b1;
-}
-
-#mpd.paused {
-    background-color: #51a37a;
-}
-
-#language {
-    background: #00b093;
-    color: #740864;
-    padding: 0 5px;
-    margin: 0 5px;
-    min-width: 16px;
-}
-
-#keyboard-state {
-    background: #97e1ad;
-    color: #000000;
-    padding: 0 0px;
-    margin: 0 5px;
-    min-width: 16px;
-}
-
-#keyboard-state > label {
-    padding: 0 5px;
-}
-
-#keyboard-state > label.locked {
-    background: rgba(0, 0, 0, 0.2);
-}
-
 #scratchpad {
     background: rgba(0, 0, 0, 0.2);
 }
 
 #scratchpad.empty {
     background-color: transparent;
-}
-
-#privacy {
-    padding: 0;
-}
-
-#privacy-item {
-    padding: 0 5px;
-    color: white;
-}
-
-#privacy-item.screenshare {
-    background-color: #cf5700;
-}
-
-#privacy-item.audio-in {
-    background-color: #1ca000;
-}
-
-#privacy-item.audio-out {
-    background-color: #0069d4;
 }
