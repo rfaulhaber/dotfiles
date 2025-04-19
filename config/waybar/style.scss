@@ -91,7 +91,6 @@ window#waybar.empty {
 #power-profiles-daemon,
 #mpd {
     padding: 0 10px;
-    color: theme.$base07;
     background: theme.$background;
     border-left: 1px solid theme.$base03;
     border-right: 1px solid theme.$base03;
@@ -175,33 +174,35 @@ label:focus {
     background-color: #000000;
 }
 
-#cpu {
-    color: theme.$green;
-}
-
+#cpu,
 #memory {
     color: theme.$green;
 }
 
 // states used for both cpu and memory
-.low {
+#cpu.low,
+#memory.low {
     color: theme.$green;
 }
 
-.low-medium {
+#cpu.low-medium,
+#memory.low-medium {
     color: theme.$cyan;
 }
 
-.medium {
-    color: theme.$green;
-}
-
-.high {
+#cpu.medium,
+#memory.medium {
     color: theme.$yellow;
 }
 
-.max {
-    color: theme.$red;
+#cpu.high,
+#memory.high {
+    color: theme.$base0E;
+}
+
+#cpu.max,
+#memory.max {
+    color: theme.$base0F;
 }
 
 #backlight {

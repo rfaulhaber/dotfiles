@@ -19,6 +19,7 @@ in {
     ./rofi
     ./sound
     ./swww
+    ./waybar
   ];
   options.modules.desktop = {
     # TODO rewrite such that you don't need this

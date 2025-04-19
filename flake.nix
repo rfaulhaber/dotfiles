@@ -34,14 +34,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland.url = "github:hyprwm/Hyprland/v0.47.2-b";
-
     wezterm.url = "github:wez/wezterm?dir=nix";
 
-    disko = {
-      url = "github:nix-community/disko/latest";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     swww.url = "github:LGFae/swww";
     # TODO consider using stylix
     # currently, a wallpaper is required with stylix. this is problematic
@@ -51,14 +45,20 @@
       url = "github:tinted-theming/schemes";
       flake = false;
     };
-    murex.url = "github:rfaulhaber/murex";
     nix-doom-emacs-unstraightened = {
       url = "github:marienz/nix-doom-emacs-unstraightened";
       inputs.nixpkgs.follows = "";
     };
     niri.url = "github:YaLTeR/niri";
-    # waybar.url = "github:Alexays/waybar";
+    waybar.url = "github:Alexays/waybar";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    disko = {
+      url = "github:nix-community/disko/latest";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # currently unused flake inputs
+    # hyprland.url = "github:hyprwm/Hyprland/v0.47.2-b";
+    # murex.url = "github:rfaulhaber/murex";
   };
 
   outputs = inputs @ {

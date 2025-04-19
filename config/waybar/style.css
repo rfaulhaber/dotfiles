@@ -77,7 +77,6 @@ window#waybar.empty {
 #power-profiles-daemon,
 #mpd {
   padding: 0 10px;
-  color: #d5d6db;
   background: #1a1b26;
   border-left: 1px solid #444b6a;
   border-right: 1px solid #444b6a;
@@ -114,32 +113,34 @@ label:focus {
   background-color: #000000;
 }
 
-#cpu {
-  color: #9ece6a;
-}
-
+#cpu,
 #memory {
   color: #9ece6a;
 }
 
-.low {
+#cpu.low,
+#memory.low {
   color: #9ece6a;
 }
 
-.low-medium {
+#cpu.low-medium,
+#memory.low-medium {
   color: #b4f9f8;
 }
 
-.medium {
-  color: #9ece6a;
-}
-
-.high {
+#cpu.medium,
+#memory.medium {
   color: #0db9d7;
 }
 
-.max {
-  color: #c0caf5;
+#cpu.high,
+#memory.high {
+  color: #bb9af7;
+}
+
+#cpu.max,
+#memory.max {
+  color: #f7768e;
 }
 
 #backlight {

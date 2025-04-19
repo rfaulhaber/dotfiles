@@ -25,6 +25,7 @@ in {
       desktop = {
         swww.enable = true;
         wayland.enable = true;
+        waybar.enable = true;
         environment.type = "wayland";
         fuzzel.enable = true;
       };
@@ -55,7 +56,6 @@ in {
     user.packages = with pkgs; [
       fuzzel
       swaylock
-      waybar
     ];
 
     environment.systemPackages = with pkgs; [
