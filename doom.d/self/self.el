@@ -9,6 +9,8 @@
 (defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
 (defvar self/common-directories '() "Alist (Name . Path) of common directories, used by self/visit-common-directories")
 
+(defvar self/global-config-file-path "~/.config/globals.json" "Path to personal global config.")
+
 (defconst self/date-format-options '(("MM/YYYY"    . "%m/%Y")
                                      ("MM/DD"      . "%m/%d")
                                      ("MM/DD/YYYY" . "%m/%d/%Y")
@@ -324,6 +326,21 @@ hello world
     (with-current-buffer buffer
       (erase-buffer)
       (insert (shell-command-to-string (format "delta %s %s" (car files) (nth 1 files)))))))
+
+(defun self/display-theme-colors ()
+  "Loads and displays the theme values from `self/global-config-file-path'"
+  (interactive)
+  (if-let* ((buffer (get-buffer "*theme*")))
+      (switch-to-buffer buffer)
+    (with-current-buffer (get-buffer-create "*theme*")
+      (erase-buffer)
+      (when (not (file-exists-p self/global-config-file-path))
+        (user-error "No global config file found!"))
+      (let ((theme-output (shell-command-to-string (format "open %s | get colors.theme" self/global-config-file-path))))
+        (insert theme-output)
+        (rainbow-mode 1)
+        (read-only-mode 1)
+        (switch-to-buffer (current-buffer))))))
 
 
 ;; ----------------------------- utility functions -----------------------------
