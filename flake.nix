@@ -56,6 +56,7 @@
       url = "github:nix-community/disko/latest";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi";
     # currently unused flake inputs
     # hyprland.url = "github:hyprwm/Hyprland/v0.47.2-b";
     # murex.url = "github:rfaulhaber/murex";
@@ -71,6 +72,7 @@
     nix-darwin,
     emacs-overlay,
     flake-parts,
+    nixos-raspberrypi,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} (top @ {
@@ -124,6 +126,9 @@
             system = "x86_64-linux";
           };
           pallas = mkHost ./nix/hosts/pallas/configuration.nix {
+            system = "aarch64-linux";
+          };
+          nike = mkHost ./nix/hosts/nike/configuration.nix {
             system = "aarch64-linux";
           };
         };
@@ -196,19 +201,19 @@
             format = "sd-aarch64-installer";
           };
 
-          # arm-installer-rpi5 = nixos-generators.nixosGenerate {
-          #   system = "aarch64-linux";
-          #   modules = [
-          #     ./nix/installers/aarch64-linux/configuration.nix
-          #   ];
-          #   specialArgs = {
-          #     inherit inputs;
-          #   };
-          #   customFormats.aarch64-linux-rpi5 = import ./nix/formats/aarch64/linux/raspberry-pi/5/configuration.nix {
-          #     inherit pkgs inputs;
-          #   };
-          #   format = "aarch64-linux-rpi5";
-          # };
+          arm-installer-rpi5 = nixos-generators.nixosGenerate {
+            system = "aarch64-linux";
+            modules = [
+              ./nix/installers/aarch64-linux/configuration.nix
+            ];
+            specialArgs = {
+              inherit inputs;
+            };
+            customFormats.aarch64-linux-rpi5 = import ./nix/formats/aarch64/linux/raspberry-pi/5/configuration.nix {
+              inherit pkgs inputs;
+            };
+            format = "aarch64-linux-rpi5";
+          };
 
           x86_64-installer-generic = nixos-generators.nixosGenerate {
             system = "x86_64-linux";

@@ -47,19 +47,20 @@
           '';
         };
       };
-      # samba-serve = {
-      #   enable = true;
-      #   shares = {
-      #     calibre = {
-      #       path = "/data/calibre";
-      #       comment = "Calibre share.";
-      #     };
-      #     games = {
-      #       path = "/data/games";
-      #       comment = "Retroarch roms";
-      #     };
-      #   };
-      # };
+      samba-serve = {
+        enable = true;
+        shares = {
+          # calibre = {
+          #   path = "/data/calibre";
+          #   comment = "Calibre share.";
+          # };
+          games = {
+            path = "/data/games";
+            comment = "Retroarch roms";
+            extraOptions."writeable" = "no";
+          };
+        };
+      };
       zerotier = {
         enable = true;
         networks = ["12ac4a1e719ca283" "b6079f73c6986bc2"];

@@ -11,16 +11,14 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules
-    inputs.nixos-hardware.nixosModules.raspberry-pi-3
+    inputs.nixos-hardware.nixosModules.raspberry-pi-5
   ];
 
-  # system = "aarch64-linux";
-
   modules = {
-    desktop = {
-      enable = true;
-      environment.retroarch.enable = true;
-    };
+    # desktop = {
+    #   enable = true;
+    #   environment.retroarch.enable = true;
+    # };
     programs = {
       nushell = {
         enable = true;
@@ -44,27 +42,23 @@
           port = 14625;
         };
       };
-      samba-mount = {
-        enable = true;
-        mounts."${config.user.home}/games" = {
-          domain = "192.168.0.3";
-          host = "games";
-          secrets = "/etc/samba/secrets";
-        };
-      };
+      # samba-mount = {
+      #   enable = true;
+      #   mounts."${config.user.home}/games" = {
+      #     domain = "192.168.0.3";
+      #     host = "games";
+      #     secrets = "/etc/samba/secrets";
+      #   };
+      # };
       # guac.enable = true;
     };
 
     themes.active = "moonlight";
   };
 
-  boot = {
-    kernelPackages = pkgs.linuxKernel.packages.linux_rpi3;
-    initrd.availableKernelModules = ["xhci_pci" "usbhid" "usb_storage"];
-    loader = {
-      grub.enable = false;
-      generic-extlinux-compatible.enable = true;
-    };
+  boot.loader = {
+    grub.enable = false;
+    generic-extlinux-compatible.enable = true;
   };
 
   console.enable = false;

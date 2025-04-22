@@ -8,7 +8,6 @@
 }:
 with lib; let
   cfg = config.modules.programs.age;
-  agenix = inputs.agenix;
 in {
   imports = [inputs.agenix.nixosModules.default];
   options.modules.programs.age = {
@@ -49,7 +48,7 @@ in {
     user.packages = with pkgs; [
       age
       # rage
-      agenix.packages.${pkgs.system}.default
+      inputs.agenix.packages.${pkgs.system}.default
     ];
   };
 }
