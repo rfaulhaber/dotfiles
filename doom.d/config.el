@@ -190,7 +190,7 @@ Used in loading config specific to those systems.")
         org-modern-fold-stars
         '(("◉" . "○")
           ("◉" . "○")
-          ("" . "")
+          ("▸" . "▾")
           ("▸" . "▾"))
         org-modern-checkbox
         '((?X . "󱗼")
