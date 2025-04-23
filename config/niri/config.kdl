@@ -308,6 +308,16 @@ window-rule {
     open-floating true
 }
 
+window-rule {
+    match app-id=r#"firefox|firefox-aurora"#
+    open-maximized true
+}
+
+window-rule {
+  match app-id="Emacs"
+  open-maximized true
+}
+
 // Example: block out two password managers from screen capture.
 // (This example rule is commented out with a "/-" in front.)
 /-window-rule {
