@@ -157,8 +157,19 @@
                   self.nixosConfigurations.pallas;
               };
             };
+            nike = {
+              hostname = "nike";
+              profiles.system = {
+                user = "root";
+                fastConnection = true;
+                path =
+                  deploy-rs.lib.aarch64-linux.activate.nixos
+                  self.nixosConfigurations.nike;
+              };
+            };
           };
         };
+
         checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
 
         packages.x86_64-linux = let

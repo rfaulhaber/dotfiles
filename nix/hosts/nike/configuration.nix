@@ -6,19 +6,39 @@
   lib,
   pkgs,
   inputs,
+  modulesPath,
   ...
 }: {
   imports = [
     ./hardware-configuration.nix
     ../../modules
-    inputs.nixos-hardware.nixosModules.raspberry-pi-5
+    inputs.nixos-raspberrypi.lib.inject-overlays
+    # inputs.nixos-raspberrypi.nixosModules.sd-image
+    (lib.mkAliasOptionModuleMD ["environment" "checkConfigurationOptions"] ["_module" "check"])
+    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.base
+    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.display-vc4
+    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.bluetooth
   ];
 
+  disabledModules = [
+    (modulesPath + "/rename.nix")
+  ];
+
+  # TODO place elsewhere
+  nix.settings = {
+    extra-substituters = [
+      "https://nixos-raspberrypi.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="
+    ];
+  };
+
   modules = {
-    # desktop = {
-    #   enable = true;
-    #   environment.retroarch.enable = true;
-    # };
+    desktop = {
+      enable = true;
+      retropie-nix.enable = true;
+    };
     programs = {
       nushell = {
         enable = true;
@@ -42,36 +62,31 @@
           port = 14625;
         };
       };
-      # samba-mount = {
-      #   enable = true;
-      #   mounts."${config.user.home}/games" = {
-      #     domain = "192.168.0.3";
-      #     host = "games";
-      #     secrets = "/etc/samba/secrets";
-      #   };
-      # };
+      samba-mount = {
+        enable = true;
+        mounts."${config.user.home}/games" = {
+          domain = "192.168.0.3";
+          host = "games";
+          secrets = "/etc/nixos/smb-secrets";
+        };
+      };
       # guac.enable = true;
     };
 
     themes.active = "moonlight";
   };
 
-  boot.loader = {
-    grub.enable = false;
-    generic-extlinux-compatible.enable = true;
-  };
-
-  console.enable = false;
-
-  environment.systemPackages = with pkgs; [
-    libraspberrypi
-    raspberrypi-eeprom
-  ];
-
   networking = {
     hostName = "nike";
-    useDHCP = true;
-    interfaces.enu1u1u1.useDHCP = lib.mkDefault true;
+    hostId = "51F49153";
+    # useDHCP = true;
+    interfaces.end0.useDHCP = true;
+
+    dhcpcd.extraConfig = ''
+      blacklist 192.168.0.1
+    '';
+
+    firewall.enable = true;
   };
 
   # temporary, make nix settings modular

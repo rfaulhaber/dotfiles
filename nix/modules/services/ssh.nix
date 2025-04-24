@@ -112,9 +112,7 @@ in {
             user = config.user.name;
             port = 10222;
             forwardAgent = true;
-            extraOptions = {
-              "AddKeysToAgent" = "yes";
-            };
+            extraOptions."AddKeysToAgent" = "yes";
           };
 
           "github.com" = {
@@ -137,28 +135,30 @@ in {
             hostname = mkLocalHostname "2";
             forwardAgent = true;
             user = "ryan";
-            extraOptions = {
-              "AddKeysToAgent" = "yes";
-            };
             port = 12981;
+            extraOptions."AddKeysToAgent" = "yes";
           };
 
           "nix-installer" = {
             hostname = mkLocalHostname "190";
             user = "nixos";
-            extraOptions = {
-              "AddKeysToAgent" = "yes";
-            };
+            extraOptions."AddKeysToAgent" = "yes";
           };
 
           "steamdeck" = {
             hostname = "steamdeck";
             user = "deck";
             forwardAgent = true;
-            extraOptions = {
-              "AddKeysToAgent" = "yes";
-            };
             port = 27077;
+            extraOptions."AddKeysToAgent" = "yes";
+          };
+
+          "nike" = {
+            hostname = mkLocalHostname "227";
+            user = "ryan";
+            forwardAgent = true;
+            port = 14625;
+            extraOptions."AddKeysToAgent" = "yes";
           };
         };
       };

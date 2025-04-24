@@ -16,6 +16,7 @@ in {
     ./mako
     ./polybar
     ./random-wallpaper.nix
+    ./retropie-nix
     ./rofi
     ./sound
     ./swww

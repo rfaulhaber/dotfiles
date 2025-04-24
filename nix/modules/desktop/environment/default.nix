@@ -9,6 +9,7 @@ in {
   imports = [
     ./awesome
     ./bspwm
+    ./gnome
     ./hyprland
     ./i3
     ./niri
