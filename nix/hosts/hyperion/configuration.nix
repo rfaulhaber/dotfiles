@@ -9,7 +9,7 @@
   ...
 }: {
   imports = [
-    ../../modules
+    # ../../modules
     ./hardware-configuration.nix
     inputs.nixos-generators.nixosModules.all-formats
   ];
@@ -152,13 +152,11 @@
   };
 
   # TODO move, set defaults
+  # TODO separate hardware config
   networking = {
     hostName = "hyperion";
     hostId = "836be91c";
 
-    # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-    # Per-interface useDHCP will be mandatory in the future, so this generated config
-    # replicates the default behaviour.
     useDHCP = false;
 
     interfaces.enp5s0.useDHCP = true;

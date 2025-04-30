@@ -57,9 +57,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi";
-    # currently unused flake inputs
-    # hyprland.url = "github:hyprwm/Hyprland/v0.47.2-b";
-    # murex.url = "github:rfaulhaber/murex";
+    lix-module = {
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/2.92.0-3.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -72,6 +73,7 @@
     nix-darwin,
     emacs-overlay,
     flake-parts,
+    lix-module,
     nixos-raspberrypi,
     ...
   }:
@@ -79,20 +81,15 @@
       config,
       withSystem,
       moduleWithSystem,
-      inputs,
       system,
       ...
     }: {
       imports = [];
       flake = let
-        inherit (lib.my) mapModules mkPkgs;
-
-        pkgs = mkPkgs nixpkgs [];
-
-        # TODO import lib functions that don't depend on pkgs
-        lib = nixpkgs.lib.extend (self: super: {
+        lib = inputs.nixpkgs.lib.extend (self: super: {
           my = import ./nix/lib {
-            inherit inputs pkgs;
+            inherit inputs;
+            pkgs = inputs.nixpkgs;
             lib = self;
           };
         });
@@ -111,15 +108,16 @@
             description = "Emacs Lisp template";
           };
         };
-        overlays = mapModules ./nix/overlays import;
+        # overlays = mapModules ./nix/overlays import;
         # these are the actual system configurations
         # any particular system can be build with nixos-rebuild of course, but also:
         # nix build .#nixosConfigurations.<hostname>.config.system.build.toplevel
         # TODO utilize top-level nixosModules
+        # TODO a nixos configuration should be a combination of a modules configuration and a hardware configuration
         nixosConfigurations = let
           mkHost = lib.my.mkNixOSHost;
         in {
-          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
+          hyperion = lib.my.mkNixOSHost ./nix/hosts/hyperion/configuration.nix {
             system = "x86_64-linux";
           };
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {
@@ -212,19 +210,19 @@
             format = "sd-aarch64-installer";
           };
 
-          arm-installer-rpi5 = nixos-generators.nixosGenerate {
-            system = "aarch64-linux";
-            modules = [
-              ./nix/installers/aarch64-linux/configuration.nix
-            ];
-            specialArgs = {
-              inherit inputs;
-            };
-            customFormats.aarch64-linux-rpi5 = import ./nix/formats/aarch64/linux/raspberry-pi/5/configuration.nix {
-              inherit pkgs inputs;
-            };
-            format = "aarch64-linux-rpi5";
-          };
+          # arm-installer-rpi5 = nixos-generators.nixosGenerate {
+          #   system = "aarch64-linux";
+          #   modules = [
+          #     ./nix/installers/aarch64-linux/configuration.nix
+          #   ];
+          #   specialArgs = {
+          #     inherit inputs;
+          #   };
+          #   customFormats.aarch64-linux-rpi5 = import ./nix/formats/aarch64/linux/raspberry-pi/5/configuration.nix {
+          #     inherit pkgs inputs;
+          #   };
+          #   format = "aarch64-linux-rpi5";
+          # };
 
           x86_64-installer-generic = nixos-generators.nixosGenerate {
             system = "x86_64-linux";

@@ -4,16 +4,7 @@
   ...
 }:
 with builtins;
-with lib; let
-  inherit (inputs) nixpkgs home-manager;
-in rec {
-  mkPkgs = system: pkgs: extraOverlays:
-    import pkgs {
-      inherit system;
-      config.allowUnfree = true;
-      overlays = extraOverlays ++ (lib.attrValues inputs.self.overlays);
-    };
-
+with lib; rec {
   # thank you hlissner
   # https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix#L7
   mkHost = path: attrs @ {
@@ -22,21 +13,21 @@ in rec {
     specialArgs ? {},
     extraModules ? [],
     ...
-  }: let
-    pkgs = mkPkgs system nixpkgs overlays;
-  in {
+  }: {
     inherit system;
     modules =
       [
-        home-manager.nixosModules.home-manager
+        inputs.lix-module.nixosModules.default
+        inputs.home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
         }
         {
-          nixpkgs.pkgs = pkgs;
           networking.hostName = hostnameFromPath path;
+          nixpkgs.config.allowUnfree = true;
         }
+        ../../nix/modules
         (filterAttrs (n: v: !elem n ["system"]) attrs)
         path
       ]
@@ -105,7 +96,7 @@ in rec {
       count);
 
   mkNixOSHost = path: attrs:
-    nixosSystem (mkHost path attrs);
+    inputs.nixpkgs.lib.nixosSystem (mkHost path attrs);
 
   mkNixOSK8sNodes = n: path: attrs:
     map nixosSystem (mkK8sNodes n path attrs);
