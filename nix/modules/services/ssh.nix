@@ -131,6 +131,14 @@ in {
             };
           };
 
+          "git.home.lan 192.168.0.3" = {
+            port = 3402;
+            extraOptions = {
+              "PreferredAuthentications" = "publickey";
+              "AddKeysToAgent" = "yes";
+            };
+          };
+
           "pallas" = {
             hostname = mkLocalHostname "2";
             forwardAgent = true;
