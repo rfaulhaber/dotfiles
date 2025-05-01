@@ -28,7 +28,6 @@ with lib; rec {
           nixpkgs.config.allowUnfree = true;
         }
         ../../nix/modules
-        (filterAttrs (n: v: !elem n ["system"]) attrs)
         path
       ]
       ++ extraModules;

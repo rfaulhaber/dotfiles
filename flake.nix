@@ -117,7 +117,7 @@
         nixosConfigurations = let
           mkHost = lib.my.mkNixOSHost;
         in {
-          hyperion = lib.my.mkNixOSHost ./nix/hosts/hyperion/configuration.nix {
+          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
             system = "x86_64-linux";
           };
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {
