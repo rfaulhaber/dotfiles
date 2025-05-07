@@ -101,9 +101,31 @@
 
     useDHCP = false;
 
+    # vlans = {
+    #   "docker_bridge" = {
+    #     id = 100;
+    #     interface = "eno2";
+    #   };
+    # };
+
+    # macvlans.docker_bridge = {
+    #   interface = "eno2";
+    #   mode = "bridge";
+    # };
+
     interfaces = {
       eno1.useDHCP = true;
       eno2.useDHCP = true;
+
+      # docker_bridge = {
+      #   useDHCP = false;
+      #   ipv4.addresses = [
+      #     {
+      #       address = "192.168.0.220";
+      #       prefixLength = 24;
+      #     }
+      #   ];
+      # };
     };
 
     # should only get its static ip address from the pihole

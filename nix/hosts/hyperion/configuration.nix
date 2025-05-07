@@ -40,7 +40,6 @@
         carapace.enable = true;
         plugins = with pkgs.nushellPlugins; [
           polars
-          highlight
         ];
       };
       direnv.enable = true;

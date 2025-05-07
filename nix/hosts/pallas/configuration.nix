@@ -82,11 +82,17 @@
     hostName = "pallas";
     useDHCP = true;
 
+    defaultGateway6 = {
+      address = "2600:1702:6710:117F:56AF:97FF:FE12:496C";
+      interface = "end0";
+    };
+
     interfaces.end0 = {
       useDHCP = true;
       ipv6.addresses = let
         addresses = [
           "2600:1702:6710:117F:C40A:AFB1:A677:52E4"
+          "2600:1702:6710:117F:487B:3A4C:4399:5458"
           "2600:1702:6710:117F:DA3A:DDFF:FEDA:2B5"
         ];
       in
