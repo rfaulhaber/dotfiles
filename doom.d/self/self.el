@@ -342,6 +342,16 @@ hello world
         (read-only-mode 1)
         (switch-to-buffer (current-buffer))))))
 
+(defun self/open-external-terminal-for-current-project ()
+  (interactive)
+  (if-let ((location (or (projectile-project-root)
+                         (when buffer-file-name (f-dirname buffer-file-name)))))
+      (make-process
+       :name "terminal spawn"
+       :buffer (get-buffer-create "*termianl spawn*")
+       :command `("wezterm" "start" "--cwd" ,location))
+    (user-error "no current project root")))
+
 
 ;; ----------------------------- utility functions -----------------------------
 
