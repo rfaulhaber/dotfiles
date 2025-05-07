@@ -344,14 +344,14 @@ hello world
 
 (defun self/open-external-terminal-for-current-project ()
   (interactive)
-  (if-let ((location (or (projectile-project-root)
-                         (when buffer-file-name (f-dirname buffer-file-name)))))
+  (if-let* ((location (or (projectile-project-root)
+                          (when buffer-file-name (f-dirname buffer-file-name)))))
       (make-process
        :name "terminal spawn"
        :buffer (get-buffer-create "*termianl spawn*")
+       ;; TODO make configurable
        :command `("wezterm" "start" "--cwd" ,location))
-    (user-error "no current project root")))
-
+    (user-error "cannot find a directory to open")))
 
 ;; ----------------------------- utility functions -----------------------------
 
