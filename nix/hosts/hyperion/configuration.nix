@@ -9,7 +9,7 @@
   ...
 }: {
   imports = [
-    # ../../modules
+    # TODO conditionally import?
     ./hardware-configuration.nix
     inputs.nixos-generators.nixosModules.all-formats
     inputs.lix-module.nixosModules.default
@@ -95,7 +95,7 @@
     };
     desktop = {
       enable = true;
-      environment.niri = lib.mkDefault { enable = true; };
+      environment.niri = lib.mkDefault {enable = true;};
       random-wallpaper = {
         enable = true;
         token = config.age.secrets.unsplash.path;
@@ -146,9 +146,7 @@
 
     binfmt.emulatedSystems = ["aarch64-linux"];
 
-    zfs = {
-      extraPools = ["zroot"];
-    };
+    zfs.extraPools = ["zroot"];
   };
 
   # TODO move, set defaults
