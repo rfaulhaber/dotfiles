@@ -12,6 +12,7 @@
     # ../../modules
     ./hardware-configuration.nix
     inputs.nixos-generators.nixosModules.all-formats
+    inputs.lix-module.nixosModules.default
   ];
 
   modules = {

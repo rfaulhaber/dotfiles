@@ -16,9 +16,7 @@ with lib; rec {
   }: {
     inherit system;
     modules =
-      lib.optionals (system
-      == "x86_64-linux") [inputs.lix-module.nixosModules.default]
-      ++ [
+      [
         inputs.home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
