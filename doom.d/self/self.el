@@ -353,6 +353,14 @@ hello world
        :command `("wezterm" "start" "--cwd" ,location))
     (user-error "cannot find a directory to open")))
 
+(defun self/update-org-agenda-files ()
+  "Adds today's journal entry, if it exists, to  `org-agenda-files'."
+  (interactive)
+  (let ((journal-file-name (format-time-string "journal/%Y%m%d.org"))))
+  (setq org-agenda-files
+        (append org-agenda-files
+                (list journal-file-name))))
+
 ;; ----------------------------- utility functions -----------------------------
 
 ;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el

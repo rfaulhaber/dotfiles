@@ -166,7 +166,15 @@ Used in loading config specific to those systems.")
       (mapcar
        (lambda (str)
          (concat org-directory "/" str))
-       (list "todo.org" "habits.org" "projects.org" "blog.org" "todo")))
+       (append
+        (list
+         "todo.org"
+         "habits.org"
+         "projects.org"
+         "blog.org"
+         "todo")
+        (when config/work-computer-p
+          (list (format-time-string "journal/%Y%m%d.org"))))))
 
 ;; org-roam
 (setq
@@ -361,7 +369,10 @@ Used in loading config specific to those systems.")
                '(nushell-ts-mode . ("nu" "--lsp")))
 
   (add-to-list 'eglot-server-programs
-               '(elixir-mode . ("elixir-ls"))))
+               '(elixir-mode . ("elixir-ls")))
+
+  (add-to-list 'eglot-server-programs
+               '(terraform-mode . ("tflint" "--langserver"))))
 ;; kdl mode
 (add-to-list 'auto-mode-alist '("\\.kdl\\'" . kdl-ts-mode))
 

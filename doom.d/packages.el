@@ -65,6 +65,7 @@
 (package! nushell-ts-mode)
 (package! realgud-lldb)
 (package! nix-ts-mode)
+(package! terraform-mode)
 
 ;; (package! hyperbole)
 
