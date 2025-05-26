@@ -53,6 +53,8 @@
     services = {
       zfs.enable = true;
       docker.enable = true;
+      radicle.enable = true;
+      sudo-rs.enable = true;
       printing = {
         enable = true;
         client = true;

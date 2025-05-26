@@ -36,7 +36,9 @@
 
     wezterm.url = "github:wez/wezterm?dir=nix";
 
-    swww.url = "github:LGFae/swww";
+    # NOTE 5/26/25 pinning to this commmit as the maintainer of swww erroneously
+    # deleted a file from the nix distribution of this package
+    swww.url = "github:LGFae/swww?rev=97ef5891c04f3ff0c5ed8d9a45164e29d157dd36";
     # TODO consider using stylix
     # currently, a wallpaper is required with stylix. this is problematic
     # because I do not need to set a wallpaper in my config
@@ -58,7 +60,7 @@
     };
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi";
     lix-module = {
-      url = "https://git.lix.systems/lix-project/nixos-module/archive/2.92.0-3.tar.gz";
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/2.93.0.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

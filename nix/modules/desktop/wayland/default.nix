@@ -30,7 +30,7 @@ in {
 
       systemPackages = with pkgs; [
         inputs.swww.packages.${pkgs.system}.swww
-        wl-clipboard
+        wl-clipboard-rs
       ];
     };
   };

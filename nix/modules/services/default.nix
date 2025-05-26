@@ -14,11 +14,13 @@
     ./printing
     ./proxy
     ./pueue
+    ./radicle
     ./redshift
     ./samba-mount
     ./samba-serve
     ./snapraid
     ./ssh.nix
+    ./sudo-rs
     ./syncthing
     ./systemd
     ./tailscale
