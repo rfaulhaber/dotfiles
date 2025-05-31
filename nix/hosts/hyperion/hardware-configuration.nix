@@ -12,30 +12,37 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod"];
-  boot.initrd.kernelModules = [];
-  boot.kernelModules = ["kvm-amd"];
-  boot.extraModulePackages = [];
-
-  fileSystems."/" = {
-    device = "zroot/root";
-    fsType = "zfs";
+  boot = {
+    initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod"];
+    initrd.kernelModules = [];
+    kernelModules = ["kvm-amd"];
+    extraModulePackages = [];
   };
 
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/B0B7-062D";
-    fsType = "vfat";
-    options = ["fmask=0077" "dmask=0077"];
-  };
+  fileSystems = {
+    "/boot" = {
+      device = "/dev/disk/by-uuid/B0B7-062D";
+      fsType = "vfat";
+      options = ["fmask=0077" "dmask=0077"];
+    };
 
-  fileSystems."/home" = {
-    device = "zroot/home";
-    fsType = "zfs";
-  };
+    "/" = {
+      device = "zroot/root";
+      fsType = "zfs";
+      options = ["zfsutil"];
+    };
 
-  fileSystems."/nix" = {
-    device = "zroot/nix";
-    fsType = "zfs";
+    "/home" = {
+      device = "zroot/home";
+      fsType = "zfs";
+      options = ["zfsutil"];
+    };
+
+    "/nix" = {
+      device = "zroot/nix";
+      fsType = "zfs";
+      options = ["zfsutil"];
+    };
   };
 
   swapDevices = [];

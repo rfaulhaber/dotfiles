@@ -169,6 +169,12 @@
     '';
   };
 
+  # TODO implement encrypted home
+  # security.pam.zfs = {
+  #   enable = true;
+  #   homes = "zroot/home";
+  # };
+
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   system.autoUpgrade = {
