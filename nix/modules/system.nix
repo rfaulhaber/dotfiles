@@ -11,8 +11,7 @@ with lib; {
     # All my machines are in the same timezone
     # TODO should this be here?
 
-      time.timeZone = "America/New_York";
-
+    time.timeZone = "America/New_York";
 
     # TODO where should these live?
     i18n.defaultLocale = "en_US.UTF-8";
@@ -24,9 +23,6 @@ with lib; {
     # TODO make standard nix module?
     nix = {
       package = pkgs.nixVersions.stable;
-      extraOptions = ''
-        experimental-features = nix-command flakes
-      '';
       gc = {
         automatic = true;
         dates = "weekly";
@@ -39,6 +35,19 @@ with lib; {
         trusted-users = users;
         allowed-users = users;
         auto-optimise-store = true;
+
+        experimental-features = let
+          lixEnabled = builtins.hasAttr "lix" config && config.lix.enable;
+        in
+          ["nix-command" "flakes"]
+          ++ (
+            # this is so silly, but cppnix's feature is called "pipe-operators"
+            # while lix's feature is called "pipe-operator". not all my machines
+            # use lix, so I have to account for this
+            if lixEnabled
+            then ["pipe-operator"]
+            else ["pipe-operators"]
+          );
       };
     };
 
