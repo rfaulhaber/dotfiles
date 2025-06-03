@@ -14,6 +14,10 @@
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
 
+  nixpkgs.overlays = [
+    (import ../../overlays/pam_ssh_agent_auth.nix)
+  ];
+
   modules = {
     programs = {
       nushell = {
