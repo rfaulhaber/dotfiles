@@ -111,6 +111,14 @@ Used in loading config specific to those systems.")
 (map! :leader "b o" #'self/new-buffer-with-mode)
 (map! :leader "TAB p" #'self/projectile-open-project-in-new-workspace)
 
+(map! (:when (featurep :system 'macos)
+        "<apps>" #'execute-extended-command))
+
+;; markdown-mode changes to make consistent with org-mode
+(map! :map markdown-mode-map
+      :ni [C-return] #'markdown-insert-list-item
+      :leader "m l l" #'markdown-insert-link)
+
 ;; common directories
 (setq self/common-directories '(("Downloads" . "~/Downloads")
                                 ("Projects" . "~/Projects")
