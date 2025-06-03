@@ -63,6 +63,11 @@
       url = "https://git.lix.systems/lix-project/nixos-module/archive/2.93.0.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # so that we can use the pipeline operator
+    nil = {
+      url = "github:oxalica/nil/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -268,13 +273,13 @@
             ];
           };
 
-          cluster = pkgs.mkShell {
-            buildInputs = with pkgs; [
-              ansible
-              terraform
-              vagrant
-            ];
-          };
+          # cluster = pkgs.mkShell {
+          #   buildInputs = with pkgs; [
+          #     ansible
+          #     terraform
+          #     vagrant
+          #   ];
+          # };
 
           generate = pkgs.mkShell {
             buildInputs = [

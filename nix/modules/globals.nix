@@ -32,15 +32,15 @@ in {
           };
         };
       };
-      "theme.scss".text = lib.pipe theme [
-        lib.attrsToList
-        (map ({
+      "theme.scss".text =
+        theme
+        |> lib.attrsToList
+        |> (map ({
           name,
           value,
         }: "\$${name}: ${value};"))
-        (builtins.concatStringsSep
-        "\n")
-      ];
+        |> (builtins.concatStringsSep
+          "\n");
     };
   };
 }

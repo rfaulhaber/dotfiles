@@ -30,10 +30,11 @@ in {
         "/etc/ssh/ssh_host_ed25519_key"
       ];
 
-      secrets = lib.pipe "${cfg.secretsDir}/secrets.nix" [
-        import
-        lib.attrNames
-        (map (name: let
+      secrets =
+        "${cfg.secretsDir}/secrets.nix"
+        |> import
+        |> lib.attrNames
+        |> (map (name: let
           nameWithoutSuffix = lib.removeSuffix ".age" name;
         in {
           "${nameWithoutSuffix}" = {
@@ -41,8 +42,7 @@ in {
             owner = config.user.name;
           };
         }))
-        (foldl (x: y: x // y) {})
-      ];
+        |> (foldl (x: y: x // y) {});
     };
 
     user.packages = with pkgs; [

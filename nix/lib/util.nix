@@ -70,5 +70,8 @@ with lib; rec {
   #   (name -> value -> bool)
   #   (name -> value -> { name = any; value = any; })
   #   attrs
-  mapFilterAttrs = pred: f: attrs: pipe attrs [(mapAttrs' f) (filterAttrs pred)];
+  mapFilterAttrs = pred: f: attrs:
+    attrs
+    |> (mapAttrs' f)
+    |> filterAttrs pred;
 }

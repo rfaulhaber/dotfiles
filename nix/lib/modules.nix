@@ -16,10 +16,13 @@ in {
       path = "${toString dir}/${n}";
     in
       if v == "directory" && pathExists "${path}/default.nix"
-      then pipe path [fn nameValuePair]
+      then path |> fn |> nameValuePair
       else if v == "regular" && n != "default.nix" && hasSuffix ".nix" n
-      then pipe path [fn (nameValuePair (removeSuffix ".nix" n))]
+      then
+        path
+        |> fn
+        |> (nameValuePair (removeSuffix ".nix" n))
       else nameValuePair "" null;
   in
-    pipe dir [readDir (mapFilterAttrs pred f)];
+    dir |> readDir |> (mapFilterAttrs pred f);
 }

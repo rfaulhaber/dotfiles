@@ -44,8 +44,8 @@ with lib; let
       gnutls
       graphviz
       imagemagick
+      inputs.nil.outputs.packages.${pkgs.stdenv.targetPlatform.system}.nil
       languagetool
-      nil
       nodePackages.mermaid-cli
       ripgrep
       sqlite

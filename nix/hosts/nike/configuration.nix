@@ -12,12 +12,13 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules
-    inputs.nixos-raspberrypi.lib.inject-overlays
-    # inputs.nixos-raspberrypi.nixosModules.sd-image
+    inputs.nixos-hardware.nixosModules.raspberry-pi-5
     (lib.mkAliasOptionModuleMD ["environment" "checkConfigurationOptions"] ["_module" "check"])
-    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.base
-    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.display-vc4
-    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.bluetooth
+    # inputs.nixos-raspberrypi.lib.inject-overlays
+    # inputs.nixos-raspberrypi.nixosModules.sd-image
+    # inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.base
+    # inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.display-vc4
+    # inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.bluetooth
   ];
 
   disabledModules = [
@@ -35,10 +36,10 @@
   };
 
   modules = {
-    desktop = {
-      enable = true;
-      retropie-nix.enable = true;
-    };
+    # desktop = {
+    #   enable = true;
+    #   # retropie-nix.enable = true;
+    # };
     programs = {
       nushell = {
         enable = true;
@@ -70,7 +71,6 @@
           secrets = "/etc/nixos/smb-secrets";
         };
       };
-      # guac.enable = true;
     };
 
     themes.active = "moonlight";
@@ -89,7 +89,27 @@
     firewall.enable = true;
   };
 
-  boot.loader.raspberryPi.bootloader = "uboot";
+  boot.loader = {
+    grub.enable = false;
+    generic-extlinux-compatible.enable = true;
+  };
+
+  # raspberry pi hardware configuration
+  # hardware = {
+  #   raspberry-pi."5" = {
+  #     fkms-3d.enable = true;
+  #     apply-overlays-dtmerge.enable = true;
+  #   };
+
+  #   enableRedistributableFirmware = true;
+  # };
+
+  console.enable = false;
+
+  environment.systemPackages = with pkgs; [
+    libraspberrypi
+    raspberrypi-eeprom
+  ];
 
   # temporary, make nix settings modular
   nix.gc.automatic = lib.mkForce false;
