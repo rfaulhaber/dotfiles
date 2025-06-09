@@ -12,13 +12,13 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules
-    inputs.nixos-hardware.nixosModules.raspberry-pi-5
+    # inputs.nixos-hardware.nixosModules.raspberry-pi-5
     (lib.mkAliasOptionModuleMD ["environment" "checkConfigurationOptions"] ["_module" "check"])
-    # inputs.nixos-raspberrypi.lib.inject-overlays
+    inputs.nixos-raspberrypi.lib.inject-overlays
     # inputs.nixos-raspberrypi.nixosModules.sd-image
-    # inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.base
-    # inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.display-vc4
-    # inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.bluetooth
+    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.base
+    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.display-vc4
+    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.bluetooth
   ];
 
   disabledModules = [
