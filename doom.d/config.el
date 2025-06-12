@@ -116,8 +116,7 @@ Used in loading config specific to those systems.")
 
 ;; markdown-mode changes to make consistent with org-mode
 (map! :map markdown-mode-map
-      :ni [C-return] #'markdown-insert-list-item
-      :leader "m l l" #'markdown-insert-link)
+      :ni [C-return] #'markdown-insert-list-item)
 
 ;; common directories
 (setq self/common-directories '(("Downloads" . "~/Downloads")
