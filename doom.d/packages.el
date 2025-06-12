@@ -66,6 +66,7 @@
 (package! realgud-lldb)
 (package! nix-ts-mode)
 (package! terraform-mode)
+(package! gptel :recipe (:nonrecursive t))
 
 ;; (package! hyperbole)
 
