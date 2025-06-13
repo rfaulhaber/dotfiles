@@ -168,6 +168,14 @@ in {
             port = 14625;
             extraOptions."AddKeysToAgent" = "yes";
           };
+
+          "janus" = {
+            hostname = "66.63.168.53";
+            user = "ryan";
+            forwardAgent = true;
+            port = 6674;
+            extraOptions."AddKeysToAgent" = "yes";
+          };
         };
       };
     })

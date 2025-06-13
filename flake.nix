@@ -36,8 +36,6 @@
 
     wezterm.url = "github:wez/wezterm?dir=nix";
 
-    # NOTE 5/26/25 pinning to this commmit as the maintainer of swww erroneously
-    # deleted a file from the nix distribution of this package
     swww.url = "github:LGFae/swww";
     # TODO consider using stylix
     # currently, a wallpaper is required with stylix. this is problematic
@@ -128,6 +126,9 @@
             system = "x86_64-linux";
           };
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {
+            system = "x86_64-linux";
+          };
+          janus = mkHost ./nix/hosts/janus/configuration.nix {
             system = "x86_64-linux";
           };
           pallas = mkHost ./nix/hosts/pallas/configuration.nix {
@@ -273,30 +274,13 @@
             ];
           };
 
-          # cluster = pkgs.mkShell {
-          #   buildInputs = with pkgs; [
-          #     ansible
-          #     terraform
-          #     vagrant
-          #   ];
-          # };
-
           generate = pkgs.mkShell {
             buildInputs = [
               inputs'.nixos-generators.packages.default
             ];
           };
 
-          # for doing any kind of dotfiles dev for gnome widgets/desktops
-          gnomeDev = pkgs.mkShell {
-            buildInputs = with pkgs; [
-              dart-sass # lol
-              scss-lint
-              nodePackages_latest.prettier
-            ];
-          };
-
-          default = self'.devShells.gnomeDev;
+          default = self'.devShells.generate;
         };
       };
     });
