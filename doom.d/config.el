@@ -365,21 +365,26 @@ Used in loading config specific to those systems.")
 ;; eglot
 (after! eglot
   (add-to-list 'eglot-server-programs
-               '(nix-ts-mode . ("nil" :initializationOptions
-                                (:formatting (:command ["alejandra" "--quiet" "-"])))))
+               '((nix-ts-mode nix-mode) . ("nil" :initializationOptions
+                                           (:formatting (:command ["alejandra" "--quiet" "-"])))))
 
-  (add-to-list 'eglot-server-programs
-               '(nix-mode . ("nil" :initializationOptions
-                             (:formatting (:command ["alejandra" "--quiet" "-"])))))
+  (add-hook 'nix-ts-mode-hook #'eglot-ensure)
+  (add-hook 'nix-mode-hook #'eglot-ensure)
 
   (add-to-list 'eglot-server-programs
                '(nushell-ts-mode . ("nu" "--lsp")))
 
+  (add-hook 'nushell-ts-mode-hook #'eglot-ensure)
+
   (add-to-list 'eglot-server-programs
-               '(elixir-mode . ("elixir-ls")))
+               '((elixir-ts-mode elixir-mode) . ("elixir-ls")))
+
+  (add-hook 'elixir-mode-hook #'eglot-ensure)
+  (add-hook 'elixir-ts-mode-hook #'eglot-ensure)
 
   (add-to-list 'eglot-server-programs
                '(terraform-mode . ("tflint" "--langserver"))))
+
 ;; kdl mode
 (add-to-list 'auto-mode-alist '("\\.kdl\\'" . kdl-ts-mode))
 

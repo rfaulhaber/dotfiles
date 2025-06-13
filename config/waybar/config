@@ -56,7 +56,7 @@
   "disk": {
     "interval": 30,
     "format": "󰋊 {path}: {used}",
-    "path": "/home",
+    "path": "/home/ryan",
     "tooltip": true
   },
   "disk#nix": {
