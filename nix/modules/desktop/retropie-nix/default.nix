@@ -24,8 +24,8 @@ in {
     };
 
     services.displayManager.autoLogin = {
-        enable = true;
-        user = "gamer";
-      };
+      enable = true;
+      user = "gamer";
+    };
   };
 }

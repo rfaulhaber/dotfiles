@@ -44,8 +44,8 @@ in {
     };
 
     services.displayManager.gdm = {
-        enable = true;
-        wayland = true;
+      enable = true;
+      wayland = true;
     };
 
     # the above uses gdm to login, so we have to also set enableGnomeKeyring here maybe

@@ -1,10 +1,13 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-
-let cfg = config.modules.desktop.fuzzel;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
+  cfg = config.modules.desktop.fuzzel;
 in {
-  options.modules.desktop.fuzzel = { enable = mkEnableOption false; };
+  options.modules.desktop.fuzzel = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     user.packages = with pkgs; [

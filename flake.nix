@@ -283,13 +283,14 @@
             ];
           };
 
-          generate = pkgs.mkShell {
+          nix = pkgs.mkShell {
             buildInputs = [
               inputs'.nixos-generators.packages.default
+              inputs'.nil.packages.default
             ];
           };
 
-          default = self'.devShells.generate;
+          default = self'.devShells.nix;
         };
       };
     });
