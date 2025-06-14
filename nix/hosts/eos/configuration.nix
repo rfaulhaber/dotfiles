@@ -6,20 +6,73 @@
 }: {
   imports = [../../modules];
 
-  services.nix-daemon.enable = true;
-  # nix.package = pkgs.nix;
+  # Define the user info that modules will use
+  userInfo = {
+    fullName = "Ryan Faulhaber";
+    primaryEmail = "ryan@faulhaber.io";
+    primaryGPGKey = "6B51D9B8CEA6A53C";
+  };
 
-  # Necessary for using flakes on this system.
-  nix.settings.experimental-features = "nix-command flakes";
+  # Define the main user configuration
+  user = {
+    name = "ryan";
+    description = "Ryan Faulhaber";
+  };
 
-  # system.configurationRevision = self.rev or self.dirtyRev or null;
+  # Module configuration
+  modules = {
+    # Programs that work well on Darwin
+    programs = {
+      emacs.enable = true;
+      git = {
+        enable = true;
+        useDelta = true;
+      };
+      nushell = {
+        enable = true;
+        setDefault = true;
+        zoxide.enable = true;
+        carapace.enable = true;
+      };
+      wezterm.enable = true;
+      starship.enable = true;
+      direnv.enable = true;
+      eza.enable = true;
+      ghostty.enable = true;
+    };
 
-  # Used for backwards compatibility, please read the changelog before changing.
-  # $ darwin-rebuild changelog
-  system.stateVersion = 4;
+    # Services that work on Darwin
+    services = {
+      gpg.enable = true;
+    };
 
-  # The platform the configuration will be used on.
-  nixpkgs.hostPlatform = "aarch64-darwin";
+    # Theme configuration
+    themes.active = "tokyo-night-dark";
+  };
 
-  environment.systemPackages = with pkgs; [neovim];
+  # Darwin-specific basic configuration is handled by modules/darwin.nix
+  # Host-specific overrides can go here
+
+  # Example: Custom environment variables for this host
+  environment.variables = {
+    EDITOR = "emacs";
+    BROWSER = "open";
+  };
+
+  # Host-specific packages
+  environment.systemPackages = with pkgs; [
+    # Development tools
+    neovim
+
+    # System utilities
+    htop
+    tree
+
+    # Network tools
+    nmap
+
+    # Fun stuff
+    fortune
+    cowsay
+  ];
 }

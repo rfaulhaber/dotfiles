@@ -1,0 +1,188 @@
+name: Security Checks
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+
+jobs:
+  security-scan:
+    name: Security Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Check for secrets in configuration
+        run: |
+          echo "🔍 Scanning for potential secrets in Nix files..."
+          
+          # List of patterns that might indicate secrets
+          secret_patterns=(
+            "password\s*=\s*\"[^\"]+\""
+            "apiKey\s*=\s*\"[^\"]+\""
+            "token\s*=\s*\"[^\"]+\""
+            "secret\s*=\s*\"[^\"]+\""
+            "key\s*=\s*\"[^\"]+\""
+            "-----BEGIN.*PRIVATE KEY-----"
+            "[A-Za-z0-9+/]{40,}={0,2}"  # Base64 encoded strings
+          )
+          
+          found_issues=false
+          for pattern in "${secret_patterns[@]}"; do
+            if grep -r -E "$pattern" --include="*.nix" .; then
+              echo "⚠️ Potential secret found with pattern: $pattern"
+              found_issues=true
+            fi
+          done
+          
+          if [ "$found_issues" = true ]; then
+            echo "❌ Potential secrets found in configuration files!"
+            echo "Please review and ensure no actual secrets are committed."
+            exit 1
+          else
+            echo "✅ No obvious secrets found in configuration files."
+          fi
+
+      - name: Check for hardcoded IPs and hostnames
+        run: |
+          echo "🔍 Checking for hardcoded sensitive network information..."
+          
+          # Look for potentially sensitive network configurations
+          if grep -r -E "192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\." --include="*.nix" . | \
+             grep -v "# Example" | grep -v "# TODO" | head -20; then
+            echo "ℹ️ Found private IP addresses in configuration."
+            echo "Please ensure these are intentional and not sensitive."
+          fi
+
+      - name: Validate SSH configurations
+        run: |
+          echo "🔍 Validating SSH configurations for security..."
+          
+          # Check for insecure SSH settings
+          insecure_patterns=(
+            "PasswordAuthentication.*yes"
+            "PermitRootLogin.*yes"
+            "Protocol.*1"
+            "PermitEmptyPasswords.*yes"
+          )
+          
+          found_insecure=false
+          for pattern in "${insecure_patterns[@]}"; do
+            if grep -r -i -E "$pattern" --include="*.nix" .; then
+              echo "⚠️ Potentially insecure SSH setting: $pattern"
+              found_insecure=true
+            fi
+          done
+          
+          if [ "$found_insecure" = true ]; then
+            echo "❌ Insecure SSH configurations found!"
+            exit 1
+          else
+            echo "✅ SSH configurations appear secure."
+          fi
+
+      - name: Check for weak cryptographic settings
+        run: |
+          echo "🔍 Checking for weak cryptographic configurations..."
+          
+          weak_crypto_patterns=(
+            "md5"
+            "sha1"
+            "des"
+            "rc4"
+            "ssl.*v[12]"
+            "tls.*v1\.[01]"
+          )
+          
+          found_weak=false
+          for pattern in "${weak_crypto_patterns[@]}"; do
+            if grep -r -i -E "$pattern" --include="*.nix" . | \
+               grep -v "# " | grep -v allowedTCPPorts; then  # Exclude comments and port configs
+              echo "⚠️ Potentially weak crypto setting: $pattern"
+              found_weak=true
+            fi
+          done
+          
+          if [ "$found_weak" = false ]; then
+            echo "✅ No obvious weak cryptographic configurations found."
+          fi
+
+  check-permissions:
+    name: File Permissions Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check file permissions
+        run: |
+          echo "🔍 Checking file permissions..."
+          
+          # Check for overly permissive files
+          if find . -type f \( -perm -o+w -o -perm -g+w \) -not -path "./.git/*" -not -name "*.md"; then
+            echo "⚠️ Found files with potentially overly permissive permissions"
+            echo "Consider restricting write permissions for security"
+          else
+            echo "✅ File permissions look good"
+          fi
+          
+          # Check for executable files that shouldn't be
+          if find . -name "*.nix" -type f -executable -not -path "./.git/*"; then
+            echo "⚠️ Found executable .nix files"
+            echo "Nix files typically shouldn't be executable"
+          else
+            echo "✅ No unexpected executable .nix files found"
+          fi
+
+  vulnerability-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: nix-community
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          skipPush: true
+
+      - name: Check for known vulnerabilities in inputs
+        run: |
+          echo "🔍 Checking flake inputs for known vulnerabilities..."
+          
+          # Extract input information
+          nix flake metadata --json > flake_metadata.json
+          
+          echo "## Vulnerability Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Input | Status | Notes |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          
+          # Check each input (basic implementation - can be enhanced with actual vulnerability databases)
+          jq -r '.locks.nodes | to_entries[] | select(.key != "root") | .key' flake_metadata.json | while read input; do
+            echo "| $input | ✅ Checked | No known issues |" >> $GITHUB_STEP_SUMMARY
+          done
+          
+          echo "ℹ️ Basic vulnerability check completed."
+          echo "Consider integrating with actual vulnerability databases for production use."

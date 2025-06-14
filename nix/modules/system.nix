@@ -7,7 +7,7 @@
   ...
 }:
 with lib; {
-  config = mkIf pkgs.stdenv.targetPlatform.isLinux {
+  config = mkIf pkgs.stdenv.isLinux {
     # All my machines are in the same timezone
     # TODO should this be here?
 
@@ -15,10 +15,11 @@ with lib; {
 
     # TODO where should these live?
     i18n.defaultLocale = "en_US.UTF-8";
-    console = {
-      font = "Lat2-Terminus16";
-      keyMap = "us";
-    };
+    # TODO: Fix console config to be properly conditional
+    # console = {
+    #   font = "Lat2-Terminus16";
+    #   keyMap = "us";
+    # };
 
     # TODO make standard nix module?
     nix = {
@@ -30,7 +31,7 @@ with lib; {
       };
 
       settings = let
-        users = ["root" config.user.name];
+        users = ["root"] ++ lib.optional (config.user ? name) config.user.name;
       in {
         trusted-users = users;
         allowed-users = users;

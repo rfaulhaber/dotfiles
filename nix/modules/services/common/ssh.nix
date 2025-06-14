@@ -56,41 +56,8 @@ in {
   };
 
   config = mkIf cfg.enable (mkMerge [
-    # ssh server config
-    (mkIf (cfg.server.enable) {
-      assertions = [
-        {
-          assertion = (builtins.length cfg.server.keys) > 0;
-          message = "SSH client must have at least one authorized key";
-        }
-      ];
-      services.openssh = {
-        enable = true;
-        settings = {
-          PasswordAuthentication = false;
-          PermitRootLogin = lib.mkDefault "no";
-        };
-        extraConfig =
-          ''
-            PermitEmptyPasswords no
-            AllowTcpForwarding yes
-          ''
-          + cfg.server.extraConfig;
-        ports = [cfg.server.port];
-      };
-
-      # TODO support multiple users?
-      # TODO make more secure, see https://github.com/NixOS/nixpkgs/issues/31611
-      user.openssh.authorizedKeys.keys = cfg.server.keys;
-
-      security.pam = {
-        # TODO are both necessary?
-        sshAgentAuth.enable = true;
-        services.${config.user.name}.sshAgentAuth = true;
-      };
-    })
-    # ssh client config
-    (mkIf (cfg.client.enable) {
+    # SSH client config (cross-platform)
+    (mkIf cfg.client.enable {
       home.programs.ssh = {
         enable = true;
         compression = true;
@@ -178,6 +145,42 @@ in {
           };
         };
       };
+    })
+
+    # SSH server config (Linux-only)
+    (mkIf (cfg.server.enable && pkgs.stdenv.isLinux) {
+      assertions = [
+        {
+          assertion = (builtins.length cfg.server.keys) > 0;
+          message = "SSH client must have at least one authorized key";
+        }
+      ];
+      # OpenSSH service temporarily disabled for Darwin compatibility debugging
+      # services.openssh = {
+      #   enable = true;
+      #   settings = {
+      #     PasswordAuthentication = false;
+      #     PermitRootLogin = lib.mkDefault "no";
+      #   };
+      #   extraConfig =
+      #     ''
+      #       PermitEmptyPasswords no
+      #       AllowTcpForwarding yes
+      #     ''
+      #     + cfg.server.extraConfig;
+      #   ports = [cfg.server.port];
+      # };
+
+      # TODO support multiple users?
+      # TODO make more secure, see https://github.com/NixOS/nixpkgs/issues/31611
+      # user.openssh.authorizedKeys.keys = cfg.server.keys;
+
+      # PAM configuration temporarily disabled for Darwin compatibility debugging
+      # security.pam = {
+      #   # TODO are both necessary?
+      #   sshAgentAuth.enable = true;
+      #   services.${config.user.name}.sshAgentAuth = true;
+      # };
     })
   ]);
 }

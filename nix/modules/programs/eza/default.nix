@@ -14,14 +14,7 @@ in {
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [eza];
 
-    # TODO make more generic i.e. not zsh specific
-    programs.zsh.shellAliases = {
-      ls = "${pkgs.eza}/bin/eza";
-      l = "${pkgs.eza}/bin/eza -lah";
-      ll = "${pkgs.eza}/bin/eza -l";
-      la = "${pkgs.eza}/bin/eza -a";
-      lt = "${pkgs.eza}/bin/eza --tree";
-      lla = "${pkgs.eza}/bin/eza -la";
-    };
+    # TODO: Add shell aliases through home-manager for cross-platform compatibility
+    # ZSH aliases removed temporarily due to Darwin compatibility issues
   };
 }

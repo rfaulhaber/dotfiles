@@ -1,0 +1,188 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  generate-docs:
+    name: Generate Documentation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Generate system documentation
+        run: |
+          mkdir -p docs
+          
+          echo "# Dotfiles Configuration Documentation" > docs/README.md
+          echo "" >> docs/README.md
+          echo "Generated on: $(date)" >> docs/README.md
+          echo "" >> docs/README.md
+          
+          echo "## Available Configurations" >> docs/README.md
+          echo "" >> docs/README.md
+          
+          # Document NixOS configurations
+          if nix eval .#nixosConfigurations --apply builtins.attrNames 2>/dev/null; then
+            echo "### NixOS Configurations" >> docs/README.md
+            echo "" >> docs/README.md
+            nix eval .#nixosConfigurations --apply builtins.attrNames --json | \
+              jq -r '.[]' | while read host; do
+                echo "- **$host**: NixOS configuration" >> docs/README.md
+              done
+            echo "" >> docs/README.md
+          fi
+          
+          # Document Darwin configurations
+          if nix eval .#darwinConfigurations --apply builtins.attrNames 2>/dev/null; then
+            echo "### Darwin Configurations" >> docs/README.md
+            echo "" >> docs/README.md
+            nix eval .#darwinConfigurations --apply builtins.attrNames --json | \
+              jq -r '.[]' | while read host; do
+                echo "- **$host**: macOS configuration" >> docs/README.md
+              done
+            echo "" >> docs/README.md
+          fi
+          
+          echo "## Flake Inputs" >> docs/README.md
+          echo "" >> docs/README.md
+          echo "| Input | Type | URL |" >> docs/README.md
+          echo "|-------|------|-----|" >> docs/README.md
+          nix flake metadata --json | jq -r '
+            .locks.nodes | to_entries[] | 
+            select(.key != "root" and .value.original) |
+            "| \(.key) | \(.value.original.type) | \(.value.original.url // ("\(.value.original.owner)/\(.value.original.repo)")) |"
+          ' >> docs/README.md
+          
+          echo "" >> docs/README.md
+          echo "## Module Structure" >> docs/README.md
+          echo "" >> docs/README.md
+          echo "\`\`\`" >> docs/README.md
+          find nix/modules -name "*.nix" | head -20 | sort >> docs/README.md
+          echo "\`\`\`" >> docs/README.md
+
+      - name: Generate module documentation
+        run: |
+          echo "# Module Documentation" > docs/modules.md
+          echo "" >> docs/modules.md
+          echo "This document provides an overview of available modules." >> docs/modules.md
+          echo "" >> docs/modules.md
+          
+          # Document module structure
+          for category in programs services desktop themes; do
+            if [ -d "nix/modules/$category" ]; then
+              echo "## $category Modules" >> docs/modules.md
+              echo "" >> docs/modules.md
+              
+              find "nix/modules/$category" -name "default.nix" -o -name "*.nix" | \
+                grep -v default.nix | sort | while read module; do
+                module_name=$(basename "$module" .nix)
+                relative_path=${module#nix/modules/}
+                echo "- **$module_name**: \`$relative_path\`" >> docs/modules.md
+                
+                # Try to extract options from the module
+                if grep -q "options\." "$module" 2>/dev/null; then
+                  echo "  - Configuration options available" >> docs/modules.md
+                fi
+              done
+              echo "" >> docs/modules.md
+            fi
+          done
+
+      - name: Generate host documentation
+        run: |
+          echo "# Host Configurations" > docs/hosts.md
+          echo "" >> docs/hosts.md
+          
+          if [ -d "nix/hosts" ]; then
+            find nix/hosts -name "configuration.nix" | while read config; do
+              host=$(basename $(dirname "$config"))
+              echo "## $host" >> docs/hosts.md
+              echo "" >> docs/hosts.md
+              
+              # Extract basic info from the configuration
+              if grep -q "programs\." "$config" 2>/dev/null; then
+                echo "**Enabled Programs:**" >> docs/hosts.md
+                grep -E "^\s*[a-zA-Z0-9_-]+\.enable = true;" "$config" | \
+                  sed 's/.*\.\([a-zA-Z0-9_-]*\)\.enable = true;/- \1/' | head -10 >> docs/hosts.md
+                echo "" >> docs/hosts.md
+              fi
+              
+              if grep -q "services\." "$config" 2>/dev/null; then
+                echo "**Enabled Services:**" >> docs/hosts.md
+                grep -E "^\s*[a-zA-Z0-9_-]+\.enable = true;" "$config" | \
+                  grep services | \
+                  sed 's/.*\.\([a-zA-Z0-9_-]*\)\.enable = true;/- \1/' | head -10 >> docs/hosts.md
+                echo "" >> docs/hosts.md
+              fi
+            done
+          fi
+
+      - name: Setup Pages
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: actions/deploy-pages@v4
+
+  validate-readme:
+    name: Validate README
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check README exists
+        run: |
+          if [ ! -f README.md ]; then
+            echo "❌ README.md not found"
+            echo "Consider adding a README.md with:"
+            echo "- Project description"
+            echo "- Installation instructions"  
+            echo "- Usage examples"
+            echo "- Configuration overview"
+            exit 1
+          else
+            echo "✅ README.md found"
+          fi
+
+      - name: Check for basic documentation sections
+        run: |
+          required_sections=("Installation" "Usage" "Configuration")
+          missing_sections=()
+          
+          for section in "${required_sections[@]}"; do
+            if ! grep -i "# $section\|## $section" README.md >/dev/null; then
+              missing_sections+=("$section")
+            fi
+          done
+          
+          if [ ${#missing_sections[@]} -gt 0 ]; then
+            echo "ℹ️ Consider adding these sections to README.md:"
+            printf '- %s\n' "${missing_sections[@]}"
+          else
+            echo "✅ README.md has good documentation structure"
+          fi

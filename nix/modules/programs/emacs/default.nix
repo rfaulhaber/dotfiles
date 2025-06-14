@@ -109,31 +109,38 @@ in {
       inputs.nix-doom-emacs-unstraightened.overlays.default
     ];
 
-    services.emacs = {
-      enable = true;
-      install = true;
-      defaultEditor = true;
-      package =
-        if cfg.doomUnstraightened.setDefault
-        then resolvedEmacsPkg
-        else normalPackage;
-    };
+    # Emacs service temporarily disabled for Darwin compatibility debugging
+    # services.emacs = mkIf pkgs.stdenv.isLinux {
+    #   enable = true;
+    #   install = true;
+    #   defaultEditor = true;
+    #   package =
+    #     if cfg.doomUnstraightened.setDefault
+    #     then resolvedEmacsPkg
+    #     else normalPackage;
+    # };
 
     # emacs dependency
     modules.programs.aspell.enable = true;
 
     user.packages =
       userPackages
-      ++ lib.optional cfg.doomUnstraightened.enable resolvedEmacsPkg;
+      ++ lib.optional cfg.doomUnstraightened.enable resolvedEmacsPkg
+      ++ lib.optional pkgs.stdenv.isDarwin (
+        if cfg.doomUnstraightened.setDefault
+        then resolvedEmacsPkg
+        else normalPackage
+      );
 
-    environment.etc."xdg/mimeapps.list" = {
+    environment.etc."xdg/mimeapps.list" = mkIf pkgs.stdenv.isLinux {
       text = ''
         [Default Applications]
         application/pdf=org.gnome.Evince.desktop;emacs.desktop
       '';
     };
 
-    programs.zsh.shellAliases = mkIf config.modules.programs.zsh.enable shellAliases;
+    # ZSH aliases temporarily disabled for Darwin compatibility
+    # programs.zsh.shellAliases = mkIf (pkgs.stdenv.isLinux && config.modules.programs.zsh.enable) shellAliases;
 
     home.programs.nushell.shellAliases = mkIf config.modules.programs.nushell.enable shellAliases;
 

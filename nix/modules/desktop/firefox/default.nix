@@ -39,7 +39,8 @@ in {
   config = mkIf cfg.enable {
     environment.systemPackages = [cfg.package];
 
-    programs.zsh.shellAliases = mkIf config.modules.programs.zsh.enable firefoxAlias;
+    # ZSH aliases temporarily disabled for Darwin compatibility
+    # programs.zsh.shellAliases = mkIf (pkgs.stdenv.isLinux && config.modules.programs.zsh.enable) firefoxAlias;
 
     home.programs.nushell.shellAliases = mkIf config.modules.programs.nushell.enable firefoxAlias;
 

@@ -86,7 +86,8 @@ in {
       defaults.email = cfg.defaultAcmeEmail;
     };
 
-    networking.firewall = {
+    # Linux-specific firewall configuration
+    networking.firewall = mkIf pkgs.stdenv.isLinux {
       enable = true;
       allowedTCPPorts = let
         externalPorts = attrValues cfg.externalAliases;

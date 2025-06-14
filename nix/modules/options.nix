@@ -52,10 +52,7 @@ with lib.my; {
     };
 
     dotfiles = {
-      dir = mkOpt path (findFirst pathExists (toString ../../.) [
-        "${config.user.home}/.config/dotfiles"
-        "/etc/dotfiles"
-      ]);
+      dir = mkOpt path (toString ../../.);
       binDir = mkOpt path "${config.dotfiles.dir}/bin";
       configDir = mkOpt path "${config.dotfiles.dir}/config";
       modulesDir = mkOpt path "${config.dotfiles.dir}/modules";
@@ -65,18 +62,28 @@ with lib.my; {
   };
 
   config = {
-    user = mkIf pkgs.stdenv.isLinux rec {
-      name = "ryan";
-      description = "ryan";
-      # TODO do better
-      extraGroups = ["wheel" "audio" "lp" "plugdev"];
-      isNormalUser = true;
-      home = "/home/${name}";
-      group = "users";
-      uid = 1000;
-      # TODO if doing a fresh install, set UID and GID
-      # gid = 1000;
-    };
+    user = let
+      common = {
+        name = "ryan";
+        description = "ryan";
+      };
+    in
+      mkMerge [
+        common
+        (mkIf pkgs.stdenv.isLinux {
+          # TODO do better
+          extraGroups = ["wheel" "audio" "lp" "plugdev"];
+          isNormalUser = true;
+          home = "/home/${common.name}";
+          group = "users";
+          uid = 1000;
+          # TODO if doing a fresh install, set UID and GID
+          # gid = 1000;
+        })
+        (mkIf pkgs.stdenv.isDarwin {
+          home = "/Users/${common.name}";
+        })
+      ];
 
     # supplementary user info used throughout config
     userInfo = {
@@ -100,7 +107,16 @@ with lib.my; {
       users.${config.user.name} = {
         home = {
           file = mkAliasDefinitions options.home.file;
-          stateVersion = config.system.stateVersion;
+          username = mkForce config.user.name;
+          homeDirectory = mkForce (
+            if pkgs.stdenv.isDarwin 
+            then "/Users/ryan" 
+            else config.user.home
+          );
+          stateVersion =
+            if pkgs.stdenv.isDarwin
+            then "25.11"
+            else config.system.stateVersion;
         };
 
         accounts = mkAliasDefinitions options.home.accounts;
@@ -117,6 +133,22 @@ with lib.my; {
       };
     };
 
-    users.users.${config.user.name} = mkAliasDefinitions options.user;
+    users.users.${config.user.name} = mkIf pkgs.stdenv.isLinux (mkAliasDefinitions options.user);
+
+    # Platform compatibility assertions
+    assertions = [
+      {
+        assertion = !(config.modules.desktop.enable or false && pkgs.stdenv.isDarwin);
+        message = "Desktop environment modules are only supported on Linux";
+      }
+      {
+        assertion = !(config.modules.services.zfs.enable or false && pkgs.stdenv.isDarwin);
+        message = "ZFS services are only supported on Linux";
+      }
+      {
+        assertion = !(config.modules.services.docker.enable or false && pkgs.stdenv.isDarwin);
+        message = "Docker service module is Linux-only (use Docker Desktop manually on macOS)";
+      }
+    ];
   };
 }

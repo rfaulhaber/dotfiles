@@ -1,0 +1,237 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  nix-flake-check:
+    name: Nix Flake Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: nix-community
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          skipPush: true
+
+      - name: Install Nushell
+        run: nix profile install nixpkgs#nushell
+
+      - name: Make scripts executable
+        run: chmod +x scripts/ci/*.nu
+
+      - name: Check flake validity
+        run: nu scripts/ci/flake-check.nu
+
+  build-nixos-configs:
+    name: Build NixOS Configurations
+    runs-on: ubuntu-latest
+    needs: nix-flake-check
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [hyperion, helios, atlas, janus, pallas, nike, nexus, hestia]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: nix-community
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          skipPush: true
+
+      - name: Install Nushell
+        run: nix profile install nixpkgs#nushell
+
+      - name: Make scripts executable
+        run: chmod +x scripts/ci/*.nu
+
+      - name: Build NixOS configuration for ${{ matrix.host }}
+        run: nu scripts/ci/build-config.nu ${{ matrix.host }} nixos
+
+  build-darwin-configs:
+    name: Build Darwin Configurations
+    runs-on: macos-latest
+    needs: nix-flake-check
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [eos]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: nix-community
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          skipPush: true
+
+      - name: Build Darwin configuration for ${{ matrix.host }}
+        run: |
+          nix build .#darwinConfigurations.${{ matrix.host }}.system \
+            --print-build-logs \
+            --fallback
+
+  check-formatting:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Check Nix formatting
+        run: |
+          # Check if all .nix files are formatted with nixfmt
+          if command -v nixfmt-classic >/dev/null 2>&1; then
+            FORMATTER="nixfmt-classic"
+          elif nix run nixpkgs#nixfmt-classic -- --version >/dev/null 2>&1; then
+            FORMATTER="nix run nixpkgs#nixfmt-classic --"
+          else
+            echo "No nixfmt found, skipping formatting check"
+            exit 0
+          fi
+          
+          # Find all .nix files and check formatting
+          unformatted_files=()
+          while IFS= read -r -d '' file; do
+            if ! $FORMATTER --check "$file" >/dev/null 2>&1; then
+              unformatted_files+=("$file")
+            fi
+          done < <(find . -name "*.nix" -type f -print0)
+          
+          if [ ${#unformatted_files[@]} -gt 0 ]; then
+            echo "The following files are not properly formatted:"
+            printf '%s\n' "${unformatted_files[@]}"
+            echo ""
+            echo "Run 'nix fmt' to format all files."
+            exit 1
+          else
+            echo "All Nix files are properly formatted."
+          fi
+
+  check-deadnix:
+    name: Check for Dead Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Run deadnix
+        run: |
+          nix run nixpkgs#deadnix -- \
+            --fail \
+            --no-lambda-arg \
+            --no-lambda-pattern-names \
+            .
+
+  check-statix:
+    name: Nix Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Run statix
+        run: |
+          nix run nixpkgs#statix -- check .
+
+  dependency-analysis:
+    name: Dependency Analysis
+    runs-on: ubuntu-latest
+    needs: nix-flake-check
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Analyze flake inputs
+        run: |
+          echo "## Flake Inputs Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "| Input | URL | Revision |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-----|----------|" >> $GITHUB_STEP_SUMMARY
+          
+          nix flake metadata --json | jq -r '
+            .locks.nodes | to_entries[] | 
+            select(.key != "root" and .value.original) |
+            "| \(.key) | \(.value.original.url // (.value.original.owner + "/" + .value.original.repo)) | \(.value.locked.rev[0:7] // "N/A") |"
+          ' >> $GITHUB_STEP_SUMMARY
+
+      - name: Check for outdated inputs
+        run: |
+          echo "## Input Update Check" >> $GITHUB_STEP_SUMMARY
+          echo "Checking if any flake inputs have updates available..." >> $GITHUB_STEP_SUMMARY
+          
+          # Create a temporary flake.lock backup
+          cp flake.lock flake.lock.backup
+          
+          # Update flake.lock and see what changed
+          nix flake update --no-write-lock-file > update_output.txt 2>&1 || true
+          
+          if nix flake update --no-write-lock-file && ! cmp -s flake.lock flake.lock.backup; then
+            echo "⚠️ Some inputs have updates available" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ All inputs are up to date" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Restore backup
+          mv flake.lock.backup flake.lock

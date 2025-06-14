@@ -1,33 +1,20 @@
 {
-  imports = [
-    ./astal
-    ./cachix
-    ./doas
-    ./docker
-    ./gpg
-    ./guac
-    ./keybase
-    ./mail
-    ./mergerfs
-    ./mullvad
-    ./passwords
-    ./printing
-    ./proxy
-    ./pueue
-    ./radicle
-    ./redshift
-    ./samba-mount
-    ./samba-serve
-    ./snapraid
-    ./ssh.nix
-    ./sudo-rs
-    ./syncthing
-    ./systemd
-    ./tailscale
-    ./virt
-    ./wireguard
-    ./yubikey
-    ./zerotier
-    ./zfs
-  ];
+  lib,
+  isLinux,
+  isDarwin,
+  ...
+}: {
+  imports =
+    [
+      # Always import cross-platform services
+      ./common
+    ]
+    ++ lib.optionals isLinux [
+      # Linux-specific services
+      ./linux
+    ]
+    ++ lib.optionals isDarwin [
+      # Darwin-specific services
+      ./darwin
+    ];
 }

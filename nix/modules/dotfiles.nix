@@ -18,7 +18,7 @@ in {
 
     home.file.dotfiles = {
       source = config.dotfiles.dir;
-      target = "${config.user.home}/.config/dotfiles";
+      target = ".config/dotfiles";
       recursive = true;
     };
 
