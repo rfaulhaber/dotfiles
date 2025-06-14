@@ -392,7 +392,8 @@ Used in loading config specific to those systems.")
 
 ;; ---------------------------------- treesit ----------------------------------
 
-(setq treesit-language-source-alist '((nu . ("https://github.com/nushell/tree-sitter-nu" "main"))))
+(setq treesit-language-source-alist '((nu . ("https://github.com/nushell/tree-sitter-nu" "main"))
+                                      (nix . ("https://github.com/nix-community/tree-sitter-nix"))))
 
 ;; ----------------------------------- misc ------------------------------------
 
