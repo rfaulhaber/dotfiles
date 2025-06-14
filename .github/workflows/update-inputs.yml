@@ -1,0 +1,146 @@
+name: Update Dependencies
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      create_pr:
+        description: 'Create PR for updates'
+        required: false
+        default: 'true'
+        type: boolean
+      inputs_to_update:
+        description: 'Specific inputs to update (comma-separated, empty for all)'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  update-flake-inputs:
+    name: Update Flake Inputs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: nix-community
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          skipPush: true
+
+      - name: Backup original flake.lock
+        run: cp flake.lock flake.lock.backup
+
+      - name: Update flake inputs
+        run: |
+          if [ -n "${{ github.event.inputs.inputs_to_update }}" ]; then
+            # Update specific inputs
+            IFS=',' read -ra INPUTS <<< "${{ github.event.inputs.inputs_to_update }}"
+            for input in "${INPUTS[@]}"; do
+              echo "Updating input: $input"
+              nix flake lock --update-input "$input"
+            done
+          else
+            # Update all inputs
+            echo "Updating all inputs"
+            nix flake update
+          fi
+
+      - name: Check if flake.lock changed
+        id: check_changes
+        run: |
+          if cmp -s flake.lock flake.lock.backup; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in flake.lock"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in flake.lock"
+          fi
+
+      - name: Generate update summary
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          echo "# Flake Input Updates" > update_summary.md
+          echo "" >> update_summary.md
+          echo "## Updated Inputs" >> update_summary.md
+          echo "" >> update_summary.md
+          
+          # Show what changed
+          git diff --no-index flake.lock.backup flake.lock | grep -E '^[+-]' | grep -v '^[+-]{3}' | while read line; do
+            if [[ $line == +* ]]; then
+              echo "- **Added/Updated:** \`${line:1}\`" >> update_summary.md
+            elif [[ $line == -* ]]; then
+              echo "- **Removed/Changed:** \`${line:1}\`" >> update_summary.md
+            fi
+          done || echo "- Changes detected (see diff for details)" >> update_summary.md
+          
+          echo "" >> update_summary.md
+          echo "## Verification" >> update_summary.md
+          echo "- [ ] All configurations build successfully" >> update_summary.md
+          echo "- [ ] No breaking changes introduced" >> update_summary.md
+          echo "- [ ] Security review completed" >> update_summary.md
+
+      - name: Test updated configuration
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          echo "Testing updated configuration..."
+          
+          # Test flake check first
+          nix flake check --no-build
+          
+          # Test a few key configurations
+          echo "Testing key configurations..."
+          
+          # Test one NixOS config (if available)
+          if nix eval .#nixosConfigurations --apply builtins.attrNames | grep -q "hyperion"; then
+            echo "Testing NixOS configuration: hyperion"
+            timeout 300 nix build .#nixosConfigurations.hyperion.config.system.build.toplevel --no-link --show-trace
+          fi
+          
+          # Test Darwin config (if available)
+          if nix eval .#darwinConfigurations --apply builtins.attrNames 2>/dev/null | grep -q "eos"; then
+            echo "Testing Darwin configuration: eos"
+            # Note: This might fail on non-Darwin systems, so we make it non-blocking
+            timeout 300 nix build .#darwinConfigurations.eos.system --no-link --show-trace || echo "Darwin build skipped (expected on non-Darwin)"
+          fi
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.changed == 'true' && (github.event.inputs.create_pr != 'false')
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            chore: update flake inputs
+
+            Automated update of flake inputs.
+            
+            Co-authored-by: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          title: 'chore: update flake inputs'
+          body-path: update_summary.md
+          branch: update-flake-inputs
+          delete-branch: true
+          labels: |
+            dependencies
+            automated
+
+      - name: Comment on manual trigger
+        if: steps.check_changes.outputs.changed == 'false' && github.event_name == 'workflow_dispatch'
+        run: |
+          echo "No updates available for the specified inputs."
+          echo "All inputs are already up to date."

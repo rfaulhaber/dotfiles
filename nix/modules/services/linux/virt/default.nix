@@ -27,7 +27,7 @@ in {
     };
   };
 
-  config = mkIf cfg.enable (mkMerge [
+  config = mkIf (cfg.enable && pkgs.stdenv.isLinux) (mkMerge [
     {
       virtualisation.libvirtd = {
         enable = true;

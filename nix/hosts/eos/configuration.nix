@@ -6,20 +6,42 @@
 }: {
   imports = [../../modules];
 
-  services.nix-daemon.enable = true;
-  # nix.package = pkgs.nix;
+  # # Define the user info that modules will use
+  # userInfo = {
+  #   fullName = "Ryan Faulhaber";
+  #   primaryEmail = "ryan@faulhaber.io";
+  #   primaryGPGKey = "6B51D9B8CEA6A53C";
+  # };
 
-  # Necessary for using flakes on this system.
-  nix.settings.experimental-features = "nix-command flakes";
+  # Define the main user configuration
+  # user = {
+  #   name = "ryan";
+  #   description = "Ryan Faulhaber";
+  # };
 
-  # system.configurationRevision = self.rev or self.dirtyRev or null;
+  modules = {
+    programs = {
+      emacs.enable = true;
+      git = {
+        enable = true;
+        useDelta = true;
+      };
+      nushell = {
+        enable = true;
+        setDefault = true;
+        zoxide.enable = true;
+        carapace.enable = true;
+      };
+      wezterm.enable = true;
+      direnv.enable = true;
+    };
 
-  # Used for backwards compatibility, please read the changelog before changing.
-  # $ darwin-rebuild changelog
-  system.stateVersion = 4;
+    # Services that work on Darwin
+    # services = {
+    #   gpg.enable = true;
+    # };
 
-  # The platform the configuration will be used on.
-  nixpkgs.hostPlatform = "aarch64-darwin";
-
-  environment.systemPackages = with pkgs; [neovim];
+    # Theme configuration
+    themes.active = "tokyo-night-dark";
+  };
 }

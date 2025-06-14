@@ -1,0 +1,196 @@
+name: Performance Analysis
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    # Run performance analysis weekly
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  build-time-analysis:
+    name: Build Time Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: nix-community
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          skipPush: true
+
+      - name: Measure build times
+        run: |
+          echo "# Build Performance Analysis" > performance_report.md
+          echo "" >> performance_report.md
+          echo "Generated on: $(date)" >> performance_report.md
+          echo "" >> performance_report.md
+          
+          echo "## Build Time Analysis" >> performance_report.md
+          echo "" >> performance_report.md
+          echo "| Configuration | Build Time | Status |" >> performance_report.md
+          echo "|---------------|------------|--------|" >> performance_report.md
+          
+          # Test a sample of configurations
+          configs_to_test=("hyperion" "eos")
+          
+          for config in "${configs_to_test[@]}"; do
+            echo "Testing $config..."
+            
+            # Try NixOS first
+            if nix eval .#nixosConfigurations.$config 2>/dev/null >/dev/null; then
+              start_time=$(date +%s)
+              if timeout 600 nix build .#nixosConfigurations.$config.config.system.build.toplevel --no-link; then
+                end_time=$(date +%s)
+                duration=$((end_time - start_time))
+                echo "| $config (NixOS) | ${duration}s | ✅ Success |" >> performance_report.md
+              else
+                echo "| $config (NixOS) | Timeout/Error | ❌ Failed |" >> performance_report.md
+              fi
+            # Try Darwin
+            elif nix eval .#darwinConfigurations.$config 2>/dev/null >/dev/null; then
+              start_time=$(date +%s)
+              if timeout 600 nix build .#darwinConfigurations.$config.system --no-link; then
+                end_time=$(date +%s)
+                duration=$((end_time - start_time))
+                echo "| $config (Darwin) | ${duration}s | ✅ Success |" >> performance_report.md
+              else
+                echo "| $config (Darwin) | Timeout/Error | ❌ Failed |" >> performance_report.md
+              fi
+            else
+              echo "| $config | N/A | ⚠️ Not Found |" >> performance_report.md
+            fi
+          done
+
+      - name: Analyze flake evaluation time
+        run: |
+          echo "" >> performance_report.md
+          echo "## Flake Evaluation Performance" >> performance_report.md
+          echo "" >> performance_report.md
+          
+          start_time=$(date +%s%3N)
+          nix flake show --quiet >/dev/null
+          end_time=$(date +%s%3N)
+          duration=$((end_time - start_time))
+          
+          echo "- **Flake evaluation time**: ${duration}ms" >> performance_report.md
+          
+          start_time=$(date +%s%3N)
+          nix flake check --no-build >/dev/null 2>&1
+          end_time=$(date +%s%3N)
+          duration=$((end_time - start_time))
+          
+          echo "- **Flake check time**: ${duration}ms" >> performance_report.md
+
+      - name: Dependency analysis
+        run: |
+          echo "" >> performance_report.md
+          echo "## Dependency Analysis" >> performance_report.md
+          echo "" >> performance_report.md
+          
+          # Count total dependencies
+          total_inputs=$(nix flake metadata --json | jq '.locks.nodes | keys | length')
+          echo "- **Total flake inputs**: $total_inputs" >> performance_report.md
+          
+          # Analyze package count for a sample config
+          if nix eval .#nixosConfigurations --apply builtins.attrNames 2>/dev/null | grep -q "hyperion"; then
+            pkg_count=$(nix eval .#nixosConfigurations.hyperion.config.environment.systemPackages --apply "pkgs: builtins.length pkgs" 2>/dev/null || echo "N/A")
+            echo "- **System packages (hyperion)**: $pkg_count" >> performance_report.md
+          fi
+
+      - name: Upload performance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report
+          path: performance_report.md
+
+      - name: Comment on PR with performance analysis
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('performance_report.md')) {
+              const report = fs.readFileSync('performance_report.md', 'utf8');
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '## 📊 Performance Analysis\n\n' + report
+              });
+            }
+
+  cache-analysis:
+    name: Cache Hit Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes pipe-operators
+            accept-flake-config = true
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: nix-community
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          skipPush: true
+
+      - name: Analyze cache effectiveness
+        run: |
+          echo "# Cache Analysis Report" > cache_report.md
+          echo "" >> cache_report.md
+          
+          # Test build with fresh cache state
+          echo "Testing cache effectiveness..." >> cache_report.md
+          
+          # Clear any local cache
+          nix store gc || true
+          
+          # Test a simple build and measure cache hits
+          if nix eval .#nixosConfigurations --apply builtins.attrNames 2>/dev/null | grep -q "hyperion"; then
+            echo "Building hyperion to test cache hits..." >> cache_report.md
+            
+            start_time=$(date +%s)
+            nix build .#nixosConfigurations.hyperion.config.system.build.toplevel --no-link --print-build-logs 2>&1 | \
+              grep -E "(copying path|building)" | wc -l > build_activity.txt
+            end_time=$(date +%s)
+            
+            activity_count=$(cat build_activity.txt)
+            duration=$((end_time - start_time))
+            
+            echo "- **Build duration**: ${duration}s" >> cache_report.md
+            echo "- **Build/copy operations**: $activity_count" >> cache_report.md
+            
+            if [ "$activity_count" -lt 10 ]; then
+              echo "- **Cache efficiency**: 🟢 Excellent (most artifacts cached)" >> cache_report.md
+            elif [ "$activity_count" -lt 50 ]; then
+              echo "- **Cache efficiency**: 🟡 Good (some cache misses)" >> cache_report.md
+            else
+              echo "- **Cache efficiency**: 🔴 Poor (many cache misses)" >> cache_report.md
+            fi
+          fi
+
+      - name: Upload cache report
+        uses: actions/upload-artifact@v4
+        with:
+          name: cache-analysis-report
+          path: cache_report.md

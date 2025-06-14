@@ -56,7 +56,8 @@ in {
       port = cfg.port;
     };
 
-    networking.firewall = mkIf ((length (attrNames cfg.sharedNetworkConfig)) > 0) {
+    # Linux-specific firewall configuration
+    networking.firewall = mkIf (pkgs.stdenv.isLinux && (length (attrNames cfg.sharedNetworkConfig)) > 0) {
       extraCommands = let
         # a thousand thanks to this ServerFault answer:
         # https://serverfault.com/questions/704643/steps-for-limiting-outside-connections-to-docker-container-with-iptables/933803

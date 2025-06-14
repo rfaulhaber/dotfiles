@@ -27,7 +27,7 @@ in {
   };
 
   config =
-    mkIf cfg.enable
+    mkIf (cfg.enable && pkgs.stdenv.isLinux)
     (mkMerge [
       (mkIf (cfg.server) {
         services = {

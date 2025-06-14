@@ -9,13 +9,17 @@ with lib; let
 in {
   options.modules.programs._1password = {enable = mkEnableOption false;};
   config = mkIf cfg.enable {
-    programs = {
-      _1password.enable = true;
+    # Core 1Password CLI (works on all platforms)
+    programs._1password.enable = true;
 
-      _1password-gui = {
+    # Platform-specific GUI configuration
+    programs._1password-gui =
+      {
         enable = true;
+      }
+      // lib.optionalAttrs pkgs.stdenv.isLinux {
+        # Only add polkitPolicyOwners on Linux where the option exists
         polkitPolicyOwners = [config.user.name];
       };
-    };
   };
 }

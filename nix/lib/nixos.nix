@@ -35,6 +35,9 @@ with lib; rec {
         inherit lib inputs system;
         platform = system;
         hostDir = dirOf path;
+        # Platform detection for import-time decisions
+        isLinux = lib.hasSuffix "linux" system;
+        isDarwin = lib.hasSuffix "darwin" system;
       }
       // specialArgs;
   };
@@ -99,8 +102,43 @@ with lib; rec {
   mkNixOSK8sNodes = n: path: attrs:
     map nixosSystem (mkK8sNodes n path attrs);
 
-  mkDarwinHost = path: attrs:
-    darwinSystem (mkHost path attrs);
+  mkDarwinHost = path: attrs @ {
+    system,
+    overlays ? [],
+    specialArgs ? {},
+    extraModules ? [],
+    ...
+  }: {
+    inherit system;
+    modules =
+      [
+        inputs.home-manager.darwinModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+        }
+        {
+          networking.hostName = hostnameFromPath path;
+          nixpkgs.config.allowUnfree = true;
+        }
+        ../../nix/modules
+        path
+      ]
+      ++ extraModules;
+    specialArgs =
+      {
+        inherit lib inputs system;
+        platform = system;
+        hostDir = dirOf path;
+        # Platform detection for import-time decisions
+        isLinux = lib.hasSuffix "linux" system;
+        isDarwin = lib.hasSuffix "darwin" system;
+      }
+      // specialArgs;
+  };
+
+  mkNixDarwinHost = path: attrs:
+    inputs.nix-darwin.lib.darwinSystem (mkDarwinHost path attrs);
 
   # thank you hlissner
   mapHosts = dir: attrs @ {system ? defaultSystem, ...}:

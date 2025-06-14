@@ -43,63 +43,71 @@ in {
       type = types.bool;
     };
   };
-  config = mkIf cfg.enable {
-    environment = {
-      systemPackages = with pkgs; [
-        nix-zsh-completions
-        xclip # required for pbcopy and pbpaste
-        (mkIf cfg.useZoxide zoxide)
-        (mkIf cfg.useDirenv direnv)
-      ];
+  config = mkIf cfg.enable (mkMerge [
+    # Linux-only configuration
+    (mkIf pkgs.stdenv.isLinux {
+      environment = {
+        systemPackages = with pkgs; [
+          nix-zsh-completions
+          xclip # required for pbcopy and pbpaste
+          (mkIf cfg.useZoxide zoxide)
+          (mkIf cfg.useDirenv direnv)
+        ];
 
-      # sometimes zsh from nixpkgs doesn't respect highlightStyle value
-      variables = {ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=${colors.grey}";};
-    };
+        # sometimes zsh from nixpkgs doesn't respect highlightStyle value
+        variables = {ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=${colors.grey or "#8189af"}";};
+        pathsToLink = ["/share/zsh"];
+      };
 
-    programs.zsh = {
-      enable = true;
-      ohMyZsh = mkIf cfg.ohMyZsh.enable {
+      programs.zsh = {
         enable = true;
-        plugins = ["git" "colored-man-pages"];
-        theme = cfg.ohMyZsh.theme;
-      };
-      autosuggestions.enable = true;
-      autosuggestions.highlightStyle = "fg=${colors.grey}";
-      syntaxHighlighting.enable = true;
-      interactiveShellInit = let
-        zoxideInit = ''
-          eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
+        ohMyZsh = mkIf cfg.ohMyZsh.enable {
+          enable = true;
+          plugins = ["git" "colored-man-pages"];
+          theme = cfg.ohMyZsh.theme;
+        };
+        autosuggestions.enable = true;
+        autosuggestions.highlightStyle = "fg=${colors.grey or "#8189af"}";
+        syntaxHighlighting.enable = true;
+        interactiveShellInit = let
+          zoxideInit = ''
+            eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
+          '';
+          # we have to use the plain executable here because for some reason the
+          # pkgs.direnv version doesn't have permission to run
+          direnvInit = ''
+            eval "$(direnv hook zsh)"
+          '';
+        in ''
+          ${
+            if cfg.useZoxide
+            then zoxideInit
+            else ""
+          }
+          ${
+            if cfg.useDirenv
+            then direnvInit
+            else ""
+          }
+          ${
+            if config.modules.programs.emacs.enable
+            then "PATH=$PATH:~/.emacs.d/bin"
+            else ""
+          }
         '';
-        # we have to use the plain executable here because for some reason the
-        # pkgs.direnv version doesn't have permission to run
-        direnvInit = ''
-          eval "$(direnv hook zsh)"
-        '';
-      in ''
-        ${
-          if cfg.useZoxide
-          then zoxideInit
-          else ""
-        }
-        ${
-          if cfg.useDirenv
-          then direnvInit
-          else ""
-        }
-        ${
-          if config.modules.programs.emacs.enable
-          then "PATH=$PATH:~/.emacs.d/bin"
-          else ""
-        }
-      '';
-      shellAliases = {
-        pbcopy = "xclip -selection clipboard";
-        pbpaste = "xclip -selection clipboard -o";
+        shellAliases = {
+          pbcopy = "xclip -selection clipboard";
+          pbpaste = "xclip -selection clipboard -o";
+        };
       };
-    };
 
-    user.shell = mkIf cfg.setDefault pkgs.zsh;
+      user.shell = mkIf cfg.setDefault pkgs.zsh;
+    })
 
-    environment.pathsToLink = ["/share/zsh"];
-  };
+    # Darwin-only configuration (minimal or disabled)
+    (mkIf pkgs.stdenv.isDarwin {
+      # ZSH module is not supported on Darwin
+      # Darwin shell configuration should be handled by nix-darwin modules
+    })
+  ]);
 }

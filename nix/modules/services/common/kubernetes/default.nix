@@ -75,11 +75,12 @@ in {
     })
     (mkIf (cfg.node.enable) {
       services.kubernetes = let
-        masterAddress = "http://${cfg.master.host}:${toString cfg.master.port}";
+        masterAddress = "http://${cfg.master.hostname}:${toString cfg.master.port}";
+        api = masterAddress;
       in {
         roles = ["node"];
 
-        masterAddress = cfg.masterHost;
+        masterAddress = masterAddress;
         easyCerts = true;
 
         kubelet.kubeconfig.server = api;

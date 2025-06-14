@@ -50,7 +50,7 @@ in {
     };
   };
 
-  config = mkIf cfg.enable {
+  config = mkIf (cfg.enable && pkgs.stdenv.isLinux) {
     assertions = let
       foldPred = acc: item:
       # TODO probably a more elegant way to do this
