@@ -109,8 +109,8 @@ with lib.my; {
           file = mkAliasDefinitions options.home.file;
           username = mkForce config.user.name;
           homeDirectory = mkForce (
-            if pkgs.stdenv.isDarwin 
-            then "/Users/ryan" 
+            if pkgs.stdenv.isDarwin
+            then "/Users/ryan"
             else config.user.home
           );
           stateVersion =

@@ -11,16 +11,11 @@
       ./aspell
       ./direnv
       ./emacs
-      ./eza
-      ./ghostty
       ./git
-      ./keychain
       ./kitty
       ./neovim
       ./nushell
-      ./pcloud
       ./pijul
-      ./starship
       ./wezterm
     ]
     ++ lib.optionals isLinux [
