@@ -42,6 +42,7 @@
           port = 6674;
         };
       };
+      netbird.enable = true;
     };
     themes.active = "tokyo-night-dark";
   };

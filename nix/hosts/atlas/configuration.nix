@@ -28,7 +28,6 @@
         updatedb.enable = true;
         dockerCleanup.enable = true;
       };
-      pueue.enable = true;
       printing = {
         enable = true;
         server = true;
@@ -70,6 +69,7 @@
           };
         };
       };
+      netbird.enable = true;
     };
     themes.active = "tokyo-night-dark";
   };

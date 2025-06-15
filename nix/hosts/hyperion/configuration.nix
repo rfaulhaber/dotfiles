@@ -89,7 +89,7 @@
         enableGUI = true;
       };
       cachix.enable = true;
-      pueue.enable = true;
+      netbird.enable = true;
     };
     hardware = {
       zsa.enable = true;

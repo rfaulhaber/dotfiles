@@ -2,28 +2,22 @@
   imports = [
     ./astal
     ./cachix
-    ./doas
     ./docker
     ./gpg
-    ./guac
-    ./keybase
     ./mail
-    ./mergerfs
     ./mullvad
+    ./netbird
     ./passwords
     ./printing
     ./proxy
-    ./pueue
     ./radicle
     ./redshift
     ./samba-mount
     ./samba-serve
-    ./snapraid
     ./ssh.nix
     ./sudo-rs
     ./syncthing
     ./systemd
-    ./tailscale
     ./virt
     ./wireguard
     ./yubikey
