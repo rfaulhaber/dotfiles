@@ -174,12 +174,12 @@
               };
             };
             janus = {
-              hostname = "66.63.168.53";
+              hostname = "janus";
               profiles.system = {
-                user = "nixos";
-                sshUser = "nixos";
-                sshOpts = ["-i" "/home/ryan/.ssh/id_host"];
-                path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.janus;
+                user = "root";
+                path =
+                  deploy-rs.lib.x86_64-linux.activate.nixos
+                  self.nixosConfigurations.janus;
               };
             };
           };

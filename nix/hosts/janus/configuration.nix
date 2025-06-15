@@ -2,9 +2,15 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: {
-  imports = [../../modules ./hardware.nix];
+  imports = [
+    ../../modules
+    ./hardware.nix
+    inputs.disko.nixosModules.disko
+    ./disko.nix
+  ];
 
   modules = {
     programs = {
@@ -46,7 +52,11 @@
       cleanOnBoot = true;
     };
 
-    loader.systemd-boot.enable = true;
+    loader.grub = {
+      enable = true;
+      efiSupport = true;
+      efiInstallAsRemovable = true;
+    };
   };
 
   networking = {

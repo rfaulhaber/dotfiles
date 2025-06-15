@@ -170,7 +170,7 @@ in {
           };
 
           "janus" = {
-            hostname = "66.63.168.53";
+            hostname = "66.63.168.153";
             user = "ryan";
             forwardAgent = true;
             port = 6674;
