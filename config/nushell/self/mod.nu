@@ -70,3 +70,12 @@ export def rotn [n: int]: string -> string {
   }
     | str join
 }
+
+# wrapper for creating nix shells with unfree software
+export def "nix shell-unfree" [flake: string] {
+  with-env { NIXPKGS_ALLOW_UNFREE: 1 } { ^nix shell --impure $flake }
+}
+
+export def "nix run-unfree" [flake: string]: nothing -> nothing {
+  with-env { NIXPKGS_ALLOW_UNFREE: 1 } { ^nix run --impure $flake }
+}
