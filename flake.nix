@@ -268,29 +268,16 @@
           deploy-rs = inputs'.deploy-rs.apps.default;
           generate = inputs'.nixos-generators.apps.default;
         };
-        devShells = {
-          deploy-rs = pkgs.mkShell {
-            buildInputs = [inputs'.deploy-rs.packages.default];
-          };
-
-          luaDev = pkgs.mkShell {
-            buildInputs = with pkgs; [
-              lua-language-server
-              luajitPackages.fennel
-              luajitPackages.luasocket
-              stylua
-              fnlfmt
-            ];
-          };
-
-          nix = pkgs.mkShell {
-            buildInputs = [
+        devShells.default = pkgs.mkShell {
+          buildInputs =
+            [
               inputs'.nixos-generators.packages.default
               inputs'.nil.packages.default
+              inputs'.deploy-rs.packages.default
+            ]
+            ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+              inputs'.nix-darwin.packages.default
             ];
-          };
-
-          default = self'.devShells.nix;
         };
       };
     });

@@ -64,7 +64,19 @@
     hostName = "janus";
     hostId = "66a2b43a";
 
-    interfaces.ens3.useDHCP = true;
+    interfaces.ens3 = {
+      useDHCP = true;
+      ipv4.addresses = [
+        {
+          address = "66.63.168.153";
+          prefixLength = 24;
+        }
+        {
+          address = "66.63.168.244";
+          prefixLength = 24;
+        }
+      ];
+    };
   };
 
   system.autoUpgrade = {
