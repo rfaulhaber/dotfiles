@@ -274,6 +274,7 @@
               inputs'.nixos-generators.packages.default
               inputs'.nil.packages.default
               inputs'.deploy-rs.packages.default
+              pkgs.nvd
             ]
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
               inputs'.nix-darwin.packages.default
