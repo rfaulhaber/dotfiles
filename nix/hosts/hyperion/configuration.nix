@@ -79,17 +79,16 @@
       };
       # passwords.enable = true;
       yubikey.enable = true;
-      zerotier = {
-        enable = true;
-        networks = ["b6079f73c6986bc2"];
-      };
       syncthing.enable = true;
       mullvad = {
         enable = true;
         enableGUI = true;
       };
       cachix.enable = true;
-      netbird.enable = true;
+      netbird = {
+        enable = true;
+        autoStart = true;
+      };
     };
     hardware = {
       zsa.enable = true;
