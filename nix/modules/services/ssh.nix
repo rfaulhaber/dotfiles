@@ -131,7 +131,8 @@ in {
             };
           };
 
-          "git.home.lan 192.168.0.3" = {
+          "git.3679.space" = {
+            hostname = "git.3679.space";
             port = 3402;
             extraOptions = {
               "PreferredAuthentications" = "publickey";
