@@ -22,7 +22,10 @@
     };
     services = {
       zfs.enable = true;
-      docker.enable = true;
+      docker = {
+        enable = true;
+        enableNvidiaTools = true;
+      };
       gpg.enable = true;
       systemd.modules = {
         updatedb.enable = true;
@@ -46,31 +49,11 @@
           '';
         };
       };
-      samba-serve = {
-        enable = true;
-        shares = {
-          # calibre = {
-          #   path = "/data/calibre";
-          #   comment = "Calibre share.";
-          # };
-          games = {
-            path = "/data/games";
-            comment = "Retroarch roms";
-            extraOptions."writeable" = "no";
-          };
-        };
-      };
-      zerotier = {
-        enable = true;
-        networks = ["12ac4a1e719ca283" "b6079f73c6986bc2"];
-        sharedNetworkConfig = {
-          "ztbto5nphs" = {
-            dockerWhitelist = [8089];
-          };
-        };
-      };
       netbird.enable = true;
     };
+
+    hardware.nvidia.enable = true;
+
     themes.active = "tokyo-night-dark";
   };
 

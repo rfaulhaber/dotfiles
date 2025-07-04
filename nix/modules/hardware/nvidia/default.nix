@@ -8,7 +8,9 @@ with lib; let
   cfg = config.modules.hardware.nvidia;
   desktopCfg = config.modules.desktop;
 in {
-  options.modules.hardware.nvidia = {enable = mkEnableOption false;};
+  options.modules.hardware.nvidia = {
+    enable = mkEnableOption false;
+  };
 
   config = mkIf cfg.enable {
     hardware = {
@@ -27,6 +29,8 @@ in {
       };
     };
 
-    services.xserver.videoDrivers = mkIf desktopCfg.enable ["nvidia"];
+    user.extraGroups = ["video"];
+
+    services.xserver.videoDrivers = ["nvidia"];
   };
 }
