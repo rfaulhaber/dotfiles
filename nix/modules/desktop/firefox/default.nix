@@ -22,7 +22,7 @@ in {
     package = mkOption {
       type = types.package;
       description = "Firefox package to use.";
-      default = pkgs.firefox-devedition-bin;
+      default = pkgs.firefox-devedition;
     };
     setDefaultBrowser = mkOption {
       type = types.bool;
