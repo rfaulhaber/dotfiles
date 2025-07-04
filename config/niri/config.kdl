@@ -250,10 +250,12 @@ layout {
 // spawn-at-startup "alacritty" "-e" "fish"
 
 // TODO take advice from above
+// TODO handle from within nix
 
 spawn-at-startup "waybar"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "1password"
+spawn-at-startup "signal-desktop"
 
 environment {
     DISPLAY ":0"
