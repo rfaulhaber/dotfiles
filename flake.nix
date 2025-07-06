@@ -275,6 +275,7 @@
               inputs'.nil.packages.default
               inputs'.deploy-rs.packages.default
               pkgs.nvd
+              pkgs.age
             ]
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
               inputs'.nix-darwin.packages.default

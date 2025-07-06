@@ -67,6 +67,8 @@
 (package! nix-ts-mode)
 (package! terraform-mode)
 (package! gptel :recipe (:nonrecursive t))
+(package! age)
+(package! agenix)
 
 ;; (package! hyperbole)
 
