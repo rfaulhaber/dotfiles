@@ -29,8 +29,13 @@
     # agenix is super busted. doesn't work for network deployments, and doesn't
     # work when trying to set a secret credential in /etc/fstab. Look into using
     # ragenix
-    agenix = {
-      url = "github:ryantm/agenix";
+    # agenix = {
+    #   url = "github:ryantm/agenix";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+
+    ragenix = {
+      url = "github:yaxitech/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

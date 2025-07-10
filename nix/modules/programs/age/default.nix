@@ -9,7 +9,7 @@
 with lib; let
   cfg = config.modules.programs.age;
 in {
-  imports = [inputs.agenix.nixosModules.default];
+  imports = [inputs.ragenix.nixosModules.default];
   options.modules.programs.age = {
     enable = mkEnableOption false;
     secretsDir = mkOption {
@@ -20,6 +20,7 @@ in {
   };
 
   config = mkIf cfg.enable {
+    # TODO make configurable
     age = {
       identityPaths = [
         "${config.user.home}/.ssh/id_host"
@@ -46,9 +47,9 @@ in {
     };
 
     user.packages = with pkgs; [
-      age
-      # rage
-      inputs.agenix.packages.${pkgs.system}.default
+      # age
+      rage
+      inputs.ragenix.packages.${pkgs.system}.default
     ];
   };
 }
