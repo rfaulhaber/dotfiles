@@ -109,9 +109,8 @@
       };
       extraPackages = with pkgs; [
         discord
-        evince
         openvpn
-        python3
+        papers
         signal-desktop-bin
         spotify
         ungoogled-chromium
