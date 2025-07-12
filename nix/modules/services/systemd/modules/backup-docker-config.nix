@@ -34,7 +34,7 @@ in {
 
       timerConfig = {
         Persistent = true;
-        OnCalendar = "hourly";
+        OnCalendar = "daily";
       };
     };
   };

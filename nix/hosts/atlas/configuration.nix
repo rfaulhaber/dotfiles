@@ -30,7 +30,7 @@
       systemd.modules = {
         updatedb.enable = true;
         dockerCleanup.enable = true;
-        backupDockerConfig.enable = true;
+        # backupDockerConfig.enable = true;
       };
       printing = {
         enable = true;
