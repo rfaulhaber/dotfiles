@@ -13,7 +13,7 @@ in {
   config = mkIf cfg.enable {
     systemd.services.dockerCleanup = {
       inherit description;
-      path = with pkgs; [docker coreutils bash];
+      path = with pkgs; [docker];
       after = ["multi-user.target"];
       wantedBy = ["multi-user.target"];
       serviceConfig = {
@@ -21,9 +21,7 @@ in {
         User = "root";
         ExecStart = let
           dockerExec = "${pkgs.docker}/bin/docker";
-          systemPruneCmd = "${dockerExec} system prune --volumes -a";
-          yesExec = "${pkgs.coreutils}/bin/yes";
-        in "${pkgs.bash}/bin/bash -c '(${yesExec} | ${systemPruneCmd})'";
+        in "${dockerExec} system prune --volumes -a --force";
       };
     };
 
