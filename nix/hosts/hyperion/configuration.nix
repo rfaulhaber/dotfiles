@@ -180,6 +180,12 @@
     allowReboot = true;
   };
 
+  # apparently github will rate-limit your access to the API
+  # so this is a workaround for that
+  nix.settings.access-tokens = ''
+    !include ${config.age.secrets.github.path}
+  '';
+
   # for use when making a vm using nixos-rebuild build-vm
   # note that these options aren't respected when using nixos-generate
   # virtualisation.vmVariant = {
