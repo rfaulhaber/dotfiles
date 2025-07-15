@@ -351,6 +351,7 @@ Used in loading config specific to those systems.")
 
 ;; configure nix-ts-mode
 (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-ts-mode))
+(add-hook 'nix-ts-mode-hook 'eglot-ensure)
 
 ;; lua mode
 (after! lua-mode
