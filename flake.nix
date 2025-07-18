@@ -64,6 +64,7 @@
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi";
     lix-module = {
       url = "https://git.lix.systems/lix-project/nixos-module/archive/2.93.0.tar.gz";
+      # url = "git+https://git.lix.systems/lix-project/nixos-module?ref=release-2.93";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # so that we can use the pipeline operator
@@ -71,6 +72,7 @@
       url = "github:oxalica/nil/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
   };
 
   outputs = inputs @ {
