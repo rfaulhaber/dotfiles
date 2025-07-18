@@ -14,7 +14,7 @@
     ./redshift
     ./samba-mount
     ./samba-serve
-    ./ssh.nix
+    ./ssh
     ./sudo-rs
     ./syncthing
     ./systemd
