@@ -39,7 +39,7 @@
       "low-medium": 35,
       "medium": 50,
       "high": 70,
-      "max": 100
+      "max": 90
     }
   },
   "memory": {
@@ -50,7 +50,7 @@
       "low-medium": 35,
       "medium": 50,
       "high": 70,
-      "max": 100
+      "max": 90
     }
   },
   "disk": {
