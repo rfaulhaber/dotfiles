@@ -1,16 +1,15 @@
 {
+  inputs,
   config,
   lib,
   pkgs,
-  rev,
-  dirtyRev,
   ...
 }: {
   # imports = [../../modules];
 
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
-  environment.systemPackages = with pkgs; [neovim];
+  environment.systemPackages = with pkgs; [neovim direnv];
 
   # we use Determinate Nix on macOS, so we need to turn off nix-darwin's daemon
   nix.enable = false;
