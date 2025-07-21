@@ -66,7 +66,7 @@
     };
 
     # kernel settings for zfs
-    kernelPackages = pkgs.linuxPackages_6_12;
+    kernelPackages = pkgs.linuxPackages_6_15;
     kernelParams = ["nohibernate"];
 
     zfs = {
