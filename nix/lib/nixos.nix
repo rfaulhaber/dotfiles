@@ -59,7 +59,7 @@ with lib; rec {
           networking.hostName = hostnameFromPath path;
           nixpkgs.config.allowUnfree = true;
         }
-        # ../../nix/modules
+        ../../nix/darwin
         path
       ]
       ++ extraModules;

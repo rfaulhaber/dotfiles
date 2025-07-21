@@ -9,7 +9,17 @@
 
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
-  environment.systemPackages = with pkgs; [neovim direnv];
+  user.packages = with pkgs; [neovim direnv];
+
+  home.programs.nushell = let
+    configDir = "${config.home.file.dotfiles.target}/config/nushell";
+  in {
+    enable = true;
+    configFile.text = "source ${configDir}/config.nu";
+    envFile.text = "source ${configDir}/env.nu";
+  };
+
+  home-manager.backupFileExtension = "home-manager";
 
   # we use Determinate Nix on macOS, so we need to turn off nix-darwin's daemon
   nix.enable = false;
