@@ -12,15 +12,14 @@
     # TODO conditionally import?
     ./hardware-configuration.nix
     inputs.nixos-generators.nixosModules.all-formats
-    #inputs.lix-module.nixosModules.default
-    # inputs.determinate.nixosModules.default
+    inputs.determinate.nixosModules.default
   ];
 
   # TODO move
-  # nix.settings = {
-  #   substituters = ["https://install.determinate.systems"];
-  #   trusted-public-keys = ["cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="];
-  # };
+  nix.settings = {
+    substituters = ["https://install.determinate.systems"];
+    trusted-public-keys = ["cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="];
+  };
 
   modules = {
     programs = {
@@ -40,6 +39,7 @@
       git = {
         enable = true;
         useDelta = true;
+        useJJ = true;
       };
       nushell = {
         enable = true;

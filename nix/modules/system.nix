@@ -22,7 +22,6 @@ with lib; {
 
     # TODO make standard nix module?
     nix = {
-      package = pkgs.nixVersions.stable;
       gc = {
         automatic = true;
         dates = "weekly";
@@ -36,18 +35,7 @@ with lib; {
         allowed-users = users;
         auto-optimise-store = true;
 
-        experimental-features = let
-          lixEnabled = builtins.hasAttr "lix" config && config.lix.enable;
-        in
-          ["nix-command" "flakes"]
-          ++ (
-            # this is so silly, but cppnix's feature is called "pipe-operators"
-            # while lix's feature is called "pipe-operator". not all my machines
-            # use lix, so I have to account for this
-            if lixEnabled
-            then ["pipe-operator"]
-            else ["pipe-operators"]
-          );
+        experimental-features = ["nix-command" "flakes" "pipe-operators"];
       };
     };
 

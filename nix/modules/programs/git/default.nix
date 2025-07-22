@@ -21,6 +21,12 @@ in {
       description = "Use delta for git diffing.";
       example = false;
     };
+
+    useJJ = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Use Jujutsu with Git.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -45,5 +51,7 @@ in {
         merge.conflictStyle = "zdiff3";
       };
     };
+
+    user.packages = with pkgs; optionals (cfg.useJJ) [jujutsu];
   };
 }

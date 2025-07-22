@@ -30,7 +30,7 @@ in {
 
       matchBlocks = let
         mkLocalHostname = n: "192.168.0.${n}";
-        sshPath = cfg.client.sshPath;
+        sshPath = cfg.sshPath;
         defaultIdentityFile = "${sshPath}/id_host";
       in {
         "*" = {
