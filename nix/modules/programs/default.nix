@@ -5,15 +5,11 @@
     ./aspell
     ./direnv
     ./emacs
-    ./eza
-    ./ghostty
     ./git
     ./keychain
     ./kitty
     ./neovim
     ./nushell
-    ./pijul
     ./wezterm
-    ./zsh
   ];
 }

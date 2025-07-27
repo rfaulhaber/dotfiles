@@ -5,18 +5,37 @@
   pkgs,
   ...
 }: {
-  # imports = [../../modules];
-
-  # List packages installed in system profile. To search by name, run:
-  # $ nix-env -qaP | grep wget
-  user.packages = with pkgs; [neovim direnv];
-
-  home.programs.nushell = let
-    configDir = "${config.home.file.dotfiles.target}/config/nushell";
-  in {
-    enable = true;
-    configFile.text = "source ${configDir}/config.nu";
-    envFile.text = "source ${configDir}/env.nu";
+  # NOTE darwin options
+  # https://nix-darwin.github.io/nix-darwin/manual/index.html
+  modules = {
+    gpg.enable = true;
+    programs = {
+      emacs = {
+        enable = true;
+        package = pkgs.emacs-git;
+        doomUnstraightened = {
+          enable = true;
+          setDefault = true;
+        };
+      };
+      neovim.enable = true;
+      wezterm.enable = true;
+      direnv.enable = true;
+      git = {
+        enable = true;
+        useDelta = true;
+        useJJ = true;
+      };
+      nushell = {
+        enable = true;
+        setDefault = true;
+        zoxide.enable = true;
+        carapace.enable = true;
+        plugins = with pkgs.nushellPlugins; [
+          polars
+        ];
+      };
+    };
   };
 
   home-manager.backupFileExtension = "home-manager";
@@ -28,6 +47,9 @@
   nix.settings.experimental-features = "nix-command flakes pipe-operators";
 
   security.pam.services.sudo_local.touchIdAuth = true;
+
+  # TODO move
+  environment.shells = with pkgs; [nushell];
 
   # Enable alternative shell support in nix-darwin.
   # programs.fish.enable = true;

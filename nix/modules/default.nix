@@ -1,15 +1,24 @@
 {
-  imports = [
-    ./desktop
-    ./dotfiles.nix
-    ./globals.nix
-    ./hardware
-    ./linux.nix
-    ./options.nix
-    ./programs
-    ./services
-    ./system.nix
-    ./themes
-    ./xdg.nix
-  ];
+  pkgs,
+  lib,
+  system,
+  isLinux,
+  isDarwin,
+  ...
+}: {
+  imports =
+    [
+      ./conf.nix
+      ./dotfiles.nix
+      ./globals.nix
+      ./gpg
+      ./options.nix
+      ./programs
+    ]
+    ++ lib.optionals isLinux [
+      ./linux
+    ]
+    ++ lib.optionals isDarwin [
+      ./darwin
+    ];
 }

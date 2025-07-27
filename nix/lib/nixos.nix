@@ -13,11 +13,18 @@ with lib; rec {
     specialArgs ? {},
     extraModules ? [],
     ...
-  }: {
+  }: let
+    isLinux = lib.strings.hasSuffix "linux" system;
+    isDarwin = lib.strings.hasSuffix "darwin" system;
+    homeManagerModule =
+      if isDarwin
+      then inputs.home-manager.darwinModules.home-manager
+      else inputs.home-manager.nixosModules.home-manager;
+  in {
     inherit system;
     modules =
       [
-        inputs.home-manager.nixosModules.home-manager
+        homeManagerModule
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
@@ -32,40 +39,7 @@ with lib; rec {
       ++ extraModules;
     specialArgs =
       {
-        inherit lib inputs system;
-        platform = system;
-        hostDir = dirOf path;
-      }
-      // specialArgs;
-  };
-
-  # NOTE hopefully temporary
-  mkDarwinHostInner = path: attrs @ {
-    system,
-    overlays ? [],
-    specialArgs ? {},
-    extraModules ? [],
-    ...
-  }: {
-    inherit system;
-    modules =
-      [
-        inputs.home-manager.darwinModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-        }
-        {
-          networking.hostName = hostnameFromPath path;
-          nixpkgs.config.allowUnfree = true;
-        }
-        ../../nix/darwin
-        path
-      ]
-      ++ extraModules;
-    specialArgs =
-      {
-        inherit lib inputs system;
+        inherit lib inputs system isLinux isDarwin;
         platform = system;
         hostDir = dirOf path;
       }
@@ -133,7 +107,7 @@ with lib; rec {
     map nixosSystem (mkK8sNodes n path attrs);
 
   mkDarwinHost = path: attrs:
-    inputs.nix-darwin.lib.darwinSystem (mkDarwinHostInner path attrs);
+    inputs.nix-darwin.lib.darwinSystem (mkHost path attrs);
 
   # thank you hlissner
   mapHosts = dir: attrs @ {system ? defaultSystem, ...}:

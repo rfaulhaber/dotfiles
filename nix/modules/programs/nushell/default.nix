@@ -2,11 +2,14 @@
   config,
   lib,
   pkgs,
+  isLinux,
+  isDarwin,
   ...
 }:
 with lib;
 with lib.my; let
-  inherit (config.modules.desktop.environment) isX11 isWayland;
+  isX11 = isLinux && config.linux.desktop.environment.isX11;
+  isWayland = isLinux && config.linux.desktop.environment.isWayland;
   cfg = config.modules.programs.nushell;
   desktopCfg = config.modules.desktop;
 in {

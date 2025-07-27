@@ -13,7 +13,6 @@ in {
     home.programs.direnv = {
       enable = true;
       enableNushellIntegration = mkIf config.modules.programs.nushell.enable true;
-      enableZshIntegration = mkIf config.modules.programs.zsh.enable true;
       nix-direnv.enable = true;
       stdlib = ''
         use_flake() {

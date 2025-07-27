@@ -2,6 +2,8 @@
   config,
   lib,
   pkgs,
+  isLinux,
+  isDarwin,
   ...
 }:
 with lib; let
@@ -12,10 +14,13 @@ in {
     programs = {
       _1password.enable = true;
 
-      _1password-gui = {
-        enable = true;
-        polkitPolicyOwners = [config.user.name];
-      };
+      _1password-gui =
+        {
+          enable = true;
+        }
+        // lib.optionalAttrs isLinux {
+          polkitPolicyOwners = [config.user.name];
+        };
     };
   };
 }

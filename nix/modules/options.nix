@@ -4,6 +4,8 @@
   options,
   lib,
   home-manager,
+  isLinux,
+  isDarwin,
   ...
 }:
 with lib;
@@ -65,18 +67,26 @@ with lib.my; {
   };
 
   config = {
-    user = mkIf pkgs.stdenv.isLinux rec {
+    user = let
       name = "ryan";
-      description = "ryan";
-      # TODO do better
-      extraGroups = ["wheel" "audio" "lp" "plugdev"];
-      isNormalUser = true;
-      home = "/home/${name}";
-      group = "users";
-      uid = 1000;
-      # TODO if doing a fresh install, set UID and GID
-      # gid = 1000;
-    };
+    in
+      {
+        inherit name;
+      }
+      // lib.optionalAttrs isLinux {
+        description = "ryan";
+        # TODO do better
+        extraGroups = ["wheel" "audio" "lp" "plugdev"];
+        isNormalUser = true;
+        home = "/home/${name}";
+        group = "users";
+        uid = 1000;
+        # TODO if doing a fresh install, set UID and GID
+        # gid = 1000;
+      }
+      // lib.optionalAttrs isDarwin {
+        home = "/Users/${name}";
+      };
 
     # supplementary user info used throughout config
     userInfo = {
@@ -97,24 +107,30 @@ with lib.my; {
     home-manager = {
       useUserPackages = true;
 
-      users.${config.user.name} = {
-        home = {
-          file = mkAliasDefinitions options.home.file;
-          stateVersion = config.system.stateVersion;
-        };
+      users.${config.user.name} =
+        {
+          home = {
+            file = mkAliasDefinitions options.home.file;
+            packages = mkAliasDefinitions options.home.packages;
+            stateVersion =
+              if isLinux
+              then config.system.stateVersion
+              else "25.05";
+          };
 
-        accounts = mkAliasDefinitions options.home.accounts;
-        home.packages = mkAliasDefinitions options.home.packages;
-        programs = mkAliasDefinitions options.home.programs;
-        services = mkAliasDefinitions options.home.services;
-        xsession = mkAliasDefinitions options.home.xsession;
-        dconf.settings = mkAliasDefinitions options.home.dconf.settings;
+          accounts = mkAliasDefinitions options.home.accounts;
+          programs = mkAliasDefinitions options.home.programs;
+          services = mkAliasDefinitions options.home.services;
+        }
+        // lib.optionalAttrs isLinux {
+          xsession = mkAliasDefinitions options.home.xsession;
+          dconf.settings = mkAliasDefinitions options.home.dconf.settings;
 
-        xdg = {
-          configFile = mkAliasDefinitions options.home.configFile;
-          dataFile = mkAliasDefinitions options.home.dataFile;
+          xdg = {
+            configFile = mkAliasDefinitions options.home.configFile;
+            dataFile = mkAliasDefinitions options.home.dataFile;
+          };
         };
-      };
     };
 
     users.users.${config.user.name} = mkAliasDefinitions options.user;

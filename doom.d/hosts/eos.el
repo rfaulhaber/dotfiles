@@ -14,9 +14,13 @@
                        "/usr/sbin"
                        "/sbin"
                        "/usr/local/bin"
-                       "/nix/var/nix/profiles/default/bin")))
+                       "/nix/var/nix/profiles/default/bin"
+                       "/run/current-system/sw/bin"
+                       "/etc/profiles/per-user/ryan/bin")))
   (cl-loop for el in path-elements
            do
            (add-to-list 'exec-path el))
 
   (setenv "PATH" (string-join path-elements ":")))
+
+(setq doom-ripgrep-executable "/etc/profiles/per-user/ryan/bin/rg")

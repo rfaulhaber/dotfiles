@@ -5,11 +5,12 @@
   lib,
   pkgs,
   inputs,
+  isLinux,
+  isDarwin,
   ...
 }:
 with lib; let
   cfg = config.modules.programs.emacs;
-  inherit (config.modules.desktop.environment) isX11;
   shellAliases = {
     ec = "emacsclient";
     eo = "emacsclient -n"; # "emacs open"
@@ -28,37 +29,30 @@ with lib; let
   # see doom.d/init.el for more
   # we need to include every program either directly or indirectly referenced in config
   # TODO can I rewrite this such that they're not all globally available?
-  userPackages = with pkgs;
-    [
-      alejandra
-      ast-grep
-      clang # unfortunately we need a C compiler for various dependencies
-      cmake
-      direnv
-      djvulibre
-      editorconfig-core-c
-      fd
-      fzf
-      git
-      gnumake
-      gnutls
-      graphviz
-      imagemagick
-      inputs.nil.outputs.packages.${pkgs.stdenv.targetPlatform.system}.nil
-      languagetool
-      nodePackages.mermaid-cli
-      ripgrep
-      sqlite
-      texlive.combined.scheme-medium
-      wordnet
-      zstd
-    ]
-    ++ lib.optionals isX11 [
-      xdotool
-      xorg.xprop
-      xorg.xwininfo
-    ]
-    ++ lib.optional config.modules.services.mail.enable mu;
+  userPackages = with pkgs; [
+    alejandra
+    ast-grep
+    clang # unfortunately we need a C compiler for various dependencies
+    cmake
+    direnv
+    djvulibre
+    editorconfig-core-c
+    fd
+    fzf
+    git
+    gnumake
+    gnutls
+    graphviz
+    imagemagick
+    inputs.nil.outputs.packages.${pkgs.stdenv.targetPlatform.system}.nil
+    languagetool
+    nodePackages.mermaid-cli
+    ripgrep
+    sqlite
+    texlive.combined.scheme-medium
+    wordnet
+    zstd
+  ];
 
   # TODO make unstraightened work lol
   unstraightenedPackage = emacsPkg:
@@ -104,20 +98,32 @@ in {
   };
 
   config = mkIf cfg.enable {
+    nix.settings = {
+      substituters = [
+        "https://nix-community.cachix.org"
+      ];
+      trusted-public-keys = [
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      ];
+    };
+
     nixpkgs.overlays = [
       inputs.emacs-overlay.overlays.default
       inputs.nix-doom-emacs-unstraightened.overlays.default
     ];
 
-    services.emacs = {
-      enable = true;
-      install = true;
-      defaultEditor = true;
-      package =
-        if cfg.doomUnstraightened.setDefault
-        then resolvedEmacsPkg
-        else normalPackage;
-    };
+    services.emacs =
+      {
+        enable = true;
+        package =
+          if cfg.doomUnstraightened.setDefault
+          then resolvedEmacsPkg
+          else normalPackage;
+      }
+      // lib.optionalAttrs isLinux {
+        defaultEditor = true;
+        install = true;
+      };
 
     # emacs dependency
     modules.programs.aspell.enable = true;
@@ -132,8 +138,6 @@ in {
         application/pdf=org.gnome.Evince.desktop;emacs.desktop
       '';
     };
-
-    programs.zsh.shellAliases = mkIf config.modules.programs.zsh.enable shellAliases;
 
     home.programs.nushell.shellAliases = mkIf config.modules.programs.nushell.enable shellAliases;
 
