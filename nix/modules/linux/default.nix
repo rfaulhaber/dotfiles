@@ -1,42 +1,19 @@
-{
-  pkgs,
-  lib,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
-    ./desktop
-    ./docker
-    ./hardware
-    ./mullvad
-    ./netbird
-    ./printing
-    ./redshift
-    ./samba-mount
-    ./samba-serve
-    ./sudo-rs
-    ./syncthing
-    ./systemd
-    ./themes
-    ./yubikey
-    ./zerotier
-    ./zfs
+    ./services
   ];
 
   config = {
+    # generic set of packages that I use on all my Linux machines
     user.packages = with pkgs; [
       bat
-      binutils
-      coreutils-full
-      curl
+      btop
       fd
       fzf
-      btop
       pandoc
       ripgrep
       rsync
-      tokei
       unzip
-      wget
       zip
     ];
 

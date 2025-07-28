@@ -56,6 +56,7 @@
     };
     niri.url = "github:YaLTeR/niri";
     waybar.url = "github:Alexays/waybar";
+    # I use flake-parts to ensure I can use my flake across platforms, although I probably shouldn't
     flake-parts.url = "github:hercules-ci/flake-parts";
     disko = {
       url = "github:nix-community/disko/latest";
@@ -281,7 +282,7 @@
               inputs'.nil.packages.default
               inputs'.deploy-rs.packages.default
               pkgs.nvd
-              pkgs.age
+              pkgs.rage
             ]
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
               inputs'.nix-darwin.packages.default

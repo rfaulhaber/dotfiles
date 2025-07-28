@@ -6,10 +6,10 @@
   ...
 }:
 with lib; let
-  isWayland = isLinux && config.modules.desktop.environment;
-  cfg = config.modules.gpg;
+  isWayland = isLinux && config.modules.desktop.environment.isWayland;
+  cfg = config.modules.services.gpg;
 in {
-  options.modules.gpg = {
+  options.modules.services.gpg = {
     enable = mkEnableOption false;
   };
 

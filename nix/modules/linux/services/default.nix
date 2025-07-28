@@ -1,0 +1,22 @@
+{
+  imports = [
+    ./cachix
+    ./desktop
+    ./docker
+    ./hardware
+    ./mullvad
+    ./netbird
+    ./printing
+    ./radicle
+    ./redshift
+    ./samba-mount
+    ./samba-serve
+    ./sudo-rs
+    ./syncthing
+    ./systemd
+    ./themes
+    ./yubikey
+    ./zerotier
+    ./zfs
+  ];
+}

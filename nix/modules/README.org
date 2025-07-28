@@ -1,0 +1,4 @@
+#+title: nix modules
+
+My modules are divided up into "programs" and "services" broadly. This line isn't very clear cut. The arbitrary rationale I've
+decided is that a "service" is a program with a deamon of some sort (e.g. Docker, a VPN, etc.), and a program is not. This is completely arbitrary however and your mileage may vary. Also, services tend to be platform specific.

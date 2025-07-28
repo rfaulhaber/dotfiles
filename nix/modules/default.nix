@@ -14,6 +14,7 @@
       ./gpg
       ./options.nix
       ./programs
+      ./ssh
     ]
     ++ lib.optionals isLinux [
       ./linux

@@ -51,7 +51,6 @@
         ];
       };
       direnv.enable = true;
-      pijul.enable = true;
       age = {
         enable = true;
         secretsDir = ./secrets;
@@ -60,7 +59,6 @@
     services = {
       zfs.enable = true;
       docker.enable = true;
-      radicle.enable = true;
       sudo-rs.enable = true;
       printing = {
         enable = true;
@@ -75,7 +73,6 @@
       #   };
       # };
       gpg.enable = true;
-      mail.enable = true;
       systemd.modules = {
         sshAgent.enable = true;
         tmp-downloads.enable = true;

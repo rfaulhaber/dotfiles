@@ -1,0 +1,3 @@
+#+title: programs
+
+Configuration for generic, cross-platform programs.
