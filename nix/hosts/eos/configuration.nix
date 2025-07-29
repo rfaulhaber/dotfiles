@@ -8,7 +8,6 @@
   # NOTE darwin options
   # https://nix-darwin.github.io/nix-darwin/manual/index.html
   modules = {
-    gpg.enable = true;
     programs = {
       emacs = {
         enable = true;
@@ -35,6 +34,10 @@
           polars
         ];
       };
+    };
+    services = {
+      gpg.enable = true;
+      ssh.client.enable = true;
     };
   };
 

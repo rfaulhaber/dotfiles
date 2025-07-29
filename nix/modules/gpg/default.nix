@@ -3,6 +3,7 @@
   lib,
   pkgs,
   isLinux,
+  isDarwin,
   ...
 }:
 with lib; let
@@ -35,6 +36,11 @@ in {
           enableBrowserSocket = true;
           pinentryPackage = lib.mkIf isWayland pkgs.pinentry-gnome3;
         };
+
+      # user.packages = with pkgs;
+      #   lib.optionals isDarwin [
+      #     gnupg
+      #   ];
     }
     // lib.optionalAttrs isLinux {
       security.pam.services.login.enableGnomeKeyring = true;
