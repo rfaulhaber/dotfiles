@@ -37,10 +37,11 @@ in {
           pinentryPackage = lib.mkIf isWayland pkgs.pinentry-gnome3;
         };
 
-      # user.packages = with pkgs;
-      #   lib.optionals isDarwin [
-      #     gnupg
-      #   ];
+      # somehow, for some reason, programs.gnupg.agent.enable does not imply a gpg installation on darwin
+      user.packages = with pkgs;
+        lib.optionals isDarwin [
+          gnupg
+        ];
     }
     // lib.optionalAttrs isLinux {
       security.pam.services.login.enableGnomeKeyring = true;

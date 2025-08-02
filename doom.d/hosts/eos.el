@@ -24,3 +24,5 @@
   (setenv "PATH" (string-join path-elements ":")))
 
 (setq doom-ripgrep-executable "/etc/profiles/per-user/ryan/bin/rg")
+
+(setq insert-directory-program "/bin/ls")

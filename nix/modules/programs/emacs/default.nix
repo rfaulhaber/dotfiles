@@ -29,30 +29,36 @@ with lib; let
   # see doom.d/init.el for more
   # we need to include every program either directly or indirectly referenced in config
   # TODO can I rewrite this such that they're not all globally available?
-  userPackages = with pkgs; [
-    alejandra
-    ast-grep
-    clang # unfortunately we need a C compiler for various dependencies
-    cmake
-    direnv
-    djvulibre
-    editorconfig-core-c
-    fd
-    fzf
-    git
-    gnumake
-    gnutls
-    graphviz
-    imagemagick
-    inputs.nil.outputs.packages.${pkgs.stdenv.targetPlatform.system}.nil
-    languagetool
-    nodePackages.mermaid-cli
-    ripgrep
-    sqlite
-    texlive.combined.scheme-medium
-    wordnet
-    zstd
-  ];
+  userPackages = with pkgs;
+    [
+      alejandra
+      ast-grep
+      clang # unfortunately we need a C compiler for various dependencies
+      cmake
+      direnv
+      djvulibre
+      editorconfig-core-c
+      fd
+      fzf
+      git
+      gnumake
+      gnutls
+      graphviz
+      imagemagick
+      inputs.nil.outputs.packages.${pkgs.stdenv.targetPlatform.system}.nil
+      languagetool
+      nodePackages.mermaid-cli
+      ripgrep
+      sqlite
+      texlive.combined.scheme-medium
+      wordnet
+      zstd
+    ]
+    ++ lib.optionals isDarwin [
+      # emacs can't use nushell ls and macOS ls doesn't work right with dired
+      uutils-coreutils.override
+      {prefix = "u";}
+    ];
 
   # TODO make unstraightened work lol
   unstraightenedPackage = emacsPkg:
@@ -107,13 +113,6 @@ in {
       ];
     };
 
-    # TODO temporary, not sustainable, but necessary because determinate nix doesn't correctly build nix.conf on macOS
-    # TODO write to an emacs.conf file, include it in nix.custom.conf
-    environment.etc."nix/nix.custom.conf".text = mkIf isDarwin ''
-      extra-substituters = https://nix-community.cachix.org
-      extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
-    '';
-
     nixpkgs.overlays = [
       inputs.emacs-overlay.overlays.default
       inputs.nix-doom-emacs-unstraightened.overlays.default
@@ -138,12 +137,6 @@ in {
     user.packages =
       userPackages
       ++ lib.optional cfg.doomUnstraightened.enable resolvedEmacsPkg;
-
-    # TODO handle better
-    environment.etc."xdg/mimeapps.list".text = mkIf isLinux ''
-      [Default Applications]
-      application/pdf=emacs.desktop
-    '';
 
     home.programs.nushell.shellAliases =
       mkIf config.modules.programs.nushell.enable shellAliases
