@@ -6,13 +6,8 @@
 ;; it here
 (let ((path-elements '("/Users/ryan/Library/Application Support/carapace/bin"
                        "/Users/ryan/.nix-profile/bin"
-                       "/opt/homebrew/bin"
                        "/Users/ryan/.emacs.d/bin"
                        "/Users/ryan/.config/emacs/bin"
-                       "/usr/bin"
-                       "/bin"
-                       "/usr/sbin"
-                       "/sbin"
                        "/usr/local/bin"
                        "/nix/var/nix/profiles/default/bin"
                        "/run/current-system/sw/bin"
@@ -23,6 +18,6 @@
 
   (setenv "PATH" (string-join path-elements ":")))
 
-(setq doom-ripgrep-executable "/etc/profiles/per-user/ryan/bin/rg")
-
-(setq insert-directory-program "/etc/profiles/per-user/ryan/bin/ls")
+(setq doom-ripgrep-executable "/etc/profiles/per-user/ryan/bin/rg"
+      insert-directory-program "/etc/profiles/per-user/ryan/bin/ls"
+      dired-ls-sorting-switches "-ahl --group-directories-first")

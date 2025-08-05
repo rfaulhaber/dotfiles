@@ -14,9 +14,10 @@ Used in loading config specific to those systems.")
          self/system-name
          self/system-type)
 
-;; load machine-specific and type-specific configs
-(load! (format "./hosts/%s" self/system-name) nil t)
+;; load type-specific and machine-specific configs
+;; machine-specific configs can override type-specific configs
 (load! (format "./hosts/%s" self/system-type) nil t)
+(load! (format "./hosts/%s" self/system-name) nil t)
 
 ;; load custom code
 (load! "./self/self.el")
