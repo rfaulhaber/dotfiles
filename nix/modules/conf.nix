@@ -16,9 +16,6 @@ with lib; {
         }
         // lib.optionalAttrs isLinux {
           dates = "weekly";
-        }
-        // lib.optionalAttrs isDarwin {
-          interval = "weekly";
         };
 
       settings = let

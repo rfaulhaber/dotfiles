@@ -28,7 +28,6 @@ with lib; let
   # dependencies for my very specific configuration of doom
   # see doom.d/init.el for more
   # we need to include every program either directly or indirectly referenced in config
-  # TODO can I rewrite this such that they're not all globally available?
   userPackages = with pkgs;
     [
       alejandra
@@ -56,11 +55,9 @@ with lib; let
     ]
     ++ lib.optionals isDarwin [
       # emacs can't use nushell ls and macOS ls doesn't work right with dired
-      uutils-coreutils.override
-      {prefix = "u";}
+      uutils-coreutils-noprefix
     ];
 
-  # TODO make unstraightened work lol
   unstraightenedPackage = emacsPkg:
     emacsPkg {
       emacs = cfg.package;
@@ -139,14 +136,16 @@ in {
       ++ lib.optional cfg.doomUnstraightened.enable resolvedEmacsPkg;
 
     home.programs.nushell.shellAliases =
-      mkIf config.modules.programs.nushell.enable shellAliases
-      // lib.optionalAttrs isDarwin {
-        emacs = "${pkgs.emacs}/Applications/Emacs.app/Contents/MacOS/Emacs";
-      };
+      mkIf config.modules.programs.nushell.enable shellAliases;
 
     home.file.doomconfig = mkIf (!cfg.doomUnstraightened.enable) {
       source = config.dotfiles.emacsDir;
       target = "${config.user.home}/.config/doom";
+    };
+
+    home.file.doomApp = mkIf isDarwin {
+      source = "${config.services.emacs.package}/Applications/Emacs.app";
+      target = "${config.user.home}/Applications/Emacs.app";
     };
   };
 }

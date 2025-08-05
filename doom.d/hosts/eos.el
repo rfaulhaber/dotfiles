@@ -25,4 +25,4 @@
 
 (setq doom-ripgrep-executable "/etc/profiles/per-user/ryan/bin/rg")
 
-(setq insert-directory-program "/bin/ls")
+(setq insert-directory-program "/etc/profiles/per-user/ryan/bin/ls")

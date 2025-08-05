@@ -11,7 +11,6 @@ in {
 
   config = mkIf cfg.enable {
     user.packages = with pkgs; [
-      aspell
       (aspellWithDicts
         (dicts: with dicts; [en en-computers en-science]))
     ];
