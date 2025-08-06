@@ -43,6 +43,11 @@ in {
           gnupg
           pinentry_mac
         ];
+
+      home.file.gpgconf = mkIf isDarwin {
+        text = "pinentry-program /etc/profiles/per-user/${config.user.name}/bin/pinentry-mac";
+        target = "${config.user.home}/.gnupg/gpg-agent.conf";
+      };
     }
     // lib.optionalAttrs isLinux {
       security.pam.services.login.enableGnomeKeyring = true;
