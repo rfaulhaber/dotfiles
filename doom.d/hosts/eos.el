@@ -20,4 +20,4 @@
 
 (setq doom-ripgrep-executable "/etc/profiles/per-user/ryan/bin/rg"
       insert-directory-program "/etc/profiles/per-user/ryan/bin/ls"
-      dired-ls-sorting-switches "-ahl --group-directories-first")
+      dired-listing-switches "-ahl --group-directories-first")

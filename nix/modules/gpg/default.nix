@@ -41,6 +41,7 @@ in {
       user.packages = with pkgs;
         lib.optionals isDarwin [
           gnupg
+          pinentry_mac
         ];
     }
     // lib.optionalAttrs isLinux {
