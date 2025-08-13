@@ -13,7 +13,7 @@ in {
     ../../wayland
   ];
 
-  options.modules.desktop.environment.niri = {enable = mkEnableOption false;};
+  options.modules.desktop.environment.niri.enable = mkEnableOption false;
 
   config = mkIf cfg.enable {
     nix.settings = {
@@ -21,18 +21,15 @@ in {
       trusted-public-keys = ["niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964="];
     };
 
-    modules = {
-      desktop = {
-        swww.enable = true;
-        wayland.enable = true;
-        waybar.enable = true;
-        environment.type = "wayland";
-        fuzzel.enable = true;
-      };
+    modules.desktop = {
+      swww.enable = true;
+      wayland.enable = true;
+      waybar.enable = true;
+      environment.type = "wayland";
+      fuzzel.enable = true;
     };
 
     security.polkit.enable = true;
-    services.gnome.gnome-keyring.enable = true;
 
     programs = {
       niri = {
@@ -43,9 +40,12 @@ in {
       xwayland.enable = true;
     };
 
-    services.displayManager.gdm = {
-      enable = true;
-      wayland = true;
+    services = {
+      gnome.gnome-keyring.enable = true;
+      displayManager.gdm = {
+        enable = true;
+        wayland = true;
+      };
     };
 
     # the above uses gdm to login, so we have to also set enableGnomeKeyring here maybe

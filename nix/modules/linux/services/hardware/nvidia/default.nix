@@ -1,12 +1,10 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
   cfg = config.modules.hardware.nvidia;
-  desktopCfg = config.modules.desktop;
 in {
   options.modules.hardware.nvidia = {
     enable = mkEnableOption false;
@@ -17,8 +15,7 @@ in {
       graphics.enable = true;
       nvidia = {
         modesetting.enable = true;
-        # don't want to use the open source driver... yet
-        open = false;
+        open = true;
 
         powerManagement = {
           enable = false;

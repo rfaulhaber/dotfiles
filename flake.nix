@@ -26,14 +26,6 @@
 
     emacs-overlay.url = "github:nix-community/emacs-overlay";
 
-    # agenix is super busted. doesn't work for network deployments, and doesn't
-    # work when trying to set a secret credential in /etc/fstab. Look into using
-    # ragenix
-    # agenix = {
-    #   url = "github:ryantm/agenix";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
     ragenix = {
       url = "github:yaxitech/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -63,7 +55,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi";
-    # so that we can use the pipeline operator
+    # so that we can use the pipeline operator lol
     nil = {
       url = "github:oxalica/nil/main";
       inputs.nixpkgs.follows = "nixpkgs";

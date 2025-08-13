@@ -64,14 +64,6 @@
         enable = true;
         client = true;
       };
-      # samba-mount = {
-      #   enable = true;
-      #   mounts."${config.user.home}/calibre" = {
-      #     domain = "192.168.0.3";
-      #     host = "calibre";
-      #     # secrets = config.age.secrets.samba.path;
-      #   };
-      # };
       gpg.enable = true;
       systemd.modules = {
         sshAgent.enable = true;
@@ -81,7 +73,6 @@
         enable = true;
         client.enable = true;
       };
-      # passwords.enable = true;
       yubikey.enable = true;
       syncthing.enable = true;
       mullvad = {
@@ -89,6 +80,8 @@
         enableGUI = true;
       };
       cachix.enable = true;
+      # NOTE this will break on flake upgrade
+      # https://nixpk.gs/pr-tracker.html?pr=432535
       netbird = {
         enable = true;
         autoStart = true;
