@@ -16,7 +16,7 @@ set $right l
 # Your preferred terminal emulator
 set $term wezterm
 # Your preferred application launcher
-set $menu wmenu-run
+set $menu fuzzel
 
 ### Output configuration
 #

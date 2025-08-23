@@ -15,40 +15,37 @@ in {
   options.modules.desktop.environment.sway = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
-    modules = {
-      desktop = {
-        swww.enable = true;
-        wayland.enable = true;
-        environment.type = "wayland";
-      };
+    modules.desktop = {
+      swww.enable = true;
+      wayland.enable = true;
+      waybar.enable = true;
+      environment.type = "wayland";
+      fuzzel.enable = true;
     };
 
-    security.polkit.enable = true;
-    services.gnome.gnome-keyring.enable = true;
-
-    # TODO swaylock
-    # TODO waybar
-
-    programs = {
-      sway = {
-        enable = true;
-        wrapperFeatures.gtk = true;
-        extraOptions = ["--unsupported-gpu"];
-      };
+    programs.sway = {
+      enable = true;
+      wrapperFeatures.gtk = true;
+      extraOptions = ["--unsupported-gpu"];
     };
 
-    services.xserver.displayManager = {
-      gdm = {
+    services = {
+      gnome.gnome-keyring.enable = true;
+      displayManager.gdm = {
         enable = true;
         wayland = true;
       };
     };
 
-    # the above uses gdm to login, so we have to also set enableGnomeKeyring here maybe
-    security.pam.services.gdm.enableGnomeKeyring = true;
+    security = {
+      # the above uses gdm to login, so we have to also set enableGnomeKeyring here maybe
+      pam.services.gdm.enableGnomeKeyring = true;
+      polkit.enable = true;
+    };
 
     user.packages = with pkgs; [
-      wmenu
+      fuzzel
+      swaylock
       sway-contrib.grimshot
     ];
 

@@ -93,7 +93,10 @@
     };
     desktop = {
       enable = true;
-      environment.niri = lib.mkDefault {enable = true;};
+      # sadly, niri is somehow broken due to nvidia / smithay / some unknown upstream dependency
+      # so for now, we'll live with sway
+      #environment.niri = lib.mkDefault {enable = true;};
+      environment.sway.enable = true;
       random-wallpaper = {
         enable = true;
         token = config.age.secrets.unsplash.path;

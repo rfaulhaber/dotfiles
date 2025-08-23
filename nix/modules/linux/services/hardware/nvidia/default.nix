@@ -36,19 +36,10 @@ in {
     };
 
     environment = {
-      # not sure if these are needed
-      systemPackages = with pkgs; [
-        egl-wayland
-        libglvnd
-        vulkan-tools
-        vulkan-validation-layers
-      ];
-
       sessionVariables = {
         GBM_BACKEND = "nvidia-drm";
         LIBVA_DRIVER_NAME = "nvidia";
         __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-        EGL_PLATFORM = "wayland";
       };
     };
 
