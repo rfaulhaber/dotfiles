@@ -18,9 +18,11 @@ in {
 
   config = mkIf cfg.enable {
     systemd.user.services.tmp-downloads = let
-      inherit (config.user) name uid;
       nuExec = "${pkgs.nushell}/bin/nu";
-      scriptPath = "${config.dotfiles.binDir}/tmp-downloads.nu";
+      # scriptPath = "${config.dotfiles.binDir}/tmp-downloads.nu";
+      scriptPath =
+        builtins.readFile "${config.dotfiles.binDir}/tmp-downloads.nu"
+        |> pkgs.writeScript "tmp-downloads.nu";
       baseCmd = "${nuExec} ${scriptPath}";
       cmd = "${baseCmd} --link ${cfg.targetDir}";
     in {

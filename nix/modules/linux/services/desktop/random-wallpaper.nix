@@ -39,7 +39,9 @@ in {
     {
       # TODO random-wallpaper should be a nix module
       systemd.user.services.random-wallpaper = let
-        scriptPath = "${config.dotfiles.binDir}/random-wallpaper.nu";
+        scriptPath =
+          builtins.readFile "${config.dotfiles.binDir}/random-wallpaper.nu"
+          |> pkgs.writeScript "random-wallpaper.nu";
         nuExec = "${pkgs.nushell}/bin/nu";
         desktop =
           if config.modules.desktop.environment.hyprland.enable

@@ -61,6 +61,8 @@ in {
       xwayland-satellite
     ];
 
+    # xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-gtk];
+
     home.file.niriconf = {
       source = "${config.dotfiles.configDir}/niri/config.kdl";
       target = "${config.user.home}/.config/niri/config.kdl";
