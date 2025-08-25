@@ -56,6 +56,12 @@ in {
       swaylock
     ];
 
+    xdg.portal = {
+      enable = true;
+      wlr.enable = true;
+      extraPortals = [pkgs.xdg-desktop-portal-gtk];
+    };
+
     environment.systemPackages = with pkgs; [
       xdg-desktop-portal-gtk
       xwayland-satellite

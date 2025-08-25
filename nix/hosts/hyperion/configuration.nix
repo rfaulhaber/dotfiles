@@ -6,6 +6,7 @@
   pkgs,
   lib,
   inputs,
+  system,
   ...
 }: {
   imports = [
@@ -20,6 +21,18 @@
     substituters = ["https://install.determinate.systems"];
     trusted-public-keys = ["cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="];
   };
+
+  nixpkgs.overlays = [
+    # NOTE this is temporary, mesa 25.2.0 introduced a regression that is still not fixed
+    # we cannot use niri with it, so I've pinned the mesa version here
+    (
+      final: prev: let
+        mesa-pkgs = import inputs.nixpkgs-mesa {inherit system;};
+      in {
+        mesa = mesa-pkgs.mesa;
+      }
+    )
+  ];
 
   modules = {
     programs = {
@@ -93,10 +106,8 @@
     };
     desktop = {
       enable = true;
-      # sadly, niri is somehow broken due to nvidia / smithay / some unknown upstream dependency
-      # so for now, we'll live with sway
-      #environment.niri = lib.mkDefault {enable = true;};
-      environment.sway.enable = true;
+      environment.niri.enable = true;
+      # environment.sway.enable = true;
       random-wallpaper = {
         enable = true;
         token = config.age.secrets.unsplash.path;

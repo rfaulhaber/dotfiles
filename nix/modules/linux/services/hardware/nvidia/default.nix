@@ -14,6 +14,7 @@ in {
   config = mkIf cfg.enable {
     hardware = {
       graphics.enable = true;
+      graphics.package = pkgs.mesa;
       nvidia = {
         modesetting.enable = true;
         open = true;

@@ -33,6 +33,9 @@ with lib; rec {
           networking.hostName = hostnameFromPath path;
           nixpkgs.config.allowUnfree = true;
         }
+        ({...}: {
+          nixpkgs.overlays = overlays;
+        })
         ../../nix/modules
         path
       ]

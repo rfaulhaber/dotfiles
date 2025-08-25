@@ -254,7 +254,7 @@ layout {
 
 spawn-at-startup "waybar"
 spawn-at-startup "xwayland-satellite"
-spawn-at-startup "1password"
+spawn-at-startup "1password --ozone-platform=wayland"
 spawn-at-startup "signal-desktop"
 
 environment {
