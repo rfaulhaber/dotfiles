@@ -34,7 +34,7 @@ in {
         }
         // lib.optionalAttrs isLinux {
           enableBrowserSocket = true;
-          pinentryPackage = lib.mkIf isWayland pkgs.pinentry-gnome3;
+          pinentryPackage = pkgs.pinentry-gnome3;
         };
 
       # somehow, for some reason, programs.gnupg.agent.enable does not imply a gpg installation on darwin

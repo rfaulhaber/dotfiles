@@ -27,6 +27,10 @@ in {
       enable = true;
       wrapperFeatures.gtk = true;
       extraOptions = ["--unsupported-gpu"];
+      extraPackages = with pkgs; [
+        xdg-desktop-portal-gtk
+        xwayland-satellite
+      ];
     };
 
     services = {
@@ -38,9 +42,23 @@ in {
     };
 
     security = {
-      # the above uses gdm to login, so we have to also set enableGnomeKeyring here maybe
-      pam.services.gdm.enableGnomeKeyring = true;
+      pam.services = {
+        # the above uses gdm to login, so we have to also set enableGnomeKeyring here maybe
+        gdm.enableGnomeKeyring = true;
+        sway = {
+          # can I do this? will it work?
+          enableGnomeKeyring = true;
+          gnupg.enable = true;
+        };
+      };
+
       polkit.enable = true;
+    };
+
+    xdg.portal = {
+      enable = true;
+      wlr.enable = true;
+      extraPortals = [pkgs.xdg-desktop-portal-gtk];
     };
 
     user.packages = with pkgs; [
