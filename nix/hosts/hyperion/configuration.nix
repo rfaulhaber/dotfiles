@@ -22,18 +22,6 @@
     trusted-public-keys = ["cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="];
   };
 
-  nixpkgs.overlays = [
-    # NOTE this is temporary, mesa 25.2.0 introduced a regression that is still not fixed
-    # we cannot use niri with it, so I've pinned the mesa version here
-    (
-      final: prev: let
-        mesa-pkgs = import inputs.nixpkgs-mesa {inherit system;};
-      in {
-        mesa = mesa-pkgs.mesa;
-      }
-    )
-  ];
-
   modules = {
     programs = {
       emacs = {
@@ -193,9 +181,9 @@
 
   # apparently github will rate-limit your access to the API
   # so this is a workaround for that
-  nix.settings.access-tokens = ''
-    !include ${config.age.secrets.github.path}
-  '';
+  # nix.settings.access-tokens = ''
+  #   !include ${config.age.secrets.github.path}
+  # '';
 
   # for use when making a vm using nixos-rebuild build-vm
   # note that these options aren't respected when using nixos-generate

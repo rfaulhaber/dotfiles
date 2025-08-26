@@ -9,15 +9,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
-    # TODO versions to try:
-    # - 25.2.1
-    # - 25.1.6 (current working)
-    # - 25.1.7
-    # - override to latest commit
-    # - override to last working commit (https://github.com/NixOS/nixpkgs/commit/4c3870b23dded4e75292be48bdb03cd870fb1719)
-    # see: https://github.com/NixOS/nixpkgs/commits/master/pkgs/development/libraries/mesa
-    nixpkgs-mesa.url = "github:nixos/nixpkgs/c87b95e25065c028d31a94f06a62927d18763fdf";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
