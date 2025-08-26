@@ -8,6 +8,4 @@ let
   keys = users ++ hosts;
 in {
   "unsplash.age".publicKeys = keys;
-  "github.age".publicKeys = keys;
-  # "samba.age".publicKeys = keys;
 }
