@@ -48,6 +48,7 @@
       netbird.enable = true;
     };
 
+    # NOTE: the open drivers do not work on atlas
     hardware.nvidia.enable = true;
 
     themes.active = "tokyo-night-dark";

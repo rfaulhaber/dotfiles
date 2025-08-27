@@ -90,7 +90,10 @@
     };
     hardware = {
       zsa.enable = true;
-      nvidia.enable = true;
+      nvidia = {
+        enable = true;
+        useOpenDrivers = true;
+      };
     };
     desktop = {
       enable = true;

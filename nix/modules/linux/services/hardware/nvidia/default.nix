@@ -9,30 +9,24 @@ with lib; let
 in {
   options.modules.hardware.nvidia = {
     enable = mkEnableOption false;
+    useOpenDrivers = mkOption {
+      type = types.bool;
+      description = "Whether or not to use the open source NVIDIA drivers.";
+      default = false;
+    };
   };
 
   config = mkIf cfg.enable {
     hardware = {
       graphics.enable = true;
-      graphics.package = pkgs.mesa;
       nvidia = {
         modesetting.enable = true;
-        open = true;
+        open = cfg.useOpenDrivers;
 
         powerManagement = {
           enable = false;
           finegrained = false;
         };
-
-        package = config.boot.kernelPackages.nvidiaPackages.stable;
-        # package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-        #   version = "570.172.08";
-        #   sha256_64bit = "sha256-AlaGfggsr5PXsl+nyOabMWBiqcbHLG4ij617I4xvoX0=";
-        #   sha256_aarch64 = lib.fakeSha256;
-        #   openSha256 = lib.fakeSha256;
-        #   settingsSha256 = "sha256-N/1Ra8Teq93U3T898ImAT2DceHjDHZL1DuriJeTYEa4=";
-        #   persistencedSha256 = lib.fakeSha256;
-        # };
       };
     };
 
