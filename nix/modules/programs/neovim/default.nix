@@ -29,6 +29,7 @@ in {
         vim-vinegar
         coc-rust-analyzer
         rust-vim
+        nvim-treesitter.withAllGrammars
       ];
 
       extraConfig = ''
