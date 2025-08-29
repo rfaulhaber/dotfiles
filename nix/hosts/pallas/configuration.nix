@@ -31,6 +31,7 @@
     services = {
       docker.enable = true;
       gpg.enable = true;
+      sudo-rs.enable = true;
       systemd.modules = {
         dockerCleanup.enable = true;
       };

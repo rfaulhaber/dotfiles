@@ -22,6 +22,7 @@
     };
     services = {
       zfs.enable = true;
+      sudo-rs.enable = true;
       docker = {
         enable = true;
         enableNvidiaTools = true;
