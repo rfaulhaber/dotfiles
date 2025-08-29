@@ -21,8 +21,8 @@ $env.config.hooks.pre_prompt = (
                     }
                 }
                 | merge ($env.ENV_CONVERSIONS? | default {})
-                | get -i $key
-                | get -i from_string
+                | get -o $key
+                | get -o from_string
                 | if ($in | is-empty) { {|x| $x} } else { $in }
             ) $value
 
