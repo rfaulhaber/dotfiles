@@ -25,8 +25,6 @@ in {
   config = mkIf cfg.enable {
     home.programs.ssh = {
       enable = true;
-      hashKnownHosts = true;
-      addKeysToAgent = "yes";
 
       matchBlocks = let
         mkLocalHostname = n: "192.168.0.${n}";
@@ -36,6 +34,8 @@ in {
         "*" = {
           identitiesOnly = true;
           identityFile = defaultIdentityFile;
+          hashKnownHosts = true;
+          addKeysToAgent = "yes";
         };
 
         "atlas" = {
