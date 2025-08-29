@@ -121,13 +121,6 @@
         in {
           hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
             system = "x86_64-linux";
-            # overlays = [
-            #   (final: prev: let
-            #     pkgs = import inputs.nixpkgs-mesa {system = "x86_64-linux";};
-            #   in {
-            #     mesa = pkgs.mesa;
-            #   })
-            # ];
           };
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {
             system = "x86_64-linux";
