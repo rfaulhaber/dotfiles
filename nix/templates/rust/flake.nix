@@ -1,44 +1,68 @@
 {
-  description = "Rust project template";
+  description = "Rust flake template using rust-overlay and flake-parts.";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = {
+  outputs = inputs @ {
     self,
-    nixpkgs,
+    flake-parts,
+    ...
   }: let
-    projectName = "Rust project template";
-    supportedSystems = ["x86_64-linux"];
-    forSystems = systems: f:
-      nixpkgs.lib.genAttrs systems
-      (system: f system (import nixpkgs {inherit system;}));
-    forAllSystems = forSystems supportedSystems;
-  in {
-    packages = forAllSystems (system: pkgs: {
-      packages.${projectName} = pkgs.rustPlatform.buildRustPackage {
-        pname = projectName;
-        version = "0.1.0";
-        src = ./.;
-        cargoLock.lockFile = ./Cargo.lock;
-      };
-      default = self.packages.${system}.projectName;
-    });
+    projectName = "CHANGEME";
+  in
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      imports = [];
+      flake.overlays.rustOverlay = inputs.rust-overlay.overlays.default;
+      systems = [
+        "x86_64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+        "aarch64-linux"
+      ];
 
-    formatter = forAllSystems (system: pkgs: pkgs.alejandra);
+      perSystem = {
+        config,
+        self',
+        inputs',
+        pkgs,
+        system,
+        ...
+      }: {
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          overlays = [
+            self.overlays.rustOverlay
+          ];
+        };
 
-    devShells = forAllSystems (system: pkgs: {
-      default = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          cargo
-          rustc
-          rustfmt
-          clippy
-          rust-analyzer
-          rustup
-        ];
+        formatter = pkgs.alejandra;
+
+        packages.${projectName} = pkgs.rustPlatform.buildRustPackage {
+          pname = projectName;
+          version = "0.1.0";
+          src = ./.;
+          cargoLock.lockFile = ./Cargo.lock;
+
+          meta.mainProgram = projectName;
+        };
+
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            rust-bin.stable.latest.default
+            clippy
+            rust-analyzer
+            cargo-nextest
+          ];
+        };
       };
-    });
-  };
+
+      flake = {};
+    };
 }
