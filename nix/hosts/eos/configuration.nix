@@ -8,6 +8,11 @@
   # NOTE darwin options
   # https://nix-darwin.github.io/nix-darwin/manual/index.html
   modules = {
+    darwin = {
+      dock = {
+        enable = true;
+      };
+    };
     programs = {
       emacs = {
         enable = true;
