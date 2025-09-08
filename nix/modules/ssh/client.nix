@@ -36,6 +36,16 @@ in {
           identityFile = defaultIdentityFile;
           hashKnownHosts = true;
           addKeysToAgent = "yes";
+
+          # home-manager's programs.ssh default configuration
+          forwardAgent = false;
+          compression = false;
+          serverAliveInterval = 0;
+          serverAliveCountMax = 3;
+          userKnownHostsFile = "~/.ssh/known_hosts";
+          controlMaster = "no";
+          controlPath = "~/.ssh/master-%r@%n:%p";
+          controlPersist = "no";
         };
 
         "atlas" = {
@@ -43,32 +53,22 @@ in {
           user = config.user.name;
           port = 10222;
           forwardAgent = true;
-          extraOptions."AddKeysToAgent" = "yes";
         };
 
         "github.com" = {
           hostname = "github.com";
-          extraOptions = {
-            "PreferredAuthentications" = "publickey";
-            "AddKeysToAgent" = "yes";
-          };
+          extraOptions."PreferredAuthentications" = "publickey";
         };
 
         "gitlab.com" = {
           hostname = "github.com";
-          extraOptions = {
-            "PreferredAuthentications" = "publickey";
-            "AddKeysToAgent" = "yes";
-          };
+          extraOptions."PreferredAuthentications" = "publickey";
         };
 
         "git.3679.space" = {
           hostname = "git.3679.space";
           port = 3402;
-          extraOptions = {
-            "PreferredAuthentications" = "publickey";
-            "AddKeysToAgent" = "yes";
-          };
+          extraOptions."PreferredAuthentications" = "publickey";
         };
 
         "pallas" = {
@@ -76,7 +76,6 @@ in {
           forwardAgent = true;
           user = "ryan";
           port = 12981;
-          extraOptions."AddKeysToAgent" = "yes";
         };
 
         "nix-installer" = {
@@ -90,7 +89,6 @@ in {
           user = "deck";
           forwardAgent = true;
           port = 27077;
-          extraOptions."AddKeysToAgent" = "yes";
         };
 
         "nike" = {
@@ -98,7 +96,6 @@ in {
           user = "ryan";
           forwardAgent = true;
           port = 14625;
-          extraOptions."AddKeysToAgent" = "yes";
         };
 
         "janus" = {
@@ -106,7 +103,6 @@ in {
           user = "ryan";
           forwardAgent = true;
           port = 6674;
-          extraOptions."AddKeysToAgent" = "yes";
         };
       };
     };
