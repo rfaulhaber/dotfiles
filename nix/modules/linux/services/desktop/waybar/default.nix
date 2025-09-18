@@ -20,5 +20,10 @@ in {
       target = "${config.user.home}/.config/waybar";
       recursive = true;
     };
+
+    # TODO get this to work!
+    # modules.desktop.autostart.entries = [
+    #   "${pkgs.waybar}/bin/waybar"
+    # ];
   };
 }

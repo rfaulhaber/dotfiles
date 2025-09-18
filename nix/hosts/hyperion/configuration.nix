@@ -1,6 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
 {
   config,
   pkgs,
@@ -16,7 +13,7 @@
     inputs.determinate.nixosModules.default
   ];
 
-  # TODO move
+  # TODO move, make reusable
   nix.settings = {
     substituters = ["https://install.determinate.systems"];
     trusted-public-keys = ["cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="];
@@ -36,7 +33,10 @@
       # how many terminals does a guy need?
       kitty.enable = true;
       wezterm.enable = true;
-      _1password.enable = true;
+      _1password = {
+        enable = true;
+        autostart = true;
+      };
       git = {
         enable = true;
         useDelta = true;
@@ -81,8 +81,6 @@
         enableGUI = true;
       };
       cachix.enable = true;
-      # NOTE this will break on flake upgrade
-      # https://nixpk.gs/pr-tracker.html?pr=432535
       netbird = {
         enable = true;
         autoStart = true;
@@ -117,6 +115,12 @@
         spotify
         ungoogled-chromium
       ];
+      autostart = {
+        enable = true;
+        entries = [
+          "${pkgs.signal-desktop-bin}/share/applications/signal.desktop"
+        ];
+      };
     };
     themes.active = "tokyo-night-dark";
   };

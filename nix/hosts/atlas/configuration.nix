@@ -1,13 +1,20 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
 {
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: {
-  imports = [../../modules ./hardware-configuration.nix];
+  imports = [
+    ../../modules
+    ./hardware-configuration.nix
+    inputs.determinate.nixosModules.default
+  ];
+
+  nix.settings = {
+    substituters = ["https://install.determinate.systems"];
+    trusted-public-keys = ["cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="];
+  };
 
   modules = {
     programs = {
@@ -68,7 +75,7 @@
     };
 
     # kernel settings for zfs
-    kernelPackages = pkgs.linuxPackages_6_15;
+    kernelPackages = pkgs.linuxPackages_6_16;
     kernelParams = ["nohibernate"];
 
     zfs = {

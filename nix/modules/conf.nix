@@ -24,6 +24,7 @@ with lib; {
         trusted-users = users;
         allowed-users = users;
         auto-optimise-store = true;
+        download-buffer-size = 1000000000; # 1GB, hyperion has 64GB RAM
 
         experimental-features = ["nix-command" "flakes" "pipe-operators"];
       };

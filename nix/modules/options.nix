@@ -41,6 +41,7 @@ with lib.my; {
         mkOptDesc attrs {} "XDG config files to write to directly.";
       dconf.settings =
         mkOptDesc attrs {} "dconf config from home-manager";
+      autostart = mkOptDesc attrs {} "Things to automatically start for xdg autostart";
     };
 
     env = mkOption {
@@ -129,6 +130,8 @@ with lib.my; {
           xdg = {
             configFile = mkAliasDefinitions options.home.configFile;
             dataFile = mkAliasDefinitions options.home.dataFile;
+            # TODO can I just forward all this stuff automatically? it's really annoying!
+            autostart = mkAliasDefinitions options.home.autostart;
           };
         };
     };

@@ -1,6 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
 {
   config,
   lib,
@@ -12,11 +9,17 @@
     ./hardware-configuration.nix
     ../../modules
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
+    inputs.determinate.nixosModules.default
   ];
 
-  nixpkgs.overlays = [
-    (import ../../overlays/pam_ssh_agent_auth.nix)
-  ];
+  # nixpkgs.overlays = [
+  #   (import ../../overlays/pam_ssh_agent_auth.nix)
+  # ];
+
+  nix.settings = {
+    substituters = ["https://install.determinate.systems"];
+    trusted-public-keys = ["cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="];
+  };
 
   modules = {
     programs = {

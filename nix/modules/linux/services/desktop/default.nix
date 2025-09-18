@@ -9,6 +9,7 @@ with lib.my; let
   cfg = config.modules.desktop;
 in {
   imports = [
+    ./autostart
     ./environment
     ./firefox
     ./fuzzel

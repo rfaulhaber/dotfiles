@@ -16,6 +16,11 @@ in {
       default = false;
       description = "If true, uses 1password beta.";
     };
+    autostart = mkOption {
+      type = types.bool;
+      default = false;
+      description = "(Linux only) If true, will autostart 1password gui.";
+    };
   };
   config = mkIf cfg.enable {
     programs = {
@@ -32,5 +37,9 @@ in {
           package = pkgs._1password-gui-beta;
         };
     };
+
+    modules.desktop.autostart.entries = mkIf (isLinux && cfg.autostart) [
+      "${pkgs._1password-gui}/share/applications/1password.desktop"
+    ];
   };
 }

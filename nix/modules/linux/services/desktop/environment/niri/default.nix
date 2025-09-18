@@ -27,6 +27,11 @@ in {
       waybar.enable = true;
       environment.type = "wayland";
       fuzzel.enable = true;
+
+    # TODO get this to work!
+      # autostart.entries = [
+      #   "${pkgs.xwayland-satellite}/bin/xwayland-satellite"
+      # ];
     };
 
     security.polkit.enable = true;
@@ -60,8 +65,6 @@ in {
       xdg-desktop-portal-gtk
       xwayland-satellite
     ];
-
-    # xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-gtk];
 
     home.file.niriconf = {
       source = "${config.dotfiles.configDir}/niri/config.kdl";
