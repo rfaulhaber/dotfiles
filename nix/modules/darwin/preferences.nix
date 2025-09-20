@@ -1,7 +1,4 @@
-{
-  ...
-}:
-{
+{...}: {
   config = {
     system = {
       defaults.CustomUserPreferences = {

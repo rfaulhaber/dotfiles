@@ -28,7 +28,7 @@ in {
       environment.type = "wayland";
       fuzzel.enable = true;
 
-    # TODO get this to work!
+      # TODO get this to work!
       # autostart.entries = [
       #   "${pkgs.xwayland-satellite}/bin/xwayland-satellite"
       # ];
