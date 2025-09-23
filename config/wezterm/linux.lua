@@ -23,12 +23,12 @@ return {
     {
         key = "t",
         mods = "SUPER|SHIFT",
-        action = wezterm.action.SpawnTab {cwd = wezterm.home_dir}
+        action = wezterm.action.SpawnCommandInNewTab {cwd = wezterm.home_dir, domain = "CurrentPaneDomain"}
     },
     {
         key = "n",
         mods = "SUPER|SHIFT",
-        action = wezterm.action.SpawnWindow {cwd = wezterm.home_dir}
+        action = wezterm.action.SpawnCommandInNewWindow {cwd = wezterm.home_dir, domain = "CurrentPaneDomain"}
     }
   }
 }
