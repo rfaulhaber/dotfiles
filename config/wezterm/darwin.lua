@@ -18,5 +18,15 @@ return {
       mods = "CMD|ALT",
       action = wezterm.action.SplitHorizontal {domain="CurrentPaneDomain"}
     },
+    {
+        key = "t",
+        mods = "CMD|SHIFT",
+        action = wezterm.action.SpawnTab {cwd = wezterm.home_dir}
+    },
+    {
+        key = "n",
+        mods = "CMD|SHIFT",
+        action = wezterm.action.SpawnWindow {cwd = wezterm.home_dir}
+    }
   }
 }

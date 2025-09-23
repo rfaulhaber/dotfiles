@@ -20,5 +20,15 @@ return {
       mods = "SUPER|ALT",
       action = wezterm.action.SplitHorizontal {domain="CurrentPaneDomain"}
     },
+    {
+        key = "t",
+        mods = "SUPER|SHIFT",
+        action = wezterm.action.SpawnTab {cwd = wezterm.home_dir}
+    },
+    {
+        key = "n",
+        mods = "SUPER|SHIFT",
+        action = wezterm.action.SpawnWindow {cwd = wezterm.home_dir}
+    }
   }
 }
