@@ -55,6 +55,13 @@ in {
           forwardAgent = true;
         };
 
+        "atlas-netbird" = {
+          hostname = "atlas.netbird.selfhosted";
+          user = config.user.name;
+          port = 10222;
+          forwardAgent = true;
+        };
+
         "github.com" = {
           hostname = "github.com";
           extraOptions."PreferredAuthentications" = "publickey";
@@ -73,6 +80,13 @@ in {
 
         "pallas" = {
           hostname = mkLocalHostname "2";
+          forwardAgent = true;
+          user = "ryan";
+          port = 12981;
+        };
+
+        "pallas-netbird" = {
+          hostname = "pallas.netbird.selfhosted";
           forwardAgent = true;
           user = "ryan";
           port = 12981;
@@ -100,7 +114,14 @@ in {
 
         "janus" = {
           hostname = "66.63.168.153";
-          user = "ryan";
+          user = config.user.name;
+          forwardAgent = true;
+          port = 6674;
+        };
+
+        "janus-netbird" = {
+          hostname = "janus.netbird.selfhosted";
+          user = config.user.name;
           forwardAgent = true;
           port = 6674;
         };
