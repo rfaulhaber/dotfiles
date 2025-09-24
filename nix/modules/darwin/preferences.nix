@@ -1,26 +1,36 @@
 {...}: {
   config = {
     system = {
-      defaults.CustomUserPreferences = {
-        WindowManager = {
-          AppWindowGroupingBehavior = false;
-          AutoHide = false;
-          GloballyEnabled = true;
-          HideDesktop = true;
-          StageManagerHideWidgets = false;
-          StandardHideWidgets = false;
+      defaults = {
+        dock = {
+          # disable hot corners. see
+          # https://nix-darwin.github.io/nix-darwin/manual/index.html#opt-system.defaults.dock.wvous-bl-corner
+          wvous-bl-corner = 1;
+          wvous-br-corner = 1;
+          wvous-tl-corner = 1;
+          wvous-tr-corner = 1;
         };
-        NSGlobalDomain = {
-          AppleInterfaceStyle = "Dark";
-          ApplePressAndHoldEnabled = 0;
-          InitialKeyRepeat = 15;
-          KeyRepeat = 2;
-          NSAutomaticCapitalizationEnabled = 1;
-          NSAutomaticDashSubstitutionEnabled = 1;
-          NSAutomaticPeriodSubstitutionEnabled = 1;
-          NSAutomaticQuoteSubstitutionEnabled = 1;
-          NSAutomaticSpellingCorrectionEnabled = 1;
-          NSTableViewDefaultSizeMode = 2;
+        CustomUserPreferences = {
+          WindowManager = {
+            AppWindowGroupingBehavior = false;
+            AutoHide = false;
+            GloballyEnabled = true;
+            HideDesktop = true;
+            StageManagerHideWidgets = false;
+            StandardHideWidgets = false;
+          };
+          NSGlobalDomain = {
+            AppleInterfaceStyle = "Dark";
+            ApplePressAndHoldEnabled = false;
+            InitialKeyRepeat = 15;
+            KeyRepeat = 2;
+            NSAutomaticCapitalizationEnabled = false;
+            NSAutomaticDashSubstitutionEnabled = false;
+            NSAutomaticPeriodSubstitutionEnabled = false;
+            NSAutomaticQuoteSubstitutionEnabled = false;
+            NSAutomaticSpellingCorrectionEnabled = false;
+            NSTableViewDefaultSizeMode = 2;
+          };
         };
       };
       keyboard = {
