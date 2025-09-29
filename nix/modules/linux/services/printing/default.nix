@@ -43,41 +43,44 @@ in {
           printing = {
             enable = true;
             listenAddresses = ["*:631"];
-            allowFrom = ["all"];
+            allowFrom = [
+              "localhost"
+              "192.168.0.*"
+            ];
             browsing = true;
             defaultShared = true;
             openFirewall = true;
             drivers = with pkgs; [brlaser];
-            logLevel = "debug";
           };
-          samba = {
-            enable = true;
-            package = pkgs.sambaFull;
-            openFirewall = true;
-            settings = {
-              global = {
-                "load printers" = "yes";
-                "printing" = "cups";
-                "printcap name" = "cups";
-              };
-              "printers" = {
-                "comment" = "All Printers";
-                "path" = "/var/spool/samba";
-                "public" = "yes";
-                "browseable" = "yes";
-                # to allow user 'guest account' to print.
-                "guest ok" = "yes";
-                "writable" = "no";
-                "printable" = "yes";
-                "create mode" = 0700;
-              };
-            };
-          };
+          # NOTE temporarily commenting out, samba is currently broken on nixpkgs-unstable and I'm not sure that I even need it
+          # samba = {
+          #   enable = true;
+          #   package = pkgs.sambaFull;
+          #   openFirewall = true;
+          #   settings = {
+          #     global = {
+          #       "load printers" = "yes";
+          #       "printing" = "cups";
+          #       "printcap name" = "cups";
+          #     };
+          #     "printers" = {
+          #       "comment" = "All Printers";
+          #       "path" = "/var/spool/samba";
+          #       "public" = "yes";
+          #       "browseable" = "yes";
+          #       # to allow user 'guest account' to print.
+          #       "guest ok" = "yes";
+          #       "writable" = "no";
+          #       "printable" = "yes";
+          #       "create mode" = 0700;
+          #     };
+          #   };
+          # };
         };
 
-        systemd.tmpfiles.rules = [
-          "d /var/spool/samba 1777 root root -"
-        ];
+        # systemd.tmpfiles.rules = [
+        #   "d /var/spool/samba 1777 root root -"
+        # ];
 
         hardware.printers = {
           ensurePrinters = [
