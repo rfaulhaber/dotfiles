@@ -44,8 +44,7 @@ in {
             enable = true;
             listenAddresses = ["*:631"];
             allowFrom = [
-              "localhost"
-              "192.168.0.*"
+              "all"
             ];
             browsing = true;
             defaultShared = true;
