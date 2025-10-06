@@ -37,8 +37,8 @@ in {
           package = pkgs._1password-gui-beta;
         };
     };
-    modules = mkIf (isLinux && cfg.autostart) {
-      desktop.autostart.entries = [
+    modules = lib.optionalAttrs isLinux {
+      desktop.autostart.entries = lib.optionals cfg.autostart [
         "${pkgs._1password-gui}/share/applications/1password.desktop"
       ];
     };
