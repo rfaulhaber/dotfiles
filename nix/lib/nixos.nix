@@ -14,8 +14,8 @@ with lib; rec {
     extraModules ? [],
     ...
   }: let
-    isLinux = lib.strings.hasSuffix "linux" system;
-    isDarwin = lib.strings.hasSuffix "darwin" system;
+    isLinux = strings.hasSuffix "linux" system;
+    isDarwin = strings.hasSuffix "darwin" system;
     homeManagerModule =
       if isDarwin
       then inputs.home-manager.darwinModules.home-manager
@@ -105,6 +105,12 @@ with lib; rec {
 
   mkNixOSHost = path: attrs:
     inputs.nixpkgs.lib.nixosSystem (mkHost path attrs);
+
+  mkRaspberryPiNixOSHost = path: attrs:
+    inputs.nixos-raspberrypi.lib.nixosSystem (mkHost path (attrs
+      // {
+        specialArgs.nixos-raspberrypi = inputs.nixos-raspberrypi;
+      }));
 
   mkNixOSK8sNodes = n: path: attrs:
     map nixosSystem (mkK8sNodes n path attrs);

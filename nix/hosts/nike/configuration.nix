@@ -9,23 +9,25 @@
   modulesPath,
   ...
 }: {
-  imports = [
-    ./hardware-configuration.nix
-    ../../modules
-    # inputs.nixos-hardware.nixosModules.raspberry-pi-5
-    (lib.mkAliasOptionModuleMD ["environment" "checkConfigurationOptions"] ["_module" "check"])
-    inputs.nixos-raspberrypi.lib.inject-overlays
-    # inputs.nixos-raspberrypi.nixosModules.sd-image
-    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.base
-    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.display-vc4
-    inputs.nixos-raspberrypi.nixosModules.raspberry-pi-5.bluetooth
-  ];
+  imports =
+    [
+      ./hardware-configuration.nix
+    ]
+    ++ (with inputs.nixos-raspberrypi.nixosModules; [
+      raspberry-pi-5.base
+      raspberry-pi-5.page-size-16k
+      raspberry-pi-5.display-vc4
+      usb-gadget-ethernet
+      # inputs.nixos-raspberrypi.lib.inject-overlays
+      # trusted-nix-caches
+      # # nixpkgs-rpi
+      # inputs.nixos-raspberrypi.lib.inject-overlays-global
+    ]);
 
   disabledModules = [
     (modulesPath + "/rename.nix")
   ];
 
-  # TODO place elsewhere
   nix.settings = {
     extra-substituters = [
       "https://nixos-raspberrypi.cachix.org"
@@ -36,10 +38,6 @@
   };
 
   modules = {
-    # desktop = {
-    #   enable = true;
-    #   # retropie-nix.enable = true;
-    # };
     programs = {
       nushell = {
         enable = true;
@@ -63,18 +61,18 @@
           port = 14625;
         };
       };
-      samba-mount = {
-        enable = true;
-        mounts."${config.user.home}/games" = {
-          domain = "192.168.0.3";
-          host = "games";
-          secrets = "/etc/nixos/smb-secrets";
-        };
-      };
     };
 
     themes.active = "moonlight";
   };
+
+  system.nixos.tags = let
+    cfg = config.boot.loader.raspberryPi;
+  in [
+    "raspberry-pi-${cfg.variant}"
+    cfg.bootloader
+    config.boot.kernelPackages.kernel.version
+  ];
 
   networking = {
     hostName = "nike";
@@ -89,10 +87,10 @@
     firewall.enable = true;
   };
 
-  boot.loader = {
-    grub.enable = false;
-    generic-extlinux-compatible.enable = true;
-  };
+  # boot.loader = {
+  #   grub.enable = false;
+  #   generic-extlinux-compatible.enable = true;
+  # };
 
   # raspberry pi hardware configuration
   # hardware = {
@@ -103,13 +101,6 @@
 
   #   enableRedistributableFirmware = true;
   # };
-
-  console.enable = false;
-
-  environment.systemPackages = with pkgs; [
-    libraspberrypi
-    raspberrypi-eeprom
-  ];
 
   # temporary, make nix settings modular
   nix.gc.automatic = lib.mkForce false;
