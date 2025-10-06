@@ -46,6 +46,15 @@
     };
   };
 
+  nix.settings = {
+    substituters = [
+      "https://cache.garnix.io"
+    ];
+    trusted-public-keys = [
+      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+    ];
+  };
+
   home-manager.backupFileExtension = "home-manager";
 
   # we use Determinate Nix on macOS, so we need to turn off nix-darwin's daemon

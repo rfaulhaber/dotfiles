@@ -15,8 +15,14 @@
 
   # TODO move, make reusable
   nix.settings = {
-    substituters = ["https://install.determinate.systems"];
-    trusted-public-keys = ["cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="];
+    substituters = [
+      "https://install.determinate.systems"
+      "https://cache.garnix.io"
+    ];
+    trusted-public-keys = [
+      "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
+      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+    ];
   };
 
   modules = {

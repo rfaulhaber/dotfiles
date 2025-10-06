@@ -131,9 +131,9 @@
           pallas = mkHost ./nix/hosts/pallas/configuration.nix {
             system = "aarch64-linux";
           };
-          nike = mkHost ./nix/hosts/nike/configuration.nix {
-            system = "aarch64-linux";
-          };
+          # nike = mkHost ./nix/hosts/nike/configuration.nix {
+          #   system = "aarch64-linux";
+          # };
         };
         darwinConfigurations = {
           eos = lib.my.mkDarwinHost ./nix/hosts/eos/configuration.nix {
@@ -165,16 +165,16 @@
                   self.nixosConfigurations.pallas;
               };
             };
-            nike = {
-              hostname = "nike";
-              profiles.system = {
-                user = "root";
-                fastConnection = true;
-                path =
-                  deploy-rs.lib.aarch64-linux.activate.nixos
-                  self.nixosConfigurations.nike;
-              };
-            };
+            # nike = {
+            #   hostname = "nike";
+            #   profiles.system = {
+            #     user = "root";
+            #     fastConnection = true;
+            #     path =
+            #       deploy-rs.lib.aarch64-linux.activate.nixos
+            #       self.nixosConfigurations.nike;
+            #   };
+            # };
             janus = {
               hostname = "janus";
               profiles.system = {
