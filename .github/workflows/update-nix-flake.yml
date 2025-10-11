@@ -39,4 +39,8 @@ jobs:
           git commit -m "Flake bump"
           git push -u origin $branch_name
 
-          gh pr create --title $"Flake bump ($date_str)" --body "{{ env.update_output }}" --base origin/main --head $branch_name
+          print $branch_name
+
+          git diff $"main..($branch_name)"
+
+          gh pr create --title $"Flake bump ($date_str)" --body "{{ env.update_output }}" --base main --head $branch_name
