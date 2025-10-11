@@ -41,6 +41,4 @@ jobs:
 
           print $branch_name
 
-          git diff main
-
-          gh pr create --title $"Flake bump ($date_str)" --body "{{ env.update_output }}" --base main --head $branch_name
+          gh pr create --title $"Flake bump ($date_str)" --body "{{ env.update_output }}" --base master --head $branch_name
