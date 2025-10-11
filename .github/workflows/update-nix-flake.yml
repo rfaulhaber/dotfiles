@@ -29,14 +29,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           let date_str = date now | into record | $"($in.year)-($in.month)-($in.day)"
+          let branch_name = $"update-nix-flake-($date_str)"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git checkout -b $"update-nix-flake-($date_str)"
+          git checkout -b $branch_name
 
           git add flake.lock
           git commit -m "Flake bump"
-          git push
+          git push -u origin $branch_name
 
           gh pr create --title $"Flake bump ($date_str)" --body "{{ env.update_output }}" --base main --head $"update-nix-flake-($date_str)"
