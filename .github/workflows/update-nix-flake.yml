@@ -40,4 +40,4 @@ jobs:
           git commit -m "Flake bump"
           git push -u origin $branch_name
 
-          gh pr create --title $"Flake bump ($date_str)" --body "{{ env.update_output }}" --base main --head $"update-nix-flake-($date_str)"
+          gh pr create --title $"Flake bump ($date_str)" --body "{{ env.update_output }}" --base main --head $branch_name
