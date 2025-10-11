@@ -23,7 +23,7 @@ jobs:
       - name: Run nix flake update
         run: |
           let output = ^mktemp
-          nix flake update | complete | get stdout | $"update_output=($output)" | save -f $GITHUB_ENV
+          nix flake update | complete | get stdout | $"update_output=($output)" | save -f $env.GITHUB_ENV
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
