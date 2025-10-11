@@ -2,8 +2,8 @@ name: Update Nix flake
 
 on:
   schedule:
-    - cron: '0 0 * * 0'
-  workflow_dispatch: 
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
 
 defaults:
   run:
@@ -13,7 +13,6 @@ jobs:
   update-nixos-unstable:
     runs-on: ubuntu-latest
     steps:
-      - name: Nix flake update
       - uses: actions/checkout@v4
       - uses: hustcer/setup-nu@main
         with:
@@ -21,7 +20,8 @@ jobs:
       - uses: cachix/install-nix-action@v31
         with:
           nix_path: nixpkgs=channel:nixos-unstable
-      - run: |
+      - name: Run nix flake update
+        run: |
           let output = ^mktemp
           nix flake update | complete | get stdout | $"update_output=($output)" | save -f $GITHUB_ENV
       - name: Commit and push
