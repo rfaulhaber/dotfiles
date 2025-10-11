@@ -1,0 +1,35 @@
+name: Update Nix flake
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch: 
+
+defaults:
+  run:
+    shell: nu {0}
+
+jobs:
+  update-nixos-unstable:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Nix flake update
+      - uses: actions/checkout@v4
+      - uses: hustcer/setup-nu@main
+        with:
+          version: "0.106.1"
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - run: |
+          let output = ^mktemp
+          nix flake update | complete | get stdout | $"update_output=($output)" | save -f $GITHUB_ENV
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add flake.lock
+          git commit -m "Flake bump"
+          git push
+          let date_str = date now | into record | $"($in.year)-($in.month)-($in.day)"
+          gh pr create --title $"Flake bump ($date_str)" --body "{{ env.update_output }}" --base main --head $"update-nix-flake-($date_str)"
