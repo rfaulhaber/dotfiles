@@ -22,20 +22,39 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
       - name: Run nix flake update
         run: |
-          let output = ^mktemp
-          nix flake update
-            | complete
-            | get stdout
-            | save -f $output
+          nix flake metadata --json | save -f before.json
+          nix flake update 
+          nix flake metadata --json | save -f after.json
 
-          $"UPDATE_OUTPUT_FILE=($output)" | save --append $env.GITHUB_ENV
+          let root_nodes = open before.json | get locks.nodes.root.inputs | values
+          let before = open before.json | get locks.nodes
+          let after = open after.json | get locks.nodes
+
+          mut results = []
+
+          for root_node in $root_nodes {
+              let before_node = $before | get $root_node
+              let after_node = $after | get $root_node
+
+              if $before_node.locked.rev != $after_node.locked.rev {
+                  $results = $results | append {
+                      "input": $"*($root_node)*"
+                      "previous rev": $"($before_node.locked.rev) \(($before_node.locked.lastModified | into datetime -f '%s' | format date '%Y-%m-%d %H:%M:%S%:z')\)" 
+                      "current rev": $"($after_node.locked.rev) \(($after_node.locked.lastModified | into datetime -f '%s' | format date '%Y-%m-%d %H:%M:%S%:z')\)" 
+                  }
+              }
+          }
+
+          $results | to md | save -f output
       - name: Commit and push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: master
           BRANCH_DATE_FORMAT: "%Y%m%d%H%M%S"
         run: |
-          let date_str = date now | date to-timezone UTC | format date $env.BRANCH_DATE_FORMAT
+          let date_str = date now
+            | date to-timezone UTC
+            | format date $env.BRANCH_DATE_FORMAT
           let branch_name = $"update-nix-flake-($date_str)"
 
           git config user.name "github-actions[bot]"
@@ -46,6 +65,6 @@ jobs:
           git commit -m "Flake bump"
           git push -u origin $branch_name
 
-          let pr_body = open $env.UPDATE_OUTPUT_FILE
+          let pr_body = open output
 
           gh pr create --title $"Flake bump ($date_str)" --body $pr_body --base $env.DEFAULT_BRANCH --head $branch_name
