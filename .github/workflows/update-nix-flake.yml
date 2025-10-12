@@ -33,7 +33,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: master
-          BRANCH_DATE_FORMAT: %Y%m%d%H%M%S
+          BRANCH_DATE_FORMAT: "%Y%m%d%H%M%S"
         run: |
           let date_str = date now | date into-timezone UTC | format date $env.BRANCH_DATE_FORMAT
           let branch_name = $"update-nix-flake-($date_str)"
