@@ -23,12 +23,19 @@ jobs:
       - name: Run nix flake update
         run: |
           let output = ^mktemp
-          nix flake update | complete | get stdout | $"update_output=($output)" | save -f $env.GITHUB_ENV
+          nix flake update
+            | complete
+            | get stdout
+            | save -f $output
+
+          $"UPDATE_OUTPUT_FILE=($output)" | save --append $env.GITHUB_ENV
       - name: Commit and push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: master
+          BRANCH_DATE_FORMAT: %Y%m%d%H%M%S
         run: |
-          let date_str = date now | into record | $"($in.year)-($in.month)-($in.day)"
+          let date_str = date now | date into-timezone UTC | format date $env.BRANCH_DATE_FORMAT
           let branch_name = $"update-nix-flake-($date_str)"
 
           git config user.name "github-actions[bot]"
@@ -39,6 +46,6 @@ jobs:
           git commit -m "Flake bump"
           git push -u origin $branch_name
 
-          print $branch_name
+          let pr_body = open $env.UPDATE_OUTPUT_FILE
 
-          gh pr create --title $"Flake bump ($date_str)" --body "${{ env.update_output }}" --base master --head $branch_name
+          gh pr create --title $"Flake bump ($date_str)" --body $pr_body --base $env.DEFAULT_BRANCH --head $branch_name
