@@ -64,6 +64,11 @@ in {
     environment.systemPackages = with pkgs; [
       xdg-desktop-portal-gtk
       xwayland-satellite
+      # the niri configuration for NixOS does not seem to ship with a graphical file explorer configured
+      # this is, unfortunately, needed for interacting with the filesystem from a browser
+      # I would like to avoid using this, so this may not be permanent
+      # we sort of kind of use GNOME under the hood, so nautilus is what I'm going with
+      nautilus
     ];
 
     home.file.niriconf = {
