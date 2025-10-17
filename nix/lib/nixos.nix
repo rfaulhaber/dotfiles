@@ -42,7 +42,7 @@ with lib; rec {
       ++ extraModules;
     specialArgs =
       {
-        inherit lib inputs system isLinux isDarwin;
+        inherit lib inputs system isLinux isDarwin isAarch64;
         platform = system;
         hostDir = dirOf path;
       }

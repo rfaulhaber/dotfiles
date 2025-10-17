@@ -17,7 +17,7 @@
       raspberry-pi-5.base
       raspberry-pi-5.page-size-16k
       raspberry-pi-5.display-vc4
-      usb-gadget-ethernet
+      # usb-gadget-ethernet
       # inputs.nixos-raspberrypi.lib.inject-overlays
       # trusted-nix-caches
       # # nixpkgs-rpi
@@ -53,11 +53,6 @@
         enable = true;
         server = {
           enable = true;
-          keys = [
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHlCcs8h2PrT3GcOVs6K0IGozqV8yuR945ZDr8eYhqfj ryan@hyperion"
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID9EVRAxaCrK68NSCoiNjjQLqu4k13Z45tCBb0jGAtC/ ryan@eos"
-            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPhN+t0aI3pQhZsFPoRn8dWe7YvDn3ehWOUmwvqbQyZP ryan@1p"
-          ];
           port = 14625;
         };
       };
@@ -86,21 +81,6 @@
 
     firewall.enable = true;
   };
-
-  # boot.loader = {
-  #   grub.enable = false;
-  #   generic-extlinux-compatible.enable = true;
-  # };
-
-  # raspberry pi hardware configuration
-  # hardware = {
-  #   raspberry-pi."5" = {
-  #     fkms-3d.enable = true;
-  #     apply-overlays-dtmerge.enable = true;
-  #   };
-
-  #   enableRedistributableFirmware = true;
-  # };
 
   # temporary, make nix settings modular
   nix.gc.automatic = lib.mkForce false;

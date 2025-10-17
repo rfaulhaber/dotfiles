@@ -64,6 +64,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -131,7 +135,9 @@
           pallas = mkHost ./nix/hosts/pallas/configuration.nix {
             system = "aarch64-linux";
           };
-          # nike = mkHost ./nix/hosts/nike/configuration.nix {
+          # NOTE: this will not compile due to this issue:
+          # https://github.com/nvmd/nixos-raspberrypi/issues/51
+          # nike = lib.my.mkRaspberryPiNixOSHost ./nix/hosts/nike/configuration.nix {
           #   system = "aarch64-linux";
           # };
         };
@@ -229,20 +235,6 @@
             format = "sd-aarch64-installer";
           };
 
-          # arm-installer-rpi5 = nixos-generators.nixosGenerate {
-          #   system = "aarch64-linux";
-          #   modules = [
-          #     ./nix/installers/aarch64-linux/configuration.nix
-          #   ];
-          #   specialArgs = {
-          #     inherit inputs;
-          #   };
-          #   customFormats.aarch64-linux-rpi5 = import ./nix/formats/aarch64/linux/raspberry-pi/5/configuration.nix {
-          #     inherit pkgs inputs;
-          #   };
-          #   format = "aarch64-linux-rpi5";
-          # };
-
           x86_64-installer-generic = nixos-generators.nixosGenerate {
             system = "x86_64-linux";
             modules = [
@@ -252,6 +244,15 @@
               inherit inputs;
             };
             format = "install-iso";
+          };
+
+          raspberrypi-5-installer = nixos-generators.nixosGenerate {
+            system = "aarch64-linux";
+            modules = [
+              ./nix/installers/aarch64-linux/raspberry-pi-5.nix
+            ];
+            specialArgs = {inherit inputs;};
+            format = "sd-aarch64-installer";
           };
         };
       };
@@ -276,6 +277,7 @@
               inputs'.nixos-generators.packages.default
               inputs'.nil.packages.default
               inputs'.deploy-rs.packages.default
+              inputs'.sops-nix.packages.default
               pkgs.nvd
               pkgs.rage
             ]

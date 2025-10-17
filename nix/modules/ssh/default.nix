@@ -1,13 +1,8 @@
 {
-  config,
   lib,
-  pkgs,
   isLinux,
   ...
-}:
-with lib; let
-  cfg = config.modules.services.ssh;
-in {
+}: {
   imports =
     [
       ./client.nix
@@ -17,5 +12,5 @@ in {
       ./server.nix
     ];
 
-  options.modules.services.ssh = {enable = mkEnableOption false;};
+  options.modules.services.ssh.enable = lib.mkEnableOption false;
 }

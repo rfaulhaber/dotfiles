@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -14,10 +13,16 @@ in {
       default = false;
     };
 
-    keys = mkOption {
-      description = "SSH keys used by the default user of this machine.";
-      default = import ./keys.nix;
+    useDefaultKeys = mkOption {
+      description = "If true, loads the keys in keys.nix.";
+      type = types.bool;
+      default = true;
+    };
+
+    extraKeys = mkOption {
+      description = "Additional SSH keys to configure.";
       type = types.listOf types.str;
+      default = [];
     };
 
     port = mkOption {
@@ -33,35 +38,41 @@ in {
     };
   };
 
-  config = mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = (builtins.length cfg.keys) > 0;
-        message = "SSH client must have at least one authorized key";
-      }
-    ];
-    services.openssh = {
-      enable = true;
-      settings = {
-        PasswordAuthentication = false;
-        PermitRootLogin = lib.mkDefault "no";
+  config = let
+    keys =
+      if cfg.useDefaultKeys
+      then (import ./keys.nix) ++ cfg.extraKeys
+      else cfg.extraKeys;
+  in
+    mkIf cfg.enable {
+      assertions = [
+        {
+          assertion = (builtins.length keys) > 0;
+          message = "SSH client must have at least one authorized key";
+        }
+      ];
+      services.openssh = {
+        enable = true;
+        settings = {
+          PasswordAuthentication = false;
+          PermitRootLogin = lib.mkDefault "no";
+        };
+        extraConfig =
+          ''
+            PermitEmptyPasswords no
+            AllowTcpForwarding yes
+          ''
+          + cfg.extraConfig;
+        ports = [cfg.port];
       };
-      extraConfig =
-        ''
-          PermitEmptyPasswords no
-          AllowTcpForwarding yes
-        ''
-        + cfg.extraConfig;
-      ports = [cfg.port];
-    };
 
-    # TODO support multiple users?
-    user.openssh.authorizedKeys.keys = cfg.keys;
+      # TODO support multiple users?
+      user.openssh.authorizedKeys.keys = keys;
 
-    security.pam = {
-      # TODO are both necessary?
-      sshAgentAuth.enable = true;
-      services.${config.user.name}.sshAgentAuth = true;
+      security.pam = {
+        # TODO are both necessary?
+        sshAgentAuth.enable = true;
+        services.${config.user.name}.sshAgentAuth = true;
+      };
     };
-  };
 }
