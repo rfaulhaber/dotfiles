@@ -1,5 +1,4 @@
 builds:
- exclude:
-   - 'deploy.*'
-   - 'packages.*'
-   - 'devShells.*'
+ include:
+   - 'nixosConfigurations.*'
+   - 'darwinConfigurations.*'
