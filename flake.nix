@@ -245,15 +245,6 @@
             };
             format = "install-iso";
           };
-
-          raspberrypi-5-installer = nixos-generators.nixosGenerate {
-            system = "aarch64-linux";
-            modules = [
-              ./nix/installers/aarch64-linux/raspberry-pi-5.nix
-            ];
-            specialArgs = {inherit inputs;};
-            format = "sd-aarch64-installer";
-          };
         };
       };
       systems = ["x86_64-linux" "aarch64-darwin"];
