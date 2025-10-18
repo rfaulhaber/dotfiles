@@ -1,0 +1,37 @@
+keys:
+  - &hyperion_id age1t5e40x0tm32lsyzexm40t6k5t92y9mcpwgvpwg9zmxd7llkayc4srcxu8d
+  - &eos_id age1s47fq2kj0qwe9zcuq2czcfjlhvneuutjzjjzx7exjqmqru6j5csqk9pu5e
+  - &1p_id age1jgct0ryhmy8lrqxq4rfhcjmp563tfar2vzpp9etx0sh0ff3kud7srvelpt
+
+  - &hyperion_host age1nmhza5av5n84taq90pvyf2evzcqvqclg33522wfztgf0jhs4550shx0f8t
+  - &atlas_host age1gazngglgyk72yefg8rmzch7pa0srdct9zx7wgadxrgqzcp87cdsqehnfx9
+  - &janus_host age1dulvs8mjcnkm0u6pl7j2zn22jmzn5368gmll4ma2gexrpcs49uusjzfyxj
+  - &pallas_host age1prrezvq3gu8aa8kcgqdkdhu8tqprrkn9sv2lmk4z7f8s9xnktslqhjq2sw
+
+creation_rules:
+  - path_regex: .*/hyperion/secrets.yaml$
+    key_groups:
+    - age:
+      - *hyperion_id
+      - *hyperion_host
+  - path_regex: .*/atlas/secrets.yaml$
+    key_groups:
+      - age:
+          - *hyperion_id
+          - *eos_id
+          - *1p_id
+          - *atlas_host
+  - path_regex: .*/janus/secrets.yaml$
+    key_groups:
+      - age:
+          - *hyperion_id
+          - *eos_id
+          - *1p_id
+          - *janus_host
+  - path_regex: .*/pallas/secrets.yaml$
+    key_groups:
+      - age:
+          - *hyperion_id
+          - *eos_id
+          - *1p_id
+          - *pallas_host

@@ -20,6 +20,7 @@ with lib; rec {
       if isDarwin
       then inputs.home-manager.darwinModules.home-manager
       else inputs.home-manager.nixosModules.home-manager;
+    hostname = hostnameFromPath path;
   in {
     inherit system;
     modules =
@@ -30,7 +31,7 @@ with lib; rec {
           home-manager.useUserPackages = true;
         }
         {
-          networking.hostName = hostnameFromPath path;
+          networking.hostName = hostname;
           nixpkgs.config.allowUnfree = true;
         }
         ({...}: {
@@ -42,7 +43,7 @@ with lib; rec {
       ++ extraModules;
     specialArgs =
       {
-        inherit lib inputs system isLinux isDarwin isAarch64;
+        inherit lib inputs system isLinux isDarwin isAarch64 hostname;
         platform = system;
         hostDir = dirOf path;
       }

@@ -10,6 +10,7 @@
     ./kitty
     ./neovim
     ./nushell
+    ./sops
     ./wezterm
   ];
 }

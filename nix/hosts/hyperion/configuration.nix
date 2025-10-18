@@ -58,10 +58,8 @@
         ];
       };
       direnv.enable = true;
-      age = {
-        enable = true;
-        secretsDir = ./secrets;
-      };
+      age.enable = true;
+      sops.enable = true;
     };
     services = {
       zfs.enable = true;
@@ -105,7 +103,7 @@
       # environment.sway.enable = true;
       random-wallpaper = {
         enable = true;
-        token = config.age.secrets.unsplash.path;
+        token = config.sops.secrets.unsplash.path;
       };
       monitors = ["DP-0"];
       sound.enable = true;

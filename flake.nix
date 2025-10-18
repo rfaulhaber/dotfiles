@@ -280,6 +280,7 @@
               inputs'.sops-nix.packages.default
               pkgs.nvd
               pkgs.rage
+              pkgs.sops
             ]
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
               inputs'.nix-darwin.packages.default

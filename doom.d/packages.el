@@ -69,6 +69,7 @@
 (package! gptel :recipe (:nonrecursive t))
 (package! age)
 (package! agenix)
+(package! sops)
 
 ;; (package! hyperbole)
 

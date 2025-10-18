@@ -12,16 +12,23 @@ in {
   imports = [inputs.ragenix.nixosModules.default];
   options.modules.programs.age = {
     enable = mkEnableOption false;
-    secretsDir = mkOption {
-      description = "Secrets dir for this config.";
-      type = types.either types.str types.path;
-      default = "${hostDir}/secrets";
+    agenix = {
+      enable = mkOption {
+        description = "If enabled, uses agenix.";
+        type = types.bool;
+        default = false;
+      };
+      secretsDir = mkOption {
+        description = "Secrets dir for this config.";
+        type = types.either types.str types.path;
+        default = "${hostDir}/secrets";
+      };
     };
   };
 
   config = mkIf cfg.enable {
     # TODO make configurable
-    age = {
+    age = mkIf cfg.agenix.enable {
       identityPaths = [
         "${config.user.home}/.ssh/id_host"
         # NB: make sure this actually exists!!!
@@ -46,10 +53,12 @@ in {
         |> (foldl (x: y: x // y) {});
     };
 
-    user.packages = with pkgs; [
-      # age
-      rage
-      inputs.ragenix.packages.${pkgs.system}.default
-    ];
+    user.packages = with pkgs;
+      [
+        rage
+      ]
+      ++ lib.optionals cfg.agenix.enable [
+        inputs.ragenix.packages.${pkgs.system}.default
+      ];
   };
 }
