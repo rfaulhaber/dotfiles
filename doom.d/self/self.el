@@ -106,7 +106,7 @@ Version 2016-07-13"
 
 (defun self/copy-line-number-reference (arg)
   (interactive "p")
-  (when-let ((file-name (buffer-file-name)))
+  (when-let* ((file-name (buffer-file-name)))
     (pcase arg
       (1 (kill-new (format "%s:%s" file-name (line-number-at-pos))))
       (4 (kill-new (format "%s:%s:%s" file-name (line-number-at-pos) (current-column)))))))
@@ -153,7 +153,9 @@ Version 2016-07-13"
   (switch-to-buffer (find-file-noselect new-name)))
 
 (defun self/fill-line-length-with-character (char &optional direction)
-  "Inserts a line of CHAR of current line length above and below the current line. One prefix argument only adds the bottom line, and two prefix arguments only adds the top line."
+  "Inserts a line of CHAR of current line length above and below the current
+line. One prefix argument only adds the bottom line, and two prefix arguments
+only adds the top line."
   (interactive "sChar: \np")
   (when (> (length char) 1)
     (user-error "This function only supports filling lines with one character at the moment!"))
@@ -257,9 +259,9 @@ hello world
 
 (defun self/projectile-open-project-in-new-workspace (&optional arg)
   (interactive "P")
-  (if-let ((projects (projectile-relevant-known-projects))
-           (selected-project (completing-read "Select a project: " projects nil t))
-           (selected-project-name (f-filename selected-project)))
+  (if-let* ((projects (projectile-relevant-known-projects))
+            (selected-project (completing-read "Select a project: " projects nil t))
+            (selected-project-name (f-filename selected-project)))
       (progn
         (+workspace-switch selected-project-name t)
         (projectile-switch-project-by-name selected-project)
@@ -277,7 +279,7 @@ hello world
 
 (defun self/open-current-buffer-in-browser ()
   (interactive)
-  (if-let ((filename (buffer-file-name)))
+  (if-let* ((filename (buffer-file-name)))
       (browse-url filename)
     (user-error "Buffer is not associated with a file")))
 
@@ -360,6 +362,20 @@ hello world
   (setq org-agenda-files
         (append org-agenda-files
                 (list journal-file-name))))
+
+(defun self/open-projectile-project-in-new-frame (&optional arg)
+  "Like `self/projectile-open-project-in-new-workspace', but opens a new frame too."
+  (interactive "P")
+  (if-let* ((projects (projectile-relevant-known-projects))
+            (selected-project (completing-read "Select a project: " projects nil t))
+            (selected-project-name (f-filename selected-project)))
+      (progn
+        (let ((new-frame (make-frame)))
+          (with-selected-frame new-frame
+            (+workspace-switch selected-project-name t)
+            (projectile-switch-project-by-name selected-project)
+            (+workspace/display))))
+    (user-error "Something is wrong with projectile config!")))
 
 ;; ----------------------------- utility functions -----------------------------
 
