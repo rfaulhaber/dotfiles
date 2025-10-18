@@ -1,0 +1,5 @@
+builds:
+ exclude:
+   - 'deploy*'
+   - 'packages*'
+   - 'devShells*'
