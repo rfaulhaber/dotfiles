@@ -1,5 +1,5 @@
 builds:
  exclude:
-   - 'deploy*'
-   - 'packages*'
-   - 'devShells*'
+   - 'deploy.*'
+   - 'packages.*'
+   - 'devShells.*'
