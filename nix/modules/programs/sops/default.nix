@@ -5,14 +5,20 @@
   inputs,
   hostDir,
   hostname,
+  isLinux,
+  isDarwin,
   ...
 }:
 with lib; let
   cfg = config.modules.programs.sops;
 in {
-  imports = [
-    inputs.sops-nix.nixosModules.sops
-  ];
+  imports =
+    lib.optionals isLinux [
+      inputs.sops-nix.nixosModules.sops
+    ]
+    ++ lib.optionals isDarwin [
+      inputs.sops-nix.darwinModules.sops
+    ];
   options.modules.programs.sops = {
     enable = mkEnableOption false;
     secrets = mkOption {
