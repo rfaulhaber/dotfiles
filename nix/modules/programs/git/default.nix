@@ -30,25 +30,28 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.programs.git = {
-      enable = true;
-      package = mkIf cfg.useFull pkgs.gitAndTools.gitFull;
-      userName = config.userInfo.fullName;
-      userEmail = config.userInfo.primaryEmail;
+    home.programs = {
+      git = {
+        enable = true;
+        package = mkIf cfg.useFull pkgs.gitAndTools.gitFull;
+        settings = {
+          user = {
+            name = config.userInfo.fullName;
+            email = config.userInfo.primaryEmail;
+          };
+          init.defaultBranch = "main";
+          merge.conflictStyle = "zdiff3";
+        };
 
+        signing = {
+          signByDefault = true;
+          key = config.userInfo.primaryGPGKey;
+        };
+      };
       delta = mkIf cfg.useDelta {
         enable = true;
-        options = {line-numbers = true;};
-      };
-
-      signing = {
-        signByDefault = true;
-        key = config.userInfo.primaryGPGKey;
-      };
-
-      extraConfig = {
-        init.defaultBranch = "main";
-        merge.conflictStyle = "zdiff3";
+        enableGitIntegration = true;
+        options.line-numbers = true;
       };
     };
 
