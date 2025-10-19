@@ -33,7 +33,8 @@
 
     wezterm.url = "github:wez/wezterm?dir=nix";
 
-    swww.url = "github:LGFae/swww";
+    # TODO remove pin when no longer broken
+    swww.url = "github:LGFae/swww?rev=b9aaba38c79e9915c62328861def7353f53dcdbd";
     # TODO consider using stylix
     # currently, a wallpaper is required with stylix. this is problematic
     # because I do not need to set a wallpaper in my config
@@ -50,7 +51,8 @@
       url = "github:YaLTeR/niri";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    waybar.url = "github:Alexays/waybar";
+    # TODO remove pin when no longer broken
+    waybar.url = "github:Alexays/waybar?rev=9d37dedb57922cb5cb68e06d9ae2ce6170d58b16";
     # I use flake-parts to ensure I can use my flake across platforms, although I probably shouldn't
     flake-parts.url = "github:hercules-ci/flake-parts";
     disko = {
