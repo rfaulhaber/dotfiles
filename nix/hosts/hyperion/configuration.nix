@@ -61,12 +61,10 @@
       age.enable = true;
       sops = {
         enable = true;
-        secrets = {
-          unsplash = {
-            user = config.user.name;
-            group = config.user.group;
-            mode = "0440";
-          };
+        secrets.unsplash = {
+          owner = config.user.name;
+          group = config.user.group;
+          mode = "0440";
         };
       };
     };
