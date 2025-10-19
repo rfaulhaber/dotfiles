@@ -59,7 +59,16 @@
       };
       direnv.enable = true;
       age.enable = true;
-      sops.enable = true;
+      sops = {
+        enable = true;
+        secrets = {
+          unsplash = {
+            user = config.user.name;
+            group = config.user.group;
+            mode = "0440";
+          };
+        };
+      };
     };
     services = {
       zfs.enable = true;
@@ -100,7 +109,6 @@
     desktop = {
       enable = true;
       environment.niri.enable = true;
-      # environment.sway.enable = true;
       random-wallpaper = {
         enable = true;
         token = config.sops.secrets.unsplash.path;
