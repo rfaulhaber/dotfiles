@@ -25,6 +25,6 @@ jobs:
       - name: Commit and push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BRANCH: master
+          DEFAULT_BRANCH: main
           BRANCH_DATE_FORMAT: "%Y%m%d%H%M%S"
         run: "nu .github/workflows/scripts/commit-and-push.nu"
