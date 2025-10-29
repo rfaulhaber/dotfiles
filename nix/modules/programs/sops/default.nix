@@ -26,12 +26,17 @@ in {
       type = types.attrs;
       default = {};
     };
+    keyFile = mkOption {
+      description = "Path to default system key file.";
+      type = types.str;
+      default = "/etc/sops/age/host.age";
+    };
   };
 
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = lib.pathExists "${hostDir}/secrets.yaml";
+        assertion = builtins.pathExists "${hostDir}/secrets.yaml";
         message = "$host/secrets.yaml must exist";
       }
     ];
@@ -40,8 +45,8 @@ in {
       inherit (cfg) secrets;
       defaultSopsFile = "${hostDir}/secrets.yaml";
       age = {
+        inherit (cfg) keyFile;
         sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
-        keyFile = "${config.user.home}/.config/sops/age/keys.txt";
       };
     };
 

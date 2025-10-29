@@ -1,6 +1,7 @@
 {
   imports = [
     ./cachix
+    ./containers
     ./desktop
     ./docker
     ./hardware
