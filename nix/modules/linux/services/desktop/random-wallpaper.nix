@@ -37,19 +37,18 @@ in {
 
   config = mkIf cfg.enable (mkMerge [
     {
-      # TODO random-wallpaper should be a nix module
       systemd.user.services.random-wallpaper = let
+        # TODO if writeScriptBin doesn't persist, make random wallpaper into a package
         scriptPath =
           builtins.readFile "${config.dotfiles.binDir}/random-wallpaper.nu"
-          |> pkgs.writeScript "random-wallpaper.nu";
-        nuExec = "${pkgs.nushell}/bin/nu";
+          |> pkgs.writeScriptBin "random-wallpaper";
         desktop =
           if config.modules.desktop.environment.hyprland.enable
           then "hyprland"
           else if isWayland
           then "wayland"
           else "xserver";
-        exec = "${nuExec} -c '${scriptPath} --desktop ${desktop} --token (open ${cfg.token}) ${cfg.query}'";
+        exec = "${scriptPath}/bin/random-wallpaper --desktop ${desktop} --token-file ${cfg.token} ${cfg.query}";
       in {
         inherit description;
         path = with pkgs;

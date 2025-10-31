@@ -19,12 +19,10 @@ in {
   config = mkIf cfg.enable {
     systemd.user.services.tmp-downloads = let
       nuExec = "${pkgs.nushell}/bin/nu";
-      # scriptPath = "${config.dotfiles.binDir}/tmp-downloads.nu";
       scriptPath =
         builtins.readFile "${config.dotfiles.binDir}/tmp-downloads.nu"
-        |> pkgs.writeScript "tmp-downloads.nu";
-      baseCmd = "${nuExec} ${scriptPath}";
-      cmd = "${baseCmd} --link ${cfg.targetDir}";
+        |> pkgs.writeScriptBin "tmp-downloads";
+      cmd = "${scriptPath}/bin/tmp-downloads --link ${cfg.targetDir}";
     in {
       path = [pkgs.nushell];
       after = ["local-fs.target"];
