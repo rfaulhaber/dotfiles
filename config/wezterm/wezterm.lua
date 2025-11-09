@@ -71,6 +71,8 @@ if hosts[hostname] ~= null then
   end
 end
 
+print("loading platform", platform, "with host", host)
+
 -- non-platform-specific config
 config.font = wezterm.font 'Hack Nerd Font Mono'
 config.color_scheme = 'Tokyo Night'
