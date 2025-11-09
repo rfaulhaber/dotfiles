@@ -62,6 +62,14 @@ in {
           forwardAgent = true;
         };
 
+        "codeberg.org" = {
+          hostname = "codeberg.org";
+          extraOptions = {
+            "PreferredAuthentications" = "publickey";
+            "AddressFamily" = "inet";
+          };
+        };
+
         "github.com" = {
           hostname = "github.com";
           extraOptions."PreferredAuthentications" = "publickey";
@@ -90,6 +98,14 @@ in {
           forwardAgent = true;
           user = "ryan";
           port = 12981;
+        };
+
+        "sourcehut" = {
+          hostname = "*sr.ht";
+          extraOptions = {
+            "PreferredAuthentications" = "publickey";
+            "AddressFamily" = "inet";
+          };
         };
 
         "nix-installer" = {
