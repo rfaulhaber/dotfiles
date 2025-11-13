@@ -25,6 +25,7 @@ in {
   config = mkIf cfg.enable {
     home.programs.ssh = {
       enable = true;
+      enableDefaultConfig = false;
 
       matchBlocks = let
         mkLocalHostname = n: "192.168.0.${n}";
