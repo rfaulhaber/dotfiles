@@ -67,10 +67,23 @@
             group = config.user.group;
             mode = "0440";
           };
+          mullvad = {
+            owner = config.user.name;
+            group = config.user.group;
+            mode = "0440";
+          };
         };
       };
     };
     services = {
+      # containers.mullvad = {
+      #   enable = true;
+      #   privateKeyFile = config.sops.secrets.mullvad.path;
+      #   mullvadConfig = {
+      #     publicKey = "placeholder";
+      #     endpoint = "placeholder";
+      #   };
+      # };
       zfs.enable = true;
       docker.enable = true;
       sudo-rs.enable = true;
@@ -172,6 +185,7 @@
   networking = {
     hostName = "hyperion";
     hostId = "836be91c";
+    useNetworkd = true;
 
     useDHCP = false;
 
