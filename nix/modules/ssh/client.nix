@@ -101,12 +101,9 @@ in {
           port = 12981;
         };
 
-        "sourcehut" = {
-          hostname = "*sr.ht";
-          extraOptions = {
-            "PreferredAuthentications" = "publickey";
-            "AddressFamily" = "inet";
-          };
+        "*sr.ht".extraOptions = {
+          "PreferredAuthentications" = "publickey";
+          "AddressFamily" = "inet";
         };
 
         "nix-installer" = {
