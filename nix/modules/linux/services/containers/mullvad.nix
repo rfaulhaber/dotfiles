@@ -69,11 +69,7 @@ in {
         services.resolved.enable = true;
         networking = {
           hostName = "container-mullvad";
-          # Use systemd-resolved inside the container
-          # Workaround for bug https://github.com/NixOS/nixpkgs/issues/162686
           useHostResolvConf = lib.mkForce false;
-          # useDHCP = false;
-          # interfaces.eth0.useDHCP = true;
 
           nat = {
             enable = true;

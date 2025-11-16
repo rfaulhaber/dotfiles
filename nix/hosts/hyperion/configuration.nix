@@ -76,14 +76,6 @@
       };
     };
     services = {
-      # containers.mullvad = {
-      #   enable = true;
-      #   privateKeyFile = config.sops.secrets.mullvad.path;
-      #   mullvadConfig = {
-      #     publicKey = "placeholder";
-      #     endpoint = "placeholder";
-      #   };
-      # };
       zfs.enable = true;
       docker.enable = true;
       sudo-rs.enable = true;
