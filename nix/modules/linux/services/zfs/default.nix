@@ -6,6 +6,34 @@
 }:
 with lib; let
   cfg = config.modules.services.zfs;
+  mkFilesystemFromDataset = name: mountpoint: {
+    ${mountpoint} = {
+      device = name;
+      fsType = "zfs";
+      options = ["zfsutil"];
+    };
+  };
+  zfsExec = "${pkgs.zfs}/bin/zfs";
+
+  mkPropertyCmd = name: value: "${zfsExec} list ${dataset} > /dev/null 2>&1 || ${zfsExec} set ${propertyName}=${value} ${dataset}";
+  mkSystemdService = dataset: properties: {
+    "zfs-create-${dataset}" = {
+      description = "Creates ${dataset} ZFS dataset";
+      wantedBy = ["multi-user.target"];
+      after = ["zfs-import.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      script =
+        ''
+          ${zfsExec} list ${dataset} > /dev/null 2>&1 || zfs create ${dataset}
+        ''
+        + properties
+        |> mapAttrs mkPropertyCmd
+        |> concatStringsSep "\n";
+    };
+  };
 in {
   options.modules.services.zfs = {
     enable = mkEnableOption false;
@@ -17,6 +45,26 @@ in {
             description = "Dataset to share.";
             type = types.str;
             example = "data/something_to_share";
+          };
+        };
+      });
+    };
+    datasets = mkOption {
+      description = "Declarative ZFS datasets.";
+      type = types.attrsOf (types.submodule {
+        options = {
+          mountpoint = mkOption {
+            description = "Where to mount the dataset.";
+            type = types.either types.str types.path;
+          };
+          datasetOptions = mkOption {
+            description = "ZFS dataset options.";
+            type = types.attrsOf types.str;
+            example = {
+              "mountpoint" = "/mnt/dataset";
+              "encryption" = "on";
+            };
+            default = {};
           };
         };
       });
