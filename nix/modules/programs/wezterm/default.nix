@@ -31,6 +31,11 @@ in {
       recursive = true;
     };
 
+    environment.sessionVariables = {
+      WEZTERM_CONFIG_DIR = config.home.file.wezterm_config.target;
+      WEZTERM_CONFIG_FILE = "${config.home.file.wezterm_config.target}/wezterm.lua";
+    };
+
     # allows us to use the cached version of wezterm for the wezterm input
     nix.settings = {
       substituters = ["https://wezterm.cachix.org"];
