@@ -1,3 +1,7 @@
+# a lot of the configuration here is hard-coded because it suits my specific needs.
+# hypothetically, I could make it more modular, but I so rarely need to print anything as it is
+# that I probably won't.
+# TODO consider making this a container of some sort
 {
   config,
   lib,
@@ -51,35 +55,7 @@ in {
             openFirewall = true;
             drivers = with pkgs; [brlaser];
           };
-          # NOTE temporarily commenting out, samba is currently broken on nixpkgs-unstable and I'm not sure that I even need it
-          # samba = {
-          #   enable = true;
-          #   package = pkgs.sambaFull;
-          #   openFirewall = true;
-          #   settings = {
-          #     global = {
-          #       "load printers" = "yes";
-          #       "printing" = "cups";
-          #       "printcap name" = "cups";
-          #     };
-          #     "printers" = {
-          #       "comment" = "All Printers";
-          #       "path" = "/var/spool/samba";
-          #       "public" = "yes";
-          #       "browseable" = "yes";
-          #       # to allow user 'guest account' to print.
-          #       "guest ok" = "yes";
-          #       "writable" = "no";
-          #       "printable" = "yes";
-          #       "create mode" = 0700;
-          #     };
-          #   };
-          # };
         };
-
-        # systemd.tmpfiles.rules = [
-        #   "d /var/spool/samba 1777 root root -"
-        # ];
 
         hardware.printers = {
           ensurePrinters = [
