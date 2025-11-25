@@ -1,8 +1,4 @@
-{
-  lib,
-  pkgs,
-  ...
-}:
+{lib, ...}:
 with builtins;
 with lib; rec {
   mkOpt = type: default: mkOption {inherit type default;};

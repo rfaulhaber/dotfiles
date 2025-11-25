@@ -43,7 +43,16 @@ with lib; rec {
       ++ extraModules;
     specialArgs =
       {
-        inherit lib inputs system isLinux isDarwin isAarch64 hostname;
+        inherit inputs system isLinux isDarwin isAarch64 hostname;
+        # jank
+        lib = let
+          impure = import ./_impure.nix {
+            pkgs = import inputs.nixpkgs {inherit system;};
+          };
+        in
+          lib.extend (self: super: {
+            my = super.my // impure;
+          });
         platform = system;
         hostDir = dirOf path;
       }

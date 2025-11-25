@@ -96,7 +96,6 @@
         lib = inputs.nixpkgs.lib.extend (self: super: {
           my = import ./nix/lib {
             inherit inputs;
-            pkgs = inputs.nixpkgs;
             lib = self;
           };
         });
