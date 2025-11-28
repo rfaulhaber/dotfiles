@@ -77,7 +77,10 @@
     };
     services = {
       zfs.enable = true;
-      docker.enable = true;
+      docker = {
+        enable = true;
+        enableIPv6 = true;
+      };
       sudo-rs.enable = true;
       printing = {
         enable = true;

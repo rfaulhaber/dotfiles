@@ -19,6 +19,11 @@ in {
       type = types.bool;
       default = false;
     };
+    enableIPv6 = mkOption {
+      description = "Enables ipv6 in the docker daemon.";
+      type = types.bool;
+      default = false;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -31,7 +36,15 @@ in {
 
     virtualisation.docker = {
       enable = true;
-      daemon.settings.features.cdi = mkIf cfg.enableNvidiaTools true;
+      daemon.settings =
+        {
+          features.cdi = mkIf cfg.enableNvidiaTools true;
+        }
+        // lib.optionalAttrs cfg.enableIPv6 {
+          ipv6 = true;
+          "fixed-cidr-v6" = "2001:db8:1::/64";
+          ip6tables = true;
+        };
     };
 
     hardware.nvidia-container-toolkit.enable = mkIf cfg.enableNvidiaTools true;
