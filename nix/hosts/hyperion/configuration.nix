@@ -132,7 +132,6 @@
         openvpn
         papers
         signal-desktop-bin
-        spotify
         ungoogled-chromium
       ];
       autostart = {
