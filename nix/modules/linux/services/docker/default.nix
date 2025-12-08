@@ -42,7 +42,7 @@ in {
         }
         // lib.optionalAttrs cfg.enableIPv6 {
           ipv6 = true;
-          "fixed-cidr-v6" = "2001:db8:1::/64";
+          "fixed-cidr-v6" = "fd0f:a7dd:47f7::/64";
           ip6tables = true;
         };
     };

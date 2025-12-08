@@ -33,7 +33,8 @@
       docker = {
         enable = true;
         enableNvidiaTools = true;
-        enableIPv6 = true;
+        # TODO figure out how to enable
+        # enableIPv6 = true;
       };
       gpg.enable = true;
       systemd.modules = {
