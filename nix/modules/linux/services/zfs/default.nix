@@ -6,34 +6,6 @@
 }:
 with lib; let
   cfg = config.modules.services.zfs;
-  mkFilesystemFromDataset = name: mountpoint: {
-    ${mountpoint} = {
-      device = name;
-      fsType = "zfs";
-      options = ["zfsutil"];
-    };
-  };
-  zfsExec = "${pkgs.zfs}/bin/zfs";
-
-  mkPropertyCmd = name: value: "${zfsExec} list ${dataset} > /dev/null 2>&1 || ${zfsExec} set ${propertyName}=${value} ${dataset}";
-  mkSystemdService = dataset: properties: {
-    "zfs-create-${dataset}" = {
-      description = "Creates ${dataset} ZFS dataset";
-      wantedBy = ["multi-user.target"];
-      after = ["zfs-import.target"];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-      };
-      script =
-        ''
-          ${zfsExec} list ${dataset} > /dev/null 2>&1 || zfs create ${dataset}
-        ''
-        + properties
-        |> mapAttrs mkPropertyCmd
-        |> concatStringsSep "\n";
-    };
-  };
 in {
   options.modules.services.zfs = {
     enable = mkEnableOption false;
@@ -51,20 +23,22 @@ in {
     };
     datasets = mkOption {
       description = "Declarative ZFS datasets.";
+      default = {};
       type = types.attrsOf (types.submodule {
         options = {
-          mountpoint = mkOption {
-            description = "Where to mount the dataset.";
-            type = types.either types.str types.path;
+          type = mkOption {
+            type = types.enum ["filesystem" "volume"];
+            description = "Type of ZFS dataset to create";
+            default = "filesystem";
           };
-          datasetOptions = mkOption {
+          properties = mkOption {
             description = "ZFS dataset options.";
             type = types.attrsOf types.str;
+            default = {};
             example = {
               "mountpoint" = "/mnt/dataset";
               "encryption" = "on";
             };
-            default = {};
           };
         };
       });
@@ -101,5 +75,25 @@ in {
 
     # TODO need way to override for multiple encrypted datasets
     boot.zfs.requestEncryptionCredentials = cfg.encryptedHome == null;
+
+    systemd.services.zfs-manage-datasets = mkIf (cfg.datasets
+      != {}) {
+      description = "Create ZFS datasets.";
+      wantedBy = ["multi-user.target"];
+      after = ["zfs-import.target" "zfs-mount.service"];
+      before = ["local-fs.target"];
+      path = with pkgs; [nushell zfs];
+
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = let
+          zfsManageScript =
+            builtins.readFile "${config.dotfiles.binDir}/zfs-manage.nu"
+            |> lib.my.writeNushellScriptBin "zfs-manage";
+          datasetsJSON = builtins.toJSON cfg.datasets;
+        in "${zfsManageScript}/bin/zfs-manage '${datasetsJSON}'";
+      };
+    };
   };
 }
