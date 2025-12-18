@@ -105,6 +105,7 @@ Used in loading config specific to those systems.")
 (map! :leader "f O"   #'self/visit-common-directories)
 (map! :leader "d"     #'dired)
 (map! :leader "TAB i" #'+ibuffer/open-for-current-workspace)
+(map! :leader "i k" #'consult-yank-from-kill-ring)
 ;; racket-mode doesn't define evil-jump-item and it's annoying
 (map! :mode racket-mode
       "TAB" #'evil-jump-item)
