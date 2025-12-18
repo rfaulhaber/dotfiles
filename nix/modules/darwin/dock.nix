@@ -25,6 +25,9 @@ in {
           app = "/Applications/WezTerm.app";
         }
         {
+          app = "/Applications/Qobuz.app";
+        }
+        {
           app = "/Applications/Signal.app";
         }
         {
