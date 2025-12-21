@@ -37,11 +37,6 @@
     fsType = "zfs";
   };
 
-  fileSystems."/data/games" = {
-    device = "data/games";
-    fsType = "zfs";
-  };
-
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/113F-0AA3";
     fsType = "vfat";
