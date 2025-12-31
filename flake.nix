@@ -253,9 +253,18 @@
         pkgs,
         inputs',
         self',
+        system,
         ...
       }: {
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfreePredicate = pkg:
+            builtins.elem (pkgs.lib.getName pkg) [
+              "claude-code"
+            ];
+        };
         formatter = pkgs.alejandra;
+
         apps = {
           # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
           # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
@@ -272,6 +281,7 @@
               pkgs.nvd
               pkgs.rage
               pkgs.sops
+              pkgs.claude-code
             ]
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
               inputs'.nix-darwin.packages.default

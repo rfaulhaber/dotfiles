@@ -73,9 +73,14 @@
 
 ;; (package! hyperbole)
 
+(package! mcp
+  :pin "125e0a4478ff1404880ea4e593f5e4ff0122cb83"
+  :recipe (:host github
+           :repo "lizqwerscott/mcp.el"))
+
 ;; rustic isn't maintained anymore and doom still uses the main branch
 (package! rustic
-  :pin "22a5ef8bfd5a34ced945c2722938eb29632371d4"
+  :pin "e77f62facc1f6287bc62c1dd41a996b8fb25fea2"
   :recipe (:host github
            :repo "emacs-rustic/rustic"))
 
@@ -86,7 +91,7 @@
            :repo "rfaulhaber/caseconv.el"))
 
 (package! nix-local-buffer
-  :pin "3cfc659c1e3ff95e03321462a3e12e04622174f2"
+  :pin "11e82fc401d60e1db95a767a2002fa266a92776f"
   :recipe (:host github
            :repo "rfaulhaber/nix-local-buffer"))
 
