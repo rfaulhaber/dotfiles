@@ -51,7 +51,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # TODO remove pin when no longer broken
-    waybar.url = "github:Alexays/waybar";
+    waybar.url = "github:Alexays/waybar?ref=a9ef11a2b387593a50dde6ff1ce22f434a840bd8";
     # I use flake-parts to ensure I can use my flake across platforms, although I probably shouldn't
     flake-parts.url = "github:hercules-ci/flake-parts";
     disko = {
