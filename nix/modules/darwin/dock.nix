@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 with lib; let
@@ -21,9 +22,11 @@ in {
         {
           app = "/Users/ryan/Applications/Emacs.app";
         }
-        {
-          app = "/Applications/WezTerm.app";
-        }
+        (
+          lib.optionalAttrs (config.modules.programs.wezterm.enable) {
+            app = "${config.modules.programs.wezterm.weztermPackage}/Applications/WezTerm.app";
+          }
+        )
         {
           app = "/Applications/Qobuz.app";
         }

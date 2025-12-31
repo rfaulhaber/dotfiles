@@ -17,11 +17,16 @@ in {
       type = types.bool;
       default = false;
     };
+    weztermPackage = mkOption {
+      description = "WezTerm package to use.";
+      type = types.package;
+      default = inputs.wezterm.packages.${pkgs.system}.default;
+    };
   };
 
   config = mkIf cfg.enable {
     user.packages = [
-      inputs.wezterm.packages.${pkgs.system}.default
+      cfg.weztermPackage
     ];
 
     # NOTE: using home-manager for wezterm creates a single wezterm.lua file
@@ -45,6 +50,11 @@ in {
       // lib.optionalAttrs isLinux {
         sessionVariables = vars;
       };
+
+    home.file.weztermApp = mkIf isDarwin {
+      source = "${cfg.weztermPackage}/Applications/WezTerm.app";
+      target = "${config.user.home}/Applications/WezTerm.app";
+    };
 
     # allows us to use the cached version of wezterm for the wezterm input
     nix.settings = {
