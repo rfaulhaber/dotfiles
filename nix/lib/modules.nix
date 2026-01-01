@@ -12,21 +12,21 @@
 in {
   # thank you hlissner
   mapModules = dir: fn: let
-      pred = n: v: v != null && !(hasPrefix "_" n);
-      f = n: v: let
-        path = "${toString dir}/${n}";
-      in
-        if v == "directory" && pathExists "${path}/default.nix"
-        then path |> fn |> nameValuePair
-        else if v == "regular" && n != "default.nix" && hasSuffix ".nix" n
-        then
-          path
-          |> fn
-          |> (nameValuePair (removeSuffix ".nix" n))
-        else nameValuePair "" null;
+    pred = n: v: v != null && !(hasPrefix "_" n);
+    f = n: v: let
+      path = "${toString dir}/${n}";
     in
-      dir
-      |> readDir
-      |> filterAttrs pred
-      |> (mapFilterAttrs pred f);
+      if v == "directory" && pathExists "${path}/default.nix"
+      then path |> fn |> nameValuePair
+      else if v == "regular" && n != "default.nix" && hasSuffix ".nix" n
+      then
+        path
+        |> fn
+        |> (nameValuePair (removeSuffix ".nix" n))
+      else nameValuePair "" null;
+  in
+    dir
+    |> readDir
+    |> filterAttrs pred
+    |> (mapFilterAttrs pred f);
 }

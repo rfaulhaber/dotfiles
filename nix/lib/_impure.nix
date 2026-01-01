@@ -7,7 +7,7 @@
   writeNushellScriptBin = name: text:
     pkgs.writeScriptBin name ''
       #!${pkgs.nushell}/bin/nu
-      
+
       ${text}
     '';
 }
