@@ -1,6 +1,7 @@
-{lib, ...}:
-with builtins;
-with lib; rec {
+{lib, ...}: let
+  inherit (builtins) toString foldl';
+  inherit (lib) types mkOption flip pipe mapAttrs' filterAttrs;
+in rec {
   mkOpt = type: default: mkOption {inherit type default;};
 
   mkOptDesc = type: default: description:

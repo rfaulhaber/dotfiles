@@ -1,8 +1,9 @@
 # thank you hlissner
 # https://github.com/hlissner/dotfiles/blob/089f1a9da9018df9e5fc200c2d7bef70f4546026/lib/attrs.nix
-{lib, ...}:
-with builtins;
-with lib; rec {
+{lib, ...}: let
+  inherit (builtins) map listToAttrs;
+  inherit (lib) mapAttrsToList mapAttrs' filterAttrs any count;
+in rec {
   # attrsToList
   attrsToList = attrs:
     mapAttrsToList (name: value: {inherit name value;}) attrs;

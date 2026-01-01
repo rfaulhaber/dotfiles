@@ -5,8 +5,8 @@
   isLinux,
   isDarwin,
   ...
-}:
-with lib; let
+}: let
+  inherit (lib) mkEnableOption mkIf optionalAttrs optionals;
   isWayland = isLinux && config.modules.desktop.environment.isWayland;
   cfg = config.modules.services.gpg;
 in {
@@ -18,11 +18,11 @@ in {
     mkIf cfg.enable {
       # it is unclear to me how to automatically unlock gnome keyring upon login, so
       # I'm taking the shotgun approach
-      services = lib.optionalAttrs isLinux {
-        dbus.packages = with pkgs; [
-          gnome-keyring
-          gcr
-          dconf
+      services = optionalAttrs isLinux {
+        dbus.packages = [
+          pkgs.gnome-keyring
+          pkgs.gcr
+          pkgs.dconf
         ];
         gnome.gnome-keyring.enable = true;
       };
@@ -32,24 +32,23 @@ in {
           enable = true;
           enableSSHSupport = true;
         }
-        // lib.optionalAttrs isLinux {
+        // optionalAttrs isLinux {
           enableBrowserSocket = true;
           pinentryPackage = pkgs.pinentry-gnome3;
         };
 
       # somehow, for some reason, programs.gnupg.agent.enable does not imply a gpg installation on darwin
-      user.packages = with pkgs;
-        lib.optionals isDarwin [
-          gnupg
-          pinentry_mac
-        ];
+      user.packages = optionals isDarwin [
+        pkgs.gnupg
+        pkgs.pinentry_mac
+      ];
 
       home.file.gpgconf = mkIf isDarwin {
         text = "pinentry-program /etc/profiles/per-user/${config.user.name}/bin/pinentry-mac";
         target = "${config.user.home}/.gnupg/gpg-agent.conf";
       };
     }
-    // lib.optionalAttrs isLinux {
+    // optionalAttrs isLinux {
       security.pam.services.login.enableGnomeKeyring = true;
     };
 }

@@ -5,9 +5,8 @@
   isLinux,
   isDarwin,
   ...
-}:
-with lib;
-with lib.my; let
+}: let
+  inherit (lib) mkEnableOption mkOption types mkIf mkMerge optionals;
   isX11 = isLinux && config.modules.desktop.environment.isX11;
   isWayland = isLinux && config.modules.desktop.environment.isWayland;
   cfg = config.modules.programs.nushell;
@@ -76,11 +75,11 @@ in {
 
     user.shell = mkIf cfg.setDefault pkgs.nushell;
 
-    user.packages = with pkgs;
+    user.packages =
       [
-        bat # bat is used as nushell's pager. see config/nushell/env.nu
+        pkgs.bat # bat is used as nushell's pager. see config/nushell/env.nu
       ]
-      ++ lib.optional isX11 xclip
-      ++ lib.optional isWayland wl-clipboard;
+      ++ lib.optional isX11 pkgs.xclip
+      ++ lib.optional isWayland pkgs.wl-clipboard;
   };
 }

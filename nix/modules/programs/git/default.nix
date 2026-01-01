@@ -3,8 +3,8 @@
   lib,
   pkgs,
   ...
-}:
-with lib; let
+}: let
+  inherit (lib) mkEnableOption mkOption types mkIf optionals;
   cfg = config.modules.programs.git;
 in {
   options.modules.programs.git = {
@@ -55,6 +55,6 @@ in {
       };
     };
 
-    user.packages = with pkgs; optionals (cfg.useJJ) [jujutsu];
+    user.packages = optionals (cfg.useJJ) [pkgs.jujutsu];
   };
 }

@@ -2,9 +2,10 @@
   inputs,
   lib,
   ...
-}:
-with builtins;
-with lib; rec {
+}: let
+  inherit (builtins) head match toString dirOf;
+  inherit (lib) strings mkForce;
+in rec {
   # thank you hlissner
   # https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix#L7
   mkHost = path: attrs @ {
@@ -16,6 +17,7 @@ with lib; rec {
   }: let
     isLinux = strings.hasSuffix "linux" system;
     isDarwin = strings.hasSuffix "darwin" system;
+    isAarch64 = strings.hasPrefix "aarch64" system;
     homeManagerModule =
       if isDarwin
       then inputs.home-manager.darwinModules.home-manager
@@ -69,7 +71,7 @@ with lib; rec {
   }: (mkHost path {
     inherit system overlays;
     specialArgs = {
-      inherit thisAddrss isMaster masterAddress;
+      inherit thisAddress isMaster masterAddress;
     };
     extraModules = [
       {
@@ -123,14 +125,14 @@ with lib; rec {
       }));
 
   mkNixOSK8sNodes = n: path: attrs:
-    map nixosSystem (mkK8sNodes n path attrs);
+    map inputs.nixpkgs.lib.nixosSystem (mkK8sNodes n path attrs);
 
   mkDarwinHost = path: attrs:
     inputs.nix-darwin.lib.darwinSystem (mkHost path attrs);
 
   # thank you hlissner
-  mapHosts = dir: attrs @ {system ? defaultSystem, ...}:
-    mapModules dir (hostPath: mkHost hostPath attrs);
+  mapHosts = dir: attrs @ {system, ...}:
+    lib.my.mapModules dir (hostPath: mkHost hostPath attrs);
 
   hostnameFromPath = path: head (match ".*/([[:alpha:]]+)/configuration.nix" (toString path));
 }

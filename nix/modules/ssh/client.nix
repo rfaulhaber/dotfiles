@@ -3,8 +3,8 @@
   lib,
   pkgs,
   ...
-}:
-with lib; let
+}: let
+  inherit (lib) mkOption types mkIf;
   cfg = config.modules.services.ssh.client;
 in {
   options.modules.services.ssh.client = {
@@ -18,7 +18,7 @@ in {
       description = "Path to SSH directory.";
       type = types.either types.str types.path;
       default = "${config.user.home}/.ssh";
-      apply = toString;
+      apply = builtins.toString;
     };
   };
 

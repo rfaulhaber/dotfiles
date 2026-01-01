@@ -7,10 +7,12 @@
   isLinux,
   isDarwin,
   ...
-}:
-with lib;
-with lib.my; {
-  options = with types; {
+}: let
+  inherit (lib) types mkOption mkAliasDefinitions optionalAttrs concatMapStringsSep isList mapAttrs findFirst pathExists;
+  inherit (lib.my) mkOpt mkOptDesc;
+  inherit (types) attrs attrsOf oneOf str path listOf either;
+in {
+  options = {
     user = mkOption {
       description = "Name of the primary account.";
       default = {};
@@ -103,7 +105,7 @@ with lib.my; {
       };
     };
 
-    users.groups = mkIf pkgs.stdenv.isLinux {plugdev = {};};
+    users.groups = lib.mkIf pkgs.stdenv.isLinux {plugdev = {};};
 
     home-manager = {
       useUserPackages = true;

@@ -4,15 +4,14 @@
   self,
   lib,
   ...
-}:
-with builtins;
-with lib; let
+}: let
+  inherit (builtins) readDir pathExists toString;
+  inherit (lib) nameValuePair hasSuffix removeSuffix filterAttrs;
+  inherit (lib.strings) hasPrefix;
   inherit (self.attrs) mapFilterAttrs;
 in {
   # thank you hlissner
-  mapModules = dir: fn:
-    with lib;
-    with builtins; let
+  mapModules = dir: fn: let
       pred = n: v: v != null && !(hasPrefix "_" n);
       f = n: v: let
         path = "${toString dir}/${n}";
