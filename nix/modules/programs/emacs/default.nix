@@ -15,42 +15,43 @@
     ec = "emacsclient";
     eo = "emacsclient -n"; # "emacs open"
   };
-  emacsPackages = epkgs: [
-    epkgs.pdf-tools
-    epkgs.prettier
-    epkgs.vterm
-    epkgs.tree-sitter
-    epkgs.tree-sitter-langs
-    epkgs.treesit-grammars.with-all-grammars
-  ];
+  emacsPackages = epkgs:
+    with epkgs; [
+      pdf-tools
+      prettier
+      vterm
+      tree-sitter
+      tree-sitter-langs
+      treesit-grammars.with-all-grammars
+    ];
 
   # dependencies for my very specific configuration of doom
   # see doom.d/init.el for more
   # we need to include every program either directly or indirectly referenced in config
-  userPackages =
+  userPackages = with pkgs;
     [
-      pkgs.alejandra
-      pkgs.ast-grep
-      pkgs.clang # unfortunately we need a C compiler for various dependencies
-      pkgs.cmake
-      pkgs.direnv
-      pkgs.djvulibre
-      pkgs.editorconfig-core-c
-      pkgs.fd
-      pkgs.fzf
-      pkgs.git
-      pkgs.gnumake
-      pkgs.gnutls
-      pkgs.graphviz
-      pkgs.imagemagick
+      alejandra
+      ast-grep
+      clang # unfortunately we need a C compiler for various dependencies
+      cmake
+      direnv
+      djvulibre
+      editorconfig-core-c
+      fd
+      fzf
+      git
+      gnumake
+      gnutls
+      graphviz
+      imagemagick
       inputs.nil.outputs.packages.${pkgs.stdenv.targetPlatform.system}.nil
-      pkgs.languagetool
-      pkgs.nodePackages.mermaid-cli
-      pkgs.ripgrep
-      pkgs.sqlite
-      pkgs.texlive.combined.scheme-medium
-      pkgs.wordnet
-      pkgs.zstd
+      languagetool
+      nodePackages.mermaid-cli
+      ripgrep
+      sqlite
+      texlive.combined.scheme-medium
+      wordnet
+      zstd
     ]
     ++ optionals isDarwin [
       # emacs can't use nushell ls and macOS ls doesn't work right with dired
