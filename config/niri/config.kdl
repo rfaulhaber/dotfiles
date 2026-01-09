@@ -353,7 +353,7 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Mod+Return { spawn "wezterm"; }
+    Mod+Return { spawn "ghostty"; }
     Mod+D { spawn "fuzzel"; }
     Mod+Alt+D { spawn "fuzzel" "--list-executables-in-path"; }
     Super+Alt+L { spawn "swaylock"; }
