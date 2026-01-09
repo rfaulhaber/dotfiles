@@ -5,6 +5,7 @@
     ./aspell
     ./direnv
     ./emacs
+    ./ghostty
     ./git
     ./keychain
     ./kitty

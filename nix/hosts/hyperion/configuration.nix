@@ -39,6 +39,7 @@
       # how many terminals does a guy need?
       kitty.enable = true;
       wezterm.enable = true;
+      ghostty.enable = true;
       _1password = {
         enable = true;
         autostart = true;

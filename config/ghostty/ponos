@@ -1,0 +1,4 @@
+config-file = defaults
+config-file = darwin
+
+command = /opt/homebrew/bin/nu --login
