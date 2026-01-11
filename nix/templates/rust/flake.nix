@@ -44,17 +44,18 @@
 
         formatter = pkgs.alejandra;
 
-        packages.${projectName} = pkgs.rustPlatform.buildRustPackage {
-          pname = projectName;
-          version = "0.1.0";
-          src = ./.;
-          cargoLock.lockFile = ./Cargo.lock;
-
-          meta.mainProgram = projectName;
+        packages = {
+          ${projectName} = pkgs.rustPlatform.buildRustPackage {
+            pname = projectName;
+            version = "0.1.0";
+            src = ./.;
+            cargoLock.lockFile = ./Cargo.lock;
+          };
+          default = self'.packages.${projectName};
         };
 
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
+          packages = with pkgs; [
             rust-bin.stable.latest.default
             clippy
             rust-analyzer
