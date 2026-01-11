@@ -1,5 +1,7 @@
 #+TITLE: dotfiles
 
+*NOTICE OF DEPRECATION*: As part of my overall plan of leaving GitHub, futher updates can be found at [[https://codeberg.org/ryf/dotfiles][Codeberg]]!
+
 These are all the configuration files I use across every computer I use for
 development. For all development I use either Linux or Mac explicitly, and these
 configuration files assume such.
