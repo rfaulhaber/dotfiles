@@ -44,7 +44,6 @@
       git = {
         enable = true;
         useDelta = true;
-        useJJ = true;
       };
       nushell = {
         enable = true;
