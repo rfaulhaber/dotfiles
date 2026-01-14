@@ -120,6 +120,29 @@ Nushell scripts in `/bin/` for system tasks:
 - `random-wallpaper.nu` - Unsplash wallpaper rotation
 - `mullvad-config.nu` - VPN configuration
 
+### OCI Container Services
+
+Declarative container management via `modules.linux.oci`. Uses Podman with systemd integration.
+
+```nix
+modules.linux.oci = {
+  enable = true;
+  networks.default.enable = true;
+  services.plex = {
+    enable = true;
+    baseDir = "/data/apps/plex";
+    mediaDirs = { movies = "/data/movies"; tv = "/data/tv"; };
+    useNvidia = true;
+  };
+};
+```
+
+Module locations: `nix/modules/linux/oci/`
+
+**Secrets handling:** Service modules accept `*File` options for secrets (e.g., `webPasswordFile`). These should be sops-nix secret paths. Environment files must be in `KEY=value` format - use `sops.templates` if needed.
+
+**Naming convention:** Follows compose2nix patterns - networks are `${hostname}_${name}`, services wire to `podman-compose-${hostname}-root.target`.
+
 ## Key Patterns
 
 **Module option pattern:**
