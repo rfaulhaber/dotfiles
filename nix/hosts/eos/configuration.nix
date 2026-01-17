@@ -23,7 +23,7 @@
         };
       };
       neovim.enable = true;
-      wezterm.enable = true;
+      ghostty.enable = true;
       direnv.enable = true;
       git = {
         enable = true;
