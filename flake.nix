@@ -31,8 +31,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    wezterm.url = "github:wez/wezterm?dir=nix";
-
     swww.url = "github:LGFae/swww";
     # TODO consider using stylix
     # currently, a wallpaper is required with stylix. this is problematic
