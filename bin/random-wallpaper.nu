@@ -1,5 +1,7 @@
 #!/usr/bin/env nu
 
+const log_file_path = "~/.local/share/random-wallpaper/log.json"
+
 def main [--token: string, --token-file: string, --desktop: string, --monitor: string, query?: string] {
     let key = if $token_file != null {
       open $token_file
@@ -18,7 +20,13 @@ def main [--token: string, --token-file: string, --desktop: string, --monitor: s
 
     let url = if query == null { $base_url } else { $"($base_url)&query=($query)" }
 
-    let log_file = "~/.wallpaper-log.json" | path expand
+    let log_file = $log_file_path | path expand
+    let log_file_exists = $log_file | path exists
+
+    if not $log_file_exists {
+      mkdir ($log_file | path dirname)
+      "{}" | save -f $log_file
+    }
 
     let tmpdir = (mktemp -d)
 
@@ -42,10 +50,13 @@ def main [--token: string, --token-file: string, --desktop: string, --monitor: s
         | update description { |r| if $r.description == null { $r.alt_description } else { $r.description } }
         | reject alt_description
 
-    open $log_file | append $log_record | to json | save -f $log_file
+    open $log_file
+        | append $log_record
+        | to json
+        | save -f $log_file
 
     match $desktop {
-        "hyprland" | "wayland" => {
+        "wayland" => {
             # TODO handle multiple displays when it becomes relevant
             ^swww img $filename
         },
