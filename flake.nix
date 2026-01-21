@@ -248,7 +248,16 @@
         self',
         system,
         ...
-      }: {
+      }: let
+      	# temprorary fix for deploy-rs issue
+        deployRsPatch = pkgs.fetchpatch {
+          url = "https://github.com/serokell/deploy-rs/pull/359.patch";
+          hash = "sha256-t1yVnID7nkOS46f0ao1Oaovj0qXoKoI1nvtDdUDNopU=";
+        };
+        patchedDeployRs = inputs'.deploy-rs.packages.default.overrideAttrs (old: {
+          patches = (old.patches or []) ++ [deployRsPatch];
+        });
+      in {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
           config.allowUnfreePredicate = pkg:
@@ -261,15 +270,17 @@
         apps = {
           # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
           # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
-          deploy-rs = inputs'.deploy-rs.apps.default;
+          #deploy-rs = inputs'.deploy-rs.apps.default;
+          deploy-rs = patchedDeployRs;
           generate = inputs'.nixos-generators.apps.default;
         };
         devShells.default = pkgs.mkShell {
-          buildInputs =
+          packages =
             [
               inputs'.nixos-generators.packages.default
               inputs'.nil.packages.default
-              inputs'.deploy-rs.packages.default
+              #inputs'.deploy-rs.packages.default
+              patchedDeployRs
               inputs'.sops-nix.packages.default
               pkgs.nvd
               pkgs.rage
