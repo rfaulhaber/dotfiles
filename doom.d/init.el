@@ -55,7 +55,7 @@
        vc                ; version-control and Emacs, sitting in a tree
 
        :term
-       vterm             ; the best terminal emulation in Emacs
+                                        ;vterm             ; the best terminal emulation in Emacs
 
        :checkers
        (syntax +flymake +icons)              ; tasing you for every semicolon you forget
@@ -74,7 +74,7 @@
        pdf               ; pdf enhancements
 
        :lang
-       common-lisp       ; if you've seen one lisp, you've seen them all
+                                        ;common-lisp       ; if you've seen one lisp, you've seen them all
        data              ; config/data formats
        (elixir +lsp)           ; erlang done right
        emacs-lisp        ; drown in parentheses
@@ -85,9 +85,8 @@
        (nix +lsp)              ; I hereby declare "nix geht mehr!"
        (org +hugo +journal +pandoc +present +roam2 +noter +dragndrop +pretty +pomodoro)               ; organize your plain life in plain text
        (python +lsp +pyright)           ; beautiful is better than ugly
-       rest              ; Emacs as a REST client
        (rust +lsp)               ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
-       scheme            ; a fully conniving family of lisps
+                                        ;scheme            ; a fully conniving family of lisps
        (sh +lsp)         ; she sells {ba,z,fi}sh shells on the C xor
        (web +lsp)               ; the tubes
        yaml              ; JSON, but readable
@@ -97,7 +96,6 @@
 
        :app
        everywhere
-       calendar
 
        :os
        (:if IS-MAC macos)             ; MacOS-specific commands
