@@ -12,6 +12,10 @@
       dock = {
         enable = true;
       };
+      random-wallpaper = {
+        enable = true;
+        token = config.sops.secrets.unsplash.path;
+      };
     };
     programs = {
       emacs = {
@@ -38,6 +42,16 @@
         plugins = with pkgs.nushellPlugins; [
           polars
         ];
+      };
+      sops = {
+        enable = true;
+        secrets = {
+          unsplash = {
+            owner = config.user.name;
+            group = "staff"; # TODO more dynamic?
+            mode = "0440";
+          };
+        };
       };
     };
     services = {

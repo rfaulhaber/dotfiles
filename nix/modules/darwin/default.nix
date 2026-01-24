@@ -7,6 +7,7 @@
   imports = [
     ./preferences.nix
     ./dock.nix
+    ./random-wallpaper.nix
   ];
   config = {
     system.primaryUser = config.user.name;

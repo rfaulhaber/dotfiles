@@ -31,6 +31,11 @@ in {
       type = types.str;
       default = "/etc/sops/age/host.age";
     };
+    sshKeyPaths = mkOption {
+      description = "Path to default ssh key file.";
+      type = types.listOf types.str;
+      default = ["/etc/ssh/ssh_host_ed25519_key"];
+    };
   };
 
   config = mkIf cfg.enable {
@@ -45,8 +50,7 @@ in {
       inherit (cfg) secrets;
       defaultSopsFile = "${hostDir}/secrets.yaml";
       age = {
-        inherit (cfg) keyFile;
-        sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
+        inherit (cfg) keyFile sshKeyPaths;
       };
     };
 

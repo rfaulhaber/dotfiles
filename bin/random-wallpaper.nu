@@ -62,6 +62,11 @@ def main [--token: string, --token-file: string, --desktop: string, --monitor: s
         },
         "xserver" => {
             ^feh --bg-fill $filename
+        },
+        "darwin" => {
+            # Use osascript to set wallpaper on all desktops
+            let script = $'tell application "System Events" to tell every desktop to set picture to POSIX file "($filename)"'
+            ^osascript -e $script
         }
     }
 }
