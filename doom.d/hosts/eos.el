@@ -4,8 +4,9 @@
 
 (set-frame-size (selected-frame) 145 46)
 
-;; not sure why the PATH isn't loading correctly, so I've opted to manually fix
-;; it here
+;; Ensure nix paths are in exec-path and PATH
+;; IMPORTANT: Prepend to existing PATH rather than replacing it entirely,
+;; otherwise envrc/direnv won't work correctly (it merges with default process-environment)
 (let ((path-elements '("/run/current-system/sw/bin"
                        "/etc/profiles/per-user/ryan/bin"
                        "/usr/bin"
@@ -14,7 +15,11 @@
            do
            (add-to-list 'exec-path el))
 
-  (setenv "PATH" (string-join path-elements ":")))
+  ;; Prepend nix paths to existing PATH, preserving the rest
+  (setenv "PATH" (string-join (delete-dups
+                               (append path-elements
+                                       (parse-colon-path (getenv "PATH"))))
+                              ":")))
 
 (setq doom-ripgrep-executable "/etc/profiles/per-user/ryan/bin/rg"
       insert-directory-program "/etc/profiles/per-user/ryan/bin/ls"
