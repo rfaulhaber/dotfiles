@@ -2,7 +2,7 @@
 
 const log_file_path = "~/.local/share/random-wallpaper/log.json"
 
-def main [--token: string, --token-file: string, --desktop: string, --monitor: string, query?: string] {
+def main [--token: string, --token-file: string, --desktop: string, query?: string] {
     let key = if $token_file != null {
       open $token_file
     } else if $token != null {
@@ -18,23 +18,23 @@ def main [--token: string, --token-file: string, --desktop: string, --monitor: s
 
     let base_url = $"https://api.unsplash.com/photos/random/?client_id=($key)&orientation=landscape"
 
-    let url = if query == null { $base_url } else { $"($base_url)&query=($query)" }
+    let url = if $query == null { $base_url } else { $"($base_url)&query=($query)" }
 
     let log_file = $log_file_path | path expand
     let log_file_exists = $log_file | path exists
 
     if not $log_file_exists {
       mkdir ($log_file | path dirname)
-      "{}" | save -f $log_file
+      "[]" | save -f $log_file
     }
 
     let tmpdir = (mktemp -d)
 
     let res = (http get $url)
 
-    if ("errors" in res)  {
+    if ("errors" in $res) {
        print -e "Unsplash reported errors. Aborting."
-       print -e $"Error: (res | get errors)"
+       print -e $"Error: ($res | get errors)"
 
        exit 1
     }

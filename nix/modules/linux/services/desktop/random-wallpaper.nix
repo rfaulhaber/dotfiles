@@ -43,9 +43,7 @@ in {
           builtins.readFile "${config.dotfiles.binDir}/random-wallpaper.nu"
           |> pkgs.writeScriptBin "random-wallpaper";
         desktop =
-          if config.modules.desktop.environment.hyprland.enable
-          then "hyprland"
-          else if isWayland
+          if isWayland
           then "wayland"
           else "xserver";
         exec = "${scriptPath}/bin/random-wallpaper --desktop ${desktop} --token-file ${cfg.token} ${cfg.query}";
@@ -54,8 +52,7 @@ in {
         path = with pkgs;
           [nushell]
           ++ lib.optional isWayland inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
-          ++ lib.optional isX11 feh
-          ++ lib.optional (desktop == "hyprland") inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+          ++ lib.optional isX11 feh;
         after = ["graphical-session.target" "network-online.target"] ++ lib.optional isWayland "swww.service" ++ lib.optional config.modules.desktop.environment.niri.enable "niri.service";
         partOf = ["graphical-session.target"] ++ lib.optional config.modules.desktop.environment.niri.enable "niri.service";
         wantedBy = ["graphical-session.target"];
