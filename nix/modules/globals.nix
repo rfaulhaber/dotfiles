@@ -31,7 +31,7 @@ in {
         name = colors.scheme;
         bin = {
           randomWallpaper = {
-            logFile = "~/.wallpaper-log.json";
+            logFile = "~/.local/share/random-wallpaper/log.json";
           };
         };
       };

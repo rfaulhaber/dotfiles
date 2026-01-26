@@ -83,19 +83,25 @@ in {
     # TODO make fonts module
     fonts = {
       fontDir.enable = true;
+      enableDefaultPackages = true;
       enableGhostscriptFonts = true;
       packages = with pkgs;
         [
           lato
           merriweather
+          noto-fonts-cjk-sans
+          noto-fonts-cjk-serif
         ]
         ++ (with pkgs.nerd-fonts; [
           hack
         ]);
-      fontconfig.defaultFonts = {
-        serif = ["Merriweather"];
-        sansSerif = ["Lato"];
-        monospace = ["Hack Nerd Font Mono"];
+      fontconfig = {
+        allowBitmaps = false;
+        defaultFonts = {
+          serif = ["Merriweather"];
+          sansSerif = ["Lato"];
+          monospace = ["Hack Nerd Font Mono"];
+        };
       };
     };
 
