@@ -113,17 +113,10 @@ in {
         };
 
         "steamdeck" = {
-          hostname = "steamdeck";
+          hostname = mkLocalHostname "226";
           user = "deck";
           forwardAgent = true;
           port = 27077;
-        };
-
-        "nike" = {
-          hostname = mkLocalHostname "227";
-          user = "ryan";
-          forwardAgent = true;
-          port = 14625;
         };
 
         "janus" = {
