@@ -40,6 +40,8 @@ in {
 
     # Allow Firefox Developer Edition for native messaging on NixOS
     # 1Password verifies browser paths, but NixOS store paths aren't recognized by default
+    # NB that the documentation on the NixOS wiki is misleading about this point:
+    # it says that Firefox is supported by default, however apparently variants of the standard Firefox are not
     environment.etc = lib.optionalAttrs isLinux {
       "1password/custom_allowed_browsers" = {
         text = "firefox-devedition";
