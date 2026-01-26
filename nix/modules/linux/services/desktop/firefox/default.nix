@@ -24,7 +24,10 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [cfg.package];
+    programs.firefox = {
+      enable = true;
+      package = cfg.package;
+    };
 
     programs.zsh.shellAliases = lib.optionalAttrs config.modules.programs.zsh.enable firefoxAlias;
 
