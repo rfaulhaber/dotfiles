@@ -7,8 +7,12 @@
 }:
 with lib; let
   cfg = config.modules.themes;
+  schemePath = "${inputs.tt-schemes}/base16/${cfg.active}.yaml";
+  # Use base16 library directly without importing the nixosModule.
+  # This avoids creating a `scheme` option in the NixOS options tree,
+  # which would trigger a warning during documentation generation.
+  base16 = pkgs.callPackage inputs.base16.lib {};
 in {
-  imports = [inputs.base16.nixosModule];
   options.modules.themes = {
     active = mkOption {
       type = types.str;
@@ -21,9 +25,7 @@ in {
       default = {};
     };
   };
-  config = let
-    schemePath = "${inputs.tt-schemes}/base16/${cfg.active}.yaml";
-  in {
+  config = {
     assertions = [
       {
         assertion = builtins.pathExists schemePath;
@@ -31,9 +33,6 @@ in {
       }
     ];
 
-    scheme = schemePath;
-
-    # TODO this is messy, do something else here
-    modules.themes.colors = config.scheme;
+    modules.themes.colors = base16.mkSchemeAttrs schemePath;
   };
 }

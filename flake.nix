@@ -250,6 +250,7 @@
         ...
       }: let
         # temprorary fix for deploy-rs issue
+        # see https://github.com/serokell/deploy-rs/issues/355
         deployRsPatch = pkgs.fetchpatch {
           url = "https://github.com/serokell/deploy-rs/pull/359.patch";
           hash = "sha256-t1yVnID7nkOS46f0ao1Oaovj0qXoKoI1nvtDdUDNopU=";
