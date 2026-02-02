@@ -126,10 +126,9 @@
       };
       extraPackages = with pkgs; [
         discord
-        openvpn
-        papers
         signal-desktop-bin
         ungoogled-chromium
+        feishin
       ];
       autostart = {
         enable = true;

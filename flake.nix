@@ -48,7 +48,8 @@
       url = "github:YaLTeR/niri";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    waybar.url = "github:Alexays/waybar";
+    # NOTE temporarily pin waybar, latest commit is broken on nix
+    waybar.url = "github:Alexays/waybar?ref=09cbec0a3c1161c441e183b48eb5546433282288";
     # I use flake-parts to ensure I can use my flake across platforms, although I probably shouldn't
     flake-parts.url = "github:hercules-ci/flake-parts";
     disko = {
@@ -248,17 +249,7 @@
         self',
         system,
         ...
-      }: let
-        # temprorary fix for deploy-rs issue
-        # see https://github.com/serokell/deploy-rs/issues/355
-        deployRsPatch = pkgs.fetchpatch {
-          url = "https://github.com/serokell/deploy-rs/pull/359.patch";
-          hash = "sha256-t1yVnID7nkOS46f0ao1Oaovj0qXoKoI1nvtDdUDNopU=";
-        };
-        patchedDeployRs = inputs'.deploy-rs.packages.default.overrideAttrs (old: {
-          patches = (old.patches or []) ++ [deployRsPatch];
-        });
-      in {
+      }: {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
           config.allowUnfreePredicate = pkg:
@@ -271,8 +262,7 @@
         apps = {
           # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
           # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
-          #deploy-rs = inputs'.deploy-rs.apps.default;
-          deploy-rs = patchedDeployRs;
+          deploy-rs = inputs'.deploy-rs.apps.default;
           generate = inputs'.nixos-generators.apps.default;
         };
         devShells.default = pkgs.mkShell {
@@ -280,8 +270,7 @@
             [
               inputs'.nixos-generators.packages.default
               inputs'.nil.packages.default
-              #inputs'.deploy-rs.packages.default
-              patchedDeployRs
+              inputs'.deploy-rs.packages.default
               inputs'.sops-nix.packages.default
               pkgs.nvd
               pkgs.rage
