@@ -60,24 +60,26 @@
     };
   };
 
+  # TODO add place for ad-hoc packages?
+  user.packages = with pkgs; [
+    feishin
+  ];
+
   home-manager.backupFileExtension = "home-manager";
 
   # we use Determinate Nix on macOS, so we need to turn off nix-darwin's daemon
   nix.enable = false;
 
   # Necessary for using flakes on this system.
-  nix.settings.experimental-features = "nix-command flakes pipe-operators";
+  nix.settings.experimental-features = "nix-command flakes pipe-operators ca-derivations";
 
+  # nixpkgs.config.contentAddressedByDefault = true;
+
+  # TODO move
   security.pam.services.sudo_local.touchIdAuth = true;
 
   # TODO move
   environment.shells = with pkgs; [nushell];
-
-  # Enable alternative shell support in nix-darwin.
-  # programs.fish.enable = true;
-
-  # Set Git commit hash for darwin-version.
-  # system.configurationRevision = rev || dirtyRev || null;
 
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog

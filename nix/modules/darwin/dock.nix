@@ -33,7 +33,7 @@ in {
           }
         )
         {
-          app = "/Applications/Qobuz.app";
+          app = "${pkgs.feishin}/Applications/Feishin.app";
         }
         {
           app = "/Applications/Signal.app";
