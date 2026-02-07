@@ -2,9 +2,10 @@
   config,
   lib,
   pkgs,
+  isDarwin,
   ...
 }: let
-  inherit (lib) mkOption types mkIf;
+  inherit (lib) mkOption types mkIf optionalAttrs;
   cfg = config.modules.services.ssh.client;
 in {
   options.modules.services.ssh.client = {
@@ -47,6 +48,11 @@ in {
           controlMaster = "no";
           controlPath = "~/.ssh/master-%r@%n:%p";
           controlPersist = "no";
+
+          # macOS: use Keychain for SSH key passphrases
+          extraOptions = optionalAttrs isDarwin {
+            "UseKeychain" = "yes";
+          };
         };
 
         "atlas" = {
