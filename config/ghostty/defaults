@@ -1,2 +1,4 @@
 font-family = Hack Nerd Font Mono
 theme = TokyoNight
+
+window-inherit-working-directory = false
