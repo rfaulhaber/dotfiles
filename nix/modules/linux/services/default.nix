@@ -8,8 +8,6 @@
     ./mullvad
     ./netbird
     ./printing
-    ./radicle
-    ./redshift
     ./samba-mount
     ./samba-serve
     ./sudo-rs
@@ -17,7 +15,6 @@
     ./systemd
     ./themes
     ./yubikey
-    ./zerotier
     ./zfs
   ];
 }
