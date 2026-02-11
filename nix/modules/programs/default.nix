@@ -12,6 +12,5 @@
     ./neovim
     ./nushell
     ./sops
-    ./wezterm
   ];
 }
