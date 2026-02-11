@@ -70,11 +70,13 @@
 (package! age)
 (package! agenix)
 (package! sops)
+(package! just-mode)
+(package! justl)
 
 ;; (package! hyperbole)
 
 (package! mcp
-  :pin "125e0a4478ff1404880ea4e593f5e4ff0122cb83"
+  :pin "2e947d2ddc8cbe655f846e23711e412d41f1bf6a"
   :recipe (:host github
            :repo "lizqwerscott/mcp.el"))
 
