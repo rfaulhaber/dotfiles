@@ -75,6 +75,8 @@ in {
 
     user.shell = mkIf cfg.setDefault pkgs.nushell;
 
+    environment.shells = [pkgs.nushell];
+
     user.packages =
       [
         pkgs.bat # bat is used as nushell's pager. see config/nushell/env.nu
