@@ -29,7 +29,7 @@
           then 1000000000 # 1GB
           else 104857600; # 100MB
 
-        experimental-features = ["nix-command" "flakes" "pipe-operators"];
+        experimental-features = ["nix-command" "flakes" "pipe-operators" "ca-derivations"];
       };
     };
   };
