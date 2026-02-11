@@ -11,6 +11,14 @@
 
 (defvar self/global-config-file-path "~/.config/globals.json" "Path to personal global config.")
 
+(defvar self/external-terminal-command "ghostty"
+  "The terminal emulator program to use for `self/open-external-terminal-for-current-project'.")
+
+(defvar self/external-terminal-args-fn
+  (lambda (dir)
+    (list (format "--working-directory=%s" dir)))
+  "Function that takes a directory and returns a list of arguments for `self/external-terminal-command'.")
+
 (defconst self/date-format-options '(("MM/YYYY"    . "%m/%Y")
                                      ("MM/DD"      . "%m/%d")
                                      ("MM/DD/YYYY" . "%m/%d/%Y")
@@ -350,9 +358,9 @@ hello world
                           (when buffer-file-name (f-dirname buffer-file-name)))))
       (make-process
        :name "terminal spawn"
-       :buffer (get-buffer-create "*termianl spawn*")
-       ;; TODO make configurable
-       :command `("wezterm" "start" "--cwd" ,location))
+       :buffer (get-buffer-create "*terminal spawn*")
+       :command (cons self/external-terminal-command
+                      (funcall self/external-terminal-args-fn location)))
     (user-error "cannot find a directory to open")))
 
 (defun self/update-org-agenda-files ()
