@@ -1,5 +1,6 @@
 export use ./colored_man_pages.nu
 export use ./util.nu
+export use ./net.nu
 
 # Runs ^tokei and returns the output as a Nu record.
 export def tokei-summary [] {
