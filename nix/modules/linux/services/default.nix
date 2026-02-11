@@ -8,8 +8,7 @@
     ./mullvad
     ./netbird
     ./printing
-    ./samba-mount
-    ./samba-serve
+    ./samba
     ./sudo-rs
     ./syncthing
     ./systemd

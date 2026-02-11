@@ -38,11 +38,13 @@
     };
     services = {
       docker.enable = true;
-      samba-mount = {
+      samba.mount = {
         enable = true;
         mounts."${config.user.home}/calibre" = {
-          domain = "192.168.86.10";
-          host = "calibre";
+          server = "192.168.86.10";
+          share = "calibre";
+          credentials = config.sops.secrets."smb-credentials".path;
+          gid = 100;
         };
       };
       keybase.enable = true;
