@@ -20,7 +20,7 @@ in {
     systemd.user.services.tmp-downloads = let
       scriptPath =
         builtins.readFile "${config.dotfiles.binDir}/tmp-downloads.nu"
-        |> lib.my.writeNushellScriptBin "tmp-downloads";
+        |> lib.my.writeNushellScriptBin pkgs "tmp-downloads";
       cmd = "${scriptPath}/bin/tmp-downloads --link ${cfg.targetDir}";
     in {
       path = [pkgs.nushell];

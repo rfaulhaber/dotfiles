@@ -4,8 +4,7 @@
   pkgs,
   ...
 }:
-with lib;
-with lib.my; let
+with lib; let
   cfg = config.modules.desktop;
 in {
   imports = [

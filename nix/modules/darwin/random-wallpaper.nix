@@ -32,7 +32,7 @@ in {
     launchd.user.agents.random-wallpaper = let
       scriptPath =
         builtins.readFile "${config.dotfiles.binDir}/random-wallpaper.nu"
-        |> lib.my.writeNushellScriptBin "random-wallpaper";
+        |> lib.my.writeNushellScriptBin pkgs "random-wallpaper";
       tokenArgs =
         if builtins.isPath cfg.token || lib.hasPrefix "/" cfg.token
         then ["--token-file" (toString cfg.token)]

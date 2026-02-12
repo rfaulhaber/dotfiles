@@ -4,7 +4,7 @@
   ...
 }: let
   inherit (builtins) head match toString dirOf;
-  inherit (lib) strings mkForce;
+  inherit (lib) strings;
 in rec {
   # thank you hlissner
   # https://github.com/hlissner/dotfiles/blob/master/lib/nixos.nix#L7
@@ -45,75 +45,12 @@ in rec {
       ++ extraModules;
     specialArgs =
       {
-        inherit inputs system isLinux isDarwin isAarch64 hostname;
-        # jank
-        lib = let
-          impure = import ./_impure.nix {
-            pkgs = import inputs.nixpkgs {inherit system;};
-          };
-        in
-          lib.extend (self: super: {
-            my = super.my // impure;
-          });
+        inherit inputs lib system isLinux isDarwin isAarch64 hostname;
         platform = system;
         hostDir = dirOf path;
       }
       // specialArgs;
   };
-
-  mkK8sNode = path: {
-    system,
-    overlays ? [],
-    masterAddress,
-    thisAddress,
-    isMaster,
-    hostname,
-  }: (mkHost path {
-    inherit system overlays;
-    specialArgs = {
-      inherit thisAddress isMaster masterAddress;
-    };
-    extraModules = [
-      {
-        networking.hostName = lib.mkForce hostname;
-      }
-    ];
-  });
-
-  mkK8sNodes = count: path: {
-    system,
-    overlays ? [],
-    masterAddress,
-  }: let
-    incrementIPAddress = n: address:
-      lib.pipe address [
-        (lib.splitString ".")
-        (x: let
-          first3 = lib.take 3 x;
-          last = (lib.toInt (lib.last x)) + n;
-        in
-          first3 ++ [(builtins.toString last)])
-        (builtins.concatStringsSep ".")
-      ];
-  in
-    map (n:
-      mkK8sNode path {
-        inherit system overlays masterAddress;
-
-        isMaster = n == 1;
-        hostname = "${hostnameFromPath path}-${(
-          if n == 1
-          then "master"
-          else n
-        )}";
-        thisAddress =
-          if n == 1
-          then masterAddress
-          else (incrementIPAddress (n - 1) masterAddress);
-      })
-    (lib.range
-      1
-      count);
 
   mkNixOSHost = path: attrs:
     inputs.nixpkgs.lib.nixosSystem (mkHost path attrs);
@@ -124,15 +61,8 @@ in rec {
         specialArgs.nixos-raspberrypi = inputs.nixos-raspberrypi;
       }));
 
-  mkNixOSK8sNodes = n: path: attrs:
-    map inputs.nixpkgs.lib.nixosSystem (mkK8sNodes n path attrs);
-
   mkDarwinHost = path: attrs:
     inputs.nix-darwin.lib.darwinSystem (mkHost path attrs);
-
-  # thank you hlissner
-  mapHosts = dir: attrs @ {system, ...}:
-    lib.my.mapModules dir (hostPath: mkHost hostPath attrs);
 
   hostnameFromPath = path: head (match ".*/([[:alpha:]]+)/configuration.nix" (toString path));
 }

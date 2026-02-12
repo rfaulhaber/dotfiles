@@ -26,6 +26,16 @@
       };
       neovim.enable = true;
       git.enable = true;
+      # sops = {
+      #   enable = true;
+      #   secrets = {
+      #     "cache_secret_key" = {
+      #       owner = config.user.name;
+      #       group = config.user.group;
+      #       mode = "0440";
+      #     };
+      #   };
+      # };
     };
     services = {
       zfs.enable = true;
@@ -56,6 +66,17 @@
         };
       };
       netbird.enable = true;
+      samba.serve = {
+        enable = true;
+        subnet = "192.168.0";
+        interface = "eno2";
+        shares.roms = {
+          path = "/data/games/roms";
+          comment = "ROM library";
+          readOnly = true;
+          guestOk = true;
+        };
+      };
     };
 
     # NOTE: the open drivers do not work on atlas

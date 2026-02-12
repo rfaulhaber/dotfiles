@@ -60,7 +60,7 @@ in {
     port = mkOption {
       description = "Port to serve the binary cache on.";
       type = types.port;
-      default = 5000;
+      default = 8751;
     };
 
     secretKeyFile = mkOption {
@@ -76,6 +76,12 @@ in {
       description = "Whether to open the cache port in the firewall.";
       type = types.bool;
       default = true;
+    };
+
+    interface = mkOption {
+      description = "Network interface to open the cache port on.";
+      type = types.str;
+      example = "enp3s0";
     };
 
     priority = mkOption {
@@ -111,13 +117,18 @@ in {
     # Harmonia backend
     services.harmonia = mkIf (cfg.backend == "harmonia") {
       enable = true;
-      signKeyPath = cfg.secretKeyFile;
-      settings = {
-        bind = "[::]:${toString cfg.port}";
-        priority = cfg.priority;
-        workers = cfg.harmonia.workers;
-        max_connection_rate = cfg.harmonia.maxConnectionRate;
-      };
+      signKeyPaths = [cfg.secretKeyFile];
+      settings =
+        {
+          bind = "[::]:${toString cfg.port}";
+          priority = cfg.priority;
+        }
+        // optionalAttrs (cfg.harmonia.workers != null) {
+          workers = cfg.harmonia.workers;
+        }
+        // optionalAttrs (cfg.harmonia.maxConnectionRate != null) {
+          max_connection_rate = cfg.harmonia.maxConnectionRate;
+        };
     };
 
     # nix-serve backend
@@ -129,7 +140,7 @@ in {
     };
 
     # Firewall configuration
-    networking.firewall = mkIf cfg.openFirewall {
+    networking.firewall.interfaces.${cfg.interface} = mkIf cfg.openFirewall {
       allowedTCPPorts = [cfg.port];
     };
 

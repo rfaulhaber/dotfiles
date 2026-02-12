@@ -49,7 +49,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # NOTE temporarily pin waybar, latest commit is broken on nix
-    waybar.url = "github:Alexays/waybar?ref=09cbec0a3c1161c441e183b48eb5546433282288";
+    waybar.url = "github:Alexays/waybar";
     # I use flake-parts to ensure I can use my flake across platforms, although I probably shouldn't
     flake-parts.url = "github:hercules-ci/flake-parts";
     disko = {

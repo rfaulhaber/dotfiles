@@ -3,21 +3,20 @@
   lib,
   ...
 }: let
-  inherit (lib) makeExtensible attrValues foldr;
-  inherit (modules) mapModules;
-
-  modules = import ./modules.nix {
-    inherit lib;
-    self.attrs = import ./attrs.nix {
-      inherit lib;
-      self = {};
-    };
-  };
-
-  mylib = makeExtensible (self:
-    mapModules ./.
-    (file: import file {inherit self lib inputs;}));
+  inherit (lib) mkOption;
+  nixos = import ./nixos.nix {inherit inputs lib;};
 in
-  mylib.extend
-  (self: super:
-    foldr (a: b: a // b) {} (attrValues super))
+  nixos
+  // {
+    mkOpt = type: default: mkOption {inherit type default;};
+
+    mkOptDesc = type: default: description:
+      mkOption {inherit type default description;};
+
+    writeNushellScriptBin = pkgs: name: text:
+      pkgs.writeScriptBin name ''
+        #!${pkgs.nushell}/bin/nu
+
+        ${text}
+      '';
+  }

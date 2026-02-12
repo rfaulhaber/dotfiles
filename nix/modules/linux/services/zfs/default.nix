@@ -90,7 +90,7 @@ in {
         ExecStart = let
           zfsManageScript =
             builtins.readFile "${config.dotfiles.binDir}/zfs-manage.nu"
-            |> lib.my.writeNushellScriptBin "zfs-manage";
+            |> lib.my.writeNushellScriptBin pkgs "zfs-manage";
           datasetsJSON = builtins.toJSON cfg.datasets;
         in "${zfsManageScript}/bin/zfs-manage '${datasetsJSON}'";
       };
