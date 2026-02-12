@@ -15,10 +15,6 @@
     };
     deploy-rs.url = "github:serokell/deploy-rs";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -75,7 +71,6 @@
     home-manager,
     deploy-rs,
     nixos-hardware,
-    nixos-generators,
     nix-darwin,
     emacs-overlay,
     flake-parts,
@@ -199,46 +194,6 @@
           roc-rk3328-cc-bootloader = import ./nix/pkgs/roc-rk3328-cc-bootloader {
             inherit pkgs lib;
           };
-
-          # run with:
-          # nix build .#arm-roc-installer
-          arm-roc-installer = nixos-generators.nixosGenerate {
-            system = "aarch64-linux";
-            modules = [
-              ./nix/installers/aarch64-linux/configuration.nix
-            ];
-            specialArgs = {
-              inherit inputs;
-            };
-            customFormats.aarch64-linux-roc = import ./nix/formats/aarch64/linux/renegade-roc/configuration.nix {
-              inherit pkgs;
-              bootloader = self.packages.x86_64-linux.roc-rk3328-cc-bootloader;
-            };
-            format = "aarch64-linux-roc";
-          };
-
-          # supports raspberry pi up to version 4
-          arm-installer-generic = nixos-generators.nixosGenerate {
-            system = "aarch64-linux";
-            modules = [
-              ./nix/installers/aarch64-linux/configuration.nix
-            ];
-            specialArgs = {
-              inherit inputs;
-            };
-            format = "sd-aarch64-installer";
-          };
-
-          x86_64-installer-generic = nixos-generators.nixosGenerate {
-            system = "x86_64-linux";
-            modules = [
-              ./nix/installers/x86_64-linux/configuration.nix
-            ];
-            specialArgs = {
-              inherit inputs;
-            };
-            format = "install-iso";
-          };
         };
       };
       systems = ["x86_64-linux" "aarch64-darwin"];
@@ -263,12 +218,10 @@
           # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
           # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
           deploy-rs = inputs'.deploy-rs.apps.default;
-          generate = inputs'.nixos-generators.apps.default;
         };
         devShells.default = pkgs.mkShell {
           packages =
             [
-              inputs'.nixos-generators.packages.default
               inputs'.nil.packages.default
               inputs'.deploy-rs.packages.default
               inputs'.sops-nix.packages.default

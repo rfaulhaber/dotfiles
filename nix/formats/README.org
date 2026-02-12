@@ -1,3 +1,0 @@
-#+title: Formats
-
-Custom hardware formats for nixos-generators, organized by architecture.
