@@ -3,7 +3,6 @@
   pkgs,
   options,
   lib,
-  home-manager,
   isLinux,
   isDarwin,
   ...

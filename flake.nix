@@ -112,28 +112,13 @@
         nixosConfigurations = let
           mkHost = lib.my.mkNixOSHost;
         in {
-          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
-            system = "x86_64-linux";
-          };
-          atlas = mkHost ./nix/hosts/atlas/configuration.nix {
-            system = "x86_64-linux";
-          };
-          janus = mkHost ./nix/hosts/janus/configuration.nix {
-            system = "x86_64-linux";
-          };
-          pallas = mkHost ./nix/hosts/pallas/configuration.nix {
-            system = "aarch64-linux";
-          };
-          # NOTE: this will not compile due to this issue:
-          # https://github.com/nvmd/nixos-raspberrypi/issues/51
-          # nike = lib.my.mkRaspberryPiNixOSHost ./nix/hosts/nike/configuration.nix {
-          #   system = "aarch64-linux";
-          # };
+          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {};
+          atlas = mkHost ./nix/hosts/atlas/configuration.nix {};
+          janus = mkHost ./nix/hosts/janus/configuration.nix {};
+          pallas = mkHost ./nix/hosts/pallas/configuration.nix {};
         };
         darwinConfigurations = {
-          eos = lib.my.mkDarwinHost ./nix/hosts/eos/configuration.nix {
-            system = "aarch64-darwin";
-          };
+          eos = lib.my.mkDarwinHost ./nix/hosts/eos/configuration.nix {};
         };
         deploy = {
           sshUser = "ryan";
@@ -160,16 +145,6 @@
                   self.nixosConfigurations.pallas;
               };
             };
-            # nike = {
-            #   hostname = "nike";
-            #   profiles.system = {
-            #     user = "root";
-            #     fastConnection = true;
-            #     path =
-            #       deploy-rs.lib.aarch64-linux.activate.nixos
-            #       self.nixosConfigurations.nike;
-            #   };
-            # };
             janus = {
               hostname = "janus";
               profiles.system = {

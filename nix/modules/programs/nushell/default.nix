@@ -3,7 +3,6 @@
   lib,
   pkgs,
   isLinux,
-  isDarwin,
   ...
 }: let
   inherit (lib) mkEnableOption mkOption types mkIf mkMerge optionals;

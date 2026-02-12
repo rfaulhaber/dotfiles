@@ -1,7 +1,5 @@
 {
-  pkgs,
   lib,
-  system,
   isLinux,
   isDarwin,
   ...

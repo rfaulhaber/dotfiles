@@ -3,13 +3,11 @@
   pkgs,
   lib,
   inputs,
-  system,
   ...
 }: {
   imports = [
     # TODO conditionally import?
     ./hardware-configuration.nix
-    inputs.nixos-generators.nixosModules.all-formats
     inputs.determinate.nixosModules.default
   ];
 

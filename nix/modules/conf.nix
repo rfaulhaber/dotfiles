@@ -3,7 +3,6 @@
   lib,
   pkgs,
   isLinux,
-  isDarwin,
   ...
 }: {
   config = {
