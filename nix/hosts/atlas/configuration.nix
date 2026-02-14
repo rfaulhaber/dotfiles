@@ -68,7 +68,7 @@
       netbird.enable = true;
       samba.serve = {
         enable = true;
-        subnet = "192.168.0";
+        subnet = "192.168.0.";
         interface = "eno2";
         shares.roms = {
           path = "/data/games/roms";
