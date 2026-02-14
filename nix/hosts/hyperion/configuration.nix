@@ -6,7 +6,6 @@
   ...
 }: {
   imports = [
-    # TODO conditionally import?
     ./hardware-configuration.nix
     inputs.determinate.nixosModules.default
   ];
@@ -32,7 +31,6 @@
         };
       };
       neovim.enable = true;
-      # how many terminals does a guy need?
       kitty.enable = true;
       ghostty.enable = true;
       _1password = {
@@ -69,6 +67,7 @@
           };
         };
       };
+      claude.enable = true;
     };
     services = {
       zfs.enable = true;
@@ -199,28 +198,4 @@
     enable = true;
     allowReboot = true;
   };
-
-  # apparently github will rate-limit your access to the API
-  # so this is a workaround for that
-  # nix.settings.access-tokens = ''
-  #   !include ${config.age.secrets.github.path}
-  # '';
-
-  # for use when making a vm using nixos-rebuild build-vm
-  # note that these options aren't respected when using nixos-generate
-  # virtualisation.vmVariant = {
-  #   user.initialHashedPassword = "$6$GNqgrpQokCNs9sfr$vjVC5sv1rfLElOCY/czFKLR7gcoQQgoLR/l0X7I7KhgCKqaoYuUWlgyfCdFeRdFJtkckDFoiEkDoBIflMIEQR1"; # "test" lol
-
-  #   # the vm will try using DHCP for an interface that doesn't exist
-  #   networking.interfaces.enp5s0.useDHCP = lib.mkForce false;
-  #   networking.interfaces.eth0.useDHCP = true;
-  #   networking.interfaces.br0.useDHCP = true;
-  #   networking.bridges = {
-  #     "br0" = {
-  #       interfaces = ["eth0"];
-  #     };
-  #   };
-
-  #   networking.networkmanager.enable = lib.mkForce false;
-  # };
 }

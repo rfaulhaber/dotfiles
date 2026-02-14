@@ -23,6 +23,9 @@ in rec {
         }
         {
           networking.hostName = hostname;
+          # this is kind of less than ideal, I feel like modules that use unfree
+          # code should have to manually opt into this, but this is easier said
+          # than done for some reason
           nixpkgs.config.allowUnfree = true;
         }
         ({...}: {

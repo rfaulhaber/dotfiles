@@ -3,11 +3,11 @@
     ./1password
     ./age
     ./aspell
+    ./claude
     ./direnv
     ./emacs
     ./ghostty
     ./git
-    ./keychain
     ./kitty
     ./neovim
     ./nushell

@@ -20,7 +20,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    emacs-overlay.url = "github:nix-community/emacs-overlay";
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     ragenix = {
       url = "github:yaxitech/ragenix";
@@ -182,10 +185,6 @@
       }: {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
-          config.allowUnfreePredicate = pkg:
-            builtins.elem (pkgs.lib.getName pkg) [
-              "claude-code"
-            ];
         };
         formatter = pkgs.alejandra;
 
@@ -203,7 +202,6 @@
               pkgs.nvd
               pkgs.rage
               pkgs.sops
-              pkgs.claude-code
             ]
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
               inputs'.nix-darwin.packages.default
