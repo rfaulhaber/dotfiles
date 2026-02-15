@@ -18,6 +18,7 @@
       };
     };
     programs = {
+      claude.enable = true;
       emacs = {
         enable = true;
         package = pkgs.emacs-git;
