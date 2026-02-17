@@ -71,7 +71,7 @@
         subnet = "192.168.0.";
         interface = "eno2";
         shares.roms = {
-          path = "/data/games/roms";
+          path = "/data/games/roms/roms";
           comment = "ROM library";
           readOnly = true;
           guestOk = true;
