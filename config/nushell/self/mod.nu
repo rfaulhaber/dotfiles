@@ -72,6 +72,27 @@ export def rotn [n: int]: string -> string {
     | str join
 }
 
+# Converts a dotenv file into a Nushell record, with the env variable names as keys.
+export def "read-dotenv" [
+  file?: path # If a raw string is not passed into this command, you must specify a file to open and read
+]: [
+  string -> record
+  nothing -> record
+] {
+    let input = if $in == null {
+      open $file
+    } else {
+      $in
+    }
+
+    $input
+        | lines
+        | where { |line| ($line | str trim) != "" and (not ($line | str starts-with '#')) }
+        | split column --number 2 '='
+        | rename left right
+        | reduce --fold {} { |row, acc| $acc | merge { $row.left: $row.right } }
+}
+
 # wrapper for creating nix shells with unfree software
 export def "nix shell-unfree" [flake: string] {
   with-env { NIXPKGS_ALLOW_UNFREE: 1 } { ^nix shell --impure $flake }
