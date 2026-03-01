@@ -74,6 +74,7 @@
       docker = {
         enable = true;
         enableIPv6 = true;
+        enableNvidiaTools = true;
       };
       sudo-rs.enable = true;
       printing = {
