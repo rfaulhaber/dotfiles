@@ -124,14 +124,14 @@
       };
       extraPackages = with pkgs; [
         discord
-        signal-desktop-bin
+        signal-desktop
         ungoogled-chromium
         feishin
       ];
       autostart = {
         enable = true;
         entries = [
-          "${pkgs.signal-desktop-bin}/share/applications/signal.desktop"
+          "${pkgs.signal-desktop}/share/applications/signal.desktop"
         ];
       };
     };

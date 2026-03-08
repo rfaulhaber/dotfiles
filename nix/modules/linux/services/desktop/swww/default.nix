@@ -21,7 +21,7 @@ in {
       swwwPkg = inputs.swww.packages.${pkgs.system}.swww;
     in {
       path = [swwwPkg];
-      wantedBy = ["random-wallpaper.service"];
+      wantedBy = ["graphical-session.target"];
       after = ["graphical-session.target"];
       wants = ["graphical-session.target"];
       environment = {
