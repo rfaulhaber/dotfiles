@@ -21,7 +21,9 @@
       claude.enable = true;
       emacs = {
         enable = true;
-        package = pkgs.emacs-git;
+        # eos temporarily will use stable emacs for faster builds
+        # package = pkgs.emacs-git;
+        package = pkgs.emacs;
         doomUnstraightened = {
           enable = true;
           setDefault = true;
