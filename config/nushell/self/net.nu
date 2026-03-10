@@ -1,5 +1,5 @@
 # Uses `ss` to list all actively used ports.
-def list-ports [] {
+export def list-ports [] {
     ^ss -tulnpH
     | lines
     | where { |line| ($line | str trim) != "" }
