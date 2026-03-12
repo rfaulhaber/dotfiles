@@ -1,4 +1,3 @@
-export use ./banner.nu
 export use ./colored_man_pages.nu
 export use ./net.nu
 export use ./nix.nu
