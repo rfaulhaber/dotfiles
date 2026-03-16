@@ -156,6 +156,8 @@
     };
   };
 
+  environment.systemPackages = [pkgs.ghostty.terminfo];
+
   system.autoUpgrade = {
     enable = true;
     allowReboot = true;

@@ -55,6 +55,8 @@
     };
   };
 
+  environment.systemPackages = [pkgs.ghostty.terminfo];
+
   networking = {
     hostName = "janus";
     hostId = "66a2b43a";

@@ -69,6 +69,7 @@
   console.enable = false;
 
   environment.systemPackages = with pkgs; [
+    ghostty.terminfo
     libraspberrypi
     raspberrypi-eeprom
   ];
