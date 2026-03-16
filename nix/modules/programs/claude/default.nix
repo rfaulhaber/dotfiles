@@ -31,6 +31,11 @@ in {
         # Standard tools
         "Bash(which *)"
         "Bash(man *)"
+        "Bash(ls:*)"
+        "WebSearch"
+        "WebFetch(domain:crates.io)"
+        "WebFetch(domain:docs.rs)"
+        "WebFetch(domain:github.com)"
       ];
       description = ''
         Tool patterns to allow without prompting.
