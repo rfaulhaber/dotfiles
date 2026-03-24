@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 with lib; let
@@ -65,6 +66,9 @@ in {
           + cfg.extraConfig;
         ports = [cfg.port];
       };
+
+      # Ensure Ghostty terminfo is available for incoming SSH sessions
+      environment.systemPackages = [pkgs.ghostty.terminfo];
 
       # TODO support multiple users?
       user.openssh.authorizedKeys.keys = keys;

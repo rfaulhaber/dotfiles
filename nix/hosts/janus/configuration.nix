@@ -43,19 +43,12 @@
   };
 
   boot = {
-    tmp = {
-      useTmpfs = true;
-      cleanOnBoot = true;
-    };
-
     loader.grub = {
       enable = true;
       efiSupport = true;
       efiInstallAsRemovable = true;
     };
   };
-
-  environment.systemPackages = [pkgs.ghostty.terminfo];
 
   networking = {
     hostName = "janus";
@@ -74,10 +67,21 @@
         }
       ];
     };
-  };
 
-  system.autoUpgrade = {
-    enable = true;
-    allowReboot = true;
+    firewall = {
+      enable = true;
+      # SSH
+      allowedTCPPorts = [6674];
+      # Coturn (TURN/STUN) uses network_mode: host, so it needs INPUT chain rules.
+      # Other Docker containers use port forwarding (FORWARD chain), which NixOS
+      # firewall does not touch — they manage their own iptables rules.
+      allowedUDPPorts = [3478 5349];
+      allowedUDPPortRanges = [
+        {
+          from = 49152;
+          to = 65535;
+        }
+      ];
+    };
   };
 }

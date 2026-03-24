@@ -115,9 +115,4 @@
 
     networkmanager.enable = true;
   };
-
-  system.autoUpgrade = {
-    enable = true;
-    allowReboot = true;
-  };
 }

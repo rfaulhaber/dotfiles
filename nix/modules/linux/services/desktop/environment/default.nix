@@ -7,14 +7,15 @@ with lib; let
   cfg = config.modules.desktop.environment;
 in {
   imports = [
-    ./awesome
-    ./bspwm
-    ./gnome
-    ./hyprland
-    ./i3
     ./niri
-    ./retroarch
-    ./sway
+    # Unlinked — kept for reference but not evaluated:
+    # ./awesome
+    # ./bspwm
+    # ./gnome
+    # ./hyprland
+    # ./i3
+    # ./retroarch
+    # ./sway
   ];
 
   options.modules.desktop.environment = {

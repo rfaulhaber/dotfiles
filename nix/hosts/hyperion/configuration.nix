@@ -144,11 +144,6 @@
     kernelPackages = pkgs.linuxPackages;
     kernelParams = ["nohibernate"];
 
-    tmp = {
-      useTmpfs = true;
-      cleanOnBoot = true;
-    };
-
     loader = {
       systemd-boot = {
         enable = true;
@@ -196,9 +191,4 @@
   # };
 
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-
-  system.autoUpgrade = {
-    enable = true;
-    allowReboot = true;
-  };
 }

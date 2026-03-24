@@ -12,15 +12,16 @@ in {
     ./environment
     ./firefox
     ./fuzzel
-    ./lightdm
     ./mako
-    ./polybar
     ./random-wallpaper.nix
-    ./retropie-nix
-    ./rofi
     ./sound
     ./swww
     ./waybar
+    # Unlinked — kept for reference but not evaluated:
+    # ./lightdm
+    # ./polybar
+    # ./retropie-nix
+    # ./rofi
   ];
   options.modules.desktop = {
     # TODO rewrite such that you don't need this

@@ -89,11 +89,6 @@
   };
 
   boot = {
-    tmp = {
-      useTmpfs = true;
-      cleanOnBoot = true;
-    };
-
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
@@ -159,10 +154,4 @@
     };
   };
 
-  environment.systemPackages = [pkgs.ghostty.terminfo];
-
-  system.autoUpgrade = {
-    enable = true;
-    allowReboot = true;
-  };
 }
