@@ -8,14 +8,6 @@ with lib; let
 in {
   imports = [
     ./niri
-    # Unlinked — kept for reference but not evaluated:
-    # ./awesome
-    # ./bspwm
-    # ./gnome
-    # ./hyprland
-    # ./i3
-    # ./retroarch
-    # ./sway
   ];
 
   options.modules.desktop.environment = {

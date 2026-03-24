@@ -17,11 +17,6 @@ in {
     ./sound
     ./swww
     ./waybar
-    # Unlinked — kept for reference but not evaluated:
-    # ./lightdm
-    # ./polybar
-    # ./retropie-nix
-    # ./rofi
   ];
   options.modules.desktop = {
     # TODO rewrite such that you don't need this

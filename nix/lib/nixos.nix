@@ -18,8 +18,11 @@ in rec {
     modules =
       [
         {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            backupFileExtension = ".hm-bakcup";
+          };
         }
         {
           networking.hostName = hostname;

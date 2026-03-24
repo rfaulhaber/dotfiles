@@ -15,13 +15,5 @@
     ./themes
     ./yubikey
     ./zfs
-    # Unlinked — kept for reference but not evaluated:
-    # ./containers
-    # ./keybase
-    # ./kubernetes
-    # ./mail
-    # ./passwords
-    # ./virt
-    # ./wireguard
   ];
 }

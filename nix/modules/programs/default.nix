@@ -6,6 +6,7 @@
     ./claude
     ./direnv
     ./emacs
+    ./firefox
     ./ghostty
     ./git
     ./kitty
