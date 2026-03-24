@@ -26,16 +26,13 @@
       };
       neovim.enable = true;
       git.enable = true;
-      # sops = {
-      #   enable = true;
-      #   secrets = {
-      #     "cache_secret_key" = {
-      #       owner = config.user.name;
-      #       group = config.user.group;
-      #       mode = "0440";
-      #     };
-      #   };
-      # };
+      sops = {
+        enable = true;
+        keyFile = null;
+        secrets = {
+          nix-cache = {};
+        };
+      };
     };
     services = {
       zfs.enable = true;
@@ -76,6 +73,12 @@
           readOnly = true;
           guestOk = true;
         };
+      };
+      nix-cache = {
+        enable = true;
+        port = 4965;
+        interface = "eno2";
+        secretKeyFile = config.sops.secrets.nix-cache.path;
       };
     };
 

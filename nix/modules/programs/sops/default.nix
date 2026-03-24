@@ -28,7 +28,7 @@ in {
     };
     keyFile = mkOption {
       description = "Path to default system key file.";
-      type = types.str;
+      type = types.nullOr types.str;
       default = "/etc/sops/age/host.age";
     };
     sshKeyPaths = mkOption {
@@ -49,9 +49,13 @@ in {
     sops = {
       inherit (cfg) secrets;
       defaultSopsFile = "${hostDir}/secrets.yaml";
-      age = {
-        inherit (cfg) keyFile sshKeyPaths;
-      };
+      age =
+        {
+          inherit (cfg) sshKeyPaths;
+        }
+        // lib.optionalAttrs (cfg.keyFile != null) {
+          inherit (cfg) keyFile;
+        };
     };
 
     user.packages = with pkgs; [

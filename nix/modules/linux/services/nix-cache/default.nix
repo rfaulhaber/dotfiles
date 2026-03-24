@@ -115,7 +115,7 @@ in {
     ];
 
     # Harmonia backend
-    services.harmonia = mkIf (cfg.backend == "harmonia") {
+    services.harmonia.cache = mkIf (cfg.backend == "harmonia") {
       enable = true;
       signKeyPaths = [cfg.secretKeyFile];
       settings =
