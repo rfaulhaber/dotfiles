@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    name: Evaluate & format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - name: Check formatting
+        run: nix fmt -- --check .
+      - name: Evaluate NixOS configurations
+        run: |
+          for host in hyperion atlas janus pallas; do
+            echo "::group::Evaluating $host"
+            nix eval .#nixosConfigurations.$host.config.system.build.toplevel
+            echo "::endgroup::"
+          done
+
+  build:
+    name: Build ${{ matrix.host }}
+    needs: check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [hyperion, atlas, janus]
+        # pallas (aarch64-linux) and eos (aarch64-darwin) need non-x86_64 runners.
+        # Add pallas here once a self-hosted aarch64 runner is available.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - name: Build ${{ matrix.host }}
+        run: nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel --print-build-logs
