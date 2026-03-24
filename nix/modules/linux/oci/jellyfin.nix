@@ -5,16 +5,22 @@
   ...
 }:
 with lib; let
-  cfg = config.modules.linux.oci.services.plex;
+  cfg = config.modules.linux.oci.services.jellyfin;
   ociLib = config.modules.linux.oci.lib;
 in {
-  options.modules.linux.oci.services.plex = {
-    enable = mkEnableOption "Plex media server";
+  options.modules.linux.oci.services.jellyfin = {
+    enable = mkEnableOption "Jellyfin media server";
+
+    image = mkOption {
+      description = "Jellyfin container image.";
+      type = types.str;
+      default = "lscr.io/linuxserver/jellyfin:latest";
+    };
 
     baseDir = mkOption {
-      description = "Base directory for Plex data (config, transcode).";
+      description = "Base directory for Jellyfin data (config, cache).";
       type = types.str;
-      example = "/data/apps/plex";
+      example = "/data/apps/jellyfin";
     };
 
     mediaDirs = mkOption {
@@ -48,12 +54,12 @@ in {
 
     user = {
       uid = mkOption {
-        description = "UID for the plex user inside container.";
+        description = "UID for the jellyfin user inside container.";
         type = types.int;
         default = config.user.uid;
       };
       gid = mkOption {
-        description = "GID for the plex group inside container.";
+        description = "GID for the jellyfin group inside container.";
         type = types.int;
         default = config.user.gid;
       };
@@ -61,19 +67,17 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # Ensure the default network exists if we're using it
     modules.linux.oci.networks = mkIf (elem "default" cfg.networks) {
       default.enable = true;
     };
 
-    virtualisation.oci-containers.containers."plex" = {
-      image = "linuxserver/plex";
+    virtualisation.oci-containers.containers."jellyfin" = {
+      image = cfg.image;
       environment =
         {
           "PGID" = toString cfg.user.gid;
           "PUID" = toString cfg.user.uid;
           "TZ" = cfg.timezone;
-          "VERSION" = "docker";
         }
         // optionalAttrs (cfg.gpu == "nvidia") {
           "NVIDIA_VISIBLE_DEVICES" = "all";
@@ -81,28 +85,24 @@ in {
       volumes =
         [
           "${cfg.baseDir}/config:/config:rw"
-          "${cfg.baseDir}/transcode:/transcode:rw"
+          "${cfg.baseDir}/cache:/cache:rw"
         ]
         ++ (mapAttrsToList (name: path: "${path}:/${name}:rw") cfg.mediaDirs);
       ports = [
-        "32400:32400/tcp"
-        "3005:3005/tcp"
-        "8324:8324/tcp"
-        "32410:32410/udp"
-        "32412:32412/udp"
-        "32413:32413/udp"
-        "32414:32414/udp"
-        "32469:32469/tcp"
+        "8096:8096/tcp"
+        "8920:8920/tcp"
+        "7359:7359/udp"
+        "1900:1900/udp"
       ];
       log-driver = "journald";
       extraOptions =
-        ["--network-alias=plex"]
+        ["--network-alias=jellyfin"]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ optionals (cfg.gpu == "nvidia") ["--device=nvidia.com/gpu=all"]
         ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri"];
     };
 
-    systemd.services."podman-plex" = ociLib.mkServiceConfig {
+    systemd.services."podman-jellyfin" = ociLib.mkServiceConfig {
       networks = cfg.networks;
     };
   };

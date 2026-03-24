@@ -5,6 +5,7 @@
     ./docker
     ./hardware
     ./mullvad
+    ./nfs
     ./nix-cache
     ./netbird
     ./printing

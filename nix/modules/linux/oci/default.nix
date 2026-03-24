@@ -82,6 +82,8 @@ with lib; let
 in {
   imports = [
     ./caddy.nix
+    ./immich.nix
+    ./jellyfin.nix
     ./miniflux.nix
     ./pihole.nix
     ./plex.nix
