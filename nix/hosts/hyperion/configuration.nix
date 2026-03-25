@@ -125,7 +125,6 @@
         setDefaultPDFViewer = true;
       };
       extraPackages = with pkgs; [
-        discord
         signal-desktop
         ungoogled-chromium
         feishin
