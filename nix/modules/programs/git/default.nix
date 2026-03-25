@@ -46,6 +46,7 @@ in {
         signing = {
           signByDefault = true;
           key = config.userInfo.primaryGPGKey;
+          format = "openpgp";
         };
       };
       delta = mkIf cfg.useDelta {
