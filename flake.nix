@@ -44,7 +44,6 @@
       url = "github:YaLTeR/niri";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # NOTE temporarily pin waybar, latest commit is broken on nix
     waybar.url = "github:Alexays/waybar";
     # I use flake-parts to ensure I can use my flake across platforms, although I probably shouldn't
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -61,10 +60,6 @@
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
     sops-nix = {
       url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    firefox-addons = {
-      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -115,11 +110,14 @@
         # TODO a nixos configuration should be a combination of a modules configuration and a hardware configuration
         nixosConfigurations = let
           mkHost = lib.my.mkNixOSHost;
+          overlays = [
+            (import ./nix/overlays/netbird.nix)
+          ];
         in {
-          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {};
-          atlas = mkHost ./nix/hosts/atlas/configuration.nix {};
-          janus = mkHost ./nix/hosts/janus/configuration.nix {};
-          pallas = mkHost ./nix/hosts/pallas/configuration.nix {};
+          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {inherit overlays;};
+          atlas = mkHost ./nix/hosts/atlas/configuration.nix {inherit overlays;};
+          janus = mkHost ./nix/hosts/janus/configuration.nix {inherit overlays;};
+          pallas = mkHost ./nix/hosts/pallas/configuration.nix {inherit overlays;};
         };
         darwinConfigurations = {
           eos = lib.my.mkDarwinHost ./nix/hosts/eos/configuration.nix {};
