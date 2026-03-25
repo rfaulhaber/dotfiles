@@ -37,3 +37,26 @@ jobs:
       - uses: cachix/install-nix-action@v31
       - name: Build ${{ matrix.host }}
         run: nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel --print-build-logs
+      - name: Push to atlas cache
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          CACHE_SECRET_KEY: ${{ secrets.ATLAS_CACHE_SECRET_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.ATLAS_SSH_KEY }}
+          ATLAS_HOST: ${{ secrets.ATLAS_HOST }}
+        run: |
+          # Sign the closure with the cache key
+          echo "$CACHE_SECRET_KEY" > /tmp/cache-secret-key
+          chmod 600 /tmp/cache-secret-key
+          nix store sign --key-file /tmp/cache-secret-key --recursive ./result
+
+          # Set up SSH
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "$ATLAS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          # Copy the signed closure to atlas's nix store
+          nix copy --to "ssh-ng://$ATLAS_HOST" ./result
+
+          # Cleanup secrets from runner
+          rm -f /tmp/cache-secret-key ~/.ssh/id_ed25519
