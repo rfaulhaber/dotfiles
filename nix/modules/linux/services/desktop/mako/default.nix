@@ -6,15 +6,18 @@
 }:
 with lib; let
   cfg = config.modules.desktop.mako;
+  colors = config.modules.themes.colors.withHashtag;
+  font = "Hack Nerd Font Mono";
 in {
   options.modules.desktop.mako = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     user.packages = with pkgs; [mako];
 
-    home.file.makoconf = {
-      source = "${config.dotfiles.configDir}/mako/config";
-      target = "${config.user.home}/.config/mako/config";
-    };
+    home.configFile."mako/config".text = ''
+      font=${font} 16
+      background-color=${colors.base07}FF
+      text-color=${colors.base00}FF
+    '';
   };
 }

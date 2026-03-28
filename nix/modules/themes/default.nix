@@ -33,6 +33,20 @@ in {
       }
     ];
 
-    modules.themes.colors = base16.mkSchemeAttrs schemePath;
+    modules.themes.colors = let
+      base = base16.mkSchemeAttrs schemePath;
+      customPath = ./${cfg.active}.nix;
+      hasCustom = builtins.pathExists customPath;
+      custom =
+        if hasCustom
+        then import customPath
+        else {};
+      customNoHash = builtins.mapAttrs (_: v: lib.removePrefix "#" v) custom;
+    in
+      base
+      // customNoHash
+      // {
+        withHashtag = base.withHashtag // custom;
+      };
   };
 }

@@ -260,16 +260,15 @@ in {
     # home-manager symlinks it into the nix store (read-only), so Firefox
     # crashes with "profile cannot be loaded." Replace the symlink with a
     # mutable copy after home-manager link generation.
-    home-manager.users.${config.user.name}.home.activation.firefoxProfilesWritable =
-      inputs.home-manager.lib.hm.dag.entryAfter ["linkGeneration"] ''
-        profilesIni="$HOME/.mozilla/firefox/profiles.ini"
-        if [ -L "$profilesIni" ]; then
-          target=$(readlink "$profilesIni")
-          rm "$profilesIni"
-          cp "$target" "$profilesIni"
-          chmod u+w "$profilesIni"
-        fi
-      '';
+    home-manager.users.${config.user.name}.home.activation.firefoxProfilesWritable = inputs.home-manager.lib.hm.dag.entryAfter ["linkGeneration"] ''
+      profilesIni="$HOME/.mozilla/firefox/profiles.ini"
+      if [ -L "$profilesIni" ]; then
+        target=$(readlink "$profilesIni")
+        rm "$profilesIni"
+        cp "$target" "$profilesIni"
+        chmod u+w "$profilesIni"
+      fi
+    '';
 
     # PDF viewer default via XDG mime
     environment.etc."xdg/mimeapps.list" = mkIf (cfg.setDefaultPDFViewer && isLinux) {

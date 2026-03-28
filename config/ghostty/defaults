@@ -1,6 +1,0 @@
-font-family = Hack Nerd Font Mono
-theme = TokyoNight
-
-window-inherit-working-directory = false
-
-shell-integration-features = cursor,sudo,title,ssh-env,ssh-terminfo

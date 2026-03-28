@@ -34,7 +34,7 @@ in {
       # ];
     };
 
-    systemd.packages = [ inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.default ];
+    systemd.packages = [inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.default];
 
     security.polkit.enable = true;
 
