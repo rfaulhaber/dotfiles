@@ -47,6 +47,7 @@
       inputs.nil.outputs.packages.${pkgs.stdenv.targetPlatform.system}.nil
       languagetool
       nodePackages.mermaid-cli
+      pandoc
       ripgrep
       sqlite
       texlive.combined.scheme-medium
