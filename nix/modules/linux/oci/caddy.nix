@@ -82,6 +82,10 @@ with lib; let
     </html>
   '';
 
+  # Build a real directory in the Nix store for the index page,
+  # so it can be bind-mounted into the container without broken symlinks.
+  indexDir = pkgs.writeTextDir "index.html" generateIndexHtml;
+
   # Reverse proxy option type
   reverseProxyOpts = {name, ...}: {
     options = {
@@ -241,10 +245,6 @@ in {
     # Write the Caddyfile to /etc
     environment.etc."caddy/Caddyfile".text = generateCaddyfile;
 
-    # Write the generated index.html if enabled
-    environment.etc."caddy/srv/index/index.html" = mkIf cfg.index.enable {
-      text = generateIndexHtml;
-    };
 
     virtualisation.oci-containers.containers."caddy" = {
       image = cfg.image;
@@ -259,7 +259,7 @@ in {
           "${cfg.baseDir}/data:/data"
           "${cfg.baseDir}/config:/config"
         ]
-        ++ optional cfg.index.enable "/etc/caddy/srv/index:/srv/index:ro"
+        ++ optional cfg.index.enable "${indexDir}:/srv/index:ro"
         ++ optional (cfg.staticDir != null) "${cfg.staticDir}:/srv/static:ro";
       extraOptions = [
         "--cap-add=NET_ADMIN"
