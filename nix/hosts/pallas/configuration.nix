@@ -24,12 +24,9 @@
         setDefault = true;
         carapace.enable = true;
       };
-      neovim.enable = true;
-      git.enable = true;
     };
     services = {
       docker.enable = true;
-      gpg.enable = true;
       sudo-rs.enable = true;
       systemd.modules = {
         dockerCleanup.enable = true;

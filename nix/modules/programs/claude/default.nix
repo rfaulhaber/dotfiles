@@ -16,9 +16,6 @@ in {
         # Rust
         "Bash(cargo *)"
 
-        # Nix
-        "Bash(nix *)"
-
         # Git (read-only)
         "Bash(git status*)"
         "Bash(git log*)"
@@ -28,14 +25,17 @@ in {
         "Bash(git rev-parse*)"
         "Bash(git ls-files*)"
 
-        # Standard tools
-        "Bash(which *)"
+        # Read-only commands
+        "Bash(find *)"
+        "Bash(grep *)"
+        "Bash(ls *)"
         "Bash(man *)"
-        "Bash(ls:*)"
-        "WebSearch"
+        "Bash(which *)"
+        "Read(*)"
         "WebFetch(domain:crates.io)"
         "WebFetch(domain:docs.rs)"
         "WebFetch(domain:github.com)"
+        "WebSearch"
       ];
       description = ''
         Tool patterns to allow without prompting.

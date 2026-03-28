@@ -20,12 +20,10 @@
         zoxide.enable = true;
         carapace.enable = true;
       };
-      neovim.enable = true;
-      git.enable = true;
     };
     services = {
       docker.enable = true;
-      gpg.enable = true;
+      sudo-rs.enable = true;
       systemd.modules = {
         updatedb.enable = true;
         dockerCleanup.enable = true;

@@ -110,14 +110,11 @@
         # TODO a nixos configuration should be a combination of a modules configuration and a hardware configuration
         nixosConfigurations = let
           mkHost = lib.my.mkNixOSHost;
-          overlays = [
-            (import ./nix/overlays/netbird.nix)
-          ];
         in {
-          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {inherit overlays;};
-          atlas = mkHost ./nix/hosts/atlas/configuration.nix {inherit overlays;};
-          janus = mkHost ./nix/hosts/janus/configuration.nix {inherit overlays;};
-          pallas = mkHost ./nix/hosts/pallas/configuration.nix {inherit overlays;};
+          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {};
+          atlas = mkHost ./nix/hosts/atlas/configuration.nix {};
+          janus = mkHost ./nix/hosts/janus/configuration.nix {};
+          pallas = mkHost ./nix/hosts/pallas/configuration.nix {};
         };
         darwinConfigurations = {
           eos = lib.my.mkDarwinHost ./nix/hosts/eos/configuration.nix {};

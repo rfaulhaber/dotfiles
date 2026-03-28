@@ -24,8 +24,6 @@
         zoxide.enable = true;
         carapace.enable = true;
       };
-      neovim.enable = true;
-      git.enable = true;
       sops = {
         enable = true;
         keyFile = null;
@@ -43,11 +41,9 @@
         # TODO figure out how to enable
         # enableIPv6 = true;
       };
-      gpg.enable = true;
       systemd.modules = {
         updatedb.enable = true;
         dockerCleanup.enable = true;
-        # backupDockerConfig.enable = true;
       };
       printing = {
         enable = true;
@@ -153,5 +149,4 @@
       '';
     };
   };
-
 }
