@@ -55,7 +55,7 @@ in {
       gid = mkOption {
         description = "GID for the plex group inside container.";
         type = types.int;
-        default = config.user.gid;
+        default = 100;
       };
     };
   };

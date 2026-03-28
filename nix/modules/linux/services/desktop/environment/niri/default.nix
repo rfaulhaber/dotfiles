@@ -7,10 +7,13 @@
 }:
 with lib; let
   cfg = config.modules.desktop.environment.niri;
+  colors = config.modules.themes.colors;
+  niriPkg = inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in {
   imports = [
     ../../swww
     ../../wayland
+    inputs.niri-flake.nixosModules.niri
   ];
 
   options.modules.desktop.environment.niri.enable = mkEnableOption false;
@@ -27,21 +30,16 @@ in {
       waybar.enable = true;
       environment.type = "wayland";
       fuzzel.enable = true;
-
-      # TODO get this to work!
-      # autostart.entries = [
-      #   "${pkgs.xwayland-satellite}/bin/xwayland-satellite"
-      # ];
     };
 
-    systemd.packages = [inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.default];
+    systemd.packages = [niriPkg];
 
     security.polkit.enable = true;
 
     programs = {
       niri = {
         enable = true;
-        package = inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        package = niriPkg;
       };
 
       xwayland.enable = true;
@@ -55,7 +53,6 @@ in {
       };
     };
 
-    # the above uses gdm to login, so we have to also set enableGnomeKeyring here maybe
     security.pam.services.gdm.enableGnomeKeyring = true;
 
     user.packages = with pkgs; [
@@ -66,16 +63,49 @@ in {
     environment.systemPackages = with pkgs; [
       xdg-desktop-portal-gtk
       xwayland-satellite
-      # the niri configuration for NixOS does not seem to ship with a graphical file explorer configured
-      # this is, unfortunately, needed for interacting with the filesystem from a browser
-      # I would like to avoid using this, so this may not be permanent
-      # we sort of kind of use GNOME under the hood, so nautilus is what I'm going with
       nautilus
     ];
 
-    home.file.niriconf = {
-      source = "${config.dotfiles.configDir}/niri/config.kdl";
-      target = "${config.user.home}/.config/niri/config.kdl";
+    # niri settings via the sodiboo/niri-flake home-manager module
+    # (nixosModules.niri auto-imports the HM module when home-manager is present)
+    home-manager.users.${config.user.name}.programs.niri.settings = {
+      input = {
+        keyboard.xkb = {};
+        touchpad = {
+          tap = true;
+          natural-scroll = true;
+        };
+      };
+
+      outputs."DP-1" = {
+        mode = {
+          width = 3840;
+          height = 2160;
+          refresh = 59.997;
+        };
+        scale = 1;
+        transform.rotation = 0;
+        position = {
+          x = 1280;
+          y = 0;
+        };
+      };
+
+      layout = import ./layout.nix {inherit colors;};
+
+      spawn-at-startup = [
+        {argv = ["waybar"];}
+        {argv = ["xwayland-satellite"];}
+      ];
+
+      environment = {
+        DISPLAY = ":0";
+      };
+
+      screenshot-path = "~/pictures/screenshots/screenshot-%Y-%m-%d-%H:%M:%S.png";
+
+      window-rules = import ./window-rules.nix;
+      binds = import ./binds.nix;
     };
   };
 }
