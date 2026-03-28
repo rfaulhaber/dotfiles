@@ -15,7 +15,6 @@
       btop
       fd
       fzf
-      pandoc
       ripgrep
       rsync
       unzip

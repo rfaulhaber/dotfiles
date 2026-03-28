@@ -104,8 +104,16 @@ in {
       description = "Podman named volumes to create";
     };
 
+    lib = mkOption {
+      type = types.attrs;
+      internal = true;
+      description = "Helper functions and values for OCI service modules.";
+    };
+  };
+
+  config = mkIf cfg.enable {
     # Exposed for service modules to reference
-    lib = {
+    modules.linux.oci.lib = {
       inherit hostname rootTargetName networkServiceName volumeServiceName;
 
       # Full network name as it appears in podman
@@ -136,9 +144,6 @@ in {
         wantedBy = ["${rootTargetName}.target"];
       };
     };
-  };
-
-  config = mkIf cfg.enable {
     virtualisation.podman = {
       enable = true;
       autoPrune.enable = true;

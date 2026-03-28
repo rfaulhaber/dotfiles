@@ -14,7 +14,7 @@ in {
     image = mkOption {
       description = "Pi-hole container image.";
       type = types.str;
-      default = "pihole/pihole:2025.11.1";
+      default = "pihole/pihole:2026.02.0";
     };
 
     baseDir = mkOption {
@@ -107,7 +107,7 @@ in {
       gid = mkOption {
         description = "GID for pihole inside container.";
         type = types.int;
-        default = config.user.gid;
+        default = 100;
       };
     };
   };
@@ -120,6 +120,8 @@ in {
       extraOptions = [
         "--network=host"
         "--cap-add=NET_ADMIN"
+        "--cap-add=NET_RAW"
+        "--cap-add=SYS_TIME"
       ];
 
       environmentFiles = [
