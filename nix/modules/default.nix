@@ -13,6 +13,7 @@
       ./options.nix
       ./programs
       ./ssh
+      ./themes
     ]
     ++ lib.optionals isLinux [
       ./linux

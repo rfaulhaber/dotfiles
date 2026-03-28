@@ -124,13 +124,17 @@ in {
           programs = mkAliasDefinitions options.home.programs;
           services = mkAliasDefinitions options.home.services;
         }
+        // {
+          xdg = {
+            configFile = mkAliasDefinitions options.home.configFile;
+            dataFile = mkAliasDefinitions options.home.dataFile;
+          };
+        }
         // lib.optionalAttrs isLinux {
           xsession = mkAliasDefinitions options.home.xsession;
           dconf.settings = mkAliasDefinitions options.home.dconf.settings;
 
           xdg = {
-            configFile = mkAliasDefinitions options.home.configFile;
-            dataFile = mkAliasDefinitions options.home.dataFile;
             # TODO can I just forward all this stuff automatically? it's really annoying!
             autostart = mkAliasDefinitions options.home.autostart;
           };

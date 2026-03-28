@@ -48,12 +48,12 @@ in {
         # given the way nushell loads, this causes all the sourced files in the
         # dotfiles to not load correctly. so the way we avoid that is to have
         # home manager's config load the config from the dotfiles like so.
-        # on Linux, we also source a generated theme file that overrides the
-        # hardcoded tokyo-night theme with colors from the active system theme.
-        configFile.text =
-          "source ${configDir}/config.nu"
-          + lib.optionalString isLinux
-          "\nsource ${config.user.home}/.config/nushell/generated-theme.nu";
+        # a generated theme file is sourced after to override the hardcoded
+        # tokyo-night fallback with colors from the active system theme.
+        configFile.text = ''
+          source ${configDir}/config.nu
+          source ${config.user.home}/.config/nushell/generated-theme.nu
+        '';
         envFile.text = "source ${configDir}/env.nu";
 
         shellAliases = mkIf (pkgs.stdenv.isLinux && desktopCfg.enable) (mkMerge [
@@ -77,8 +77,8 @@ in {
       carapace.enable = cfg.carapace.enable;
     };
 
-    # generate a theme override on Linux using the active system theme
-    home.file.nushellGeneratedTheme = mkIf isLinux (let
+    # generate a theme override using the active system theme
+    home.file.nushellGeneratedTheme = let
       c = config.modules.themes.colors.withHashtag;
     in {
       target = "${config.user.home}/.config/nushell/generated-theme.nu";
@@ -181,7 +181,7 @@ in {
             separator: '${c.fg}'
         }
       '';
-    });
+    };
 
     user.shell = mkIf cfg.setDefault pkgs.nushell;
 

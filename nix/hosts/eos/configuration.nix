@@ -8,6 +8,7 @@
   # NOTE darwin options
   # https://nix-darwin.github.io/nix-darwin/manual/index.html
   modules = {
+    themes.active = "tokyo-night-dark";
     darwin = {
       dock = {
         enable = true;

@@ -13,7 +13,6 @@
     ./sudo-rs
     ./syncthing
     ./systemd
-    ./themes
     ./yubikey
     ./zfs
   ];
