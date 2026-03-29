@@ -1,5 +1,0 @@
-config-file = defaults
-config-file = darwin
-
-command = /etc/profiles/per-user/ryan/bin/nu --login
-

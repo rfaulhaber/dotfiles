@@ -34,7 +34,10 @@
       };
       neovim.enable = true;
       kitty.enable = true;
-      ghostty.enable = true;
+      ghostty = {
+        enable = true;
+        fontSize = 20;
+      };
       _1password = {
         enable = true;
         autostart = true;

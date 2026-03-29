@@ -20,30 +20,38 @@ in {
         then pkgs.ghostty-bin
         else pkgs.ghostty;
     };
+    fontSize = mkOption {
+      description = "Font size.";
+      type = types.int;
+      default = 16;
+    };
+    extraConfig = mkOption {
+      description = "Additional Ghostty configuration lines.";
+      type = types.lines;
+      default = "";
+    };
   };
 
   config = mkIf cfg.enable {
     user.packages = [cfg.package];
 
     home.file = {
-      ghosttyConfigDir = {
-        source = "${config.dotfiles.configDir}/ghostty";
-        target = "${config.user.home}/.config/ghostty";
-        recursive = true;
-      };
-
-      ghosttyConfigFile = {
+      ghosttyConfig = {
         target = "${config.user.home}/.config/ghostty/config";
-        text = ''
-          config-file = ${config.networking.hostName}
-        '';
+        text =
+          ''
+            config-file = theme
+            font-family = ${font}
+            font-size = ${toString cfg.fontSize}
+            window-inherit-working-directory = false
+            shell-integration-features = cursor,sudo,title,ssh-env,ssh-terminfo
+          ''
+          + optionalString (cfg.extraConfig != "") cfg.extraConfig;
       };
 
-      ghosttyDefaults = {
-        target = "${config.user.home}/.config/ghostty/defaults";
+      ghosttyTheme = {
+        target = "${config.user.home}/.config/ghostty/theme";
         text = ''
-          font-family = ${font}
-
           background = ${colors.base00}
           foreground = ${colors.base05}
           cursor-color = ${colors.base05}
@@ -66,9 +74,6 @@ in {
           palette = 13=${colors.bright-magenta}
           palette = 14=${colors.bright-cyan}
           palette = 15=${colors.base07}
-
-          window-inherit-working-directory = false
-          shell-integration-features = cursor,sudo,title,ssh-env,ssh-terminfo
         '';
       };
 
