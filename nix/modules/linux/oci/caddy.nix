@@ -245,7 +245,6 @@ in {
     # Write the Caddyfile to /etc
     environment.etc."caddy/Caddyfile".text = generateCaddyfile;
 
-
     virtualisation.oci-containers.containers."caddy" = {
       image = cfg.image;
       ports = [
