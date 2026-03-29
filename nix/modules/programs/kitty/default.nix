@@ -21,6 +21,8 @@ in {
     home.programs.kitty = {
       enable = true;
       settings = with colors; {
+        font_family = config.modules.themes.font;
+
         # colors
         background = base00;
         foreground = base07;

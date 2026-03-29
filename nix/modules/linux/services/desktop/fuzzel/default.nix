@@ -7,7 +7,7 @@
 with lib; let
   cfg = config.modules.desktop.fuzzel;
   colors = config.modules.themes.colors;
-  font = "Hack Nerd Font Mono";
+  font = config.modules.themes.font;
 in {
   options.modules.desktop.fuzzel = {enable = mkEnableOption false;};
 

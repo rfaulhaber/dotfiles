@@ -8,7 +8,7 @@
 with lib; let
   cfg = config.modules.programs.ghostty;
   colors = config.modules.themes.colors.withHashtag;
-  font = "Hack Nerd Font Mono";
+  font = config.modules.themes.font;
 in {
   options.modules.programs.ghostty = {
     enable = mkEnableOption false;

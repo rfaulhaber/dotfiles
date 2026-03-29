@@ -47,10 +47,10 @@ in {
           fixed-center = true;
 
           # fonts
-          font-0 = "Hack Nerd Font:size=${fontSizeStr};3";
-          font-1 = "Hack Nerd Font:size=${fontSizeStr};3";
-          font-2 = "Hack Nerd Font:size=${fontSizeStr};3";
-          font-3 = "Hack Nerd Font:size=${fontSizeStr};3";
+          font-0 = "${config.modules.themes.font}:size=${fontSizeStr};3";
+          font-1 = "${config.modules.themes.font}:size=${fontSizeStr};3";
+          font-2 = "${config.modules.themes.font}:size=${fontSizeStr};3";
+          font-3 = "${config.modules.themes.font}:size=${fontSizeStr};3";
 
           line-size = 3;
           line-color = "#f00";

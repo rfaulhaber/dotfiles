@@ -7,7 +7,7 @@
   inherit (builtins) toJSON concatStringsSep map;
   inherit (lib) attrsToList;
   colors = config.modules.themes.colors;
-  font = "Hack Nerd Font Mono";
+  font = config.modules.themes.font;
   theme = let
     c = colors.withHashtag;
   in
@@ -45,14 +45,17 @@ in {
           };
         };
       };
-      "theme.scss".text =
-        theme
-        |> attrsToList
-        |> (map ({
-          name,
-          value,
-        }: "\$${name}: ${value};"))
-        |> (concatStringsSep "\n");
+      "theme.scss".text = let
+        colorVars =
+          theme
+          |> attrsToList
+          |> (map ({
+            name,
+            value,
+          }: "\$${name}: ${value};"))
+          |> (concatStringsSep "\n");
+      in
+        colorVars + "\n\$font-family: ${font};\n";
     };
   };
 }

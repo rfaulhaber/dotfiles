@@ -75,7 +75,6 @@ in {
       }
     ];
 
-    # TODO make fonts module
     fonts = {
       fontDir.enable = true;
       enableDefaultPackages = true;
@@ -95,7 +94,7 @@ in {
         defaultFonts = {
           serif = ["Merriweather"];
           sansSerif = ["Lato"];
-          monospace = ["Hack Nerd Font Mono"];
+          monospace = [config.modules.themes.font];
         };
       };
     };

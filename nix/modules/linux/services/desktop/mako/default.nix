@@ -7,7 +7,7 @@
 with lib; let
   cfg = config.modules.desktop.mako;
   colors = config.modules.themes.colors.withHashtag;
-  font = "Hack Nerd Font Mono";
+  font = config.modules.themes.font;
 in {
   options.modules.desktop.mako = {enable = mkEnableOption false;};
 

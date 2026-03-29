@@ -1,11 +1,10 @@
 // must be run with dart-sass and "-I"
 @use "theme.scss";
 
-$font-family: Hack Nerd Font Mono;
 $font-size: 20px;
 
 * {
-    font-family: $font-family;
+    font-family: theme.$font-family;
     font-size: $font-size;
 }
 

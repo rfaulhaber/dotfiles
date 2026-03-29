@@ -19,6 +19,12 @@ in {
       description = "The active theme.";
     };
 
+    font = mkOption {
+      type = types.str;
+      description = "The system-wide font family.";
+      default = "Hack Nerd Font Mono";
+    };
+
     colors = mkOption {
       type = types.attrs;
       description = "Active color set.";
