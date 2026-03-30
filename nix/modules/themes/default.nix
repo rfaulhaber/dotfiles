@@ -35,7 +35,7 @@ in {
     assertions = [
       {
         assertion = builtins.pathExists schemePath;
-        message = "${cfg.active} is not a valid theme! For valid themes, see: https://tinted-theming.github.io/base16-gallery";
+        message = "${cfg.active} is not a valid theme! For valid themes, see: https://tinted-theming.github.io/tinted-gallery/";
       }
     ];
 
