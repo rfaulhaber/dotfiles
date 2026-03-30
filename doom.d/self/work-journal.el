@@ -1,10 +1,10 @@
 (require 'ox)
 
 (org-export-define-derived-backend 'work-journal 'blackfriday
-                                   :translate-alist '((headline . org-work-journal-headline))
-                                   :menu-entry '(?f "As Work Journal"
-                                                    ((?F "To temporary buffer" (lambda (a s v b)
-                                                                                 (org-work-journal-export-as-work-journal a s v))))))
+  :translate-alist '((headline . org-work-journal-headline))
+  :menu-entry '(?f "As Work Journal"
+                ((?F "To temporary buffer" (lambda (a s v b)
+                                             (org-work-journal-export-as-work-journal a s v))))))
 
 (defun org-work-journal-headline (headline contents info)
   "Converts an org headline into bold Slack markdown."

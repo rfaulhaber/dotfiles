@@ -24,8 +24,7 @@ Used in loading config specific to those systems.")
 
 ;; if a work computer, load additional config
 (when config/work-computer-p
-  (load! "./self/work.el")
-  (load! "./self/work-journal.el"))
+  (load! "./self/work.el"))
 
 ;; --------------------------------- doom basics ----------------------------------
 
