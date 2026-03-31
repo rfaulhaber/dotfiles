@@ -9,6 +9,10 @@ with lib; let
   cfg = config.modules.programs.ghostty;
   colors = config.modules.themes.colors.withHashtag;
   font = config.modules.themes.font;
+  ghosttyConfigs = import ../../../lib/configs/ghostty.nix {
+    inherit colors font;
+    inherit (cfg) fontSize extraConfig;
+  };
 in {
   options.modules.programs.ghostty = {
     enable = mkEnableOption false;
@@ -38,43 +42,12 @@ in {
     home.file = {
       ghosttyConfig = {
         target = "${config.user.home}/.config/ghostty/config";
-        text =
-          ''
-            config-file = theme
-            font-family = ${font}
-            font-size = ${toString cfg.fontSize}
-            window-inherit-working-directory = false
-            shell-integration-features = cursor,sudo,title,ssh-env,ssh-terminfo
-          ''
-          + optionalString (cfg.extraConfig != "") cfg.extraConfig;
+        text = ghosttyConfigs.config;
       };
 
       ghosttyTheme = {
         target = "${config.user.home}/.config/ghostty/theme";
-        text = ''
-          background = ${colors.base00}
-          foreground = ${colors.base05}
-          cursor-color = ${colors.base05}
-          selection-background = ${colors.base02}
-          selection-foreground = ${colors.base05}
-
-          palette = 0=${colors.base00}
-          palette = 1=${colors.red}
-          palette = 2=${colors.green}
-          palette = 3=${colors.yellow}
-          palette = 4=${colors.blue}
-          palette = 5=${colors.magenta}
-          palette = 6=${colors.cyan}
-          palette = 7=${colors.base05}
-          palette = 8=${colors.base03}
-          palette = 9=${colors.bright-red}
-          palette = 10=${colors.bright-green}
-          palette = 11=${colors.base09}
-          palette = 12=${colors.bright-blue}
-          palette = 13=${colors.bright-magenta}
-          palette = 14=${colors.bright-cyan}
-          palette = 15=${colors.base07}
-        '';
+        text = ghosttyConfigs.theme;
       };
 
       ghosttyApp = mkIf isDarwin {

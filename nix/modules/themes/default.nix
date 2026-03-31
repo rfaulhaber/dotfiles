@@ -8,10 +8,10 @@
 with lib; let
   cfg = config.modules.themes;
   schemePath = "${inputs.tt-schemes}/base16/${cfg.active}.yaml";
-  # Use base16 library directly without importing the nixosModule.
-  # This avoids creating a `scheme` option in the NixOS options tree,
-  # which would trigger a warning during documentation generation.
-  base16 = pkgs.callPackage inputs.base16.lib {};
+  resolveTheme = import ../../lib/configs/theme.nix {
+    inherit pkgs inputs lib;
+    themesDir = ./.;
+  };
 in {
   options.modules.themes = {
     active = mkOption {
@@ -39,20 +39,6 @@ in {
       }
     ];
 
-    modules.themes.colors = let
-      base = base16.mkSchemeAttrs schemePath;
-      customPath = ./${cfg.active}.nix;
-      hasCustom = builtins.pathExists customPath;
-      custom =
-        if hasCustom
-        then import customPath
-        else {};
-      customNoHash = builtins.mapAttrs (_: v: lib.removePrefix "#" v) custom;
-    in
-      base
-      // customNoHash
-      // {
-        withHashtag = base.withHashtag // custom;
-      };
+    modules.themes.colors = resolveTheme {themeName = cfg.active;};
   };
 }

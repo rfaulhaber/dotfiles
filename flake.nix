@@ -193,6 +193,11 @@
           # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
           deploy-rs = inputs'.deploy-rs.apps.default;
         };
+        packages.generated-configs = import ./nix/generated {
+          inherit pkgs inputs;
+          lib = pkgs.lib;
+        };
+
         devShells.default = pkgs.mkShell {
           packages =
             [

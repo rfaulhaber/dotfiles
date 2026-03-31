@@ -79,14 +79,13 @@ in {
 
     # generate a theme override using the active system theme
     home.file.nushellGeneratedTheme = let
-      c = config.modules.themes.colors.withHashtag;
-      themeText = import ./theme.nix {
-        colors = c;
+      nushellConfigs = import ../../../lib/configs/nushell.nix {
+        colors = config.modules.themes.colors.withHashtag;
         themeName = config.modules.themes.colors.scheme;
       };
     in {
       target = "${config.user.home}/.config/nushell/generated-theme.nu";
-      text = themeText;
+      text = nushellConfigs.generated-theme;
     };
 
     user.shell = mkIf cfg.setDefault pkgs.nushell;

@@ -4,6 +4,7 @@
 tmp/
 
 result
+.generated-result
 .direnv
 .projectile-cache.eld
 .sass-cache
