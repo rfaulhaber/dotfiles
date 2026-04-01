@@ -21,7 +21,7 @@ in rec {
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            backupFileExtension = ".hm-bakcup";
+            backupFileExtension = "hm-backup";
           };
         }
         {

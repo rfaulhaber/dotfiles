@@ -66,10 +66,9 @@
 
   # TODO add place for ad-hoc packages?
   user.packages = with pkgs; [
+    inputs.rz.packages.${pkgs.stdenv.hostPlatform.system}.default
     feishin
   ];
-
-  home-manager.backupFileExtension = "home-manager";
 
   # we use Determinate Nix on macOS, so we need to turn off nix-darwin's daemon
   nix.enable = false;
