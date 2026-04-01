@@ -1,0 +1,5 @@
+config-file = theme
+font-family = Hack Nerd Font Mono
+font-size = 16
+window-inherit-working-directory = false
+shell-integration-features = cursor,sudo,title,ssh-env,ssh-terminfo
