@@ -4,6 +4,7 @@
   pkgs,
   inputs,
   hostDir,
+  system,
   ...
 }:
 with lib; let
@@ -58,7 +59,7 @@ in {
         rage
       ]
       ++ lib.optionals cfg.agenix.enable [
-        inputs.ragenix.packages.${pkgs.system}.default
+        inputs.ragenix.packages.${system}.default
       ];
   };
 }

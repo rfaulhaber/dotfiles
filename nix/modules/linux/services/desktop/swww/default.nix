@@ -1,12 +1,13 @@
 {
   config,
   lib,
-  pkgs,
   inputs,
+  pkgs,
   ...
 }:
 with lib; let
   cfg = config.modules.desktop.swww;
+  system = pkgs.stdenv.hostPlatform.system;
 in {
   options.modules.desktop.swww = {enable = mkEnableOption false;};
 
@@ -18,7 +19,7 @@ in {
       }
     ];
     systemd.user.services.swww = let
-      swwwPkg = inputs.swww.packages.${pkgs.system}.swww;
+      swwwPkg = inputs.swww.packages.${system}.swww;
     in {
       path = [swwwPkg];
       wantedBy = ["graphical-session.target"];

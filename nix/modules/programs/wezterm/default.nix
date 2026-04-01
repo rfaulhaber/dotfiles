@@ -5,6 +5,7 @@
   inputs,
   isLinux,
   isDarwin,
+  system,
   ...
 }:
 with lib; let
@@ -20,7 +21,7 @@ in {
     weztermPackage = mkOption {
       description = "WezTerm package to use.";
       type = types.package;
-      default = inputs.wezterm.packages.${pkgs.system}.default;
+      default = inputs.wezterm.packages.${system}.default;
     };
   };
 

@@ -3,6 +3,7 @@
   lib,
   pkgs,
   inputs,
+  system,
   ...
 }:
 with lib; let
@@ -86,12 +87,12 @@ in {
       };
 
       systemPackages = with pkgs; [
-        inputs.swww.packages.${pkgs.system}.swww
+        inputs.swww.packages.${system}.swww
       ];
     };
 
     user.packages = with pkgs; [
-      inputs.murex.packages.${pkgs.system}.default
+      inputs.murex.packages.${system}.default
       tofi
     ];
   };

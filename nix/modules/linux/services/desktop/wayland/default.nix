@@ -7,6 +7,7 @@
 }:
 with lib; let
   cfg = config.modules.desktop.wayland;
+  system = pkgs.stdenv.hostPlatform.system;
 in {
   options.modules.desktop.wayland = {enable = mkEnableOption false;};
 
@@ -29,7 +30,7 @@ in {
       };
 
       systemPackages = with pkgs; [
-        inputs.swww.packages.${pkgs.system}.swww
+        inputs.swww.packages.${system}.swww
         wl-clipboard-rs
       ];
     };
