@@ -46,7 +46,7 @@
       imagemagick
       inputs.nil.outputs.packages.${pkgs.stdenv.targetPlatform.system}.nil
       languagetool
-      nodePackages.mermaid-cli
+      mermaid-cli
       pandoc
       ripgrep
       sqlite
