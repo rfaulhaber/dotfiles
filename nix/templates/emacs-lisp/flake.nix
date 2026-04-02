@@ -3,30 +3,41 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = {
+  outputs = inputs @ {
     self,
     nixpkgs,
-    flake-utils,
+    flake-parts,
     ...
-  }:
-    flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = import nixpkgs {
-        inherit system;
+  }: let
+    projectName = "CHANGE ME!";
+  in
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      imports = [];
+      systems = [
+        "x86_64-linux"
+        "aarch64-darwin"
+        "aarch64-linux"
+      ];
+
+      perSystem = {
+        config,
+        self',
+        inputs',
+        pkgs,
+        system,
+        ...
+      }: {
+        formatter = pkgs.alejandra;
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            emacs
+            nodejs-25
+            eask-cli
+          ];
+        };
       };
-      projectName = "package";
-    in rec {
-      defaultPackage = pkgs.stdenv.mkDerivation {};
-      # apps.${projectName} = flake-utils.lib.mkApp { drv = pkgs.${projectName}; };
-      # defaultApp = apps.${projectName}};
-      devShell = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          emacs
-          nodejs-22_x
-          nodePackages_latest.eask
-        ];
-      };
-    });
+    };
 }
