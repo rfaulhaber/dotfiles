@@ -9,11 +9,11 @@ with lib; let
 in {
   options.modules.programs.neovim = {enable = mkEnableOption false;};
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [fzf];
+    user.packages = with pkgs; [fzf];
 
     home.programs.neovim = {
       enable = true;
-      coc = {enable = true;};
+      coc.enable = true;
 
       plugins = with pkgs.vimPlugins; [
         coc-fzf
