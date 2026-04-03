@@ -4,6 +4,7 @@
     ./desktop
     ./docker
     ./hardware
+    ./keepalived
     ./mullvad
     ./nfs
     ./nix-cache

@@ -1,0 +1,3 @@
+#+title: hecate
+
+Hecate is a [[https://www.raspberrypi.com/products/raspberry-pi-3-model-b/][Raspberry Pi 3B]] that serves as a redundant backup Pi-hole DNS server to [[file:../pallas/][pallas]].

@@ -120,6 +120,7 @@
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {};
           janus = mkHost ./nix/hosts/janus/configuration.nix {};
           pallas = mkHost ./nix/hosts/pallas/configuration.nix {};
+          hecate = mkHost ./nix/hosts/hecate/configuration.nix {};
         };
         darwinConfigurations = {
           eos = lib.my.mkDarwinHost ./nix/hosts/eos/configuration.nix {};
@@ -147,6 +148,16 @@
                 path =
                   deploy-rs.lib.aarch64-linux.activate.nixos
                   self.nixosConfigurations.pallas;
+              };
+            };
+            hecate = {
+              hostname = "hecate";
+              profiles.system = {
+                user = "root";
+                fastConnection = true;
+                path =
+                  deploy-rs.lib.aarch64-linux.activate.nixos
+                  self.nixosConfigurations.hecate;
               };
             };
             janus = {
