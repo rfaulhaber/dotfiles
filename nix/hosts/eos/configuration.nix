@@ -30,7 +30,6 @@
           setDefault = true;
         };
       };
-      neovim.enable = true;
       ghostty.enable = true;
       direnv.enable = true;
       git = {
