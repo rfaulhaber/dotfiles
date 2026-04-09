@@ -7,33 +7,27 @@
   ...
 }:
 with lib; let
-  inherit (builtins) concatStringsSep map readFile;
   cfg = config.modules.desktop.waybar;
   themeCfg = config.modules.themes;
   c = themeCfg.colors.withHashtag;
 
-  # Generate a :root block with CSS custom properties from the theme.
-  # The static style.css references these as var(--background), var(--base07), etc.
-  rootBlock = let
-    vars =
-      themeCfg.themeAttrs
-      |> attrsToList
-      |> (map ({
-        name,
-        value,
-      }: "    --${name}: ${value};"))
-      |> (concatStringsSep "\n");
-  in ''
-    :root {
-    ${vars}
-        --font-family: ${themeCfg.font};
-    }
-  '';
+  waybarScssSource = ./style.scss;
 
-  waybarCss = rootBlock + readFile ./style.css;
+  # Compile style.scss with dart-sass, injecting the centralized theme as theme.scss
+  waybarStyle =
+    pkgs.runCommand "waybar-style-css" {
+      nativeBuildInputs = [pkgs.dart-sass];
+    } ''
+      mkdir -p $out theme
+      echo ${escapeShellArg themeCfg.scss} > theme/theme.scss
+      sass --no-source-map \
+        --load-path=theme \
+        ${waybarScssSource} \
+        $out/style.css
+    '';
 
   # Waybar JSON config as a Nix attrset
-  waybarConfig = import ./config {
+  waybarConfig = import ./config.nix {
     colors = c;
     homePath = config.user.home;
   };
@@ -47,7 +41,7 @@ in {
 
     home.configFile = {
       "waybar/config".text = builtins.toJSON waybarConfig;
-      "waybar/style.css".text = waybarCss;
+      "waybar/style.css".source = "${waybarStyle}/style.css";
     };
   };
 }
