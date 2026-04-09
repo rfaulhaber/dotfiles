@@ -12,6 +12,50 @@ with lib; let
     inherit pkgs inputs lib;
     themesDir = ./.;
   };
+
+  c = cfg.colors.withHashtag;
+
+  # Canonical theme attrset: base16 colors + semantic aliases + optional custom colors.
+  # This is the single source of truth consumed by globals.nix, waybar, and any
+  # future module that needs themed color variables.
+  themeAttrs =
+    {
+      inherit (c) base00 base01 base02 base03 base04 base05 base06 base07 base08 base09 base0A base0B base0C base0D base0E base0F;
+      background = c.base00;
+      cursorBg = c.base05;
+      cursorBorder = c.base05;
+      cursorFg = c.base00;
+      foreground = c.base05;
+      selectionBg = c.base05;
+      selectionFg = c.base00;
+      textColor = c.base07;
+      inherit (c) red green yellow blue cyan magenta;
+    }
+    // optionalAttrs (c ? base10) {
+      inherit (c) base10 base11 base12 base13 base14 base15 base16 base17;
+    }
+    // optionalAttrs (c ? bg) {
+      inherit (c) bg bg-alt fg fg-alt grey teal violet orange;
+    }
+    // optionalAttrs (c ? dark-cyan) {
+      inherit (c) dark-cyan dark-blue;
+    }
+    // optionalAttrs (c ? bright-black) {
+      inherit (c) bright-black bright-white;
+    };
+
+  scss = let
+    inherit (builtins) concatStringsSep map;
+    colorVars =
+      themeAttrs
+      |> attrsToList
+      |> (map ({
+        name,
+        value,
+      }: "\$${name}: ${value};"))
+      |> (concatStringsSep "\n");
+  in
+    colorVars + "\n\$font-family: ${cfg.font};\n";
 in {
   options.modules.themes = {
     active = mkOption {
@@ -30,6 +74,18 @@ in {
       description = "Active color set.";
       default = {};
     };
+
+    themeAttrs = mkOption {
+      type = types.attrs;
+      description = "Resolved theme color attrset with semantic aliases (all values have '#' prefix).";
+      readOnly = true;
+    };
+
+    scss = mkOption {
+      type = types.str;
+      description = "Theme as SCSS variable declarations, ready for @use or direct inclusion.";
+      readOnly = true;
+    };
   };
   config = {
     assertions = [
@@ -40,5 +96,7 @@ in {
     ];
 
     modules.themes.colors = resolveTheme {themeName = cfg.active;};
+    modules.themes.themeAttrs = themeAttrs;
+    modules.themes.scss = scss;
   };
 }
