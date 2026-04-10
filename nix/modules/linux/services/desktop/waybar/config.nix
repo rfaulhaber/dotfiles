@@ -45,7 +45,7 @@
   };
   memory = {
     interval = 1;
-    format = "󰘚 {percentage}% ({used}/{avail}/{total})";
+    format = "󰘚 {percentage}% ({used:0.1f}/{avail:0.1f}/{total:0.1f}) GiB";
     states = {
       low = 10;
       low-medium = 35;
