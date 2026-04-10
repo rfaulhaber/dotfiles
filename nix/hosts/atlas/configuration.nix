@@ -78,8 +78,11 @@
       };
     };
 
-    # NOTE: the open drivers do not work on atlas
-    hardware.nvidia.enable = true;
+    # NOTE: the open drivers do not work on atlas (GTX 1050 Ti, Pascal)
+    hardware.nvidia = {
+      enable = true;
+      package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
+    };
 
     themes.active = "tokyo-night-dark";
   };

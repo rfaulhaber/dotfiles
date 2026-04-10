@@ -14,6 +14,11 @@ in {
       description = "Whether or not to use the open source NVIDIA drivers.";
       default = false;
     };
+    package = mkOption {
+      type = types.nullOr types.package;
+      description = "The NVIDIA driver package to use. When null, uses the default (stable) driver.";
+      default = null;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -22,6 +27,7 @@ in {
       nvidia = {
         modesetting.enable = true;
         open = cfg.useOpenDrivers;
+        package = mkIf (cfg.package != null) cfg.package;
 
         powerManagement = {
           enable = false;
