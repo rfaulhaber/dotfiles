@@ -42,6 +42,16 @@
         };
       };
       netbird.enable = true;
+      keepalived = {
+        enable = true;
+        interface = "end0";
+        state = "MASTER";
+        priority = 100;
+        virtualIps = ["192.168.0.254/24"];
+        virtualIpv6s = ["fe80::FE/64" "2600:1702:6710:117F::FE/64"];
+        authPass = "0x7gMrmq";
+        healthCheck.enable = true;
+      };
     };
 
     linux.oci = {
@@ -57,8 +67,9 @@
             start = "192.168.0.3";
             end = "192.168.0.253";
             router = "192.168.0.1";
-            ipv6 = false;
+            ipv6 = true;
             rapidCommit = true;
+            dnsServer = "192.168.0.254";
           };
         };
         caddy = {
@@ -162,7 +173,7 @@
   };
 
   boot = {
-    kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
+    kernelPackages = pkgs.linuxPackages;
     initrd.availableKernelModules = ["xhci_pci" "usbhid" "usb_storage"];
     loader = {
       grub.enable = false;
@@ -170,15 +181,7 @@
     };
   };
 
-  # raspberry pi hardware configuration
-  hardware = {
-    raspberry-pi."4" = {
-      fkms-3d.enable = true;
-      apply-overlays-dtmerge.enable = true;
-    };
-
-    enableRedistributableFirmware = true;
-  };
+  hardware.enableRedistributableFirmware = true;
 
   console.enable = false;
 
@@ -189,7 +192,9 @@
 
   networking = {
     hostName = "pallas";
-    useDHCP = true;
+    useDHCP = false;
+    defaultGateway = "192.168.0.1";
+    nameservers = ["127.0.0.1" "1.1.1.1"];
 
     defaultGateway6 = {
       address = "2600:1702:6710:117F:56AF:97FF:FE12:496C";
@@ -197,7 +202,12 @@
     };
 
     interfaces.end0 = {
-      useDHCP = true;
+      ipv4.addresses = [
+        {
+          address = "192.168.0.2";
+          prefixLength = 24;
+        }
+      ];
       ipv6.addresses = let
         addresses = [
           "2600:1702:6710:117F:C40A:AFB1:A677:52E4"

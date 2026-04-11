@@ -37,10 +37,23 @@ in {
       example = ["192.168.0.254/24"];
     };
 
+    virtualIpv6s = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = "Virtual IPv6 addresses in CIDR notation. When non-empty, creates a separate VRRP instance for IPv6.";
+      example = ["2600:1702:6710:117F::FE/64"];
+    };
+
     virtualRouterId = mkOption {
       type = types.int;
       default = 51;
       description = "VRRP virtual router ID (must match across all peers).";
+    };
+
+    virtualRouterId6 = mkOption {
+      type = types.int;
+      default = 61;
+      description = "VRRP virtual router ID for IPv6 (must match across all peers and differ from the IPv4 ID).";
     };
 
     authPass = mkOption {
@@ -73,6 +86,20 @@ in {
   };
 
   config = mkIf cfg.enable {
+    # keepalived refuses to run check scripts as root; it expects this user
+    users.users.keepalived_script = mkIf cfg.healthCheck.enable {
+      isSystemUser = true;
+      group = "keepalived_script";
+    };
+    users.groups.keepalived_script = mkIf cfg.healthCheck.enable {};
+
+    # VRRPv3 (IPv6) requires a link-local address on the interface.
+    # NixOS sets addr_gen_mode=1 (none) on statically-configured interfaces,
+    # which suppresses auto-generation of fe80:: addresses. Reset to EUI-64.
+    boot.kernel.sysctl = mkIf (cfg.virtualIpv6s != []) {
+      "net.ipv6.conf.${cfg.interface}.addr_gen_mode" = 0;
+    };
+
     services.keepalived = {
       enable = true;
 
@@ -86,26 +113,47 @@ in {
         };
       };
 
-      vrrpInstances.VI_DNS = {
-        interface = cfg.interface;
-        state = cfg.state;
-        priority = cfg.priority;
-        virtualRouterId = cfg.virtualRouterId;
-        virtualIps = map (addr: {inherit addr;}) cfg.virtualIps;
-        trackScripts = optional cfg.healthCheck.enable "check_dns";
-        extraConfig = ''
-          authentication {
-            auth_type PASS
-            auth_pass ${cfg.authPass}
-          }
-          advert_int 1
-        '';
-      };
+      vrrpInstances =
+        {
+          VI_DNS = {
+            interface = cfg.interface;
+            state = cfg.state;
+            priority = cfg.priority;
+            virtualRouterId = cfg.virtualRouterId;
+            virtualIps = map (addr: {inherit addr;}) cfg.virtualIps;
+            trackScripts = optional cfg.healthCheck.enable "check_dns";
+            extraConfig = ''
+              authentication {
+                auth_type PASS
+                auth_pass ${cfg.authPass}
+              }
+              advert_int 1
+            '';
+          };
+        }
+        // optionalAttrs (cfg.virtualIpv6s != []) {
+          VI_DNS6 = {
+            interface = cfg.interface;
+            state = cfg.state;
+            priority = cfg.priority;
+            virtualRouterId = cfg.virtualRouterId6;
+            virtualIps = map (addr: {inherit addr;}) cfg.virtualIpv6s;
+            trackScripts = optional cfg.healthCheck.enable "check_dns";
+            # VRRP v3 (required for IPv6) does not support authentication
+            extraConfig = ''
+              advert_int 1
+            '';
+          };
+        };
     };
 
     # VRRP uses IP protocol 112 — not a TCP/UDP port
-    networking.firewall.extraCommands = ''
-      iptables -I INPUT -p vrrp -j ACCEPT
-    '';
+    networking.firewall.extraCommands =
+      ''
+        iptables -I INPUT -p vrrp -j ACCEPT
+      ''
+      + optionalString (cfg.virtualIpv6s != []) ''
+        ip6tables -I INPUT -p vrrp -j ACCEPT
+      '';
   };
 }

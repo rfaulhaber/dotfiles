@@ -7,6 +7,7 @@ keys:
   - &atlas_host age1gazngglgyk72yefg8rmzch7pa0srdct9zx7wgadxrgqzcp87cdsqehnfx9
   - &janus_host age1dulvs8mjcnkm0u6pl7j2zn22jmzn5368gmll4ma2gexrpcs49uusjzfyxj
   - &pallas_host age1prrezvq3gu8aa8kcgqdkdhu8tqprrkn9sv2lmk4z7f8s9xnktslqhjq2sw
+  - &hecate_host age1g77q7yydcthqghep854mw2jc73yjzc4v3fqc3nmqjws9mj3ucd6s8lyk8g
   - &eos_host age1zkaggmjvakqjpv0r7nu2p8djg6zvv6xq5lvpxadj3ga73385mq6q98c7nh
 
 creation_rules:
@@ -36,6 +37,13 @@ creation_rules:
           - *eos_id
           - *1p_id
           - *pallas_host
+  - path_regex: .*/hecate/secrets.yaml$
+    key_groups:
+      - age:
+          - *hyperion_id
+          - *eos_id
+          - *1p_id
+          - *hecate_host
   - path_regex: .*/eos/secrets.yaml$
     key_groups:
       - age:

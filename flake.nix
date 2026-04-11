@@ -184,6 +184,12 @@
           roc-rk3328-cc-bootloader = import ./nix/pkgs/roc-rk3328-cc-bootloader {
             inherit pkgs lib;
           };
+          rpi3-installer =
+            (inputs.nixpkgs.lib.nixosSystem {
+              system = "aarch64-linux";
+              modules = [./nix/images/rpi3-installer.nix];
+              specialArgs = {inherit inputs;};
+            }).config.system.build.sdImage;
         };
       };
       systems = ["x86_64-linux" "aarch64-darwin"];
@@ -213,10 +219,10 @@
         devShells.default = pkgs.mkShell {
           packages =
             [
-              inputs'.nil.packages.default
               inputs'.deploy-rs.packages.default
+              inputs'.nil.packages.default
               inputs'.sops-nix.packages.default
-              pkgs.nvd
+              pkgs.dix
               pkgs.rage
               pkgs.sops
             ]

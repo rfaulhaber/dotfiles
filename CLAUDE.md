@@ -58,7 +58,7 @@ nix build .#x86_64-installer-generic   # x86_64 install ISO
 
 ### Module System
 
-The configuration uses a custom module system in `nix/modules/`. Modules are toggled on/off per-host via the `modules` attribute:
+The configuration uses a custom module system in `nix/modules/`. The purpose is to simplify or standardize underlying configuration. Modules are toggled on/off per-host via the `modules` attribute:
 
 ```nix
 # In a host configuration (e.g., nix/hosts/hyperion/configuration.nix)

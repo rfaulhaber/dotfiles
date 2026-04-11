@@ -38,16 +38,17 @@
         enable = true;
         server = {
           enable = true;
-          port = 12981;
+          port = 17263;
         };
       };
       netbird.enable = true;
       keepalived = {
         enable = true;
-        interface = "eth0"; # TODO: verify interface name on the Pi 3B
+        interface = "enu1u1u1";
         state = "BACKUP";
         priority = 90;
         virtualIps = ["192.168.0.254/24"];
+        virtualIpv6s = ["fe80::FE/64" "2600:1702:6710:117F::FE/64"];
         authPass = "0x7gMrmq";
         healthCheck.enable = true;
       };
@@ -59,7 +60,7 @@
         pihole = {
           enable = true;
           baseDir = "/docker/pihole";
-          interface = "eth0"; # TODO: verify interface name on the Pi 3B
+          interface = "enu1u1u1";
           webPasswordFile = config.sops.templates."pihole-env".path;
           # DHCP disabled — hecate is a backup DNS only
         };
@@ -76,8 +77,7 @@
   };
 
   boot = {
-    # The RPi Foundation kernel supports Pi 3 despite the "rpi4" name
-    kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
+    kernelPackages = pkgs.linuxPackages;
     initrd.availableKernelModules = ["usbhid" "usb_storage"];
     loader = {
       grub.enable = false;
@@ -97,8 +97,19 @@
     hostName = "hecate";
     useDHCP = true;
 
-    # TODO: configure static IPv6 addresses once the host is provisioned
-    # interfaces.eth0 = { ... };
+    interfaces.enu1u1u1 = {
+      ipv6.addresses = let
+        addresses = [
+          "2600:1702:6710:117f:3926:9b5e:e4ac:7e55"
+          "2600:1702:6710:117f:ba27:ebff:fe45:71fc"
+        ];
+      in
+        builtins.map (address: {
+          inherit address;
+          prefixLength = 64;
+        })
+        addresses;
+    };
 
     firewall = {
       enable = true;

@@ -138,6 +138,13 @@ in {
           forwardAgent = true;
           port = 6674;
         };
+
+        "hecate" = {
+          hostname = mkLocalHostname "77";
+          forwardAgent = true;
+          user = "ryan";
+          port = 17263;
+        };
       };
     };
   };

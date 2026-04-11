@@ -7,6 +7,10 @@
 with lib; let
   cfg = config.modules.linux.oci.services.pihole;
   ociLib = config.modules.linux.oci.lib;
+
+  dnsServerConf =
+    pkgs.writeText "99-custom-dns.conf"
+    "dhcp-option=option:dns-server,${cfg.dhcp.dnsServer}";
 in {
   options.modules.linux.oci.services.pihole = {
     enable = mkEnableOption "Pi-hole DNS server";
@@ -14,7 +18,7 @@ in {
     image = mkOption {
       description = "Pi-hole container image.";
       type = types.str;
-      default = "pihole/pihole:2026.02.0";
+      default = "pihole/pihole:2026.04.0";
     };
 
     baseDir = mkOption {
@@ -77,6 +81,12 @@ in {
         description = "Enable DHCP rapid commit.";
         type = types.bool;
         default = true;
+      };
+      dnsServer = mkOption {
+        description = "DNS server IP advertised to DHCP clients. Defaults to pihole's own address when null.";
+        type = types.nullOr types.str;
+        default = null;
+        example = "192.168.0.254";
       };
     };
 
@@ -149,12 +159,18 @@ in {
           "FTLCONF_dhcp_router" = cfg.dhcp.router;
           "FTLCONF_dhcp_ipv6" = boolToString cfg.dhcp.ipv6;
           "FTLCONF_dhcp_rapidCommit" = boolToString cfg.dhcp.rapidCommit;
+        }
+        // optionalAttrs (cfg.dhcp.enable && cfg.dhcp.dnsServer != null) {
+          "FTLCONF_misc_etc_dnsmasq_d" = "true";
         };
 
-      volumes = [
-        "${cfg.baseDir}/etc-pihole:/etc/pihole"
-        "${cfg.baseDir}/etc-dnsmasq.d:/etc/dnsmasq.d"
-      ];
+      volumes =
+        [
+          "${cfg.baseDir}/etc-pihole:/etc/pihole"
+          # "${cfg.baseDir}/etc-dnsmasq.d:/etc/dnsmasq.d"
+        ]
+        ++ optional (cfg.dhcp.enable && cfg.dhcp.dnsServer != null)
+        "${dnsServerConf}:/etc/dnsmasq.d/99-custom-dns.conf:ro";
 
       log-driver = "journald";
     };
