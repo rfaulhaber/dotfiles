@@ -1,0 +1,10 @@
+#+title: Vulcan
+
+Vulcan is a high-compute Linux server.
+
+* Specs
+| CPU         | AMD Ryzen 7 5700X 3.4 GHz, 8-core processor              |
+| RAM         | DDR4 64GB (2x32GB)                                       |
+| Motherboard | ASRock B550M PRO4 AM4 AMD B550 Micro ATX AMD Motherboard |
+| Graphics    | Intel Arc B580                                           |
+| NVME        | Western Digital SN730 512 GB                             |
