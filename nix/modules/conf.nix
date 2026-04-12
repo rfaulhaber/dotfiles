@@ -24,7 +24,7 @@
         auto-optimise-store = true;
         # 1GB for high-memory systems, 100MB for others (Raspberry Pis, etc.)
         download-buffer-size =
-          if config.networking.hostName == "hyperion" || config.networking.hostName == "atlas"
+          if config.networking.hostName == "hyperion" || config.networking.hostName == "atlas" || config.networking.hostName == "vulcan"
           then 1000000000 # 1GB
           else 104857600; # 100MB
 

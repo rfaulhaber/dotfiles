@@ -31,12 +31,7 @@
     nameservers = ["192.168.0.2" "1.1.1.1"];
   };
 
-  services.openssh = {
-    enable = true;
-    settings.PermitRootLogin = "yes";
-  };
-
-  users.users.root.openssh.authorizedKeys.keys = import ../modules/ssh/keys.nix;
+  services.openssh.enable = true;
 
   users.users.ryan = {
     isNormalUser = true;

@@ -121,6 +121,7 @@
           janus = mkHost ./nix/hosts/janus/configuration.nix {};
           pallas = mkHost ./nix/hosts/pallas/configuration.nix {};
           hecate = mkHost ./nix/hosts/hecate/configuration.nix {};
+          vulcan = mkHost ./nix/hosts/vulcan/configuration.nix {};
         };
         darwinConfigurations = {
           eos = lib.my.mkDarwinHost ./nix/hosts/eos/configuration.nix {};
@@ -169,6 +170,15 @@
                   self.nixosConfigurations.janus;
               };
             };
+            vulcan = {
+              hostname = "vulcan";
+              profiles.system = {
+                user = "root";
+                path =
+                  deploy-rs.lib.x86_64-linux.activate.nixos
+                  self.nixosConfigurations.vulcan;
+              };
+            };
           };
         };
 
@@ -190,6 +200,11 @@
               modules = [./nix/images/rpi3-installer.nix];
               specialArgs = {inherit inputs;};
             }).config.system.build.sdImage;
+          x86_64-installer =
+            (inputs.nixpkgs.lib.nixosSystem {
+              system = "x86_64-linux";
+              modules = [./nix/images/x86_64-installer.nix];
+            }).config.system.build.isoImage;
         };
       };
       systems = ["x86_64-linux" "aarch64-darwin"];

@@ -145,6 +145,13 @@ in {
           user = "ryan";
           port = 17263;
         };
+
+        "vulcan" = {
+          hostname = mkLocalHostname "105";
+          forwardAgent = true;
+          user = "ryan";
+          port = 13308;
+        };
       };
     };
   };
