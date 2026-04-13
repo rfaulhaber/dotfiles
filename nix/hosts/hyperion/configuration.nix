@@ -144,7 +144,7 @@
   };
 
   boot = {
-    kernelPackages = pkgs.linuxPackages;
+    kernelPackages = pkgs.linuxPackages_6_19;
     kernelParams = ["nohibernate"];
 
     loader = {
