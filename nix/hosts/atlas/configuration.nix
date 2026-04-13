@@ -76,6 +76,20 @@
         interface = "eno2";
         secretKeyFile = config.sops.secrets.nix-cache.path;
       };
+      nfs.serve = {
+        enable = true;
+        interface = "eno2";
+        exports = {
+          movies = {
+            path = "/data/movies";
+            clients = "192.168.0.105(ro,sync,no_subtree_check,no_root_squash)";
+          };
+          tv = {
+            path = "/data/tv";
+            clients = "192.168.0.105(ro,sync,no_subtree_check,no_root_squash)";
+          };
+        };
+      };
     };
 
     # NOTE: the open drivers do not work on atlas (GTX 1050 Ti, Pascal)
