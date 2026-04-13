@@ -46,6 +46,12 @@ in {
       default = null;
     };
 
+    openFirewall = mkOption {
+      description = "Whether to open firewall ports for Jellyfin.";
+      type = types.bool;
+      default = false;
+    };
+
     timezone = mkOption {
       description = "Timezone for the container.";
       type = types.str;
@@ -104,6 +110,11 @@ in {
 
     systemd.services."podman-jellyfin" = ociLib.mkServiceConfig {
       networks = cfg.networks;
+    };
+
+    networking.firewall = mkIf cfg.openFirewall {
+      allowedTCPPorts = [8096 8920];
+      allowedUDPPorts = [7359 1900];
     };
   };
 }

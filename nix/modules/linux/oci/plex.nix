@@ -40,6 +40,12 @@ in {
       default = null;
     };
 
+    openFirewall = mkOption {
+      description = "Whether to open firewall ports for Plex.";
+      type = types.bool;
+      default = false;
+    };
+
     timezone = mkOption {
       description = "Timezone for the container.";
       type = types.str;
@@ -104,6 +110,11 @@ in {
 
     systemd.services."podman-plex" = ociLib.mkServiceConfig {
       networks = cfg.networks;
+    };
+
+    networking.firewall = mkIf cfg.openFirewall {
+      allowedTCPPorts = [32400 3005 8324 32469];
+      allowedUDPPorts = [32410 32412 32413 32414];
     };
   };
 }

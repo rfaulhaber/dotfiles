@@ -43,6 +43,12 @@ in {
       type = types.listOf types.str;
       default = ["default"];
     };
+
+    openFirewall = mkOption {
+      description = "Whether to open firewall port for the ML service.";
+      type = types.bool;
+      default = false;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -74,6 +80,10 @@ in {
     systemd.services."podman-immich_machine_learning" = ociLib.mkServiceConfig {
       networks = cfg.networks;
       volumes = ["immich_model_cache"];
+    };
+
+    networking.firewall = mkIf cfg.openFirewall {
+      allowedTCPPorts = [cfg.port];
     };
   };
 }
