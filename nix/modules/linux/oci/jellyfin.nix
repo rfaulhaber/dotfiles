@@ -23,15 +23,16 @@ in {
       example = "/data/apps/jellyfin";
     };
 
-    mediaDirs = mkOption {
-      description = "Attrset of media directories to mount. Keys become mount points inside container.";
-      type = types.attrsOf types.str;
-      default = {};
-      example = {
-        movies = "/data/movies";
-        tv = "/data/tv";
-        music = "/data/music";
-      };
+    tvDir = mkOption {
+      description = "Path to tv directory";
+      type = types.str;
+      default = null;
+    };
+
+    moviesDir = mkOption {
+      description = "Path to movies directory.";
+      type = types.str;
+      default = null;
     };
 
     networks = mkOption {
@@ -73,6 +74,8 @@ in {
   };
 
   config = mkIf cfg.enable {
+    modules.linux.oci._managedPaths.${cfg.baseDir} = {};
+
     modules.linux.oci.networks = mkIf (elem "default" cfg.networks) {
       default.enable = true;
     };
@@ -93,7 +96,12 @@ in {
           "${cfg.baseDir}/config:/config:rw"
           "${cfg.baseDir}/cache:/cache:rw"
         ]
-        ++ (mapAttrsToList (name: path: "${path}:/${name}:rw") cfg.mediaDirs);
+        ++ lib.optionals (cfg.tvDir != null) [
+          "${cfg.tvDir}:/data/tvshows:rw"
+        ]
+        ++ lib.optionals (cfg.moviesDir != null) [
+          "${cfg.moviesDir}:/data/movies:rw"
+        ];
       ports = [
         "8096:8096/tcp"
         "8920:8920/tcp"
@@ -108,9 +116,14 @@ in {
         ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri"];
     };
 
-    systemd.services."podman-jellyfin" = ociLib.mkServiceConfig {
-      networks = cfg.networks;
-    };
+    systemd.services."podman-jellyfin" = mkMerge [
+      (ociLib.mkServiceConfig {
+        networks = cfg.networks;
+      })
+      {
+        serviceConfig.ExecStartPre = ["${pkgs.coreutils}/bin/mkdir -p ${cfg.baseDir}/config ${cfg.baseDir}/cache"];
+      }
+    ];
 
     networking.firewall = mkIf cfg.openFirewall {
       allowedTCPPorts = [8096 8920];

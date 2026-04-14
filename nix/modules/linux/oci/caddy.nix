@@ -234,6 +234,8 @@ in {
   };
 
   config = mkIf cfg.enable {
+    modules.linux.oci._managedPaths.${cfg.baseDir} = {};
+
     # Add the index file server if enabled
     modules.linux.oci.services.caddy.fileServers = mkIf cfg.index.enable {
       index = {

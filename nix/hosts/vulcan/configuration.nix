@@ -6,7 +6,6 @@
   ...
 }: {
   imports = [
-    ../../modules
     inputs.disko.nixosModules.disko
     ./disko.nix
     ./hardware.nix
@@ -16,14 +15,8 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   nix.settings = {
-    substituters = [
-      "https://install.determinate.systems"
-      "http://atlas.lan:4965"
-    ];
-    trusted-public-keys = [
-      "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
-      "atlas.lan-1:ElfYJ8gkV4CN7S1afAl/Y3lfXYB5P6K7wf+XC+rBUIs="
-    ];
+    substituters = ["https://install.determinate.systems"];
+    trusted-public-keys = ["cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="];
   };
 
   modules = {
@@ -33,6 +26,13 @@
         setDefault = true;
         zoxide.enable = true;
         carapace.enable = true;
+      };
+      sops = {
+        enable = true;
+        keyFile = null;
+        secrets = {
+          nix-cache = {};
+        };
       };
     };
     services = {
@@ -46,53 +46,81 @@
         };
       };
       netbird.enable = true;
-      # nfs.mount = {
-      #   enable = true;
-      #   mounts = {
-      #     "/mnt/media/movies" = {
-      #       server = "atlas";
-      #       path = "/data/movies";
-      #     };
-      #     "/mnt/media/tv" = {
-      #       server = "atlas";
-      #       path = "/data/tv";
-      #     };
-      #   };
-      # };
+      nix-cache = {
+        enable = true;
+        port = 4965;
+        interface = "enp4s0";
+        secretKeyFile = config.sops.secrets.nix-cache.path;
+      };
+      nfs.mount = {
+        enable = true;
+        mounts = {
+          "/mnt/media/movies" = {
+            server = "atlas";
+            path = "/data/movies";
+          };
+          "/mnt/media/tv" = {
+            server = "atlas";
+            path = "/data/tv";
+          };
+        };
+      };
     };
 
     hardware.intel-gpu.enable = true;
 
-    # linux.oci = {
-    #   enable = true;
-    #   services = {
-    #     plex = {
-    #       enable = true;
-    #       baseDir = "/data/apps/plex";
-    #       gpu = "intel";
-    #       openFirewall = true;
-    #       mediaDirs = {
-    #         movies = "/mnt/media/movies";
-    #         tv = "/mnt/media/tv";
-    #       };
-    #     };
-    #     jellyfin = {
-    #       enable = true;
-    #       baseDir = "/data/apps/jellyfin";
-    #       gpu = "intel";
-    #       openFirewall = true;
-    #       mediaDirs = {
-    #         movies = "/mnt/media/movies";
-    #         tv = "/mnt/media/tv";
-    #       };
-    #     };
-    #     immich-ml = {
-    #       enable = true;
-    #       gpu = "intel";
-    #       openFirewall = true;
-    #     };
-    #   };
-    # };
+    linux.oci = {
+      enable = true;
+      zfs = {
+        enable = true;
+        pool = "zroot";
+      };
+      services = {
+        plex = {
+          enable = true;
+          baseDir = "/apps/plex";
+          gpu = "intel";
+          openFirewall = true;
+          mediaDirs = {
+            movies = "/mnt/media/movies";
+            tv = "/mnt/media/tv";
+          };
+        };
+        jellyfin = {
+          enable = true;
+          baseDir = "/apps/jellyfin";
+          gpu = "intel";
+          openFirewall = true;
+          tvDir = "/mnt/media/tv";
+          moviesDir = "/mnt/media/movies";
+        };
+        immich-ml = {
+          enable = true;
+          gpu = "intel";
+          openFirewall = true;
+        };
+        newt = {
+          enable = true;
+          pangolinEndpoint = "https://pangolin.3679.space";
+          secretsFile = config.sops.templates."newt-env".path;
+          dns = "192.168.0.2";
+        };
+        forgejo-runner = {
+          enable = true;
+          runners.default = {
+            enable = true;
+            # vulcan and atlas are on the same LAN
+            instanceUrl = "http://git.home.lan";
+            tokenFile = config.sops.templates."forgejo-runner-env".path;
+            labels = [
+              "docker:docker://node:20-bookworm"
+              "ubuntu-latest:docker://ubuntu:latest"
+            ];
+            baseDir = "/apps/forgejo-runner";
+          };
+        };
+      };
+    };
 
     themes.active = "tokyo-night-dark";
   };
@@ -116,6 +144,17 @@
 
     firewall.enable = true;
   };
+
+  sops.secrets."newt/id" = {};
+  sops.secrets."newt/secret" = {};
+  sops.secrets."forgejo-runner/token" = {};
+  sops.templates."forgejo-runner-env".content = ''
+    FORGEJO_TOKEN=${config.sops.placeholder."forgejo-runner/token"}
+  '';
+  sops.templates."newt-env".content = ''
+    NEWT_ID=${config.sops.placeholder."newt/id"}
+    NEWT_SECRET=${config.sops.placeholder."newt/secret"}
+  '';
 
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

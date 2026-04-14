@@ -68,6 +68,7 @@ with lib; let
     labelsStr = concatStringsSep "," runnerCfg.labels;
   in {
     image = runnerCfg.image;
+    user = "0:0";
     environment = {
       "DOCKER_HOST" = "unix:///var/run/docker.sock";
       "FORGEJO_INSTANCE" = runnerCfg.instanceUrl;
@@ -109,6 +110,10 @@ in {
   };
 
   config = mkIf cfg.enable {
+    modules.linux.oci._managedPaths = mapAttrs' (_: r:
+      nameValuePair r.baseDir {}
+    ) enabledRunners;
+
     # Ensure the Podman socket is available for runners to spawn job containers
     systemd.sockets."podman".enable = true;
 

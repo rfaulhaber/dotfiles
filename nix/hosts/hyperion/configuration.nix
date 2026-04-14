@@ -14,11 +14,11 @@
   nix.settings = {
     substituters = [
       "https://install.determinate.systems"
-      "http://atlas.lan:4965"
+      "http://vulcan.lan:4965"
     ];
     trusted-public-keys = [
       "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
-      "atlas.lan-1:ElfYJ8gkV4CN7S1afAl/Y3lfXYB5P6K7wf+XC+rBUIs="
+      "vulcan.lan-1:Zu8N+6EtaIeDTyCVpR15uvIYYByZqMmd8W09vu8GKl8="
     ];
   };
 

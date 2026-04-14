@@ -99,12 +99,12 @@
             };
             jellyfin = {
               hosts = ["jellyfin.home.lan"];
-              upstream = "192.168.0.3:8096";
+              upstream = "192.168.0.105:8096";
               displayName = "Jellyfin";
             };
             plex = {
               hosts = ["plex.home.lan"];
-              upstream = "192.168.0.3:32400";
+              upstream = "192.168.0.105:32400";
               displayName = "Plex";
             };
             music = {

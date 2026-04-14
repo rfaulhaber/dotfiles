@@ -123,6 +123,8 @@ in {
   };
 
   config = mkIf cfg.enable {
+    modules.linux.oci._managedPaths.${cfg.baseDir} = {};
+
     virtualisation.oci-containers.containers."pihole" = {
       image = cfg.image;
 

@@ -79,12 +79,23 @@ with lib; let
   # Filter to enabled items
   enabledNetworks = filterAttrs (_: v: v.enable) cfg.networks;
   enabledVolumes = filterAttrs (_: v: v.enable) cfg.volumes;
+
+  # ZFS dataset generation from collected paths
+  zfsCfg = cfg.zfs;
+  managedDatasets = mapAttrs' (path: pathCfg:
+    nameValuePair "${zfsCfg.pool}${path}" {
+      properties = {mountpoint = path;} // zfsCfg.properties // pathCfg.properties;
+    }
+  ) cfg._managedPaths;
 in {
   imports = [
     ./caddy.nix
+    ./forgejo-runner.nix
     ./immich.nix
+    ./immich-ml.nix
     ./jellyfin.nix
     ./miniflux.nix
+    ./newt.nix
     ./pihole.nix
     ./plex.nix
   ];
@@ -102,6 +113,34 @@ in {
       type = types.attrsOf (types.submodule volumeOpts);
       default = {};
       description = "Podman named volumes to create";
+    };
+
+    zfs = {
+      enable = mkEnableOption "ZFS dataset management for OCI service directories";
+      pool = mkOption {
+        type = types.str;
+        description = "ZFS pool name to create datasets under.";
+        example = "zroot";
+      };
+      properties = mkOption {
+        type = types.attrsOf types.str;
+        default = {};
+        description = "Default ZFS properties applied to all generated datasets.";
+        example = {compression = "lz4";};
+      };
+    };
+
+    _managedPaths = mkOption {
+      type = types.attrsOf (types.submodule {
+        options.properties = mkOption {
+          type = types.attrsOf types.str;
+          default = {};
+          description = "Per-path ZFS properties (overrides global zfs.properties).";
+        };
+      });
+      internal = true;
+      default = {};
+      description = "Host paths collected from OCI services to be managed as ZFS datasets.";
     };
 
     lib = mkOption {
@@ -128,22 +167,29 @@ in {
         volumes ? [],
         extraAfter ? [],
         extraRequires ? [],
-      }: {
+      }: let
+        zfsDeps = optional zfsCfg.enable "zfs-manage-datasets.service";
+      in {
         serviceConfig = {
           Restart = mkOverride 90 "always";
         };
         after =
-          (map (n: "${networkServiceName n}.service") networks)
+          zfsDeps
+          ++ (map (n: "${networkServiceName n}.service") networks)
           ++ (map (v: "${volumeServiceName v}.service") volumes)
           ++ extraAfter;
         requires =
-          (map (n: "${networkServiceName n}.service") networks)
+          zfsDeps
+          ++ (map (n: "${networkServiceName n}.service") networks)
           ++ (map (v: "${volumeServiceName v}.service") volumes)
           ++ extraRequires;
         partOf = ["${rootTargetName}.target"];
         wantedBy = ["${rootTargetName}.target"];
       };
     };
+    # Generate ZFS datasets from collected service paths
+    modules.services.zfs.datasets = mkIf (zfsCfg.enable && cfg._managedPaths != {}) managedDatasets;
+
     virtualisation.podman = {
       enable = true;
       autoPrune.enable = true;

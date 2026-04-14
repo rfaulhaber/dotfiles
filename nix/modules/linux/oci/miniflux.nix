@@ -114,6 +114,8 @@ in {
   };
 
   config = mkIf cfg.enable {
+    modules.linux.oci._managedPaths.${cfg.baseDir}.properties.recordsize = "8K";
+
     # Create dedicated network for miniflux + its database
     modules.linux.oci.networks.${networkName}.enable = true;
 

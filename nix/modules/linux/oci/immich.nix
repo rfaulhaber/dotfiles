@@ -119,6 +119,11 @@ in {
   };
 
   config = mkIf cfg.enable {
+    modules.linux.oci._managedPaths = {
+      ${cfg.baseDir} = {};
+      ${cfg.dbDir}.properties.recordsize = "8K";
+    };
+
     # Create dedicated network for immich services
     modules.linux.oci.networks.${networkName}.enable = true;
 

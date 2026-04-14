@@ -9,6 +9,7 @@ keys:
   - &pallas_host age1prrezvq3gu8aa8kcgqdkdhu8tqprrkn9sv2lmk4z7f8s9xnktslqhjq2sw
   - &hecate_host age1g77q7yydcthqghep854mw2jc73yjzc4v3fqc3nmqjws9mj3ucd6s8lyk8g
   - &eos_host age1zkaggmjvakqjpv0r7nu2p8djg6zvv6xq5lvpxadj3ga73385mq6q98c7nh
+  - &vulcan_host age1nn95lj9q3rf85dyzm8xazdk2utng6ark2sqkc365rq6m70ljdfjsm6wsp3
 
 creation_rules:
   - path_regex: .*/hyperion/secrets.yaml$
@@ -49,3 +50,10 @@ creation_rules:
       - age:
           - *eos_id
           - *eos_host
+  - path_regex: .*/vulcan/secrets.yaml$
+    key_groups:
+      - age:
+          - *hyperion_id
+          - *eos_id
+          - *1p_id
+          - *vulcan_host

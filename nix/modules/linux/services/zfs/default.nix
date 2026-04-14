@@ -81,7 +81,6 @@ in {
       description = "Create ZFS datasets.";
       wantedBy = ["multi-user.target"];
       after = ["zfs-import.target" "zfs-mount.service"];
-      before = ["local-fs.target"];
       path = with pkgs; [nushell zfs];
 
       serviceConfig = {

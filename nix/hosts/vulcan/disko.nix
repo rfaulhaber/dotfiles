@@ -55,11 +55,6 @@
             mountpoint = "/home";
             options.mountpoint = "legacy";
           };
-          "test" = {
-            type = "zfs_fs";
-            mountpoint = "/test";
-            options.mountpoint = "legacy";
-          };
         };
       };
     };

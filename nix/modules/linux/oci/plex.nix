@@ -67,6 +67,8 @@ in {
   };
 
   config = mkIf cfg.enable {
+    modules.linux.oci._managedPaths.${cfg.baseDir} = {};
+
     # Ensure the default network exists if we're using it
     modules.linux.oci.networks = mkIf (elem "default" cfg.networks) {
       default.enable = true;
@@ -108,9 +110,14 @@ in {
         ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri"];
     };
 
-    systemd.services."podman-plex" = ociLib.mkServiceConfig {
-      networks = cfg.networks;
-    };
+    systemd.services."podman-plex" = mkMerge [
+      (ociLib.mkServiceConfig {
+        networks = cfg.networks;
+      })
+      {
+        serviceConfig.ExecStartPre = ["${pkgs.coreutils}/bin/mkdir -p ${cfg.baseDir}/config ${cfg.baseDir}/transcode"];
+      }
+    ];
 
     networking.firewall = mkIf cfg.openFirewall {
       allowedTCPPorts = [32400 3005 8324 32469];
