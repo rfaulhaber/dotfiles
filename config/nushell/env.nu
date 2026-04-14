@@ -34,7 +34,12 @@ match $nu.os-info.name {
 match (sys host | get hostname) {
       "hyperion" => { source "./hosts/env/hyperion.nu" },
       "eos" => { source "./hosts/env/eos.nu" },
-      "ponos" => { source "./hosts/env/ponos.nu" }
+      "ponos" => { source "./hosts/env/ponos.nu" },
+      "atlas" => { source "./hosts/env/atlas.nu" },
+      "vulcan" => { source "./hosts/env/vulcan.nu" },
+      "hecate" => { source "./hosts/env/hecate.nu" },
+      "pallas" => { source "./hosts/env/pallas.nu" },
+      "janus" => { source "./hosts/env/janus.nu" },
 }
 
 if ('/proc/version' | path exists) and (open '/proc/version' | find -i "microsoft" | length) > 0 {
