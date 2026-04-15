@@ -107,21 +107,38 @@
         };
         forgejo-runner = {
           enable = true;
-          runners.default = {
-            enable = true;
-            # vulcan and atlas are on the same LAN
-            instanceUrl = "http://git.home.lan";
-            tokenFile = config.sops.templates."forgejo-runner-env".path;
-            labels = [
-              "docker:docker://node:20-bookworm"
-              "ubuntu-latest:docker://ubuntu:latest"
-              "nix:docker://nixos/nix:latest"
-            ];
-            baseDir = "/apps/forgejo-runner";
-            validVolumes = [
-              "/nix/var/nix/daemon-socket/socket"
-            ];
-            containerOptions = "-v /nix/var/nix/daemon-socket/socket:/nix/var/nix/daemon-socket/socket";
+          runners = {
+            default = {
+              enable = true;
+              # vulcan and atlas are on the same LAN
+              instanceUrl = "http://git.home.lan";
+              tokenFile = config.sops.templates."forgejo-runner-env".path;
+              labels = [
+                "docker:docker://node:20-bookworm"
+                "ubuntu-latest:docker://ubuntu:latest"
+                "nix:docker://nixos/nix:latest"
+              ];
+              baseDir = "/apps/forgejo-runner/default";
+              validVolumes = [
+                "/nix/var/nix/daemon-socket/socket"
+              ];
+              containerOptions = "-v /nix/var/nix/daemon-socket/socket:/nix/var/nix/daemon-socket/socket";
+            };
+            codeberg = {
+              enable = true;
+              instanceUrl = "https://codeberg.org";
+              tokenFile = config.sops.templates."codeberg-runner-env".path;
+              labels = [
+                "docker:docker://node:20-bookworm"
+                "ubuntu-latest:docker://ubuntu:latest"
+                "nix:docker://nixos/nix:latest"
+              ];
+              baseDir = "/apps/forgejo-runner/codeberg";
+              validVolumes = [
+                "/nix/var/nix/daemon-socket/socket"
+              ];
+              containerOptions = "-v /nix/var/nix/daemon-socket/socket:/nix/var/nix/daemon-socket/socket";
+            };
           };
         };
       };
@@ -151,16 +168,26 @@
     firewall.enable = true;
   };
 
-  sops.secrets."newt/id" = {};
-  sops.secrets."newt/secret" = {};
-  sops.secrets."forgejo-runner/token" = {};
-  sops.templates."forgejo-runner-env".content = ''
-    FORGEJO_TOKEN=${config.sops.placeholder."forgejo-runner/token"}
-  '';
-  sops.templates."newt-env".content = ''
-    NEWT_ID=${config.sops.placeholder."newt/id"}
-    NEWT_SECRET=${config.sops.placeholder."newt/secret"}
-  '';
+  sops = {
+    secrets = {
+      "newt/id" = {};
+      "newt/secret" = {};
+      "forgejo-runner/token" = {};
+      "codeberg-runner/token" = {};
+    };
+    templates = {
+      "forgejo-runner-env".content = ''
+        FORGEJO_TOKEN=${config.sops.placeholder."forgejo-runner/token"}
+      '';
+      "codeberg-runner-env".content = ''
+        FORGEJO_TOKEN=${config.sops.placeholder."codeberg-runner/token"}
+      '';
+      "newt-env".content = ''
+        NEWT_ID=${config.sops.placeholder."newt/id"}
+        NEWT_SECRET=${config.sops.placeholder."newt/secret"}
+      '';
+    };
+  };
 
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
