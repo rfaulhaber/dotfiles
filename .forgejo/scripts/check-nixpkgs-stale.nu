@@ -3,7 +3,7 @@
 # Compare the nixpkgs rev pinned in flake.lock against the latest commit
 # on nixos/nixpkgs nixos-unstable. Sets the "stale" output for the workflow.
 
-let lock = open flake.lock
+let lock = open flake.lock | from json
 
 # Walk the lock to find the nixpkgs node
 let root_nixpkgs = $lock.nodes.root.inputs.nixpkgs
