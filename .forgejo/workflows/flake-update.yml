@@ -1,0 +1,29 @@
+name: Flake Update and Build
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  check-and-build:
+    runs-on: nix
+    steps:
+      - name: Checkout
+        run: |
+          PROTO="${GITHUB_SERVER_URL%%://*}"
+          DOMAIN="${GITHUB_SERVER_URL#*://}"
+          git clone --depth 1 --branch "$GITHUB_REF_NAME" \
+            "${PROTO}://forgejo-actions:${GITHUB_TOKEN}@${DOMAIN}/${GITHUB_REPOSITORY}.git" .
+
+      - name: Check if nixpkgs is stale
+        id: check-stale
+        run: nix run nixpkgs#nushell -- .forgejo/scripts/check-nixpkgs-stale.nu
+
+      - name: Update inputs and build all hosts
+        if: steps.check-stale.outputs.stale == 'true'
+        run: nix run nixpkgs#nushell -- .forgejo/scripts/update-build-cache.nu
+
+      - name: Create PR with build report
+        if: steps.check-stale.outputs.stale == 'true'
+        run: nix run nixpkgs#nushell -- .forgejo/scripts/create-pr.nu

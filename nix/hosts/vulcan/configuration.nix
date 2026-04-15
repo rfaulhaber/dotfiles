@@ -115,8 +115,13 @@
             labels = [
               "docker:docker://node:20-bookworm"
               "ubuntu-latest:docker://ubuntu:latest"
+              "nix:docker://nixos/nix:latest"
             ];
             baseDir = "/apps/forgejo-runner";
+            validVolumes = [
+              "/nix/var/nix/daemon-socket/socket"
+            ];
+            containerOptions = "-v /nix/var/nix/daemon-socket/socket:/nix/var/nix/daemon-socket/socket";
           };
         };
       };
@@ -126,6 +131,7 @@
   };
 
   boot = {
+    binfmt.emulatedSystems = ["aarch64-linux"];
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;

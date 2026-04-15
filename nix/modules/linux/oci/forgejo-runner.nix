@@ -59,6 +59,20 @@ with lib; let
         type = types.listOf types.str;
         default = ["default"];
       };
+
+      validVolumes = mkOption {
+        description = "Host paths that job containers are allowed to mount via workflow container.volumes.";
+        type = types.listOf types.str;
+        default = [];
+        example = ["/nix/var/nix/daemon-socket/socket"];
+      };
+
+      containerOptions = mkOption {
+        description = "Extra Docker/Podman options applied to all job containers created by this runner.";
+        type = types.str;
+        default = "";
+        example = "-v /nix/var/nix/daemon-socket/socket:/nix/var/nix/daemon-socket/socket";
+      };
     };
   };
 
@@ -66,6 +80,13 @@ with lib; let
 
   mkRunnerContainer = name: runnerCfg: let
     labelsStr = concatStringsSep "," runnerCfg.labels;
+    configFile = pkgs.writeText "forgejo-runner-${name}-config.yaml" (builtins.toJSON {
+      container = {
+        valid_volumes = runnerCfg.validVolumes;
+        options = runnerCfg.containerOptions;
+        docker_host = "unix:///var/run/docker.sock";
+      };
+    });
   in {
     image = runnerCfg.image;
     user = "0:0";
@@ -77,6 +98,7 @@ with lib; let
     volumes = [
       "${runnerCfg.baseDir}:/data"
       "/run/podman/podman.sock:/var/run/docker.sock"
+      "${configFile}:/config.yaml:ro"
     ];
     entrypoint = "/bin/sh";
     cmd = [
@@ -84,13 +106,14 @@ with lib; let
       ''
         if [ ! -f /data/.runner ]; then
           forgejo-runner register \
+            --config /config.yaml \
             --instance "$FORGEJO_INSTANCE" \
             --token "$FORGEJO_TOKEN" \
             --name "${runnerCfg.runnerName}" \
             --labels "${labelsStr}" \
             --no-interactive
         fi
-        exec forgejo-runner daemon
+        exec forgejo-runner daemon --config /config.yaml
       ''
     ];
     extraOptions =
@@ -110,28 +133,37 @@ in {
   };
 
   config = mkIf cfg.enable {
-    modules.linux.oci._managedPaths = mapAttrs' (_: r:
-      nameValuePair r.baseDir {}
-    ) enabledRunners;
+    modules.linux.oci._managedPaths =
+      mapAttrs' (
+        _: r:
+          nameValuePair r.baseDir {}
+      )
+      enabledRunners;
 
     # Ensure the Podman socket is available for runners to spawn job containers
     systemd.sockets."podman".enable = true;
 
-    modules.linux.oci.networks = mkMerge (mapAttrsToList (_: runnerCfg:
-      mkIf (elem "default" runnerCfg.networks) {
-        default.enable = true;
-      }
-    ) enabledRunners);
+    modules.linux.oci.networks = mkMerge (mapAttrsToList (
+        _: runnerCfg:
+          mkIf (elem "default" runnerCfg.networks) {
+            default.enable = true;
+          }
+      )
+      enabledRunners);
 
-    virtualisation.oci-containers.containers =
-      mapAttrs' (name: runnerCfg:
+    virtualisation.oci-containers.containers = mapAttrs' (
+      name: runnerCfg:
         nameValuePair "forgejo-runner-${name}" (mkRunnerContainer name runnerCfg)
-      ) enabledRunners;
+    )
+    enabledRunners;
 
-    systemd.services = mapAttrs' (name: runnerCfg:
-      nameValuePair "podman-forgejo-runner-${name}" (ociLib.mkServiceConfig {
-        networks = runnerCfg.networks;
-      })
-    ) enabledRunners;
+    systemd.services =
+      mapAttrs' (
+        name: runnerCfg:
+          nameValuePair "podman-forgejo-runner-${name}" (ociLib.mkServiceConfig {
+            networks = runnerCfg.networks;
+          })
+      )
+      enabledRunners;
   };
 }
