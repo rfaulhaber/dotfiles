@@ -2,11 +2,15 @@
 
 # Run `nix flake update`, compute a diff of root-level inputs before and after,
 # commit the updated flake.lock to a new branch, and push it. The diff is
-# written to input-changes.json for the finalize job to include in the PR body.
+# written to $CI_RUN_DIR/input-changes.json for the finalize job to pick up
+# via the shared /ci-state bind mount (no artifact actions needed).
 #
 # Outputs (via $env.GITHUB_OUTPUT):
 #   branch — the name of the update branch (e.g. flake-update-20260416)
 #   date   — the UTC date string used in the branch name and PR title
+
+let run_dir = $env.CI_RUN_DIR
+mkdir $run_dir
 
 # --- Capture before state ---
 print "=== Capturing pre-update flake metadata ==="
@@ -55,7 +59,7 @@ let input_changes = ($root_inputs | each {|input_name|
     }
 } | compact)
 
-$input_changes | to json | save -f input-changes.json
+$input_changes | to json | save -f $"($run_dir)/input-changes.json"
 
 print "Updated inputs:"
 if ($input_changes | is-empty) {

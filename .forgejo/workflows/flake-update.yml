@@ -10,12 +10,16 @@ env:
     experimental-features = nix-command flakes ca-derivations pipe-operators
     extra-substituters = https://install.determinate.systems https://nix-community.cachix.org https://nixos-raspberrypi.cachix.org https://niri.cachix.org
     extra-trusted-public-keys = cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI= niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=
+  # All jobs share /ci-state (bind-mounted into every job container by the
+  # forgejo-runner's jobStateDir). Each workflow run gets its own subdirectory
+  # to pass data (input-changes.json, per-host build reports) between jobs
+  # without needing artifact actions (which require `node` in the image).
+  CI_RUN_DIR: /ci-state/runs/${{ github.run_id }}
 
 jobs:
   # Stage 1: check staleness, update flake inputs, push an update branch.
   # Matrix builds (stage 2) clone that branch so every leg sees the same
-  # flake.lock. A per-run "input-changes.json" artifact carries the diff
-  # summary forward to the finalize job.
+  # flake.lock. input-changes.json is dropped into CI_RUN_DIR for finalize.
   prepare:
     runs-on: nix
     outputs:
@@ -38,13 +42,6 @@ jobs:
         id: update
         if: steps.check-stale.outputs.stale == 'true'
         run: nix run nixpkgs#nushell -- .forgejo/scripts/update-inputs.nu
-
-      - name: Upload input-changes report
-        if: steps.check-stale.outputs.stale == 'true'
-        uses: forgejo/upload-artifact@v4
-        with:
-          name: input-changes
-          path: input-changes.json
 
   # Stage 2: build each host in parallel against the update branch.
   # Concurrency is bounded by the runner's `capacity` (set in vulcan's config)
@@ -72,18 +69,9 @@ jobs:
       - name: Build ${{ matrix.host }}
         run: nix run nixpkgs#nushell -- .forgejo/scripts/build-one-host.nu ${{ matrix.host }}
 
-      - name: Upload per-host build report
-        # Always upload — the script writes the report in both success and
-        # failure paths so finalize can show per-host status in the PR body.
-        if: always()
-        uses: forgejo/upload-artifact@v4
-        with:
-          name: build-report-${{ matrix.host }}
-          path: build-report-${{ matrix.host }}.json
-
-  # Stage 3: collect per-host reports and create the PR. Runs even when some
-  # matrix legs fail (always() + explicit prepare success check) so a partial
-  # failure still produces a PR that clearly flags which hosts broke.
+  # Stage 3: collect per-host reports from CI_RUN_DIR and create the PR.
+  # Runs even when some matrix legs fail (always() + explicit prepare success
+  # check) so partial failures still produce a PR flagging which hosts broke.
   finalize:
     runs-on: nix
     needs: [prepare, build]
@@ -96,17 +84,6 @@ jobs:
           git clone --depth 1 --branch "${{ needs.prepare.outputs.branch }}" \
             "${PROTO}://forgejo-actions:${GITHUB_TOKEN}@${DOMAIN}/${GITHUB_REPOSITORY}.git" .
 
-      - name: Download input-changes
-        uses: forgejo/download-artifact@v4
-        with:
-          name: input-changes
-
-      - name: Download all per-host build reports
-        uses: forgejo/download-artifact@v4
-        with:
-          path: build-reports
-          pattern: build-report-*
-
       - name: Merge reports
         run: nix run nixpkgs#nushell -- .forgejo/scripts/merge-reports.nu
 
@@ -115,3 +92,7 @@ jobs:
           nix run nixpkgs#nushell -- .forgejo/scripts/create-pr.nu \
             "${{ needs.prepare.outputs.branch }}" \
             "${{ needs.prepare.outputs.date }}"
+
+      - name: Clean up run directory
+        if: always()
+        run: rm -rf "$CI_RUN_DIR"

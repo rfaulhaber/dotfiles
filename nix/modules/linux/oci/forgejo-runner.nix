@@ -102,11 +102,17 @@ with lib; let
   };
 
   # Fold jobStateDir into the runner's effective container options so it
-  # appears in every job container spawned by that runner.
+  # appears in every job container spawned by that runner. forgejo-runner
+  # additionally validates every -v mount in `options` against the
+  # `valid_volumes` whitelist, so the path must be added to both lists.
   effectiveContainerOptions = runnerCfg:
     runnerCfg.containerOptions
     + (optionalString (runnerCfg.jobStateDir != null)
       " -v ${runnerCfg.jobStateDir}:/ci-state");
+
+  effectiveValidVolumes = runnerCfg:
+    runnerCfg.validVolumes
+    ++ (optional (runnerCfg.jobStateDir != null) runnerCfg.jobStateDir);
 
   enabledRunners = filterAttrs (_: v: v.enable) cfg.runners;
 
@@ -117,7 +123,7 @@ with lib; let
         capacity = runnerCfg.capacity;
       };
       container = {
-        valid_volumes = runnerCfg.validVolumes;
+        valid_volumes = effectiveValidVolumes runnerCfg;
         options = effectiveContainerOptions runnerCfg;
         docker_host = "unix:///var/run/docker.sock";
       };

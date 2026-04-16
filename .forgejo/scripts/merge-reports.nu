@@ -1,25 +1,24 @@
 #!/usr/bin/env nu
 
-# Merge per-host build-report-<host>.json files (downloaded as artifacts into
-# build-reports/) with input-changes.json (downloaded to the working dir) into
-# a single build-report.json for create-pr.nu to consume.
+# Merge per-host build-report-<host>.json files with input-changes.json into a
+# single build-report.json for create-pr.nu to consume. All per-run files are
+# written by earlier jobs to $CI_RUN_DIR (a subdirectory of /ci-state that is
+# bind-mounted into every job container on this runner), so no artifact
+# uploads/downloads are needed to pass data between jobs.
 #
-# Seed state for future runs is persisted per-host into /ci-state by each
-# matrix leg itself, so this step does not touch any warm-cache state.
-#
-# forgejo/download-artifact@v4 with a pattern places each artifact in its own
-# subdirectory, so the layout is:
-#   build-reports/build-report-<host>/build-report-<host>.json
-#   input-changes.json
+# Seed state for future runs is persisted per-host into /ci-state/seed by
+# each matrix leg itself, so this step does not touch any warm-cache state.
 
-let input_changes = if ("input-changes.json" | path exists) {
-    open input-changes.json | from json
+let run_dir = $env.CI_RUN_DIR
+
+let input_changes = if ($"($run_dir)/input-changes.json" | path exists) {
+    open $"($run_dir)/input-changes.json" | from json
 } else {
-    print "WARN: input-changes.json missing — reporting no input changes."
+    print $"WARN: ($run_dir)/input-changes.json missing — reporting no input changes."
     []
 }
 
-let build_results = (glob "build-reports/**/build-report-*.json"
+let build_results = (glob $"($run_dir)/build-report-*.json"
     | each {|f| open $f | from json }
     | sort-by host)
 
