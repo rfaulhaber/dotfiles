@@ -90,8 +90,11 @@ in {
           zfsManageScript =
             builtins.readFile "${config.dotfiles.binDir}/zfs-manage.nu"
             |> lib.my.writeNushellScriptBin pkgs "zfs-manage";
-          datasetsJSON = builtins.toJSON cfg.datasets;
-        in "${zfsManageScript}/bin/zfs-manage '${datasetsJSON}'";
+          # Pass the dataset spec via a file instead of argv: nushell's
+          # shebang-script argv parser treats `{...}` as a record literal and
+          # re-serializes it, double-encoding the JSON before main() sees it.
+          datasetsFile = pkgs.writeText "zfs-datasets.json" (builtins.toJSON cfg.datasets);
+        in "${zfsManageScript}/bin/zfs-manage --file ${datasetsFile}";
       };
     };
   };

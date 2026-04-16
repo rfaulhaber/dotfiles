@@ -1,5 +1,12 @@
-def main [spec?: string, --dry-run] {
-  let config = $spec | default $in
+def main [spec?: string, --file: string, --dry-run] {
+  # Prefer --file to avoid nushell's shebang-argv record-literal parsing, which
+  # mangles JSON passed positionally (curly-braced argv gets parsed as a record
+  # then re-serialized, yielding a double-encoded string).
+  let config = if $file != null and $file != "" {
+    open --raw $file
+  } else {
+    $spec | default $in
+  }
 
   if $config == null {
     print --stderr "Null input. Exiting."
