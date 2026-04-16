@@ -48,6 +48,17 @@ with lib; let
         ];
       };
 
+      capacity = mkOption {
+        description = ''
+          Number of jobs this runner can execute in parallel. Matrix strategies
+          only run concurrently if the runner's capacity is at least as large as
+          the number of matrix legs you want running at once. All concurrent jobs
+          share this host's CPU, RAM, and nix daemon — tune based on resources.
+        '';
+        type = types.ints.positive;
+        default = 1;
+      };
+
       baseDir = mkOption {
         description = "Base directory for persistent runner data.";
         type = types.str;
@@ -81,6 +92,9 @@ with lib; let
   mkRunnerContainer = name: runnerCfg: let
     labelsStr = concatStringsSep "," runnerCfg.labels;
     configFile = pkgs.writeText "forgejo-runner-${name}-config.yaml" (builtins.toJSON {
+      runner = {
+        capacity = runnerCfg.capacity;
+      };
       container = {
         valid_volumes = runnerCfg.validVolumes;
         options = runnerCfg.containerOptions;
@@ -151,11 +165,12 @@ in {
       )
       enabledRunners);
 
-    virtualisation.oci-containers.containers = mapAttrs' (
-      name: runnerCfg:
-        nameValuePair "forgejo-runner-${name}" (mkRunnerContainer name runnerCfg)
-    )
-    enabledRunners;
+    virtualisation.oci-containers.containers =
+      mapAttrs' (
+        name: runnerCfg:
+          nameValuePair "forgejo-runner-${name}" (mkRunnerContainer name runnerCfg)
+      )
+      enabledRunners;
 
     systemd.services =
       mapAttrs' (

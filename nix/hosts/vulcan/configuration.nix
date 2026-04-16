@@ -112,6 +112,9 @@
               enable = true;
               # vulcan and atlas are on the same LAN
               instanceUrl = "http://git.home.lan";
+              # Allow up to 4 concurrent jobs so CI workflows that use
+              # strategy.matrix (e.g. per-host NixOS builds) can run in parallel.
+              capacity = 4;
               tokenFile = config.sops.templates."forgejo-runner-env".path;
               labels = [
                 "docker:docker://node:20-bookworm"
@@ -127,6 +130,7 @@
             codeberg = {
               enable = true;
               instanceUrl = "https://codeberg.org";
+              capacity = 4;
               tokenFile = config.sops.templates."codeberg-runner-env".path;
               labels = [
                 "docker:docker://node:20-bookworm"
