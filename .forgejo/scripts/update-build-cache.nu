@@ -80,12 +80,12 @@ print "=== Building NixOS configurations ==="
 let build_results = ($all_hosts | each {|host|
     print $"--- Building ($host) ---"
     let start = date now
-    let result = do {
-        nix build $".#nixosConfigurations.($host).config.system.build.toplevel"
-            --no-link
-            --print-out-paths
-            --print-build-logs
-    } | complete
+    let result = ^nix build $".#nixosConfigurations.($host).config.system.build.toplevel"
+        --no-link
+        --print-out-paths
+        --print-build-logs
+        | complete
+
     let elapsed = (date now) - $start | format duration min
 
     if $result.exit_code == 0 {
@@ -108,9 +108,7 @@ print "=== Copying built closures to host nix daemon ==="
 for r in ($build_results | where status == "success") {
     if ($r.paths | is-empty) { continue }
     print $"--- Copying ($r.host) ---"
-    let copy_result = do {
-        nix copy --to daemon --no-check-sigs ...$r.paths
-    } | complete
+    let copy_result = ^nix copy --to daemon --no-check-sigs ...$r.paths | complete
     if $copy_result.exit_code == 0 {
         print $"  ✓ ($r.host) copied to host store"
     } else {
