@@ -22,6 +22,19 @@
     ];
   };
 
+  nix.extraOptions = ''
+    !include ${config.sops.templates."nix-access-tokens.conf".path}
+  '';
+
+  sops.templates."nix-access-tokens.conf" = {
+    content = ''
+      access-tokens = github.com=${config.sops.placeholder.github}
+    '';
+    owner = config.user.name;
+    group = config.user.group;
+    mode = "0440";
+  };
+
   modules = {
     programs = {
       emacs = {
@@ -70,6 +83,9 @@
             group = config.user.group;
             mode = "0440";
           };
+          # Used by nix.extraOptions to set access-tokens for github.com
+          # and avoid rate limits when fetching flake inputs.
+          github = {};
         };
       };
       claude.enable = true;
