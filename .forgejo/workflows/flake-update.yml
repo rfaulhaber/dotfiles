@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  NIX_CONFIG: "experimental-features = nix-command flakes"
+  NIX_CONFIG: "experimental-features = nix-command flakes ca-derivations pipe-operators"
 
 jobs:
   check-and-build:
