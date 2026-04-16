@@ -141,6 +141,7 @@
                 "ubuntu-latest:docker://ubuntu:latest"
                 "nix:docker://nixos/nix:latest"
               ];
+              jobStateDir = "/apps/forgejo-runner/default-state";
               baseDir = "/apps/forgejo-runner/codeberg";
               validVolumes = [
                 "/nix/var/nix/daemon-socket/socket"
