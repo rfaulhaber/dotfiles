@@ -21,11 +21,7 @@ def main [host: string] {
 
     print $"=== Building ($host) ==="
     let start = date now
-    let result = ^nix build $".#nixosConfigurations.($host).config.system.build.toplevel"
-        --no-link
-        --print-out-paths
-        --print-build-logs
-        | complete
+    let result = ^nix build $".#nixosConfigurations.($host).config.system.build.toplevel" --no-link --print-out-paths --print-build-logs | complete
 
     let elapsed = (date now) - $start | format duration min
 
