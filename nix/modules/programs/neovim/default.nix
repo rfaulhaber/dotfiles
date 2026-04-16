@@ -40,6 +40,8 @@ in {
       vimAlias = true;
       viAlias = true;
       vimdiffAlias = true;
+      withRuby = false;
+      withPython3 = false;
     };
   };
 }
