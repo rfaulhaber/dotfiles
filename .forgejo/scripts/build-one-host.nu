@@ -32,18 +32,34 @@ def main [host: string] {
 
     print $"=== Building ($host) ==="
     let start = date now
-    # Parens wrap the whole pipeline so nushell's parser keeps the `| complete`
-    # attached to the `^nix build` external across line breaks. Without parens,
-    # newer nushell versions raise "Complete only works on external commands"
-    # because the parser can't tell the continuation lines belong to the same
-    # pipeline as the ^nix build invocation.
-    let result = (
+    # Stream nix's stderr live to the terminal so CI logs show build progress
+    # and errors in real time, while also capturing stderr to a temp file for
+    # the error tail in the build report. `tee --stderr` duplicates the stderr
+    # stream: one copy goes to the closure (saved to $stderr_file), the other
+    # continues on stderr and reaches the terminal. stdout carries the
+    # `--print-out-paths` output and is captured into $stdout_raw. We wrap in
+    # `do --ignore-errors` so a non-zero nix exit doesn't abort the script —
+    # we read $env.LAST_EXIT_CODE explicitly, matching the prior `| complete`
+    # behavior.
+    let stderr_file = (^mktemp --suffix .log | str trim)
+    let stdout_raw = (do --ignore-errors {
         ^nix build $".#nixosConfigurations.($host).config.system.build.toplevel"
             --no-link
             --print-out-paths
             --print-build-logs
-        | complete
-    )
+        | tee --stderr { save --force --raw $stderr_file }
+        | decode utf-8
+    })
+    let exit_code = $env.LAST_EXIT_CODE
+    let stderr_content = if ($stderr_file | path exists) {
+        open --raw $stderr_file | decode utf-8
+    } else { "" }
+    rm --force $stderr_file
+    let result = {
+        stdout: ($stdout_raw | default ""),
+        stderr: $stderr_content,
+        exit_code: $exit_code,
+    }
 
     let elapsed = (date now) - $start | format duration min
 
