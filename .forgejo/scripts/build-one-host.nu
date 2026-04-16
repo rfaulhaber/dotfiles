@@ -5,9 +5,11 @@
 # strategy.matrix leg — one invocation per host.
 #
 # Before building, seeds the container's local /nix/store with the previous
-# successful build's closure for this host (recorded in .ci/last-builds.json).
-# Most derivations are shared between two consecutive NixOS toplevels, so the
-# seed turns those into cache hits instead of re-fetching from cache.nixos.org.
+# successful build's closure for this host, using the path list persisted at
+# /ci-state/<host>/last-paths.json. /ci-state is a host-side bind mount
+# configured on the forgejo-runner (modules.linux.oci.services.forgejo-runner.
+# runners.<name>.jobStateDir) — each matrix leg writes its own file, so there
+# is no cross-host contention and no committed git state.
 #
 # NOTE: We intentionally do NOT set NIX_REMOTE=daemon. Mixing a container-local
 # /nix/store with the host daemon's /nix/store breaks flake input fetching: the
@@ -16,12 +18,18 @@
 # container — and evaluation fails with "opening file '...-source': No such
 # file or directory".
 
+const state_root = "/ci-state"
+
 def main [host: string] {
     seed_local_store $host
 
     print $"=== Building ($host) ==="
     let start = date now
-    let result = ^nix build $".#nixosConfigurations.($host).config.system.build.toplevel" --no-link --print-out-paths --print-build-logs | complete
+    let result = ^nix build $".#nixosConfigurations.($host).config.system.build.toplevel"
+        --no-link
+        --print-out-paths
+        --print-build-logs
+        | complete
 
     let elapsed = (date now) - $start | format duration min
 
@@ -43,6 +51,10 @@ def main [host: string] {
             print $"    ($err_tail)"
         }
 
+        # Refresh this host's seed state for the next run. Only written on
+        # success so a transient failure doesn't erase the warm cache.
+        persist_seed $host $out_paths
+
         { host: $host, status: "success", elapsed: $elapsed, error: "", paths: $out_paths }
     } else {
         let err_tail = ($result.stderr | lines | last 20 | str join "\n")
@@ -61,18 +73,17 @@ def main [host: string] {
 }
 
 # Seed this container's local /nix/store from the host nix daemon, using the
-# previous successful build's toplevel paths recorded in .ci/last-builds.json.
+# previous successful build's toplevel paths recorded under /ci-state.
 # Best-effort: paths that have been garbage-collected on the daemon are
 # silently skipped (the build falls back to cache.nixos.org as usual).
 def seed_local_store [host: string] {
-    let state_file = ".ci/last-builds.json"
+    let state_file = $"($state_root)/($host)/last-paths.json"
     if not ($state_file | path exists) {
         print $"=== No ($state_file); skipping seed for ($host) ==="
         return
     }
 
-    let last = open $state_file
-    let seed_paths = ($last | get -i $host | default [])
+    let seed_paths = open $state_file
     if ($seed_paths | is-empty) {
         print $"=== No seed paths recorded for ($host); skipping seed ==="
         return
@@ -93,4 +104,13 @@ def seed_local_store [host: string] {
             print $"  ! skipped ($p): ($msg)"
         }
     }
+}
+
+# Persist this host's new toplevel paths as the seed for the next run.
+def persist_seed [host: string, paths: list<string>] {
+    let host_dir = $"($state_root)/($host)"
+    let state_file = $"($host_dir)/last-paths.json"
+    mkdir $host_dir
+    $paths | to json | save -f $state_file
+    print $"=== Persisted ($paths | length) seed path\(s\) to ($state_file) ==="
 }

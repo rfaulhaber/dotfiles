@@ -115,6 +115,10 @@
               # Allow up to 4 concurrent jobs so CI workflows that use
               # strategy.matrix (e.g. per-host NixOS builds) can run in parallel.
               capacity = 4;
+              # Bind-mounted into every job container at /ci-state. Used by the
+              # flake-update workflow to persist per-host seed paths for warming
+              # the container /nix/store on the next run.
+              jobStateDir = "/apps/forgejo-runner/default-state";
               tokenFile = config.sops.templates."forgejo-runner-env".path;
               labels = [
                 "docker:docker://node:20-bookworm"

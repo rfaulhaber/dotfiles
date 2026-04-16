@@ -84,8 +84,29 @@ with lib; let
         default = "";
         example = "-v /nix/var/nix/daemon-socket/socket:/nix/var/nix/daemon-socket/socket";
       };
+
+      jobStateDir = mkOption {
+        description = ''
+          Optional host directory bind-mounted into every job container at
+          /ci-state. Intended for workflows that want to persist small
+          warm-cache state (e.g. nix store seed paths) across runs without
+          committing it to git. The directory is registered as a managed path
+          (ZFS dataset when OCI ZFS is enabled); job scripts create whatever
+          subdirectory structure they need under /ci-state.
+        '';
+        type = types.nullOr types.str;
+        default = null;
+        example = "/apps/forgejo-runner/default/state";
+      };
     };
   };
+
+  # Fold jobStateDir into the runner's effective container options so it
+  # appears in every job container spawned by that runner.
+  effectiveContainerOptions = runnerCfg:
+    runnerCfg.containerOptions
+    + (optionalString (runnerCfg.jobStateDir != null)
+      " -v ${runnerCfg.jobStateDir}:/ci-state");
 
   enabledRunners = filterAttrs (_: v: v.enable) cfg.runners;
 
@@ -97,7 +118,7 @@ with lib; let
       };
       container = {
         valid_volumes = runnerCfg.validVolumes;
-        options = runnerCfg.containerOptions;
+        options = effectiveContainerOptions runnerCfg;
         docker_host = "unix:///var/run/docker.sock";
       };
     });
@@ -147,12 +168,20 @@ in {
   };
 
   config = mkIf cfg.enable {
-    modules.linux.oci._managedPaths =
-      mapAttrs' (
-        _: r:
-          nameValuePair r.baseDir {}
-      )
-      enabledRunners;
+    modules.linux.oci._managedPaths = let
+      basePaths =
+        mapAttrs' (
+          _: r:
+            nameValuePair r.baseDir {}
+        )
+        enabledRunners;
+      statePaths = listToAttrs (
+        mapAttrsToList
+        (_: r: nameValuePair r.jobStateDir {})
+        (filterAttrs (_: r: r.jobStateDir != null) enabledRunners)
+      );
+    in
+      basePaths // statePaths;
 
     # Ensure the Podman socket is available for runners to spawn job containers
     systemd.sockets."podman".enable = true;

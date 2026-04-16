@@ -110,21 +110,6 @@ jobs:
       - name: Merge reports
         run: nix run nixpkgs#nushell -- .forgejo/scripts/merge-reports.nu
 
-      # Commit the refreshed .ci/last-builds.json back to the update branch so
-      # that when the PR is merged, main carries the new warm-seed state into
-      # the next flake-update cycle.
-      - name: Commit refreshed last-builds state
-        run: |
-          if ! git diff --quiet -- .ci/last-builds.json; then
-            git config user.name "forgejo-actions[bot]"
-            git config user.email "forgejo-actions[bot]@noreply.localhost"
-            git add .ci/last-builds.json
-            git commit -m "ci: refresh last-builds state"
-            git push
-          else
-            echo "No last-builds changes to commit."
-          fi
-
       - name: Create PR
         run: |
           nix run nixpkgs#nushell -- .forgejo/scripts/create-pr.nu \
