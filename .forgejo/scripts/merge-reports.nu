@@ -11,15 +11,18 @@
 
 let run_dir = $env.CI_RUN_DIR
 
+# `open` on a *.json file auto-parses into structured data, so piping the
+# result through `from json` errors ("only string input data is supported").
+# Let `open` do the parsing directly.
 let input_changes = if ($"($run_dir)/input-changes.json" | path exists) {
-    open $"($run_dir)/input-changes.json" | from json
+    open $"($run_dir)/input-changes.json"
 } else {
     print $"WARN: ($run_dir)/input-changes.json missing — reporting no input changes."
     []
 }
 
 let build_results = (glob $"($run_dir)/build-report-*.json"
-    | each {|f| open $f | from json }
+    | each {|f| open $f }
     | sort-by host)
 
 let report = {

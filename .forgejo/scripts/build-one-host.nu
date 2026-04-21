@@ -30,64 +30,82 @@ def main [host: string] {
 
     seed_local_store $host
 
+    let attr = $".#nixosConfigurations.($host).config.system.build.toplevel"
+
     print $"=== Building ($host) ==="
     let start = date now
     # Stream nix's stderr live to the terminal so CI logs show build progress
-    # and errors in real time, while also capturing stderr to a temp file for
-    # the error tail in the build report. `tee --stderr` duplicates the stderr
-    # stream: one copy goes to the closure (saved to $stderr_file), the other
-    # continues on stderr and reaches the terminal. stdout carries the
-    # `--print-out-paths` output and is captured into $stdout_raw. We wrap in
-    # `do --ignore-errors` so a non-zero nix exit doesn't abort the script —
-    # we read $env.LAST_EXIT_CODE explicitly, matching the prior `| complete`
-    # behavior.
+    # in real time, while also saving a copy to $stderr_file for the error
+    # tail in the build report. `err>|` pipes nix's stderr into tee's stdin;
+    # tee writes one copy to disk via the closure and passes the stream
+    # through, which `print` forwards to the terminal. `do --ignore-errors`
+    # swallows a non-zero nix exit so we can inspect $env.LAST_EXIT_CODE
+    # ourselves.
+    #
+    # We intentionally do NOT use `--print-out-paths` + stdout capture here:
+    # combining stdout capture with a tee'd stderr pipeline is fragile across
+    # nushell versions. Instead, after a successful build we resolve the
+    # toplevel store path via `nix eval --raw …outPath`, which is both
+    # deterministic and ~free (the attribute is already in nix's eval cache
+    # from the build we just ran).
     let stderr_file = (^mktemp --suffix .log | str trim)
-    let stdout_raw = (do --ignore-errors {
-        ^nix build $".#nixosConfigurations.($host).config.system.build.toplevel"
-            --no-link
-            --print-out-paths
-            --print-build-logs
-        | tee --stderr { save --force --raw $stderr_file }
-        | decode utf-8
-    })
+    # Parens wrap the pipeline so nushell attaches `err>| tee …` to the
+    # `^nix build` invocation across line breaks; without them the parser
+    # raises "Unexpected redirection." on the continuation line.
+    do --ignore-errors {
+        (
+            ^nix build $attr --no-link --print-build-logs
+            err>| tee { save --force --raw $stderr_file }
+            | print
+        )
+    }
     let exit_code = $env.LAST_EXIT_CODE
     let stderr_content = if ($stderr_file | path exists) {
         open --raw $stderr_file | decode utf-8
     } else { "" }
     rm --force $stderr_file
-    let result = {
-        stdout: ($stdout_raw | default ""),
-        stderr: $stderr_content,
-        exit_code: $exit_code,
-    }
 
     let elapsed = (date now) - $start | format duration min
 
-    let report = if $result.exit_code == 0 {
-        let out_paths = ($result.stdout | lines | each {|l| $l | str trim } | where {|l| $l != "" })
-        print $"  ✓ ($host) built successfully \(($elapsed)\)"
-
-        # Copy the built closure to the host daemon so other machines can
-        # pull it via harmonia. --no-check-sigs is required because we build
-        # unsigned inside the container; the daemon socket's root user is a
-        # trusted-user on vulcan.
-        print $"=== Copying ($host) closure to host nix daemon ==="
-        let copy_result = ^nix copy --to daemon --no-check-sigs ...$out_paths | complete
-        if $copy_result.exit_code == 0 {
-            print $"  ✓ ($host) copied to host store"
-        } else {
-            let err_tail = ($copy_result.stderr | lines | last 10 | str join "\n")
-            print $"  ✗ ($host) copy failed"
+    let report = if $exit_code == 0 {
+        # Resolve the just-built toplevel path. If this fails the build
+        # "succeeded" but we have no path to copy — treat the host as failed
+        # rather than silently running `nix copy` with no arguments (which
+        # falls back to .#packages.<system>.default and surfaces a
+        # confusing "flake does not provide attribute" error).
+        let eval_result = (^nix eval --raw $"($attr).outPath" | complete)
+        let out_path = ($eval_result.stdout | str trim)
+        if $eval_result.exit_code != 0 or ($out_path | is-empty) {
+            let err_tail = ($eval_result.stderr | lines | last 10 | str join "\n")
+            print $"  ✗ ($host) built but could not resolve out path"
             print $"    ($err_tail)"
+            { host: $host, status: "failed", elapsed: $elapsed, error: $"out path resolution failed: ($err_tail)", paths: [] }
+        } else {
+            let out_paths = [$out_path]
+            print $"  ✓ ($host) built successfully \(($elapsed)\)"
+
+            # Copy the built closure to the host daemon so other machines can
+            # pull it via harmonia. --no-check-sigs is required because we
+            # build unsigned inside the container; the daemon socket's root
+            # user is a trusted-user on vulcan.
+            print $"=== Copying ($host) closure to host nix daemon ==="
+            let copy_result = ^nix copy --to daemon --no-check-sigs ...$out_paths | complete
+            if $copy_result.exit_code == 0 {
+                print $"  ✓ ($host) copied to host store"
+                # Refresh this host's seed state for the next run. Only
+                # written after a full success so a transient copy failure
+                # doesn't erase the warm cache.
+                persist_seed $host $out_paths
+                { host: $host, status: "success", elapsed: $elapsed, error: "", paths: $out_paths }
+            } else {
+                let err_tail = ($copy_result.stderr | lines | last 10 | str join "\n")
+                print $"  ✗ ($host) copy failed"
+                print $"    ($err_tail)"
+                { host: $host, status: "failed", elapsed: $elapsed, error: $"copy to daemon failed: ($err_tail)", paths: $out_paths }
+            }
         }
-
-        # Refresh this host's seed state for the next run. Only written on
-        # success so a transient failure doesn't erase the warm cache.
-        persist_seed $host $out_paths
-
-        { host: $host, status: "success", elapsed: $elapsed, error: "", paths: $out_paths }
     } else {
-        let err_tail = ($result.stderr | lines | last 20 | str join "\n")
+        let err_tail = ($stderr_content | lines | last 20 | str join "\n")
         print $"  ✗ ($host) failed \(($elapsed)\)"
         print $"    ($err_tail)"
         { host: $host, status: "failed", elapsed: $elapsed, error: $err_tail, paths: [] }
