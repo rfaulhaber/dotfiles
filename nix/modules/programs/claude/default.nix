@@ -68,8 +68,6 @@ in {
         };
 
         enabledPlugins = {
-          "context7@claude-plugins-official" = true;
-          "serena@claude-plugins-official" = true;
           "feature-dev@claude-plugins-official" = true;
           "code-review@claude-plugins-official" = true;
           "explanatory-output-style@claude-plugins-official" = true;
@@ -101,8 +99,8 @@ in {
         };
       };
 
-      skillsDir = "${config.dotfiles.configDir}/claude/skills";
-      memory.source = "${config.dotfiles.configDir}/claude/CLAUDE.md";
+      skills = "${config.dotfiles.configDir}/claude/skills";
+      context = "${config.dotfiles.configDir}/claude/CLAUDE.md";
     };
   };
 }

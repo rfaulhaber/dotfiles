@@ -147,7 +147,7 @@
         signal-desktop
         ungoogled-chromium
         feishin
-        inputs.rz.packages.${pkgs.stdenv.hostPlatform.system}.default
+        inputs.rz.packages.${pkgs.stdenv.hostPlatform.system}.with-bzip2
       ];
       autostart = {
         enable = true;
