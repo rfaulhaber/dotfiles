@@ -174,6 +174,11 @@
     useDHCP = false;
     interfaces.enp4s0.useDHCP = true;
 
+    # Pin atlas to its LAN IPv4 so NFS mounts use the local path. Without
+    # this, DNS returns a public AAAA record and atlas's NFS exports (keyed
+    # on 192.168.0.105) reject the IPv6 source.
+    hosts."192.168.0.3" = ["atlas"];
+
     firewall.enable = true;
   };
 

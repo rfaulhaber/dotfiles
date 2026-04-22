@@ -107,7 +107,7 @@ in {
         ["--network-alias=plex"]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ optionals (cfg.gpu == "nvidia") ["--device=nvidia.com/gpu=all"]
-        ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri"];
+        ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri:/dev/dri"];
     };
 
     systemd.services."podman-plex" = mkMerge [
