@@ -106,20 +106,14 @@ in {
       useDHCP = true;
       ipv4.addresses = [
         {
-          address = "66.63.168.153";
+          address = netbirdIp;
           prefixLength = 24;
         }
         {
-          address = "66.63.168.244";
+          address = pangolinIp;
           prefixLength = 24;
         }
       ];
-    };
-
-    firewall = {
-      enable = true;
-      # SSH only — service ports are managed by OCI modules via openFirewall
-      allowedTCPPorts = [6674];
     };
   };
 }
