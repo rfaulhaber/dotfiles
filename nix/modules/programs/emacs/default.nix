@@ -86,11 +86,6 @@ in {
       type = types.package;
       default = pkgs.emacs;
     };
-    mutableConfg = mkOption {
-      description = "If enabled, links ~/Project/dotfiles/doom.d to .config rather than from /nix/store.";
-      type = types.bool;
-      default = false;
-    };
     doomUnstraightened = {
       enable = mkEnableOption false;
       setDefault = mkOption {
@@ -139,14 +134,16 @@ in {
     home.programs.nushell.shellAliases =
       mkIf config.modules.programs.nushell.enable shellAliases;
 
-    home.file.doomconfig = mkIf (!cfg.doomUnstraightened.enable) {
-      source = config.dotfiles.emacsDir;
-      target = "${config.user.home}/.config/doom";
-    };
+    home.file = {
+      doomconfig = mkIf (!cfg.doomUnstraightened.enable) {
+        source = config.dotfiles.emacsDir;
+        target = "${config.user.home}/.config/doom";
+      };
 
-    home.file.doomApp = mkIf isDarwin {
-      source = "${config.services.emacs.package}/Applications/Emacs.app";
-      target = "${config.user.home}/Applications/Emacs.app";
+      doomApp = mkIf isDarwin {
+        source = "${config.services.emacs.package}/Applications/Emacs.app";
+        target = "${config.user.home}/Applications/Emacs.app";
+      };
     };
   };
 }

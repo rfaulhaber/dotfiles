@@ -152,6 +152,13 @@ in {
           user = "ryan";
           port = 13308;
         };
+
+        "prometheus" = {
+          hostname = mkLocalHostname "105";
+          forwardAgent = true;
+          user = "ryan";
+          port = 13571;
+        };
       };
     };
   };

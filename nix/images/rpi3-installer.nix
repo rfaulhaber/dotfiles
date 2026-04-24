@@ -1,5 +1,5 @@
 # Minimal SD card image for bootstrapping a Raspberry Pi 3B.
-# Build with: nix build .#hecate-installer
+# Build with: nix build .#rpi3-installer
 # Flash with: zstd -d result/sd-image/*.img.zst -o hecate.img && dd if=hecate.img of=/dev/sdX bs=4M status=progress
 {
   lib,
@@ -19,16 +19,8 @@
   hardware.enableRedistributableFirmware = true;
 
   networking = {
-    hostName = "hecate";
-    useDHCP = false;
-    interfaces.eth0.ipv4.addresses = [
-      {
-        address = "192.168.0.43";
-        prefixLength = 24;
-      }
-    ];
-    defaultGateway = "192.168.0.1";
-    nameservers = ["192.168.0.2" "1.1.1.1"];
+    hostName = "rpi3b";
+    useDHCP = true;
   };
 
   services.openssh.enable = true;

@@ -15,10 +15,12 @@
     substituters = [
       "https://install.determinate.systems"
       "http://vulcan.lan:4965"
+      "https://nixos-raspberrypi.cachix.org"
     ];
     trusted-public-keys = [
       "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
       "vulcan.lan-1:Zu8N+6EtaIeDTyCVpR15uvIYYByZqMmd8W09vu8GKl8="
+      "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="
     ];
   };
 
@@ -45,7 +47,6 @@
           setDefault = true;
         };
       };
-      neovim.enable = true;
       kitty.enable = true;
       ghostty = {
         enable = true;
@@ -83,8 +84,8 @@
             group = config.user.group;
             mode = "0440";
           };
-          # Used by nix.extraOptions to set access-tokens for github.com
-          # and avoid rate limits when fetching flake inputs.
+          # used by nix.extraOptions to set access-tokens for github.com
+          # and avoid rate limits when fetching flake inputs
           github = {};
         };
       };

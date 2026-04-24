@@ -89,5 +89,8 @@ in rec {
           };
       }));
 
-  hostnameFromPath = path: head (match ".*/([[:alpha:]]+)/configuration.nix" (toString path));
+  hostnameFromPath = path:
+    toString path
+    |> match ".*/([[:alpha:]]+)/configuration.nix"
+    |> head;
 }

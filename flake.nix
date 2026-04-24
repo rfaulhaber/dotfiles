@@ -122,6 +122,15 @@
           pallas = mkHost ./nix/hosts/pallas/configuration.nix {};
           hecate = mkHost ./nix/hosts/hecate/configuration.nix {};
           vulcan = mkHost ./nix/hosts/vulcan/configuration.nix {};
+          # prometheus uses the stock nixpkgs-unstable channel (via mkHost) and
+          # pulls the Pi 5 kernel/firmware/overlays from nixos-raspberrypi. Going
+          # through nixos-raspberrypi.lib.nixosSystem would re-pin nixpkgs to the
+          # flake's 25.11 and break modules written against unstable (e.g. nix-cache).
+          prometheus = mkHost ./nix/hosts/prometheus/configuration.nix {
+            specialArgs = {
+              nixos-raspberrypi = inputs.nixos-raspberrypi;
+            };
+          };
         };
         darwinConfigurations = {
           eos = lib.my.mkDarwinHost ./nix/hosts/eos/configuration.nix {};
@@ -179,6 +188,16 @@
                   self.nixosConfigurations.vulcan;
               };
             };
+            prometheus = {
+              hostname = "prometheus";
+              profiles.system = {
+                user = "root";
+                fastConnection = true;
+                path =
+                  deploy-rs.lib.aarch64-linux.activate.nixos
+                  self.nixosConfigurations.prometheus;
+              };
+            };
           };
         };
 
@@ -199,6 +218,15 @@
               system = "aarch64-linux";
               modules = [./nix/images/rpi3-installer.nix];
               specialArgs = {inherit inputs;};
+            }).config.system.build.sdImage;
+          rpi5-installer =
+            (inputs.nixpkgs.lib.nixosSystem {
+              system = "aarch64-linux";
+              modules = [./nix/images/rpi5-installer.nix];
+              specialArgs = {
+                inherit inputs;
+                nixos-raspberrypi = inputs.nixos-raspberrypi;
+              };
             }).config.system.build.sdImage;
           x86_64-installer =
             (inputs.nixpkgs.lib.nixosSystem {
