@@ -7,7 +7,7 @@
   ...
 }: {
   imports = [
-    ./hardware-configuration.nix
+    ./hardware.nix
     ./disko.nix
     ../../modules
     # Required when using nixpkgs.lib.nixosSystem directly with the Pi 5 modules:

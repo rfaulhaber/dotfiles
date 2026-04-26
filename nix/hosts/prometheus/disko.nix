@@ -28,12 +28,7 @@
               type = "filesystem";
               format = "vfat";
               mountpoint = "/boot/firmware";
-              mountOptions = [
-                "noatime"
-                "noauto"
-                "x-systemd.automount"
-                "x-systemd.idle-timeout=1min"
-              ];
+              mountOptions = ["noatime"];
             };
           };
           root = {
