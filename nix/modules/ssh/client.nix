@@ -154,7 +154,7 @@ in {
         };
 
         "prometheus" = {
-          hostname = mkLocalHostname "105";
+          hostname = mkLocalHostname "228";
           forwardAgent = true;
           user = "ryan";
           port = 13571;
