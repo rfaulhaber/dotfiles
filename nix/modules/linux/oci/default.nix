@@ -96,6 +96,7 @@ in {
     ./jellyfin.nix
     ./miniflux.nix
     ./newt.nix
+    ./open-webui.nix
     ./pihole.nix
     ./plex.nix
   ];

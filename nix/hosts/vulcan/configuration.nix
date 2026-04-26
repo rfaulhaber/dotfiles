@@ -38,6 +38,18 @@
     services = {
       zfs.enable = true;
       sudo-rs.enable = true;
+      ollama = {
+        enable = true;
+        home = "/apps/ollama";
+        modelsDir = "/mnt/llm/models";
+        gpu = "intel";
+        openFirewall = true;
+        models = ["qwen2.5:14b"];
+        zfs = {
+          enable = true;
+          pool = "zroot";
+        };
+      };
       ssh = {
         enable = true;
         server = {
@@ -62,6 +74,10 @@
           "/mnt/media/tv" = {
             server = "atlas";
             path = "/data/tv";
+          };
+          "/mnt/llm/models" = {
+            server = "atlas";
+            path = "/data/llm/models";
           };
         };
       };
@@ -98,6 +114,14 @@
           enable = true;
           gpu = "intel";
           openFirewall = true;
+        };
+        open-webui = {
+          enable = true;
+          baseDir = "/apps/open-webui";
+          openFirewall = true;
+          # Native ollama runs on the host (modules.services.ollama), so
+          # reach it via the podman-injected host gateway DNS entry.
+          ollamaBaseUrl = "http://host.containers.internal:11434";
         };
         newt = {
           enable = true;

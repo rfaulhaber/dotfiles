@@ -9,6 +9,7 @@
     ./nfs
     ./nix-cache
     ./netbird
+    ./ollama
     ./printing
     ./samba
     ./sudo-rs
