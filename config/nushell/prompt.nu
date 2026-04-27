@@ -1,3 +1,5 @@
+# Shared prompt for remote/server hosts.
+# Sourced from env.nu when the current hostname is in the server list.
 let hostname = (sys host | get hostname)
 
 $env.PROMPT_COMMAND = {||
