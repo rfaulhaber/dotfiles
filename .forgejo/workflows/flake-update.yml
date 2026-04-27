@@ -44,12 +44,12 @@ jobs:
         run: nix run nixpkgs#nushell -- .forgejo/scripts/update-inputs.nu
 
   # Stage 2: build each host in parallel against the update branch.
-  # Concurrency is bounded by the runner's `capacity` (set in vulcan's config)
-  # and `max-parallel` here; whichever is lower wins. Start conservative —
-  # aarch64 hosts (pallas, hecate) build via binfmt emulation on x86, which
-  # is resource-hungry, so 3 in flight at a time is the safe default.
+  # Concurrency is bounded by each runner's `capacity` (set in the host's
+  # forgejo-runner config) and `max-parallel` here; whichever is lower wins.
+  # x86_64 hosts build on vulcan's `nix` runner; aarch64 hosts build on
+  # prometheus's `nix-aarch64` runner natively (no QEMU emulation).
   build:
-    runs-on: nix
+    runs-on: ${{ matrix.runner }}
     needs: prepare
     if: needs.prepare.outputs.stale == 'true'
     timeout-minutes: 180
@@ -57,7 +57,14 @@ jobs:
       fail-fast: false
       max-parallel: 4
       matrix:
-        host: [hyperion, atlas, janus, vulcan]
+        include:
+          - { host: hyperion, runner: nix }
+          - { host: atlas, runner: nix }
+          - { host: janus, runner: nix }
+          - { host: vulcan, runner: nix }
+          - { host: prometheus, runner: nix-aarch64 }
+          - { host: pallas, runner: nix-aarch64 }
+          - { host: hecate, runner: nix-aarch64 }
     steps:
       - name: Checkout update branch
         run: |
