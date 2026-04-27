@@ -18,7 +18,7 @@ in {
     image = mkOption {
       description = "Pi-hole container image.";
       type = types.str;
-      default = "pihole/pihole:2026.04.0";
+      default = "pihole/pihole:2026.04.1";
     };
 
     baseDir = mkOption {
