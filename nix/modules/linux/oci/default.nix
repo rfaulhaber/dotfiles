@@ -82,11 +82,14 @@ with lib; let
 
   # ZFS dataset generation from collected paths
   zfsCfg = cfg.zfs;
-  managedDatasets = mapAttrs' (path: pathCfg:
-    nameValuePair "${zfsCfg.pool}${path}" {
-      properties = {mountpoint = path;} // zfsCfg.properties // pathCfg.properties;
-    }
-  ) cfg._managedPaths;
+  managedDatasets =
+    mapAttrs' (
+      path: pathCfg:
+        nameValuePair "${zfsCfg.pool}${path}" {
+          properties = {mountpoint = path;} // zfsCfg.properties // pathCfg.properties;
+        }
+    )
+    cfg._managedPaths;
 in {
   imports = [
     ./caddy.nix
@@ -97,8 +100,11 @@ in {
     ./miniflux.nix
     ./newt.nix
     ./open-webui.nix
+    ./netbird.nix
+    ./pangolin.nix
     ./pihole.nix
     ./plex.nix
+    ./pocket-id.nix
   ];
 
   options.modules.linux.oci = {

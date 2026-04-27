@@ -4,7 +4,11 @@
   pkgs,
   inputs,
   ...
-}: {
+}: let
+  # Janus has two public IPs — services are split across them
+  pangolinIp = "66.63.168.244";
+  netbirdIp = "66.63.168.153";
+in {
   imports = [
     ../../modules
     ./hardware.nix
@@ -20,14 +24,14 @@
         zoxide.enable = true;
         carapace.enable = true;
       };
+      sops = {
+        enable = true;
+        keyFile = null;
+        secrets = {};
+      };
     };
     services = {
-      docker.enable = true;
       sudo-rs.enable = true;
-      systemd.modules = {
-        updatedb.enable = true;
-        dockerCleanup.enable = true;
-      };
       ssh = {
         enable = true;
         server = {
@@ -37,6 +41,52 @@
       };
       netbird.enable = true;
     };
+
+    linux.oci = {
+      enable = true;
+
+      networks = {
+        pangolin.enable = true;
+        netbird.enable = true;
+      };
+
+      services = {
+        pangolin = {
+          enable = true;
+          domain = "3679.space";
+          dashboardDomain = "pangolin.3679.space";
+          bindAddress = pangolinIp;
+          baseDir = "/docker/config";
+          adminEmail = "ryf@sent.as";
+          email = {
+            smtpHost = "smtp.fastmail.com";
+            smtpPort = 465;
+            smtpUser = "ryf@sent.as";
+            noReply = "no-reply@3679.space";
+          };
+          openFirewall = true;
+        };
+
+        netbird = {
+          enable = true;
+          domain = "netbird.3679.space";
+          authDomain = "auth.3679.space";
+          bindAddress = netbirdIp;
+          baseDir = "/docker/config/netbird";
+          acmeEmail = "ryf@sent.as";
+          openFirewall = true;
+        };
+
+        pocket-id = {
+          enable = true;
+          appUrl = "https://auth.3679.space";
+          bindAddress = pangolinIp;
+          baseDir = "/docker/config/pocket-id";
+          networks = ["pangolin"];
+        };
+      };
+    };
+
     themes.active = "tokyo-night-dark";
   };
 
@@ -56,28 +106,12 @@
       useDHCP = true;
       ipv4.addresses = [
         {
-          address = "66.63.168.153";
+          address = netbirdIp;
           prefixLength = 24;
         }
         {
-          address = "66.63.168.244";
+          address = pangolinIp;
           prefixLength = 24;
-        }
-      ];
-    };
-
-    firewall = {
-      enable = true;
-      # SSH
-      allowedTCPPorts = [6674];
-      # Coturn (TURN/STUN) uses network_mode: host, so it needs INPUT chain rules.
-      # Other Docker containers use port forwarding (FORWARD chain), which NixOS
-      # firewall does not touch — they manage their own iptables rules.
-      allowedUDPPorts = [3478 5349];
-      allowedUDPPortRanges = [
-        {
-          from = 49152;
-          to = 65535;
         }
       ];
     };
