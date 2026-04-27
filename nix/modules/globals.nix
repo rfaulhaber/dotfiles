@@ -1,8 +1,5 @@
 # for outputting global static config for use in non-declarative applications
-{
-  config,
-  ...
-}: let
+{config, ...}: let
   inherit (builtins) toJSON;
   themeCfg = config.modules.themes;
 in {

@@ -51,8 +51,9 @@ in {
 
     # Enable any referenced networks
     modules.linux.oci.networks = mkMerge (map (n: {
-      ${n}.enable = true;
-    }) cfg.networks);
+        ${n}.enable = true;
+      })
+      cfg.networks);
 
     virtualisation.oci-containers.containers."newt" = {
       image = cfg.image;
