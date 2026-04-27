@@ -233,6 +233,10 @@
               system = "x86_64-linux";
               modules = [./nix/images/x86_64-installer.nix];
             }).config.system.build.isoImage;
+          # Flashable SD image of the prometheus host. Same NixOS configuration
+          # as `nixosConfigurations.prometheus`, so deploy-rs can switch the
+          # running system to a freshly built toplevel afterwards.
+          prometheus-sd-image = self.nixosConfigurations.prometheus.config.system.build.sdImage;
         };
       };
       systems = ["x86_64-linux" "aarch64-darwin"];
