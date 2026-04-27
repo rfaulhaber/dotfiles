@@ -35,6 +35,8 @@
 
   services.openssh.enable = true;
 
+  users.users.root.openssh.authorizedKeys.keys = import ../modules/ssh/keys.nix;
+
   users.users.ryan = {
     isNormalUser = true;
     extraGroups = ["wheel"];

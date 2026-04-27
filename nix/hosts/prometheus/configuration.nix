@@ -8,7 +8,6 @@
 }: {
   imports = [
     ./hardware.nix
-    ./disko.nix
     ../../modules
     # Required when using nixpkgs.lib.nixosSystem directly with the Pi 5 modules:
     # applies the vendor kernel, firmware, and bootloader overlays.
@@ -16,7 +15,9 @@
     nixos-raspberrypi.nixosModules.raspberry-pi-5.base
     nixos-raspberrypi.nixosModules.raspberry-pi-5.page-size-16k
     nixos-raspberrypi.nixosModules.trusted-nix-caches
-    inputs.disko.nixosModules.disko
+    # Provides system.build.sdImage and the firmware-partition wiring; also
+    # selects the "kernel" generational bootloader for Pi 5 automatically.
+    nixos-raspberrypi.nixosModules.sd-image
     inputs.determinate.nixosModules.default
   ];
 
@@ -58,12 +59,13 @@
     themes.active = "moonlight";
   };
 
-  # Generational bootloader recommended for new Pi 5 installs (nixos-raspberrypi README).
-  boot.loader.raspberry-pi.bootloader = "kernel";
-
   hardware.enableRedistributableFirmware = true;
 
   console.enable = false;
+
+  # The nixos-raspberrypi cachix has the vendor kernel but not its `-dev` output,
+  # which ZFS would need; opting out keeps the build a pure cache fetch.
+  boot.supportedFilesystems.zfs = false;
 
   environment.systemPackages = with pkgs; [
     libraspberrypi
