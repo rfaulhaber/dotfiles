@@ -44,7 +44,7 @@
         modelsDir = "/mnt/llm/models";
         gpu = "intel";
         openFirewall = true;
-        models = ["qwen2.5:14b"];
+        models = ["qwen2.5:14b" "phi4:14b" "phi4-reasoning:14b" "phi4-mini-reasoning:14b" "deepcoder:14b" "ministral-3:14b"];
         zfs = {
           enable = true;
           pool = "zroot";

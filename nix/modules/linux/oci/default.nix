@@ -197,6 +197,13 @@ in {
     # Generate ZFS datasets from collected service paths
     modules.services.zfs.datasets = mkIf (zfsCfg.enable && cfg._managedPaths != {}) managedDatasets;
 
+    # Plain-filesystem fallback: when ZFS isn't managing these paths, ensure
+    # they exist as directories so podman bind-mounts don't fail with
+    # `statfs ... no such file or directory` on first start.
+    systemd.tmpfiles.rules = mkIf (!zfsCfg.enable) (
+      mapAttrsToList (path: _: "d ${path} 0755 root root - -") cfg._managedPaths
+    );
+
     virtualisation.podman = {
       enable = true;
       autoPrune.enable = true;
