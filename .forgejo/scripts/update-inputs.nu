@@ -43,10 +43,10 @@ let input_changes = ($root_inputs | each {|input_name|
             null
         } else {
             let before_date = if $before_rev != "n/a" {
-                $before_node.locked.lastModified | into string | into datetime | format date "%Y-%m-%d"
+                $before_node.locked.lastModified | into datetime --format "%s" | format date "%Y-%m-%d"
             } else { "n/a" }
             let after_date = if $after_rev != "n/a" {
-                $after_node.locked.lastModified | into string | into datetime | format date "%Y-%m-%d"
+                $after_node.locked.lastModified | into datetime --format "%s" | format date "%Y-%m-%d"
             } else { "n/a" }
             {
                 input: $input_name
@@ -78,7 +78,7 @@ git config user.email "forgejo-actions[bot]@noreply.localhost"
 git checkout -b $branch_name
 git add flake.lock
 git commit -m $"flake: bump inputs ($date_str)"
-git push -u origin $branch_name
+git push -u origin $branch_name --force-with-lease
 
 # --- Expose branch name and date as step outputs ---
 let output_file = $env.GITHUB_OUTPUT
