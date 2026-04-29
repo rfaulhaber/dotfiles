@@ -117,12 +117,13 @@ $env.config.keybindings = ($env.config.keybindings | append [
 # Aliases
 alias l = ls -la
 
-# Host-specific config
+# platform-specific config
 match $nu.os-info.name {
   "macos" => { source "./hosts/config/darwin.nu" },
   "linux" => { source "./hosts/config/linux.nu" },
 }
 
+# Host-specific config
 match (sys host | get hostname) {
   "hyperion" => { source "./hosts/config/hyperion.nu" },
   "eos" => { source "./hosts/config/eos.nu" },

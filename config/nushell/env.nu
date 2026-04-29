@@ -25,18 +25,19 @@ if ([$emacs_bin_path $emacs_config_path] | path exists | any { |v| $v == true } 
     $env.PATH = ($env.PATH | split row (char esep) | prepend $emacs_config_paths)
 }
 
-# Host-specific env
+# platform-specific env
 match $nu.os-info.name {
       "macos" => { source "./hosts/env/darwin.nu" },
       "linux" => { source "./hosts/env/linux.nu" },
 }
 
-# Hosts that get the shared server-style prompt (machines I ssh into).
-let server_hosts = ["atlas" "vulcan" "hecate" "pallas" "janus"]
+# hosts that get the shared server-style prompt (machines I ssh into)
+let server_hosts = ["atlas" "vulcan" "hecate" "pallas" "janus" "prometheus"]
 if (sys host | get hostname) in $server_hosts {
     source "./prompt.nu"
 }
 
+# host-specific env
 match (sys host | get hostname) {
       "hyperion" => { source "./hosts/env/hyperion.nu" },
       "eos" => { source "./hosts/env/eos.nu" },
