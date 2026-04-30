@@ -90,10 +90,39 @@ with lib; let
         }
     )
     cfg._managedPaths;
+
+  # Helper to generate systemd service config for a container. Defined in
+  # the outer let block so mkArrService (below, in the lib attrset) can
+  # reuse it without needing `rec` on the lib.
+  mkServiceConfig' = {
+    networks ? ["default"],
+    volumes ? [],
+    extraAfter ? [],
+    extraRequires ? [],
+  }: let
+    zfsDeps = optional zfsCfg.enable "zfs-manage-datasets.service";
+  in {
+    serviceConfig = {
+      Restart = mkOverride 90 "always";
+    };
+    after =
+      zfsDeps
+      ++ (map (n: "${networkServiceName n}.service") networks)
+      ++ (map (v: "${volumeServiceName v}.service") volumes)
+      ++ extraAfter;
+    requires =
+      zfsDeps
+      ++ (map (n: "${networkServiceName n}.service") networks)
+      ++ (map (v: "${volumeServiceName v}.service") volumes)
+      ++ extraRequires;
+    partOf = ["${rootTargetName}.target"];
+    wantedBy = ["${rootTargetName}.target"];
+  };
 in {
   imports = [
     ./caddy.nix
     ./forgejo-runner.nix
+    ./gluetun.nix
     ./immich.nix
     ./immich-ml.nix
     ./jellyfin.nix
@@ -105,6 +134,7 @@ in {
     ./pihole.nix
     ./plex.nix
     ./pocket-id.nix
+    ./transmission.nix
   ];
 
   options.modules.linux.oci = {
@@ -150,6 +180,18 @@ in {
       description = "Host paths collected from OCI services to be managed as ZFS datasets.";
     };
 
+    _gluetunPorts = mkOption {
+      type = types.listOf types.str;
+      internal = true;
+      default = [];
+      description = ''
+        Aggregated host port mappings contributed by services that share the
+        gluetun container's network namespace. The gluetun service module
+        publishes these on the host since downstream containers can't bind
+        host ports themselves once joined via --network=container:gluetun.
+      '';
+    };
+
     lib = mkOption {
       type = types.attrs;
       internal = true;
@@ -169,29 +211,86 @@ in {
       volumeName = name: "${hostname}_${name}";
 
       # Helper to generate systemd service config for a container
-      mkServiceConfig = {
+      mkServiceConfig = mkServiceConfig';
+
+      # Helper for linuxserver.io-style "*arr" services (radarr, sonarr,
+      # transmission, etc.). Returns separate pieces that the caller composes
+      # into its own attrset literal under `mkIf cfg.enable {...}` — this
+      # keeps the function call lazy across the module-system pushdown phase
+      # and avoids cycles when reading config.modules.linux.oci.lib.
+      #
+      # When `useGluetun` is true, the container joins the gluetun container's
+      # network namespace and its host port mappings are forwarded onto
+      # gluetun via _gluetunPorts.
+      mkArrService = {
+        name,
+        image,
+        baseDir,
+        configSubdir ? "config",
+        mediaMounts ? [],
+        useGluetun ? false,
+        gluetunContainer ? "gluetun",
+        ports ? [],
+        gluetunPorts ? [],
         networks ? ["default"],
-        volumes ? [],
-        extraAfter ? [],
-        extraRequires ? [],
+        extraEnv ? {},
+        extraOptions ? [],
+        environmentFiles ? [],
+        dependsOn ? [],
+        user ? {
+          uid = 1000;
+          gid = 100;
+        },
+        timezone ? "America/New_York",
+        capAdd ? [],
       }: let
-        zfsDeps = optional zfsCfg.enable "zfs-manage-datasets.service";
+        netOpts =
+          if useGluetun
+          then ["--network=container:${gluetunContainer}"]
+          else
+            ["--network-alias=${name}"]
+            ++ (map (n: "--network=${hostname}_${n}") networks);
+        gluetunDeps = optional useGluetun "podman-${gluetunContainer}.service";
       in {
-        serviceConfig = {
-          Restart = mkOverride 90 "always";
+        container = {
+          inherit image dependsOn environmentFiles;
+          environment =
+            {
+              "PUID" = toString user.uid;
+              "PGID" = toString user.gid;
+              "TZ" = timezone;
+            }
+            // extraEnv;
+          volumes =
+            ["${baseDir}/${configSubdir}:/config:rw"]
+            ++ mediaMounts;
+          ports = optionals (!useGluetun) ports;
+          extraOptions =
+            netOpts
+            ++ (map (c: "--cap-add=${c}") capAdd)
+            ++ extraOptions;
+          log-driver = "journald";
         };
-        after =
-          zfsDeps
-          ++ (map (n: "${networkServiceName n}.service") networks)
-          ++ (map (v: "${volumeServiceName v}.service") volumes)
-          ++ extraAfter;
-        requires =
-          zfsDeps
-          ++ (map (n: "${networkServiceName n}.service") networks)
-          ++ (map (v: "${volumeServiceName v}.service") volumes)
-          ++ extraRequires;
-        partOf = ["${rootTargetName}.target"];
-        wantedBy = ["${rootTargetName}.target"];
+
+        serviceConfig = mkServiceConfig' {
+          networks =
+            if useGluetun
+            then []
+            else networks;
+          extraAfter = gluetunDeps;
+          extraRequires = gluetunDeps;
+        };
+
+        managedPaths = {
+          ${baseDir} = {};
+        };
+
+        gluetunPorts = optionals useGluetun gluetunPorts;
+
+        networks =
+          if useGluetun
+          then {}
+          else listToAttrs (map (n: nameValuePair n {enable = true;}) networks);
       };
     };
     # Generate ZFS datasets from collected service paths
