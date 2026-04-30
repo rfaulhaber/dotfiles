@@ -37,8 +37,14 @@ in {
     };
 
     wireguardAddresses = mkOption {
-      description = "Comma-separated wireguard interface addresses.";
-      type = types.str;
+      description = ''
+        Comma-separated wireguard interface addresses. If null, the value
+        is expected to be supplied via secretsFile as
+        WIREGUARD_ADDRESSES=... — recommended, since the assigned VPN IP
+        is identifying material.
+      '';
+      type = types.nullOr types.str;
+      default = null;
       example = "10.67.182.174/32";
     };
 
@@ -101,12 +107,14 @@ in {
         {
           "VPN_SERVICE_PROVIDER" = cfg.vpnProvider;
           "VPN_TYPE" = cfg.vpnType;
-          "WIREGUARD_ADDRESSES" = cfg.wireguardAddresses;
           "OWNED_ONLY" =
             if cfg.ownedOnly
             then "yes"
             else "no";
           "TZ" = cfg.timezone;
+        }
+        // optionalAttrs (cfg.wireguardAddresses != null) {
+          "WIREGUARD_ADDRESSES" = cfg.wireguardAddresses;
         }
         // cfg.extraEnv;
       environmentFiles = [cfg.secretsFile];

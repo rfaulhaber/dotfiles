@@ -8,6 +8,7 @@
   imports = [
     ../../modules
     ./hardware-configuration.nix
+    ./oci.nix
     inputs.determinate.nixosModules.default
   ];
 
@@ -38,15 +39,8 @@
     services = {
       zfs.enable = true;
       sudo-rs.enable = true;
-      docker = {
-        enable = true;
-        enableNvidiaTools = true;
-        # TODO figure out how to enable
-        # enableIPv6 = true;
-      };
       systemd.modules = {
         updatedb.enable = true;
-        dockerCleanup.enable = true;
       };
       printing = {
         enable = true;

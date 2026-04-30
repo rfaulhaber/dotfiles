@@ -80,15 +80,26 @@ with lib; let
   enabledNetworks = filterAttrs (_: v: v.enable) cfg.networks;
   enabledVolumes = filterAttrs (_: v: v.enable) cfg.volumes;
 
-  # ZFS dataset generation from collected paths
+  # ZFS dataset generation from collected paths.
+  # Convention: mountpoints live under /${pool}/... (e.g. pool=data and
+  # path=/data/apps/foo). The dataset name is the path with its leading
+  # slash stripped, so /data/apps/foo → data/apps/foo. Registering a
+  # path outside the pool's namespace is unsupported — the formula
+  # can't invent a canonical dataset name for arbitrary host paths.
   zfsCfg = cfg.zfs;
   managedDatasets =
     mapAttrs' (
       path: pathCfg:
-        nameValuePair "${zfsCfg.pool}${path}" {
+        nameValuePair (removePrefix "/" path) {
           properties = {mountpoint = path;} // zfsCfg.properties // pathCfg.properties;
         }
     )
+    cfg._managedPaths;
+  managedPathAssertions =
+    mapAttrsToList (path: _: {
+      assertion = hasPrefix "/${zfsCfg.pool}/" path;
+      message = "modules.linux.oci._managedPaths: path '${path}' is outside pool '${zfsCfg.pool}'. Register paths under /${zfsCfg.pool}/... or extend the helper to accept an explicit dataset name.";
+    })
     cfg._managedPaths;
 
   # Helper to generate systemd service config for a container. Defined in
@@ -120,20 +131,31 @@ with lib; let
   };
 in {
   imports = [
+    ./bazarr.nix
     ./caddy.nix
+    ./flaresolverr.nix
     ./forgejo-runner.nix
     ./gluetun.nix
     ./immich.nix
     ./immich-ml.nix
     ./jellyfin.nix
+    ./lidarr.nix
     ./miniflux.nix
     ./newt.nix
+    ./nzbget.nix
     ./open-webui.nix
     ./netbird.nix
     ./pangolin.nix
     ./pihole.nix
     ./plex.nix
     ./pocket-id.nix
+    ./prowlarr.nix
+    ./radarr.nix
+    ./recyclarr.nix
+    ./requestrr.nix
+    ./slskd.nix
+    ./sonarr.nix
+    ./soularr.nix
     ./transmission.nix
   ];
 
@@ -226,7 +248,8 @@ in {
         name,
         image,
         baseDir,
-        configSubdir ? "config",
+        containerConfigPath ? "/config",
+        configProperties ? {},
         mediaMounts ? [],
         useGluetun ? false,
         gluetunContainer ? "gluetun",
@@ -262,7 +285,7 @@ in {
             }
             // extraEnv;
           volumes =
-            ["${baseDir}/${configSubdir}:/config:rw"]
+            ["${baseDir}:${containerConfigPath}:rw"]
             ++ mediaMounts;
           ports = optionals (!useGluetun) ports;
           extraOptions =
@@ -282,7 +305,7 @@ in {
         };
 
         managedPaths = {
-          ${baseDir} = {};
+          ${baseDir} = {properties = configProperties;};
         };
 
         gluetunPorts = optionals useGluetun gluetunPorts;
@@ -303,10 +326,12 @@ in {
       mapAttrsToList (path: _: "d ${path} 0755 root root - -") cfg._managedPaths
     );
 
+    assertions = mkIf zfsCfg.enable managedPathAssertions;
+
     virtualisation.podman = {
       enable = true;
       autoPrune.enable = true;
-      dockerCompat = true;
+      dockerCompat = mkDefault true;
     };
 
     # Allow DNS from container interfaces

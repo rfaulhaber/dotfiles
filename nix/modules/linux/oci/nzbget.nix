@@ -5,46 +5,34 @@
   ...
 }:
 with lib; let
-  cfg = config.modules.linux.oci.services.transmission;
+  cfg = config.modules.linux.oci.services.nzbget;
   ociLib = config.modules.linux.oci.lib;
 in {
-  options.modules.linux.oci.services.transmission = {
-    enable = mkEnableOption "Transmission BitTorrent client";
+  options.modules.linux.oci.services.nzbget = {
+    enable = mkEnableOption "NZBGet Usenet downloader";
 
     image = mkOption {
-      description = "Transmission container image.";
+      description = "NZBGet container image.";
       type = types.str;
-      default = "lscr.io/linuxserver/transmission:latest";
+      default = "ghcr.io/linuxserver/nzbget:latest";
     };
 
     baseDir = mkOption {
-      description = "Base directory for transmission state.";
+      description = "Base directory for nzbget state (mounted at /config).";
       type = types.str;
-      example = "/data/apps/transmission";
+      example = "/data/apps/nzbget";
     };
 
     downloadsDir = mkOption {
-      description = "Host directory for completed downloads (mounted at /downloads).";
+      description = "Host directory for completed Usenet downloads (mounted at /downloads).";
       type = types.str;
-      example = "/data/transmission";
+      example = "/data/nzb";
     };
 
     webPort = mkOption {
-      description = "Host port for the transmission web UI.";
+      description = "Host port for the nzbget web UI (forwarded onto gluetun when useGluetun = true).";
       type = types.port;
-      default = 9091;
-    };
-
-    peerPort = mkOption {
-      description = "Peer port (BitTorrent peer connections, tcp + udp).";
-      type = types.port;
-      default = 51413;
-    };
-
-    username = mkOption {
-      description = "Transmission RPC username.";
-      type = types.str;
-      default = "ryan";
+      default = 6789;
     };
 
     user = {
@@ -70,7 +58,9 @@ in {
       description = ''
         Route all traffic through the gluetun VPN container by joining its
         network namespace. Disables this container's own port mappings;
-        gluetun publishes the web/peer ports to the host instead.
+        gluetun publishes the web port to the host instead. Strongly
+        recommended for nzbget since the Usenet server connection
+        identifies the account.
       '';
       type = types.bool;
       default = false;
@@ -88,15 +78,10 @@ in {
       default = ["default"];
     };
 
-    secrets = {
-      passwordFile = mkOption {
-        description = ''
-          Path to env file containing TRANSMISSION_PASS=<password>. Use
-          sops.templates to render from a sops secret.
-        '';
-        type = types.path;
-        example = literalExpression ''config.sops.templates."transmission-env".path'';
-      };
+    dependsOn = mkOption {
+      description = "Other oci-containers this service depends on.";
+      type = types.listOf types.str;
+      default = [];
     };
 
     configProperties = mkOption {
@@ -107,28 +92,20 @@ in {
   };
 
   config = mkIf cfg.enable (let
-    portMappings = [
-      "${toString cfg.webPort}:9091"
-      "${toString cfg.peerPort}:51413/tcp"
-      "${toString cfg.peerPort}:51413/udp"
-    ];
+    portMappings = ["${toString cfg.webPort}:6789"];
     arr = ociLib.mkArrService {
-      name = "transmission";
+      name = "nzbget";
       image = cfg.image;
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       mediaMounts = ["${cfg.downloadsDir}:/downloads"];
-      inherit (cfg) useGluetun gluetunContainer networks user timezone;
-      extraEnv = {
-        "USER" = cfg.username;
-      };
-      environmentFiles = [cfg.secrets.passwordFile];
+      inherit (cfg) useGluetun gluetunContainer networks user timezone dependsOn;
       ports = portMappings;
       gluetunPorts = portMappings;
     };
   in {
-    virtualisation.oci-containers.containers.transmission = arr.container;
-    systemd.services."podman-transmission" = arr.serviceConfig;
+    virtualisation.oci-containers.containers.nzbget = arr.container;
+    systemd.services."podman-nzbget" = arr.serviceConfig;
     modules.linux.oci._managedPaths = arr.managedPaths;
     modules.linux.oci._gluetunPorts = arr.gluetunPorts;
     modules.linux.oci.networks = arr.networks;

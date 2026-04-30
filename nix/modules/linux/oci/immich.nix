@@ -115,6 +115,19 @@ in {
         type = types.bool;
         default = true;
       };
+
+      url = mkOption {
+        description = ''
+          External MACHINE_LEARNING_URL to delegate to (e.g. another host
+          running an immich-machine-learning container). When non-null,
+          immich-server uses this URL for ML calls. When null, immich-server
+          uses its default (http://immich_machine_learning:3003), which only
+          works when machineLearning.enable = true.
+        '';
+        type = types.nullOr types.str;
+        default = null;
+        example = "http://vulcan.lan:3003";
+      };
     };
   };
 
@@ -172,7 +185,12 @@ in {
         "immich_server" = {
           image = "ghcr.io/immich-app/immich-server:${cfg.version}";
           dependsOn = ["immich_postgres" "immich_redis"];
-          environment = dbEnv // redisEnv;
+          environment =
+            dbEnv
+            // redisEnv
+            // optionalAttrs (cfg.machineLearning.url != null) {
+              "MACHINE_LEARNING_URL" = cfg.machineLearning.url;
+            };
           environmentFiles = [cfg.secrets.databasePasswordFile];
           volumes = [
             "${cfg.baseDir}:/usr/src/app/upload"
