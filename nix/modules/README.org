@@ -1,4 +1,11 @@
 #+title: nix modules
 
-My modules are divided up into "programs" and "services" broadly. This line isn't very clear cut. The arbitrary rationale I've
-decided is that a "service" is a program with a deamon of some sort (e.g. Docker, a VPN, etc.), and a program is not. This is completely arbitrary however and your mileage may vary. Also, services tend to be platform specific.
+The root of my nix modules.
+
+Modules adhere to the following design guidelines:
+
+- Modules are more specific instances of generic nix modules, with my preferences encoded. Host-specific configurations are exposed via options
+- A module shouldn't just be a front-end for a nix module
+- Platform-specific modules live under the ~darwin/~ and ~linux/~ directories respectively
+- Platform-agnostic programs live under ~programs/~
+- Things that run daemons live under ~services/~ (this distinction is somewhat arbitrary)

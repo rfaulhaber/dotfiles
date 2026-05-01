@@ -133,14 +133,20 @@ in {
   imports = [
     ./bazarr.nix
     ./caddy.nix
+    ./calibre.nix
+    ./calibre-web-auto.nix
+    ./filebrowser.nix
     ./flaresolverr.nix
+    ./forgejo.nix
     ./forgejo-runner.nix
     ./gluetun.nix
     ./immich.nix
     ./immich-ml.nix
     ./jellyfin.nix
     ./lidarr.nix
+    ./linkding.nix
     ./miniflux.nix
+    ./navidrome.nix
     ./newt.nix
     ./nzbget.nix
     ./open-webui.nix
@@ -156,7 +162,10 @@ in {
     ./slskd.nix
     ./sonarr.nix
     ./soularr.nix
+    ./syncthing.nix
+    ./tautulli.nix
     ./transmission.nix
+    ./vikunja.nix
   ];
 
   options.modules.linux.oci = {

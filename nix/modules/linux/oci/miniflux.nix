@@ -24,59 +24,34 @@ in {
       default = 4640;
     };
 
-    # Secrets - all should be sops secret paths
-    secrets = {
-      databasePasswordFile = mkOption {
-        description = "Path to file containing postgres password (sops secret).";
-        type = types.path;
-        example = literalExpression "config.sops.secrets.miniflux-db-password.path";
+    oidc = {
+      enable = mkEnableOption ''
+        OIDC authentication. When true, the module requires sops secrets at
+        "miniflux/oidc-client-id" and "miniflux/oidc-client-secret"
+      '';
+
+      discoveryEndpoint = mkOption {
+        description = "OIDC discovery endpoint URL (no trailing slash).";
+        type = types.str;
+        example = "https://auth.example.com";
       };
 
-      adminPasswordFile = mkOption {
-        description = "Path to file containing admin password (sops secret).";
-        type = types.path;
-        example = literalExpression "config.sops.secrets.miniflux-admin-password.path";
+      redirectUrl = mkOption {
+        description = "OAuth2 redirect URL.";
+        type = types.str;
+        example = "https://rss.example.com/oauth2/oidc/callback";
       };
 
-      # Optional OIDC configuration
-      oidc = {
-        enable = mkEnableOption "OIDC authentication";
+      providerName = mkOption {
+        description = "Display name for the OIDC provider.";
+        type = types.str;
+        default = "SSO";
+      };
 
-        clientIdFile = mkOption {
-          description = "Path to file containing OIDC client ID (sops secret).";
-          type = types.nullOr types.path;
-          default = null;
-        };
-
-        clientSecretFile = mkOption {
-          description = "Path to file containing OIDC client secret (sops secret).";
-          type = types.nullOr types.path;
-          default = null;
-        };
-
-        discoveryEndpoint = mkOption {
-          description = "OIDC discovery endpoint URL (no trailing slash).";
-          type = types.str;
-          example = "https://auth.example.com";
-        };
-
-        redirectUrl = mkOption {
-          description = "OAuth2 redirect URL.";
-          type = types.str;
-          example = "https://rss.example.com/oauth2/oidc/callback";
-        };
-
-        providerName = mkOption {
-          description = "Display name for the OIDC provider.";
-          type = types.str;
-          default = "SSO";
-        };
-
-        userCreation = mkOption {
-          description = "Automatically create users from OIDC.";
-          type = types.bool;
-          default = false;
-        };
+      userCreation = mkOption {
+        description = "Automatically create users from OIDC.";
+        type = types.bool;
+        default = false;
       };
     };
 
@@ -119,6 +94,34 @@ in {
     # Create dedicated network for miniflux + its database
     modules.linux.oci.networks.${networkName}.enable = true;
 
+    sops.secrets =
+      {
+        "miniflux/db-password" = {};
+        "miniflux/admin-password" = {};
+      }
+      // optionalAttrs cfg.oidc.enable {
+        "miniflux/oidc-client-id" = {};
+        "miniflux/oidc-client-secret" = {};
+      };
+
+    sops.templates =
+      {
+        # Shared by miniflux (DATABASE_URL substitution) and the postgres
+        # sidecar (POSTGRES_PASSWORD).
+        "miniflux-db-env".content = ''
+          POSTGRES_PASSWORD=${config.sops.placeholder."miniflux/db-password"}
+        '';
+        "miniflux-admin-env".content = ''
+          ADMIN_PASSWORD=${config.sops.placeholder."miniflux/admin-password"}
+        '';
+      }
+      // optionalAttrs cfg.oidc.enable {
+        "miniflux-oidc-env".content = ''
+          OAUTH2_CLIENT_ID=${config.sops.placeholder."miniflux/oidc-client-id"}
+          OAUTH2_CLIENT_SECRET=${config.sops.placeholder."miniflux/oidc-client-secret"}
+        '';
+      };
+
     virtualisation.oci-containers.containers = {
       # PostgreSQL database container
       "miniflux_db" = {
@@ -128,7 +131,7 @@ in {
           "POSTGRES_DB" = cfg.postgres.database;
         };
         # Password injected via environment file
-        environmentFiles = [cfg.secrets.databasePasswordFile];
+        environmentFiles = [config.sops.templates."miniflux-db-env".path];
         volumes = [
           "${cfg.baseDir}:/var/lib/postgresql/data"
         ];
@@ -153,28 +156,22 @@ in {
             "CREATE_ADMIN" = "1";
             "ADMIN_USERNAME" = cfg.adminUsername;
           }
-          // optionalAttrs cfg.secrets.oidc.enable {
+          // optionalAttrs cfg.oidc.enable {
             "OAUTH2_PROVIDER" = "oidc";
-            "OAUTH2_REDIRECT_URL" = cfg.secrets.oidc.redirectUrl;
-            "OAUTH2_OIDC_DISCOVERY_ENDPOINT" = cfg.secrets.oidc.discoveryEndpoint;
-            "OAUTH2_OIDC_PROVIDER_NAME" = cfg.secrets.oidc.providerName;
+            "OAUTH2_REDIRECT_URL" = cfg.oidc.redirectUrl;
+            "OAUTH2_OIDC_DISCOVERY_ENDPOINT" = cfg.oidc.discoveryEndpoint;
+            "OAUTH2_OIDC_PROVIDER_NAME" = cfg.oidc.providerName;
             "OAUTH2_USER_CREATION" =
-              if cfg.secrets.oidc.userCreation
+              if cfg.oidc.userCreation
               then "1"
               else "0";
           };
-        # Secrets injected via environment files
         environmentFiles =
           [
-            cfg.secrets.databasePasswordFile
-            cfg.secrets.adminPasswordFile
+            config.sops.templates."miniflux-db-env".path
+            config.sops.templates."miniflux-admin-env".path
           ]
-          ++ optionals (cfg.secrets.oidc.enable && cfg.secrets.oidc.clientIdFile != null) [
-            cfg.secrets.oidc.clientIdFile
-          ]
-          ++ optionals (cfg.secrets.oidc.enable && cfg.secrets.oidc.clientSecretFile != null) [
-            cfg.secrets.oidc.clientSecretFile
-          ];
+          ++ optional cfg.oidc.enable config.sops.templates."miniflux-oidc-env".path;
         ports = [
           "${toString cfg.port}:8080"
         ];

@@ -126,7 +126,6 @@
         newt = {
           enable = true;
           pangolinEndpoint = "https://pangolin.3679.space";
-          secretsFile = config.sops.templates."newt-env".path;
           dns = "192.168.0.2";
         };
         forgejo-runner = {
@@ -219,10 +218,6 @@
       '';
       "codeberg-runner-env".content = ''
         FORGEJO_TOKEN=${config.sops.placeholder."codeberg-runner/token"}
-      '';
-      "newt-env".content = ''
-        NEWT_ID=${config.sops.placeholder."newt/id"}
-        NEWT_SECRET=${config.sops.placeholder."newt/secret"}
       '';
     };
   };

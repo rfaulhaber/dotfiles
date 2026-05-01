@@ -3,9 +3,10 @@
 I use [[https://nixos.org/][NixOS]]. This is my system configuration.
 
 - =hosts= is where the actual individual system configurations live. You'll find
-  a configuration for each machine I use Nix on.
-- =lib= is my Nix code library, mostly lifted from other places.
-- =modules= are my actual system modules.
+  a configuration for each machine I use Nix on. See =flake.nix= at the root of this repo for a complete set of hosts.
+- =lib= is my Nix code library. Generic code lives here.
+- =modules= are my actual system modules. See the README.org in that directory for more.
 - =templates= are Nix templates used by =nix flake init=.
-- =overlays= contains personal overlays for nixpkgs. I don't have many of those.
-- =formats= and =installers= are for nixos-generate.
+- =overlays= contains personal overlays for nixpkgs. I don't have many of those. These are used for patching things in nixpkgs usually.
+- =images= are bootable images of NixOS for installation.
+- =generated= are static versions of configurations that I use on non-NixOS hosts. Often I want my themes and settings to work the same between all the machines I use but, since not every machine I use is a NixOS machine, I need some way to obtain those.

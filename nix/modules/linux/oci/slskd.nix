@@ -110,17 +110,6 @@ in {
       default = [];
     };
 
-    secretsFile = mkOption {
-      description = ''
-        Path to env file containing slskd secrets. Must include
-        SLSKD_SLSK_USERNAME and SLSKD_SLSK_PASSWORD (the Soulseek account),
-        and may include any other SLSKD_* secrets (e.g. integrations).
-        Use sops.templates to render from sops secrets.
-      '';
-      type = types.path;
-      example = literalExpression ''config.sops.templates."slskd-env".path'';
-    };
-
     configProperties = mkOption {
       description = "ZFS properties applied to the baseDir dataset. Defaults tuned for LiteDB.";
       type = types.attrsOf types.str;
@@ -142,6 +131,16 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
   in {
+    sops.secrets = {
+      "slskd/username" = {};
+      "slskd/password" = {};
+    };
+
+    sops.templates."slskd-env".content = ''
+      SLSKD_SLSK_USERNAME=${config.sops.placeholder."slskd/username"}
+      SLSKD_SLSK_PASSWORD=${config.sops.placeholder."slskd/password"}
+    '';
+
     virtualisation.oci-containers.containers.slskd = {
       image = cfg.image;
       inherit (cfg) dependsOn;
@@ -152,7 +151,7 @@ in {
           else "false";
         "TZ" = cfg.timezone;
       };
-      environmentFiles = [cfg.secretsFile];
+      environmentFiles = [config.sops.templates."slskd-env".path];
       volumes = [
         "${cfg.baseDir}:/app"
         "${cfg.downloadsDir}:/app/downloads"

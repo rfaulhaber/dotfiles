@@ -88,17 +88,6 @@ in {
       default = ["default"];
     };
 
-    secrets = {
-      passwordFile = mkOption {
-        description = ''
-          Path to env file containing TRANSMISSION_PASS=<password>. Use
-          sops.templates to render from a sops secret.
-        '';
-        type = types.path;
-        example = literalExpression ''config.sops.templates."transmission-env".path'';
-      };
-    };
-
     configProperties = mkOption {
       description = "ZFS properties applied to the baseDir dataset.";
       type = types.attrsOf types.str;
@@ -122,11 +111,17 @@ in {
       extraEnv = {
         "USER" = cfg.username;
       };
-      environmentFiles = [cfg.secrets.passwordFile];
+      environmentFiles = [config.sops.templates."transmission-env".path];
       ports = portMappings;
       gluetunPorts = portMappings;
     };
   in {
+    sops.secrets."transmission/password" = {};
+
+    sops.templates."transmission-env".content = ''
+      TRANSMISSION_PASS=${config.sops.placeholder."transmission/password"}
+    '';
+
     virtualisation.oci-containers.containers.transmission = arr.container;
     systemd.services."podman-transmission" = arr.serviceConfig;
     modules.linux.oci._managedPaths = arr.managedPaths;

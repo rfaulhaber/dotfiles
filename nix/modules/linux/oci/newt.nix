@@ -22,15 +22,6 @@ in {
       example = "https://pangolin.example.com";
     };
 
-    secretsFile = mkOption {
-      description = ''
-        Path to environment file containing NEWT_ID and NEWT_SECRET (sops secret).
-        Must be in KEY=value format.
-      '';
-      type = types.path;
-      example = literalExpression "config.sops.templates.newt-env.path";
-    };
-
     dns = mkOption {
       description = "Custom DNS server for the container.";
       type = types.nullOr types.str;
@@ -55,6 +46,16 @@ in {
       })
       cfg.networks);
 
+    sops.secrets = {
+      "newt/id" = {};
+      "newt/secret" = {};
+    };
+
+    sops.templates."newt-env".content = ''
+      NEWT_ID=${config.sops.placeholder."newt/id"}
+      NEWT_SECRET=${config.sops.placeholder."newt/secret"}
+    '';
+
     virtualisation.oci-containers.containers."newt" = {
       image = cfg.image;
       environment =
@@ -65,7 +66,7 @@ in {
         // optionalAttrs (cfg.dns != null) {
           "DNS" = cfg.dns;
         };
-      environmentFiles = [cfg.secretsFile];
+      environmentFiles = [config.sops.templates."newt-env".path];
       volumes = [
         "/run/podman/podman.sock:/var/run/docker.sock:ro"
       ];

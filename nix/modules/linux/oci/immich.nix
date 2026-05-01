@@ -39,15 +39,26 @@ in {
     };
 
     baseDir = mkOption {
-      description = "Base directory for Immich upload storage.";
+      description = ''
+        Parent directory for Immich state. Two children are bind-mounted
+        into containers: <baseDir>/files (uploads, mounted at
+        /usr/src/app/upload on immich-server) and <baseDir>/db (postgres,
+        mounted at /var/lib/postgresql/data on immich_postgres).
+      '';
       type = types.str;
       example = "/data/apps/immich";
     };
 
-    dbDir = mkOption {
-      description = "Directory for Immich PostgreSQL data.";
-      type = types.str;
-      example = "/data/db/immich";
+    filesProperties = mkOption {
+      description = "ZFS properties applied to the files dataset.";
+      type = types.attrsOf types.str;
+      default = {};
+    };
+
+    dbProperties = mkOption {
+      description = "ZFS properties applied to the db dataset. Defaults tuned for postgres.";
+      type = types.attrsOf types.str;
+      default = {recordsize = "8K";};
     };
 
     port = mkOption {
@@ -60,25 +71,6 @@ in {
       description = "GPU type for machine learning container (null for CPU-only).";
       type = types.nullOr (types.enum ["nvidia" "intel"]);
       default = null;
-    };
-
-    # Secrets
-    secrets = {
-      databasePasswordFile = mkOption {
-        description = ''
-          Path to env file containing both DB_PASSWORD and POSTGRES_PASSWORD.
-          Use sops.templates to generate this from a single secret:
-
-            sops.templates."immich-db-env".content = '''
-              DB_PASSWORD=''${config.sops.placeholder."immich/db-password"}
-              POSTGRES_PASSWORD=''${config.sops.placeholder."immich/db-password"}
-            ''';
-
-          Then set this option to config.sops.templates."immich-db-env".path
-        '';
-        type = types.path;
-        example = literalExpression ''config.sops.templates."immich-db-env".path'';
-      };
     };
 
     postgres = {
@@ -131,10 +123,15 @@ in {
     };
   };
 
-  config = mkIf cfg.enable {
+  config = mkIf cfg.enable (let
+    filesDir = "${cfg.baseDir}/files";
+    dbDir = "${cfg.baseDir}/db";
+  in {
     modules.linux.oci._managedPaths = {
-      ${cfg.baseDir} = {};
-      ${cfg.dbDir}.properties.recordsize = "8K";
+      # Parent dataset has no mountpoint — only its children are mounted.
+      "${cfg.baseDir}".properties.mountpoint = "none";
+      ${filesDir}.properties = cfg.filesProperties;
+      ${dbDir}.properties = cfg.dbProperties;
     };
 
     # Create dedicated network for immich services
@@ -143,6 +140,15 @@ in {
     # Named volume for ML model cache
     modules.linux.oci.volumes.immich_model_cache.enable =
       mkIf cfg.machineLearning.enable true;
+
+    sops.secrets."immich/db-password" = {};
+
+    # Shared by immich-server (DB_PASSWORD) and the postgres sidecar
+    # (POSTGRES_PASSWORD). Both consume the same env file.
+    sops.templates."immich-db-env".content = ''
+      DB_PASSWORD=${config.sops.placeholder."immich/db-password"}
+      POSTGRES_PASSWORD=${config.sops.placeholder."immich/db-password"}
+    '';
 
     virtualisation.oci-containers.containers =
       {
@@ -154,9 +160,9 @@ in {
             "POSTGRES_DB" = cfg.postgres.database;
             "POSTGRES_INITDB_ARGS" = "--data-checksums";
           };
-          environmentFiles = [cfg.secrets.databasePasswordFile];
+          environmentFiles = [config.sops.templates."immich-db-env".path];
           volumes = [
-            "${cfg.dbDir}:/var/lib/postgresql/data"
+            "${dbDir}:/var/lib/postgresql/data"
           ];
           extraOptions = [
             "--network-alias=immich_postgres"
@@ -191,9 +197,9 @@ in {
             // optionalAttrs (cfg.machineLearning.url != null) {
               "MACHINE_LEARNING_URL" = cfg.machineLearning.url;
             };
-          environmentFiles = [cfg.secrets.databasePasswordFile];
+          environmentFiles = [config.sops.templates."immich-db-env".path];
           volumes = [
-            "${cfg.baseDir}:/usr/src/app/upload"
+            "${filesDir}:/usr/src/app/upload"
           ];
           ports = [
             "${toString cfg.port}:2283"
@@ -255,5 +261,5 @@ in {
           volumes = ["immich_model_cache"];
         };
       };
-  };
+  });
 }

@@ -36,18 +36,6 @@ in {
       default = "wireguard";
     };
 
-    wireguardAddresses = mkOption {
-      description = ''
-        Comma-separated wireguard interface addresses. If null, the value
-        is expected to be supplied via secretsFile as
-        WIREGUARD_ADDRESSES=... — recommended, since the assigned VPN IP
-        is identifying material.
-      '';
-      type = types.nullOr types.str;
-      default = null;
-      example = "10.67.182.174/32";
-    };
-
     ownedOnly = mkOption {
       description = "Restrict to provider-owned servers only (mullvad-specific).";
       type = types.bool;
@@ -82,16 +70,6 @@ in {
       type = types.attrsOf types.str;
       default = {};
     };
-
-    secretsFile = mkOption {
-      description = ''
-        Path to environment file containing WIREGUARD_PRIVATE_KEY (and any
-        other secret env vars). Must be in KEY=value format. Use
-        sops.templates to render from a sops secret.
-      '';
-      type = types.path;
-      example = literalExpression ''config.sops.templates."gluetun-env".path'';
-    };
   };
 
   config = mkIf cfg.enable {
@@ -100,6 +78,18 @@ in {
     modules.linux.oci.networks = listToAttrs (
       map (n: nameValuePair n {enable = true;}) cfg.networks
     );
+
+    sops.secrets = {
+      "gluetun/wireguard-private-key" = {};
+      # Assigned VPN IP is identifying material — kept in sops so it
+      # never appears in the nix store.
+      "gluetun/wireguard-addresses" = {};
+    };
+
+    sops.templates."gluetun-env".content = ''
+      WIREGUARD_PRIVATE_KEY=${config.sops.placeholder."gluetun/wireguard-private-key"}
+      WIREGUARD_ADDRESSES=${config.sops.placeholder."gluetun/wireguard-addresses"}
+    '';
 
     virtualisation.oci-containers.containers."gluetun" = {
       image = cfg.image;
@@ -113,11 +103,8 @@ in {
             else "no";
           "TZ" = cfg.timezone;
         }
-        // optionalAttrs (cfg.wireguardAddresses != null) {
-          "WIREGUARD_ADDRESSES" = cfg.wireguardAddresses;
-        }
         // cfg.extraEnv;
-      environmentFiles = [cfg.secretsFile];
+      environmentFiles = [config.sops.templates."gluetun-env".path];
       volumes = [
         "${cfg.baseDir}:/gluetun"
       ];

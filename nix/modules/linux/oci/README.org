@@ -1,0 +1,5 @@
+#+title: README
+
+This directory contains what I call OCI modules, that is, nix-managed podman containers.
+
+Originally, my home server was one large docker-compose.yml file. As that grew, and as I started using nix, this became untenable. Now all my servers use nix-managed podman containers. This makes it easier to maintain complex configurations and requires much less manual intervention.
