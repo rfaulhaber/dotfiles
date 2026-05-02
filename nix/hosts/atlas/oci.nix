@@ -125,6 +125,16 @@
       immich = {
         enable = true;
         baseDir = "/data/apps/immich";
+        # The files dataset (photo uploads) is encrypted; key is sops-managed
+        # and unlocked in stage 2 by zfs-load-key-immich.service. The dataset
+        # itself was originally created out-of-band on the legacy stack with
+        # encryption=aes-256-gcm, keyformat=raw — those properties are
+        # create-only, so they ride along with the dataset; this declaration
+        # ensures a clean rebuild reproduces the same encryption settings.
+        filesEncryption = {
+          enable = true;
+          keyFile = ./secrets/immich-zfs-key;
+        };
         machineLearning = {
           enable = false;
           # Atlas delegates ML to vulcan instead of running a local sidecar.
@@ -135,6 +145,10 @@
       miniflux = {
         enable = true;
         baseDir = "/data/apps/miniflux";
+        # Legacy data is nested at <baseDir>/18/docker/PG_VERSION; override
+        # PGDATA so postgres finds it instead of trying to initdb at the
+        # bind-mount root and erroring with "directory is not empty".
+        postgres.pgdata = "/var/lib/postgresql/data/18/docker";
         oidc = {
           enable = true;
           discoveryEndpoint = "https://auth.3679.space";
@@ -170,6 +184,10 @@
         enable = true;
         baseDir = "/data/apps/filebrowser";
         filesDir = "/data/filebrowser/files";
+        oidc = {
+          enable = true;
+          issuerUrl = "https://auth.3679.space";
+        };
       };
 
       linkding = {

@@ -25,6 +25,14 @@ creation_rules:
           - *eos_id
           - *1p_id
           - *atlas_host
+  # binary secrets for atlas
+  - path_regex: .*/atlas/secrets/.*$
+    key_groups:
+      - age:
+          - *hyperion_id
+          - *eos_id
+          - *1p_id
+          - *atlas_host
   - path_regex: .*/janus/secrets.yaml$
     key_groups:
       - age:

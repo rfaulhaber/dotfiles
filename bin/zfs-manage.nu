@@ -19,8 +19,11 @@ def main [spec?: string, --file: string, --dry-run] {
   }
 
   # Properties that can only be set at creation time and cannot be changed afterwards.
+  # NOTE: `keylocation` is intentionally NOT in this list — it is mutable via `zfs set`,
+  # which is what lets us migrate a dataset's key from a plain on-disk path to a
+  # sops-rendered path under /run/secrets without recreating the dataset.
   let create_only_props = [
-    "casesensitivity" "normalization" "utf8only" "encryption" "keyformat" "keylocation"
+    "casesensitivity" "normalization" "utf8only" "encryption" "keyformat"
   ]
 
   let config_json = $config
@@ -97,25 +100,46 @@ def main [spec?: string, --file: string, --dry-run] {
             }
         }
 
-        # Ensure the dataset is mounted
-        let is_mounted = if $dry_run { "yes" } else {
-          ^zfs get -H -o value mounted $dataset_name | str trim
+        # Ensure the dataset is mounted — but only if it's actually
+        # supposed to be auto-mounted. mountpoint=none/legacy datasets
+        # have nowhere to mount; canmount=noauto/off datasets are
+        # explicitly opted out of automatic mounting (e.g. encrypted
+        # datasets unlocked by a dedicated systemd unit later).
+        let mountpoint_now = if $dry_run { "/dry-run" } else {
+          ^zfs get -H -o value mountpoint $dataset_name | complete
+            | get stdout | str trim
         }
+        let canmount_now = if $dry_run { "on" } else {
+          ^zfs get -H -o value canmount $dataset_name | complete
+            | get stdout | str trim
+        }
+        let should_auto_mount = (
+          $mountpoint_now != "none"
+          and $mountpoint_now != "legacy"
+          and $canmount_now == "on"
+        )
 
-        if $is_mounted != "yes" {
-          print $"Mounting ($dataset_name)"
-          let result = if $dry_run {
-            print $"[DEBUG]: would have run '^zfs mount ($dataset_name)'"
-            { exit_code: 0 }
-          } else {
-            ^zfs mount $dataset_name | complete
+        if $should_auto_mount {
+          let is_mounted = if $dry_run { "yes" } else {
+            ^zfs get -H -o value mounted $dataset_name | complete
+              | get stdout | str trim
           }
 
-          if $result.exit_code != 0 {
-            print --stderr $"Mounting ($dataset_name) failed with status code ($result.exit_code)"
-            let err = $result | get --optional stderr | default "no error message"
-            print --stderr $err
-            return { dataset: $dataset_name, result: $result }
+          if $is_mounted != "yes" {
+            print $"Mounting ($dataset_name)"
+            let result = if $dry_run {
+              print $"[DEBUG]: would have run '^zfs mount ($dataset_name)'"
+              { exit_code: 0 }
+            } else {
+              ^zfs mount $dataset_name | complete
+            }
+
+            if $result.exit_code != 0 {
+              print --stderr $"Mounting ($dataset_name) failed with status code ($result.exit_code)"
+              let err = $result | get --optional stderr | default "no error message"
+              print --stderr $err
+              return { dataset: $dataset_name, result: $result }
+            }
           }
         }
 

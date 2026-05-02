@@ -37,7 +37,32 @@
       };
     };
     services = {
-      zfs.enable = true;
+      zfs = {
+        enable = true;
+        # User-content datasets that are encrypted but live outside any
+        # OCI module's _managedPaths (filebrowser's user files, syncthing's
+        # synced trees). The OCI service modules consume them as plain
+        # bind-mount sources; the encryption story is host-owned. /data/photos
+        # is also encrypted but currently has no consumer in the new layout —
+        # left as-is on the legacy /etc/nixos/.keys path until a use is decided.
+        encryptedDatasets = {
+          filebrowser-files = {
+            dataset = "data/apps/filebrowser/files";
+            keyFile = config.sops.secrets."filebrowser/zfs-key".path;
+            consumers = ["podman-filebrowser.service"];
+          };
+          sync = {
+            dataset = "data/files/sync";
+            keyFile = config.sops.secrets."sync/zfs-key".path;
+            consumers = ["podman-syncthing.service"];
+          };
+          org = {
+            dataset = "data/files/org";
+            keyFile = config.sops.secrets."org/zfs-key".path;
+            consumers = ["podman-syncthing.service"];
+          };
+        };
+      };
       sudo-rs.enable = true;
       systemd.modules = {
         updatedb.enable = true;
@@ -108,6 +133,26 @@
 
     zfs = {
       extraPools = ["system" "data"];
+    };
+  };
+
+  # Host-owned binary sops secrets for ZFS dataset encryption keys whose
+  # consuming datasets aren't inside any OCI module's _managedPaths
+  # (immich's key is owned by the immich OCI module instead).
+  # `format = "binary"` because keyformat=raw expects exactly 32 bytes —
+  # a yaml/base64 round-trip would corrupt that.
+  sops.secrets = {
+    "filebrowser/zfs-key" = {
+      format = "binary";
+      sopsFile = ./secrets/filebrowser-zfs-key;
+    };
+    "sync/zfs-key" = {
+      format = "binary";
+      sopsFile = ./secrets/sync-zfs-key;
+    };
+    "org/zfs-key" = {
+      format = "binary";
+      sopsFile = ./secrets/org-zfs-key;
     };
   };
 

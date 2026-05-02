@@ -59,7 +59,7 @@ in {
       image = mkOption {
         description = "PostgreSQL container image.";
         type = types.str;
-        default = "postgres:17-alpine";
+        default = "postgres:18-alpine";
       };
 
       user = mkOption {
@@ -72,6 +72,18 @@ in {
         description = "PostgreSQL database name.";
         type = types.str;
         default = "miniflux";
+      };
+
+      pgdata = mkOption {
+        description = ''
+          PGDATA path inside the container (set as env var). Default
+          matches the postgres image's standard layout. Override when
+          the bind-mounted volume has data nested inside subdirectories
+          (some legacy installs nest under /<major>/docker/).
+        '';
+        type = types.str;
+        default = "/var/lib/postgresql/data";
+        example = "/var/lib/postgresql/data/18/docker";
       };
     };
 
@@ -106,10 +118,14 @@ in {
 
     sops.templates =
       {
-        # Shared by miniflux (DATABASE_URL substitution) and the postgres
-        # sidecar (POSTGRES_PASSWORD).
+        # Shared by miniflux and the postgres sidecar. POSTGRES_PASSWORD
+        # is consumed by postgres on initdb (no-op afterwards). DATABASE_URL
+        # is consumed by miniflux — must be fully rendered here, with the
+        # placeholder substituted, because podman doesn't do shell-style
+        # variable expansion in env values (docker-compose did).
         "miniflux-db-env".content = ''
           POSTGRES_PASSWORD=${config.sops.placeholder."miniflux/db-password"}
+          DATABASE_URL=postgres://${cfg.postgres.user}:${config.sops.placeholder."miniflux/db-password"}@miniflux_db/${cfg.postgres.database}?sslmode=disable
         '';
         "miniflux-admin-env".content = ''
           ADMIN_PASSWORD=${config.sops.placeholder."miniflux/admin-password"}
@@ -129,6 +145,7 @@ in {
         environment = {
           "POSTGRES_USER" = cfg.postgres.user;
           "POSTGRES_DB" = cfg.postgres.database;
+          "PGDATA" = cfg.postgres.pgdata;
         };
         # Password injected via environment file
         environmentFiles = [config.sops.templates."miniflux-db-env".path];
@@ -151,7 +168,11 @@ in {
         dependsOn = ["miniflux_db"];
         environment =
           {
-            "DATABASE_URL" = "postgres://${cfg.postgres.user}:$POSTGRES_PASSWORD@miniflux_db/${cfg.postgres.database}?sslmode=disable";
+            # DATABASE_URL is provided via the sops-rendered env file
+            # (miniflux-db-env) so the password placeholder gets properly
+            # substituted at activation. Putting it here would pass
+            # `$POSTGRES_PASSWORD` literally because podman doesn't expand
+            # shell-style variable references.
             "RUN_MIGRATIONS" = "1";
             "CREATE_ADMIN" = "1";
             "ADMIN_USERNAME" = cfg.adminUsername;

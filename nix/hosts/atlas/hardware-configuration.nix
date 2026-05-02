@@ -48,16 +48,6 @@
     fsType = "zfs";
   };
 
-  fileSystems."/docker/config" = {
-    device = "system/docker/config";
-    fsType = "zfs";
-  };
-
-  fileSystems."/docker/downloads" = {
-    device = "system/docker/downloads";
-    fsType = "zfs";
-  };
-
   fileSystems."/home" = {
     device = "system/home";
     fsType = "zfs";

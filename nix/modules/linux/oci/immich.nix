@@ -50,7 +50,12 @@ in {
     };
 
     filesProperties = mkOption {
-      description = "ZFS properties applied to the files dataset.";
+      description = ''
+        ZFS properties applied to the files dataset. When filesEncryption.enable
+        is true, encryption-related properties (encryption, keyformat,
+        keylocation, canmount=noauto) are merged in automatically — anything
+        set here wins on conflict.
+      '';
       type = types.attrsOf types.str;
       default = {};
     };
@@ -59,6 +64,30 @@ in {
       description = "ZFS properties applied to the db dataset. Defaults tuned for postgres.";
       type = types.attrsOf types.str;
       default = {recordsize = "8K";};
+    };
+
+    filesEncryption = {
+      enable = mkOption {
+        description = ''
+          Encrypt the files dataset using a sops-managed key. Sets up a
+          dedicated systemd unit that loads the key from
+          `config.sops.secrets."immich/zfs-key".path` after sops has
+          rendered it, then mounts the dataset before immich_server starts.
+          The dataset is given canmount=noauto so the early
+          `zfs-mount.service` skips it.
+        '';
+        type = types.bool;
+        default = false;
+      };
+
+      keyFile = mkOption {
+        description = ''
+          Path to a sops-encrypted binary file containing the raw 32-byte
+          ZFS encryption key. Treated as `format = "binary"` by sops-nix,
+          rendered to `/run/secrets/immich-zfs-key` at activation time.
+        '';
+        type = types.path;
+      };
     };
 
     port = mkOption {
@@ -97,7 +126,10 @@ in {
       image = mkOption {
         description = "Redis/Valkey container image.";
         type = types.str;
-        default = "valkey:8-bookworm";
+        # The canonical valkey image is at valkey/valkey, not the
+        # docker-hub library namespace (valkey:* doesn't exist on
+        # docker.io/library; podman would 404 trying to pull it).
+        default = "valkey/valkey:8-bookworm";
       };
     };
 
@@ -126,12 +158,36 @@ in {
   config = mkIf cfg.enable (let
     filesDir = "${cfg.baseDir}/files";
     dbDir = "${cfg.baseDir}/db";
+    # Dataset name = mountpoint with leading slash stripped, matching the
+    # convention enforced by modules.linux.oci._managedPaths.
+    filesDataset = removePrefix "/" filesDir;
+    keyFilePath = config.sops.secrets."immich/zfs-key".path or "/run/secrets/immich-zfs-key";
+    encryptionProperties = optionalAttrs cfg.filesEncryption.enable {
+      encryption = "aes-256-gcm";
+      keyformat = "raw";
+      keylocation = "file://${keyFilePath}";
+      # Skip the early zfs-mount.service — the unlock unit handles it.
+      canmount = "noauto";
+    };
   in {
     modules.linux.oci._managedPaths = {
       # Parent dataset has no mountpoint — only its children are mounted.
       "${cfg.baseDir}".properties.mountpoint = "none";
-      ${filesDir}.properties = cfg.filesProperties;
+      # Encryption properties go first so user-supplied filesProperties wins on conflict.
+      ${filesDir}.properties = encryptionProperties // cfg.filesProperties;
       ${dbDir}.properties = cfg.dbProperties;
+    };
+
+    # Wire the unlock unit when encryption is enabled. The unit's `before`
+    # ordering against zfs-manage-datasets.service ensures `recordsize`
+    # tweaks land on an unlocked dataset; `consumers` makes podman-immich_server
+    # wait for the unlock without callers needing extraAfter/extraRequires.
+    modules.services.zfs.encryptedDatasets = mkIf cfg.filesEncryption.enable {
+      immich = {
+        dataset = filesDataset;
+        keyFile = keyFilePath;
+        consumers = ["podman-immich_server.service"];
+      };
     };
 
     # Create dedicated network for immich services
@@ -141,7 +197,19 @@ in {
     modules.linux.oci.volumes.immich_model_cache.enable =
       mkIf cfg.machineLearning.enable true;
 
-    sops.secrets."immich/db-password" = {};
+    sops.secrets =
+      {
+        "immich/db-password" = {};
+      }
+      // optionalAttrs cfg.filesEncryption.enable {
+        # The whole sops file is treated as opaque binary — `keyformat = raw`
+        # means ZFS expects exactly 32 bytes, so any text-mode round-trip
+        # would corrupt it.
+        "immich/zfs-key" = {
+          format = "binary";
+          sopsFile = cfg.filesEncryption.keyFile;
+        };
+      };
 
     # Shared by immich-server (DB_PASSWORD) and the postgres sidecar
     # (POSTGRES_PASSWORD). Both consume the same env file.
@@ -253,6 +321,8 @@ in {
             "podman-immich_postgres.service"
             "podman-immich_redis.service"
           ];
+          # zfs-load-key-immich.service ordering is wired via the
+          # encryptedDatasets `consumers` field above.
         };
       }
       // optionalAttrs cfg.machineLearning.enable {

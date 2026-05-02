@@ -19,9 +19,11 @@ in {
 
     baseDir = mkOption {
       description = ''
-        Parent directory for vikunja state. Two children are bind-mounted
-        into the container: <baseDir>/files → /app/vikunja/files and
-        <baseDir>/db → /db.
+        Single state directory for vikunja. Two subdirectories are
+        bind-mounted into the container: <baseDir>/files → /app/vikunja/files
+        and <baseDir>/db → /db. Both are plain directories under one ZFS
+        dataset (vikunja is SQLite-only — no postgres tuning needed, so the
+        per-concern dataset split would just be structural overhead).
       '';
       type = types.str;
       example = "/data/apps/vikunja";
@@ -79,14 +81,11 @@ in {
       default = {};
     };
 
-    filesProperties = mkOption {
-      description = "ZFS properties applied to the files dataset.";
-      type = types.attrsOf types.str;
-      default = {};
-    };
-
-    dbProperties = mkOption {
-      description = "ZFS properties applied to the db dataset. Defaults tuned for SQLite.";
+    properties = mkOption {
+      description = ''
+        ZFS properties applied to the single baseDir dataset. Defaults
+        tuned for SQLite (recordsize=64K).
+      '';
       type = types.attrsOf types.str;
       default = {recordsize = "64K";};
     };
@@ -94,10 +93,7 @@ in {
 
   config = mkIf cfg.enable {
     modules.linux.oci._managedPaths = {
-      # Parent dataset has no mountpoint — only its children are mounted.
-      "${cfg.baseDir}".properties.mountpoint = "none";
-      "${cfg.baseDir}/files".properties = cfg.filesProperties;
-      "${cfg.baseDir}/db".properties = cfg.dbProperties;
+      "${cfg.baseDir}".properties = cfg.properties;
     };
 
     modules.linux.oci.networks = listToAttrs (
