@@ -94,7 +94,7 @@
       services = {
         plex = {
           enable = true;
-          baseDir = "/apps/plex";
+          baseDir = "/zroot/apps/plex";
           gpu = "intel";
           openFirewall = true;
           mediaDirs = {
@@ -104,7 +104,7 @@
         };
         jellyfin = {
           enable = true;
-          baseDir = "/apps/jellyfin";
+          baseDir = "/zroot/apps/jellyfin";
           gpu = "intel";
           openFirewall = true;
           tvDir = "/mnt/media/tv";
@@ -117,7 +117,7 @@
         };
         open-webui = {
           enable = true;
-          baseDir = "/apps/open-webui";
+          baseDir = "/zroot/apps/open-webui";
           openFirewall = true;
           # Native ollama runs on the host (modules.services.ollama), so
           # reach it via the podman-injected host gateway DNS entry.
@@ -141,14 +141,14 @@
               # Bind-mounted into every job container at /ci-state. Used by the
               # flake-update workflow to persist per-host seed paths for warming
               # the container /nix/store on the next run.
-              jobStateDir = "/apps/forgejo-runner/default-state";
+              jobStateDir = "/zroot/apps/forgejo-runner/default-state";
               tokenFile = config.sops.templates."forgejo-runner-env".path;
               labels = [
                 "docker:docker://node:20-bookworm"
                 "ubuntu-latest:docker://ubuntu:latest"
                 "nix:docker://nixos/nix:latest"
               ];
-              baseDir = "/apps/forgejo-runner/default";
+              baseDir = "/zroot/apps/forgejo-runner/default";
               validVolumes = [
                 "/nix/var/nix/daemon-socket/socket"
               ];
@@ -164,8 +164,8 @@
                 "ubuntu-latest:docker://ubuntu:latest"
                 "nix:docker://nixos/nix:latest"
               ];
-              jobStateDir = "/apps/forgejo-runner/codeberg-state";
-              baseDir = "/apps/forgejo-runner/codeberg";
+              jobStateDir = "/zroot/apps/forgejo-runner/codeberg-state";
+              baseDir = "/zroot/apps/forgejo-runner/codeberg";
               validVolumes = [
                 "/nix/var/nix/daemon-socket/socket"
               ];
@@ -187,7 +187,10 @@
     };
     kernelPackages = pkgs.linuxPackages;
     kernelParams = ["nohibernate"];
-    zfs.extraPools = ["zroot"];
+    zfs = {
+      extraPools = ["zroot"];
+      forceImportRoot = false;
+    };
   };
 
   networking = {

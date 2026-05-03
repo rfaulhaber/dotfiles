@@ -177,7 +177,10 @@
 
     binfmt.emulatedSystems = ["aarch64-linux"];
 
-    zfs.extraPools = ["zroot"];
+    zfs = {
+      extraPools = ["zroot"];
+      forceImportRoot = false;
+    };
   };
 
   # TODO move, set defaults
