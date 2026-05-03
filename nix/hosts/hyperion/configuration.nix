@@ -93,11 +93,6 @@
     };
     services = {
       zfs.enable = true;
-      docker = {
-        enable = true;
-        enableIPv6 = true;
-        enableNvidiaTools = true;
-      };
       sudo-rs.enable = true;
       printing = {
         enable = true;
