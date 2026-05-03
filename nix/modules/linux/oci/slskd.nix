@@ -7,6 +7,41 @@
 with lib; let
   cfg = config.modules.linux.oci.services.slskd;
   ociLib = config.modules.linux.oci.lib;
+
+  # API consumers (e.g. soularr) authenticate against slskd via a named
+  # api_key entry. The key value is a sops secret; the consumer name is
+  # an arbitrary label.
+  apiKeyOpts = {name, ...}: {
+    options = {
+      secretName = mkOption {
+        description = ''
+          Sops secret name holding the API key for this consumer. Module
+          declares `sops.secrets.<secretName>` automatically.
+        '';
+        type = types.str;
+        example = "soularr/slskd-api-key";
+      };
+      role = mkOption {
+        description = "Role granted to this API key.";
+        type = types.enum ["readonly" "readwrite" "administrator"];
+        default = "readwrite";
+      };
+    };
+  };
+
+  # slskd.yml is built as a JSON-as-YAML payload and rendered through a
+  # sops template so the api_keys (sops placeholders) get substituted at
+  # activation time.
+  configYamlAttrs = {
+    shares.directories = cfg.shares;
+    web.authentication.api_keys =
+      mapAttrs (name: k: {
+        key = config.sops.placeholder.${k.secretName};
+        role = k.role;
+      })
+      cfg.apiKeys;
+    retention = cfg.retention;
+  };
 in {
   options.modules.linux.oci.services.slskd = {
     enable = mkEnableOption "slskd Soulseek client";
@@ -20,7 +55,10 @@ in {
     baseDir = mkOption {
       description = ''
         Base directory for slskd state. Mounted at /app inside the container
-        (slskd's config layout uses /app, not /config).
+        (slskd's config layout uses /app, not /config). slskd.yml itself is
+        copied in from the sops template at boot via ExecStartPre — slskd
+        rewrites the file when settings change in the UI, so a read-only
+        bind mount would cause errors.
       '';
       type = types.str;
       example = "/data/apps/slskd";
@@ -70,7 +108,12 @@ in {
     };
 
     remoteConfiguration = mkOption {
-      description = "Whether to allow editing slskd.yml from the web UI.";
+      description = ''
+        Whether to allow editing slskd.yml from the web UI. Now that Nix
+        manages slskd.yml, leaving this on lets you tweak settings from
+        the UI in-session (overwritten on next rebuild). Turn it off to
+        force fully-declarative config.
+      '';
       type = types.bool;
       default = true;
     };
@@ -115,6 +158,60 @@ in {
       type = types.attrsOf types.str;
       default = {recordsize = "64K";};
     };
+
+    # ----- slskd.yml fields --------------------------------------------
+
+    shares = mkOption {
+      description = "Directories shared with the Soulseek network. Paths are container-side.";
+      type = types.listOf types.str;
+      default = ["/music"];
+    };
+
+    apiKeys = mkOption {
+      description = ''
+        Named API keys for programmatic access. Each entry maps a consumer
+        name (e.g. "soularr") to a sops secret holding its API key.
+      '';
+      type = types.attrsOf (types.submodule apiKeyOpts);
+      default = {};
+      example = literalExpression ''
+        {
+          soularr = {
+            secretName = "soularr/slskd-api-key";
+            role = "readwrite";
+          };
+        }
+      '';
+    };
+
+    retention = mkOption {
+      description = ''
+        slskd retention policies (minutes for time-based, except `logs`
+        which is days). Mirrors the slskd.yml layout 1:1 — see slskd
+        docs for the field semantics.
+      '';
+      type = types.attrs;
+      default = {
+        search = 10080;
+        transfers = {
+          upload = {
+            succeeded = 1440;
+            errored = 30;
+            cancelled = 5;
+          };
+          download = {
+            succeeded = 1440;
+            errored = 20160;
+            cancelled = 5;
+          };
+        };
+        files = {
+          complete = 20160;
+          incomplete = 43200;
+        };
+        logs = 180;
+      };
+    };
   };
 
   config = mkIf cfg.enable (let
@@ -130,16 +227,35 @@ in {
         ["--network-alias=slskd"]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
-  in {
-    sops.secrets = {
-      "slskd/username" = {};
-      "slskd/password" = {};
-    };
 
-    sops.templates."slskd-env".content = ''
-      SLSKD_SLSK_USERNAME=${config.sops.placeholder."slskd/username"}
-      SLSKD_SLSK_PASSWORD=${config.sops.placeholder."slskd/password"}
+    # Land slskd.yml owned by the container UID so slskd can rewrite it
+    # at runtime (UI edits, scan state). Nix wins on the next rebuild.
+    configInitScript = pkgs.writeShellScript "slskd-config-init" ''
+      install -m 0640 -o ${toString cfg.user.uid} -g ${toString cfg.user.gid} \
+        ${config.sops.templates."slskd-yml".path} \
+        ${cfg.baseDir}/slskd.yml
     '';
+  in {
+    sops.secrets =
+      {
+        "slskd/username" = {};
+        "slskd/password" = {};
+      }
+      // listToAttrs (mapAttrsToList (_: k: nameValuePair k.secretName {}) cfg.apiKeys);
+
+    sops.templates = {
+      "slskd-env".content = ''
+        SLSKD_SLSK_USERNAME=${config.sops.placeholder."slskd/username"}
+        SLSKD_SLSK_PASSWORD=${config.sops.placeholder."slskd/password"}
+      '';
+      "slskd-yml" = {
+        content = builtins.toJSON configYamlAttrs;
+        # Read-only by other UIDs; the ExecStartPre cp lands a copy into
+        # baseDir owned by the container UID, so the container reads its
+        # own writable copy and not this template directly.
+        mode = "0400";
+      };
+    };
 
     virtualisation.oci-containers.containers.slskd = {
       image = cfg.image;
@@ -164,14 +280,19 @@ in {
       log-driver = "journald";
     };
 
-    systemd.services."podman-slskd" = ociLib.mkServiceConfig {
-      networks =
-        if cfg.useGluetun
-        then []
-        else cfg.networks;
-      extraAfter = gluetunDeps;
-      extraRequires = gluetunDeps;
-    };
+    systemd.services."podman-slskd" = mkMerge [
+      (ociLib.mkServiceConfig {
+        networks =
+          if cfg.useGluetun
+          then []
+          else cfg.networks;
+        extraAfter = gluetunDeps;
+        extraRequires = gluetunDeps;
+      })
+      {
+        serviceConfig.ExecStartPre = ["${configInitScript}"];
+      }
+    ];
 
     modules.linux.oci._managedPaths.${cfg.baseDir}.properties = cfg.configProperties;
     modules.linux.oci._gluetunPorts = mkIf cfg.useGluetun portMappings;

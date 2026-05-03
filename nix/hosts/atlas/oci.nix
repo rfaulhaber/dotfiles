@@ -27,6 +27,15 @@
         baseDir = "/data/apps/transmission";
         downloadsDir = "/data/transmission";
         useGluetun = true;
+        ratioLimit = 2.0;
+        ratioLimitEnabled = true;
+        idleSeedingLimit = 30;
+        idleSeedingLimitEnabled = true;
+        peerLimits = {
+          global = 200;
+          perTorrent = 50;
+        };
+        uploadSlotsPerTorrent = 14;
       };
 
       flaresolverr = {
@@ -89,6 +98,9 @@
         downloadsDir = "/data/slskd";
         musicDir = "/data/music";
         useGluetun = true;
+        # The named API key is shared with soularr — both modules point
+        # at the same sops secret so rotating it updates both at once.
+        apiKeys.soularr.secretName = "slskd/soularr-api-key";
       };
 
       lidarr = {
@@ -108,12 +120,60 @@
         baseDir = "/data/apps/soularr";
         slskdDownloadsDir = "/data/slskd";
         useGluetun = true;
+        # Preserve the live placeholder values from the legacy on-disk
+        # config.ini for behavioral continuity. These look like template
+        # examples and can be cleaned up later.
+        searchSettings = {
+          ignoredUsers = ["User1" "User2" "Fred" "Bob"];
+          titleBlacklist = ["Word1" "word2"];
+        };
       };
 
       requestrr = {
         enable = true;
         baseDir = "/data/apps/requestrr";
         useGluetun = true;
+        # Identifying values (Discord IDs, RPC username) all live in sops.
+        # Module defaults already point at the standard secret names, so
+        # this block is mostly empty — we just point at the channel secret.
+        discord = {
+          monitoredChannelSecrets = ["requestrr/discord-channel-main"];
+          notificationChannelSecrets = ["requestrr/discord-channel-main"];
+        };
+        # Reuse the same *arr API keys recyclarr uses — single source of
+        # truth per *arr instance.
+        radarr = {
+          enable = true;
+          hostname = "gluetun";
+          apiKeySecret = "recyclarr/radarr-main-api-key";
+          categories = [
+            {
+              Id = 0;
+              Name = "movie";
+              ProfileId = 1;
+              RootFolder = "/movies";
+              MinimumAvailability = "released";
+              Tags = [];
+            }
+          ];
+        };
+        sonarr = {
+          enable = true;
+          hostname = "gluetun";
+          apiKeySecret = "recyclarr/sonarr-main-api-key";
+          categories = [
+            {
+              Id = 0;
+              Name = "tv";
+              ProfileId = 1;
+              RootFolder = "/tv";
+              Tags = [];
+              LanguageId = 1;
+              UseSeasonFolders = true;
+              SeriesType = "standard";
+            }
+          ];
+        };
       };
 
       recyclarr = {
@@ -125,12 +185,6 @@
       immich = {
         enable = true;
         baseDir = "/data/apps/immich";
-        # The files dataset (photo uploads) is encrypted; key is sops-managed
-        # and unlocked in stage 2 by zfs-load-key-immich.service. The dataset
-        # itself was originally created out-of-band on the legacy stack with
-        # encryption=aes-256-gcm, keyformat=raw — those properties are
-        # create-only, so they ride along with the dataset; this declaration
-        # ensures a clean rebuild reproduces the same encryption settings.
         filesEncryption = {
           enable = true;
           keyFile = ./secrets/immich-zfs-key;
@@ -145,9 +199,6 @@
       miniflux = {
         enable = true;
         baseDir = "/data/apps/miniflux";
-        # Legacy data is nested at <baseDir>/18/docker/PG_VERSION; override
-        # PGDATA so postgres finds it instead of trying to initdb at the
-        # bind-mount root and erroring with "directory is not empty".
         postgres.pgdata = "/var/lib/postgresql/data/18/docker";
         oidc = {
           enable = true;
@@ -227,7 +278,14 @@
         enable = true;
         baseDir = "/data/apps/vikunja";
         publicUrl = "https://tasks.3679.space";
-        configFile = "/data/apps/vikunja/config.yml";
+        auth.openid = {
+          enable = true;
+          redirectUrl = "https://tasks.3679.space/auth/openid/pocketid";
+          providers.PocketID = {
+            displayName = "Pocket ID";
+            authUrl = "https://auth.3679.space";
+          };
+        };
       };
 
       newt = {

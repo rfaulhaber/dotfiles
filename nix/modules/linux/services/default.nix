@@ -6,10 +6,11 @@
     ./hardware
     ./keepalived
     ./mullvad
+    ./netbird
     ./nfs
     ./nix-cache
-    ./netbird
     ./ollama
+    ./podman
     ./printing
     ./samba
     ./sudo-rs

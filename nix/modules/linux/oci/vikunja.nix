@@ -7,6 +7,64 @@
 with lib; let
   cfg = config.modules.linux.oci.services.vikunja;
   ociLib = config.modules.linux.oci.lib;
+
+  oidcEnabled = cfg.auth.openid.enable && cfg.auth.openid.providers != {};
+
+  providerOpts = {name, ...}: {
+    options = {
+      displayName = mkOption {
+        description = "Human-readable provider name shown on the login button.";
+        type = types.str;
+        default = name;
+      };
+
+      authUrl = mkOption {
+        description = "OIDC authority/issuer URL (no trailing slash).";
+        type = types.str;
+        example = "https://auth.example.com";
+      };
+
+      scope = mkOption {
+        description = "Space-separated OAuth2 scopes to request.";
+        type = types.str;
+        default = "openid profile email";
+      };
+
+      usernameFallback = mkOption {
+        description = "Whether to fall back to the OIDC username claim when no display name is present.";
+        type = types.bool;
+        default = true;
+      };
+
+      emailFallback = mkOption {
+        description = "Whether to fall back to the OIDC email claim when no username is present.";
+        type = types.bool;
+        default = true;
+      };
+    };
+  };
+
+  # config.yml content, rendered via sops template so the OIDC client
+  # secrets (sops placeholders) get substituted at activation time.
+  # JSON is a strict subset of YAML — toJSON output is valid YAML input
+  # for vikunja's parser, and avoids manual indentation in nix.
+  configYamlAttrs = optionalAttrs oidcEnabled {
+    auth.openid = {
+      enabled = true;
+      redirecturl = cfg.auth.openid.redirectUrl;
+      providers =
+        mapAttrs (name: p: {
+          name = p.displayName;
+          authurl = p.authUrl;
+          clientid = config.sops.placeholder."vikunja/oidc-${name}-client-id";
+          clientsecret = config.sops.placeholder."vikunja/oidc-${name}-client-secret";
+          scope = p.scope;
+          usernamefallback = p.usernameFallback;
+          emailfallback = p.emailFallback;
+        })
+        cfg.auth.openid.providers;
+    };
+  };
 in {
   options.modules.linux.oci.services.vikunja = {
     enable = mkEnableOption "Vikunja task management";
@@ -27,18 +85,6 @@ in {
       '';
       type = types.str;
       example = "/data/apps/vikunja";
-    };
-
-    configFile = mkOption {
-      description = ''
-        Optional host path to a vikunja config.yml mounted at
-        /etc/vikunja/config.yml. Treated as an opaque host path (not
-        imported into the nix store), so vikunja sees live edits without
-        a rebuild. When null, vikunja is configured entirely via env vars.
-      '';
-      type = types.nullOr types.str;
-      default = null;
-      example = "/data/apps/vikunja/config.yml";
     };
 
     publicUrl = mkOption {
@@ -89,6 +135,35 @@ in {
       type = types.attrsOf types.str;
       default = {recordsize = "64K";};
     };
+
+    auth.openid = {
+      enable = mkEnableOption ''
+        OpenID Connect authentication. Each provider declared under
+        `providers` requires sops secrets at
+        "vikunja/oidc-<name>-client-id" and
+        "vikunja/oidc-<name>-client-secret"
+      '';
+
+      redirectUrl = mkOption {
+        description = ''
+          OIDC redirect URL (matches the value registered with the
+          provider). Vikunja uses a single global redirect; the provider
+          name is part of the path.
+        '';
+        type = types.str;
+        example = "https://tasks.example.com/auth/openid/pocketid";
+      };
+
+      providers = mkOption {
+        description = ''
+          OIDC providers. Attribute keys become provider IDs in vikunja's
+          config and source the sops secret paths
+          (vikunja/oidc-<name>-client-id, ...-client-secret).
+        '';
+        type = types.attrsOf (types.submodule providerOpts);
+        default = {};
+      };
+    };
   };
 
   config = mkIf cfg.enable {
@@ -100,11 +175,34 @@ in {
       map (n: nameValuePair n {enable = true;}) cfg.networks
     );
 
-    sops.secrets."vikunja/jwt-secret" = {};
+    sops.secrets =
+      {
+        "vikunja/jwt-secret" = {};
+      }
+      // (
+        # Per-provider secrets, declared once per provider name.
+        listToAttrs (concatLists (mapAttrsToList (name: _: [
+            (nameValuePair "vikunja/oidc-${name}-client-id" {})
+            (nameValuePair "vikunja/oidc-${name}-client-secret" {})
+          ])
+          cfg.auth.openid.providers))
+      );
 
-    sops.templates."vikunja-env".content = ''
-      VIKUNJA_SERVICE_JWTSECRET=${config.sops.placeholder."vikunja/jwt-secret"}
-    '';
+    sops.templates =
+      {
+        "vikunja-env".content = ''
+          VIKUNJA_SERVICE_JWTSECRET=${config.sops.placeholder."vikunja/jwt-secret"}
+        '';
+      }
+      // optionalAttrs oidcEnabled {
+        "vikunja-config-yml" = {
+          content = builtins.toJSON configYamlAttrs;
+          # World-readable through the bind mount; vikunja runs as 0:0
+          # by default but the file still ends up on /run/secrets-rendered
+          # which restricts access at the directory level.
+          mode = "0444";
+        };
+      };
 
     virtualisation.oci-containers.containers.vikunja = {
       image = cfg.image;
@@ -120,7 +218,8 @@ in {
           "${cfg.baseDir}/files:/app/vikunja/files"
           "${cfg.baseDir}/db:/db"
         ]
-        ++ optional (cfg.configFile != null) "${cfg.configFile}:/etc/vikunja/config.yml";
+        ++ optional oidcEnabled
+        "${config.sops.templates."vikunja-config-yml".path}:/etc/vikunja/config.yml:ro";
       ports = ["${toString cfg.webPort}:3456"];
       extraOptions =
         ["--network-alias=vikunja"]

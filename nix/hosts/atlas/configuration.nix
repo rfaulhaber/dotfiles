@@ -39,12 +39,6 @@
     services = {
       zfs = {
         enable = true;
-        # User-content datasets that are encrypted but live outside any
-        # OCI module's _managedPaths (filebrowser's user files, syncthing's
-        # synced trees). The OCI service modules consume them as plain
-        # bind-mount sources; the encryption story is host-owned. /data/photos
-        # is also encrypted but currently has no consumer in the new layout —
-        # left as-is on the legacy /etc/nixos/.keys path until a use is decided.
         encryptedDatasets = {
           filebrowser-files = {
             dataset = "data/apps/filebrowser/files";
@@ -133,14 +127,10 @@
 
     zfs = {
       extraPools = ["system" "data"];
+      forceImportRoot = false;
     };
   };
 
-  # Host-owned binary sops secrets for ZFS dataset encryption keys whose
-  # consuming datasets aren't inside any OCI module's _managedPaths
-  # (immich's key is owned by the immich OCI module instead).
-  # `format = "binary"` because keyformat=raw expects exactly 32 bytes —
-  # a yaml/base64 round-trip would corrupt that.
   sops.secrets = {
     "filebrowser/zfs-key" = {
       format = "binary";
