@@ -234,7 +234,7 @@
       filebrowser = {
         enable = true;
         baseDir = "/data/apps/filebrowser";
-        filesDir = "/data/filebrowser/files";
+        filesDir = "/data/apps/filebrowser/files";
         oidc = {
           enable = true;
           issuerUrl = "https://auth.3679.space";
