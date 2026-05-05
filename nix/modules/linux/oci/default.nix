@@ -140,11 +140,13 @@ in {
     ./forgejo.nix
     ./forgejo-runner.nix
     ./gluetun.nix
+    ./grafana.nix
     ./immich.nix
     ./immich-ml.nix
     ./jellyfin.nix
     ./lidarr.nix
     ./linkding.nix
+    ./loki.nix
     ./miniflux.nix
     ./navidrome.nix
     ./newt.nix
@@ -155,6 +157,7 @@ in {
     ./pihole.nix
     ./plex.nix
     ./pocket-id.nix
+    ./prometheus.nix
     ./prowlarr.nix
     ./radarr.nix
     ./recyclarr.nix

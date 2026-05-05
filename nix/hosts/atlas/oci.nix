@@ -288,6 +288,43 @@
         };
       };
 
+      prometheus = {
+        enable = true;
+        baseDir = "/data/apps/prometheus";
+        openFirewall = true;
+        # Wire scrape targets here as agents come online on each host.
+        # Example for atlas itself once you add `services.prometheus.exporters.node`:
+        # extraScrapeConfigs = [{
+        #   job_name = "node-atlas";
+        #   static_configs = [{
+        #     targets = ["host.containers.internal:9100"];
+        #     labels.host = "atlas";
+        #   }];
+        # }];
+      };
+
+      loki = {
+        enable = true;
+        baseDir = "/data/apps/loki";
+        openFirewall = true;
+      };
+
+      grafana = {
+        enable = true;
+        baseDir = "/data/apps/grafana";
+        openFirewall = true;
+        # LAN-only access. Update to match how you reach atlas from
+        # your browser; the OIDC redirect URI is derived from this and
+        # must be registered exactly in PocketID.
+        rootUrl = "http://atlas.lan:3000";
+        oidc = {
+          enable = true;
+          issuerUrl = "https://auth.3679.space";
+          providerName = "PocketID";
+          adminGroup = "admin";
+        };
+      };
+
       newt = {
         enable = true;
         pangolinEndpoint = "https://pangolin.3679.space";

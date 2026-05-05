@@ -9,6 +9,7 @@
     ./netbird
     ./nfs
     ./nix-cache
+    ./observability-agent
     ./ollama
     ./podman
     ./printing
