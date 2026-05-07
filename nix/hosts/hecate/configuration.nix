@@ -8,6 +8,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules
+    ./oci.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-3
     inputs.determinate.nixosModules.default
   ];
@@ -51,19 +52,6 @@
         virtualIpv6s = ["fe80::FE/64" "2600:1702:6710:117F::FE/64"];
         authPass = "0x7gMrmq";
         healthCheck.enable = true;
-      };
-    };
-
-    linux.oci = {
-      enable = true;
-      services = {
-        pihole = {
-          enable = true;
-          baseDir = "/docker/pihole";
-          interface = "enu1u1u1";
-          webPasswordFile = config.sops.templates."pihole-env".path;
-          # DHCP disabled — hecate is a backup DNS only
-        };
       };
     };
 
