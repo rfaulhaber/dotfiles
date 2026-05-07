@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.loki;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.loki = {
     enable = mkEnableOption "Loki log aggregation";
 
-    image = mkOption {
-      description = "Loki container image.";
-      type = types.str;
-      default = "grafana/loki:3.7.1";
+    image = imageLib.mkImageOptions {
+      repository = "grafana/loki";
+      version = "3.7.1";
     };
 
     baseDir = mkOption {
@@ -151,7 +151,7 @@ in {
     };
 
     virtualisation.oci-containers.containers.loki = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment = {"TZ" = cfg.timezone;};
       volumes = [
@@ -166,7 +166,11 @@ in {
           "--network-alias=loki"
           "--user=${toString cfg.user.uid}:${toString cfg.user.gid}"
         ]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+        ++ imageLib.mkImageLabels {
+          module = "loki";
+          image = cfg.image;
+        };
       log-driver = "journald";
     };
 

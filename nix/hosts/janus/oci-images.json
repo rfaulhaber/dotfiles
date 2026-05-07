@@ -1,0 +1,48 @@
+{
+  "pangolin": {
+    "images": {
+      "pangolin": {
+        "version": "latest",
+        "digest": "sha256:2cd1ca1ad271ecffb0f38d971eec5ea7bce6b3e70370aa266c141e52b650b6d5"
+      },
+      "gerbil": {
+        "version": "latest",
+        "digest": "sha256:79f6fc3199309acae99f86646ec0ea033a42e429671c25b23331dee4b7abb510"
+      },
+      "traefik": {
+        "version": "v3.4.0",
+        "digest": "sha256:35125525f4771b7a72c9813d47fb9f935fa62ed262eac874334235036ad0ae64"
+      }
+    }
+  },
+  "netbird": {
+    "images": {
+      "dashboard": {
+        "version": "latest",
+        "digest": "sha256:708057d496c743c4073ce7a096613fedff8c0483ab9f3d097c67906e53880918"
+      },
+      "signal": {
+        "version": "latest",
+        "digest": "sha256:f0242f8217e35f116ddb192baa4b90bb3785d6b4099b5b89f750caf7219c85df"
+      },
+      "relay": {
+        "version": "latest",
+        "digest": "sha256:79cc7532a7cf867778c1d5e6607433a56a85e6f03053a7ba643bc9d1b29931ec"
+      },
+      "management": {
+        "version": "latest",
+        "digest": "sha256:4b0760da067f74ba3a1484c63de6ef21be78d8203141e626ad38a6ec60b5f4fe"
+      },
+      "coturn": {
+        "version": "latest",
+        "digest": "sha256:9723dc09e825b7d969b72494b5f2aa1c44c738193a4b921f703bd2660f039b61"
+      }
+    }
+  },
+  "pocket-id": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:1cc51e5b36fa7ec31368d3efb24ba362be6dce20f3cc0a2852843527bd5110f0"
+    }
+  }
+}

@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.filebrowser;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.filebrowser = {
     enable = mkEnableOption "Filebrowser web file manager";
 
-    image = mkOption {
-      description = "Filebrowser container image.";
-      type = types.str;
-      default = "gtstef/filebrowser:latest";
+    image = imageLib.mkImageOptions {
+      repository = "gtstef/filebrowser";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -262,7 +262,7 @@ in {
     };
 
     virtualisation.oci-containers.containers.filebrowser = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment =
         {
@@ -283,7 +283,11 @@ in {
       ports = ["${toString cfg.webPort}:${toString cfg.webPort}"];
       extraOptions =
         ["--network-alias=filebrowser"]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+        ++ imageLib.mkImageLabels {
+          module = "filebrowser";
+          image = cfg.image;
+        };
       log-driver = "journald";
     };
 

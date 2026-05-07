@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.prometheus;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.prometheus = {
     enable = mkEnableOption "Prometheus metrics server";
 
-    image = mkOption {
-      description = "Prometheus container image.";
-      type = types.str;
-      default = "prom/prometheus:v3.11.3";
+    image = imageLib.mkImageOptions {
+      repository = "prom/prometheus";
+      version = "v3.11.3";
     };
 
     baseDir = mkOption {
@@ -149,7 +149,7 @@ in {
     };
 
     virtualisation.oci-containers.containers.prometheus = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment = {"TZ" = cfg.timezone;};
       volumes = [
@@ -172,7 +172,11 @@ in {
           "--network-alias=prometheus"
           "--user=${toString cfg.user.uid}:${toString cfg.user.gid}"
         ]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+        ++ imageLib.mkImageLabels {
+          module = "prometheus";
+          image = cfg.image;
+        };
       log-driver = "journald";
     };
 

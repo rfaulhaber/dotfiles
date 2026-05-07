@@ -91,7 +91,9 @@
         enable = true;
         pool = "zroot";
       };
-      services = {
+      # Image versions/digests come from oci-images.json so an
+      # auto-update workflow can rewrite plain JSON instead of nix.
+      services = lib.recursiveUpdate (lib.importJSON ./oci-images.json) {
         plex = {
           enable = true;
           baseDir = "/zroot/apps/plex";

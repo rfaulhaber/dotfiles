@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.transmission;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 
   # transmission accepts a partial settings.json — it fills in built-in
   # defaults for missing keys. So we only have to write the keys we
@@ -48,10 +49,9 @@ in {
   options.modules.linux.oci.services.transmission = {
     enable = mkEnableOption "Transmission BitTorrent client";
 
-    image = mkOption {
-      description = "Transmission container image.";
-      type = types.str;
-      default = "lscr.io/linuxserver/transmission:latest";
+    image = imageLib.mkImageOptions {
+      repository = "lscr.io/linuxserver/transmission";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -283,7 +283,11 @@ in {
     ];
     arr = ociLib.mkArrService {
       name = "transmission";
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
+      extraOptions = imageLib.mkImageLabels {
+        module = "transmission";
+        image = cfg.image;
+      };
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       mediaMounts = ["${cfg.downloadsDir}:/downloads"];

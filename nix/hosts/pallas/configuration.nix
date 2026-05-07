@@ -56,7 +56,9 @@
 
     linux.oci = {
       enable = true;
-      services = {
+      # Image versions/digests come from oci-images.json so an
+      # auto-update workflow can rewrite plain JSON instead of nix.
+      services = lib.recursiveUpdate (lib.importJSON ./oci-images.json) {
         pihole = {
           enable = true;
           baseDir = "/docker/pihole";

@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.netbird;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
   networkName = "netbird";
 
   # Management config generated from Nix attrset → JSON via sops template
@@ -193,25 +194,25 @@ in {
     };
 
     images = {
-      dashboard = mkOption {
-        type = types.str;
-        default = "netbirdio/dashboard:latest";
+      dashboard = imageLib.mkImageOptions {
+        repository = "netbirdio/dashboard";
+        version = "latest";
       };
-      signal = mkOption {
-        type = types.str;
-        default = "netbirdio/signal:latest";
+      signal = imageLib.mkImageOptions {
+        repository = "netbirdio/signal";
+        version = "latest";
       };
-      relay = mkOption {
-        type = types.str;
-        default = "netbirdio/relay:latest";
+      relay = imageLib.mkImageOptions {
+        repository = "netbirdio/relay";
+        version = "latest";
       };
-      management = mkOption {
-        type = types.str;
-        default = "netbirdio/management:latest";
+      management = imageLib.mkImageOptions {
+        repository = "netbirdio/management";
+        version = "latest";
       };
-      coturn = mkOption {
-        type = types.str;
-        default = "coturn/coturn:latest";
+      coturn = imageLib.mkImageOptions {
+        repository = "coturn/coturn";
+        version = "latest";
       };
     };
 
@@ -278,7 +279,7 @@ in {
     # -- Containers --
     virtualisation.oci-containers.containers = {
       "netbird-dashboard" = {
-        image = cfg.images.dashboard;
+        image = imageLib.renderImage cfg.images.dashboard;
         environment = {
           "NETBIRD_MGMT_API_ENDPOINT" = "https://${cfg.domain}:${toString cfg.ports.management}";
           "NETBIRD_MGMT_GRPC_API_ENDPOINT" = "https://${cfg.domain}:${toString cfg.ports.management}";
@@ -302,30 +303,40 @@ in {
         volumes = [
           "${ociLib.volumeName "netbird-letsencrypt"}:/etc/letsencrypt/"
         ];
-        extraOptions = [
-          "--network-alias=netbird-dashboard"
-          "--network=${ociLib.networkName networkName}"
-        ];
+        extraOptions =
+          [
+            "--network-alias=netbird-dashboard"
+            "--network=${ociLib.networkName networkName}"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "netbird.dashboard";
+            image = cfg.images.dashboard;
+          };
         log-driver = "journald";
       };
 
       "netbird-signal" = {
-        image = cfg.images.signal;
+        image = imageLib.renderImage cfg.images.signal;
         volumes = [
           "${ociLib.volumeName "netbird-signal"}:/var/lib/netbird"
         ];
         ports = [
           "${cfg.bindAddress}:${toString cfg.ports.signal}:80"
         ];
-        extraOptions = [
-          "--network-alias=netbird-signal"
-          "--network=${ociLib.networkName networkName}"
-        ];
+        extraOptions =
+          [
+            "--network-alias=netbird-signal"
+            "--network=${ociLib.networkName networkName}"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "netbird.signal";
+            image = cfg.images.signal;
+          };
         log-driver = "journald";
       };
 
       "netbird-relay" = {
-        image = cfg.images.relay;
+        image = imageLib.renderImage cfg.images.relay;
         environment = {
           "NB_LOG_LEVEL" = "info";
           "NB_LISTEN_ADDRESS" = ":${toString cfg.ports.relay}";
@@ -337,15 +348,20 @@ in {
         ports = [
           "${cfg.bindAddress}:${toString cfg.ports.relay}:${toString cfg.ports.relay}"
         ];
-        extraOptions = [
-          "--network-alias=netbird-relay"
-          "--network=${ociLib.networkName networkName}"
-        ];
+        extraOptions =
+          [
+            "--network-alias=netbird-relay"
+            "--network=${ociLib.networkName networkName}"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "netbird.relay";
+            image = cfg.images.relay;
+          };
         log-driver = "journald";
       };
 
       "netbird-mgmt" = {
-        image = cfg.images.management;
+        image = imageLib.renderImage cfg.images.management;
         dependsOn = ["netbird-dashboard"];
         cmd = [
           "--port"
@@ -366,23 +382,33 @@ in {
         ports = [
           "${cfg.bindAddress}:${toString cfg.ports.management}:443"
         ];
-        extraOptions = [
-          "--network-alias=netbird-mgmt"
-          "--network=${ociLib.networkName networkName}"
-        ];
+        extraOptions =
+          [
+            "--network-alias=netbird-mgmt"
+            "--network=${ociLib.networkName networkName}"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "netbird.management";
+            image = cfg.images.management;
+          };
         log-driver = "journald";
       };
 
       # Coturn runs on the host network (needs direct UDP access)
       "netbird-coturn" = {
-        image = cfg.images.coturn;
+        image = imageLib.renderImage cfg.images.coturn;
         cmd = ["-c" "/etc/turnserver.conf"];
         volumes = [
           "${config.sops.templates."netbird-turnserver".path}:/etc/turnserver.conf:ro"
         ];
-        extraOptions = [
-          "--network=host"
-        ];
+        extraOptions =
+          [
+            "--network=host"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "netbird.coturn";
+            image = cfg.images.coturn;
+          };
         log-driver = "journald";
       };
     };

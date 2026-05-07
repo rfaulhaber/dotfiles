@@ -6,14 +6,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.newt;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.newt = {
     enable = mkEnableOption "Newt tunnel agent (Pangolin)";
 
-    image = mkOption {
-      description = "Newt container image.";
-      type = types.str;
-      default = "fosrl/newt";
+    image = imageLib.mkImageOptions {
+      repository = "fosrl/newt";
+      version = "latest";
     };
 
     pangolinEndpoint = mkOption {
@@ -57,7 +57,7 @@ in {
     '';
 
     virtualisation.oci-containers.containers."newt" = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       environment =
         {
           "PANGOLIN_ENDPOINT" = cfg.pangolinEndpoint;
@@ -72,7 +72,11 @@ in {
       ];
       extraOptions =
         ["--network-alias=newt" "--no-healthcheck"]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+        ++ imageLib.mkImageLabels {
+          module = "newt";
+          image = cfg.image;
+        };
       log-driver = "journald";
     };
 

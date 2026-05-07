@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.radarr;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.radarr = {
     enable = mkEnableOption "Radarr movie collection manager";
 
-    image = mkOption {
-      description = "Radarr container image.";
-      type = types.str;
-      default = "lscr.io/linuxserver/radarr:latest";
+    image = imageLib.mkImageOptions {
+      repository = "lscr.io/linuxserver/radarr";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -102,7 +102,11 @@ in {
     portMappings = ["${toString cfg.webPort}:7878"];
     arr = ociLib.mkArrService {
       name = "radarr";
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
+      extraOptions = imageLib.mkImageLabels {
+        module = "radarr";
+        image = cfg.image;
+      };
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       mediaMounts = mapAttrsToList (mountPoint: hostPath: "${hostPath}:/${mountPoint}:rw") cfg.mediaDirs;

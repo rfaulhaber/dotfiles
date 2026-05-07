@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.nzbget;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.nzbget = {
     enable = mkEnableOption "NZBGet Usenet downloader";
 
-    image = mkOption {
-      description = "NZBGet container image.";
-      type = types.str;
-      default = "ghcr.io/linuxserver/nzbget:latest";
+    image = imageLib.mkImageOptions {
+      repository = "ghcr.io/linuxserver/nzbget";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -95,7 +95,11 @@ in {
     portMappings = ["${toString cfg.webPort}:6789"];
     arr = ociLib.mkArrService {
       name = "nzbget";
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
+      extraOptions = imageLib.mkImageLabels {
+        module = "nzbget";
+        image = cfg.image;
+      };
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       mediaMounts = ["${cfg.downloadsDir}:/downloads"];

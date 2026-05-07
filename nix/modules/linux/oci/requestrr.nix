@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.requestrr;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 
   # *arr download client option block — shared between Radarr/Sonarr/Lidarr.
   arrClientOpts = {
@@ -179,10 +180,9 @@ in {
   options.modules.linux.oci.services.requestrr = {
     enable = mkEnableOption "Requestrr chat-bot media-request frontend";
 
-    image = mkOption {
-      description = "Requestrr container image (community fork).";
-      type = types.str;
-      default = "thomst08/requestrr:latest";
+    image = imageLib.mkImageOptions {
+      repository = "thomst08/requestrr";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -418,11 +418,17 @@ in {
   config = mkIf cfg.enable (let
     portMappings = ["${toString cfg.webPort}:4545"];
     netOpts =
-      if cfg.useGluetun
-      then ["--network=container:${cfg.gluetunContainer}"]
-      else
-        ["--network-alias=requestrr"]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+      (
+        if cfg.useGluetun
+        then ["--network=container:${cfg.gluetunContainer}"]
+        else
+          ["--network-alias=requestrr"]
+          ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+      )
+      ++ imageLib.mkImageLabels {
+        module = "requestrr";
+        image = cfg.image;
+      };
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
 
     # Collect every sops secret the rendered Settings.json references.
@@ -461,7 +467,7 @@ in {
     };
 
     virtualisation.oci-containers.containers.requestrr = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment = {
         "TZ" = cfg.timezone;

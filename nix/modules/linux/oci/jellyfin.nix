@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.jellyfin;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.jellyfin = {
     enable = mkEnableOption "Jellyfin media server";
 
-    image = mkOption {
-      description = "Jellyfin container image.";
-      type = types.str;
-      default = "lscr.io/linuxserver/jellyfin:latest";
+    image = imageLib.mkImageOptions {
+      repository = "lscr.io/linuxserver/jellyfin";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -81,7 +81,7 @@ in {
     };
 
     virtualisation.oci-containers.containers."jellyfin" = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       environment =
         {
           "PGID" = toString cfg.user.gid;
@@ -113,7 +113,11 @@ in {
         ["--network-alias=jellyfin"]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ optionals (cfg.gpu == "nvidia") ["--device=nvidia.com/gpu=all"]
-        ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri:/dev/dri"];
+        ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri:/dev/dri"]
+        ++ imageLib.mkImageLabels {
+          module = "jellyfin";
+          image = cfg.image;
+        };
     };
 
     systemd.services."podman-jellyfin" = mkMerge [

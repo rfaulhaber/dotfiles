@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.prowlarr;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.prowlarr = {
     enable = mkEnableOption "Prowlarr indexer manager";
 
-    image = mkOption {
-      description = "Prowlarr container image.";
-      type = types.str;
-      default = "ghcr.io/linuxserver/prowlarr:develop";
+    image = imageLib.mkImageOptions {
+      repository = "ghcr.io/linuxserver/prowlarr";
+      version = "develop";
     };
 
     baseDir = mkOption {
@@ -88,7 +88,11 @@ in {
     portMappings = ["${toString cfg.webPort}:9696"];
     arr = ociLib.mkArrService {
       name = "prowlarr";
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
+      extraOptions = imageLib.mkImageLabels {
+        module = "prowlarr";
+        image = cfg.image;
+      };
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       inherit (cfg) useGluetun gluetunContainer networks user timezone dependsOn;

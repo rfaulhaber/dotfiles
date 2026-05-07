@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.caddy;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 
   # Generate a Caddyfile from configuration
   generateCaddyfile = let
@@ -147,10 +148,9 @@ in {
   options.modules.linux.oci.services.caddy = {
     enable = mkEnableOption "Caddy reverse proxy";
 
-    image = mkOption {
-      type = types.str;
-      default = "caddy:2-alpine";
-      description = "Caddy container image";
+    image = imageLib.mkImageOptions {
+      repository = "caddy";
+      version = "2-alpine";
     };
 
     baseDir = mkOption {
@@ -248,7 +248,7 @@ in {
     environment.etc."caddy/Caddyfile".text = generateCaddyfile;
 
     virtualisation.oci-containers.containers."caddy" = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       ports = [
         "80:80"
         "443:443"
@@ -262,10 +262,15 @@ in {
         ]
         ++ optional cfg.index.enable "${indexDir}:/srv/index:ro"
         ++ optional (cfg.staticDir != null) "${cfg.staticDir}:/srv/static:ro";
-      extraOptions = [
-        "--cap-add=NET_ADMIN"
-        "--network=host"
-      ];
+      extraOptions =
+        [
+          "--cap-add=NET_ADMIN"
+          "--network=host"
+        ]
+        ++ imageLib.mkImageLabels {
+          module = "caddy";
+          image = cfg.image;
+        };
       log-driver = "journald";
     };
 

@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.slskd;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 
   # API consumers (e.g. soularr) authenticate against slskd via a named
   # api_key entry. The key value is a sops secret; the consumer name is
@@ -46,10 +47,9 @@ in {
   options.modules.linux.oci.services.slskd = {
     enable = mkEnableOption "slskd Soulseek client";
 
-    image = mkOption {
-      description = "slskd container image.";
-      type = types.str;
-      default = "slskd/slskd:latest";
+    image = imageLib.mkImageOptions {
+      repository = "slskd/slskd";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -221,11 +221,17 @@ in {
       "${toString cfg.peerPort}:50300"
     ];
     netOpts =
-      if cfg.useGluetun
-      then ["--network=container:${cfg.gluetunContainer}"]
-      else
-        ["--network-alias=slskd"]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+      (
+        if cfg.useGluetun
+        then ["--network=container:${cfg.gluetunContainer}"]
+        else
+          ["--network-alias=slskd"]
+          ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+      )
+      ++ imageLib.mkImageLabels {
+        module = "slskd";
+        image = cfg.image;
+      };
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
 
     # Land slskd.yml owned by the container UID so slskd can rewrite it
@@ -258,7 +264,7 @@ in {
     };
 
     virtualisation.oci-containers.containers.slskd = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment = {
         "SLSKD_REMOTE_CONFIGURATION" =

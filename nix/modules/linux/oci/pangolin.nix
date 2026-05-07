@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.pangolin;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
   networkName = "pangolin";
 
   # Static traefik configuration (no secrets)
@@ -186,17 +187,17 @@ in {
     };
 
     images = {
-      pangolin = mkOption {
-        type = types.str;
-        default = "fosrl/pangolin:latest";
+      pangolin = imageLib.mkImageOptions {
+        repository = "fosrl/pangolin";
+        version = "latest";
       };
-      gerbil = mkOption {
-        type = types.str;
-        default = "fosrl/gerbil:latest";
+      gerbil = imageLib.mkImageOptions {
+        repository = "fosrl/gerbil";
+        version = "latest";
       };
-      traefik = mkOption {
-        type = types.str;
-        default = "traefik:v3.4.0";
+      traefik = imageLib.mkImageOptions {
+        repository = "traefik";
+        version = "v3.4.0";
       };
     };
 
@@ -278,24 +279,29 @@ in {
     # -- Containers --
     virtualisation.oci-containers.containers = {
       "pangolin" = {
-        image = cfg.images.pangolin;
+        image = imageLib.renderImage cfg.images.pangolin;
         volumes = [
           "${cfg.baseDir}/pangolin:/app/config:rw"
         ];
-        extraOptions = [
-          "--network-alias=pangolin"
-          "--network=${ociLib.networkName networkName}"
-          "--health-cmd=curl -f http://localhost:3001/api/v1/ || exit 1"
-          "--health-interval=3s"
-          "--health-timeout=3s"
-          "--health-retries=15"
-          "--health-start-period=15s"
-        ];
+        extraOptions =
+          [
+            "--network-alias=pangolin"
+            "--network=${ociLib.networkName networkName}"
+            "--health-cmd=curl -f http://localhost:3001/api/v1/ || exit 1"
+            "--health-interval=3s"
+            "--health-timeout=3s"
+            "--health-retries=15"
+            "--health-start-period=15s"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "pangolin.pangolin";
+            image = cfg.images.pangolin;
+          };
         log-driver = "journald";
       };
 
       "gerbil" = {
-        image = cfg.images.gerbil;
+        image = imageLib.renderImage cfg.images.gerbil;
         dependsOn = ["pangolin"];
         cmd = [
           "--reachableAt=http://gerbil:3003"
@@ -312,18 +318,23 @@ in {
           "${cfg.bindAddress}:80:80"
           "${cfg.bindAddress}:${toString cfg.gerbil.tcpPort}:${toString cfg.gerbil.tcpPort}"
         ];
-        extraOptions = [
-          "--network-alias=gerbil"
-          "--network=${ociLib.networkName networkName}"
-          "--cap-add=NET_ADMIN"
-          "--cap-add=SYS_MODULE"
-        ];
+        extraOptions =
+          [
+            "--network-alias=gerbil"
+            "--network=${ociLib.networkName networkName}"
+            "--cap-add=NET_ADMIN"
+            "--cap-add=SYS_MODULE"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "pangolin.gerbil";
+            image = cfg.images.gerbil;
+          };
         log-driver = "journald";
       };
 
       # Traefik shares gerbil's network namespace (ports published on gerbil)
       "traefik" = {
-        image = cfg.images.traefik;
+        image = imageLib.renderImage cfg.images.traefik;
         dependsOn = ["pangolin"];
         cmd = ["--configFile=/etc/traefik/traefik_config.yml"];
         volumes = [
@@ -331,9 +342,14 @@ in {
           "${traefikDynamicConfig}:/etc/traefik/dynamic_config.yml:ro"
           "${cfg.baseDir}/letsencrypt:/letsencrypt:rw"
         ];
-        extraOptions = [
-          "--network=container:gerbil"
-        ];
+        extraOptions =
+          [
+            "--network=container:gerbil"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "pangolin.traefik";
+            image = cfg.images.traefik;
+          };
         log-driver = "journald";
       };
     };

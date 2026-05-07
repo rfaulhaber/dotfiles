@@ -1,0 +1,42 @@
+{
+  "plex": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:1dd281365d61fb76fd4474ba67e36ec94d2e8dbc67a8032ba10731c01701c97e"
+    }
+  },
+  "jellyfin": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:c796353f655c4be9911bf4594a25bb8da6341c5918a535a16b0bf1029123fc1c"
+    }
+  },
+  "open-webui": {
+    "image": {
+      "version": "main",
+      "digest": "sha256:a1916b8dc645222c6ff14b4ed075c0b2ac39bfb9b63690ec81a3cd0312e224b8"
+    }
+  },
+  "newt": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:13039b0a424d153730c0e6d7581743ed943e8ce44bbe1a1b9ae614e5d89a4fa1"
+    }
+  },
+  "forgejo-runner": {
+    "runners": {
+      "default": {
+        "image": {
+          "version": "6.2.2",
+          "digest": "sha256:d1ed3f7ef49710a691f6db741aa3e97fcfe50d88379b19015cfa3ab60cc40c30"
+        }
+      },
+      "codeberg": {
+        "image": {
+          "version": "6.2.2",
+          "digest": "sha256:d1ed3f7ef49710a691f6db741aa3e97fcfe50d88379b19015cfa3ab60cc40c30"
+        }
+      }
+    }
+  }
+}

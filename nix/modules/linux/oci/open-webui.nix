@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.open-webui;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.open-webui = {
     enable = mkEnableOption "Open WebUI (frontend for Ollama and OpenAI-compatible APIs)";
 
-    image = mkOption {
-      description = "Open WebUI container image.";
-      type = types.str;
-      default = "ghcr.io/open-webui/open-webui:main";
+    image = imageLib.mkImageOptions {
+      repository = "ghcr.io/open-webui/open-webui";
+      version = "main";
     };
 
     baseDir = mkOption {
@@ -65,7 +65,7 @@ in {
     };
 
     virtualisation.oci-containers.containers."open-webui" = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       environment =
         {
           "OLLAMA_BASE_URL" = cfg.ollamaBaseUrl;
@@ -80,7 +80,11 @@ in {
       log-driver = "journald";
       extraOptions =
         ["--network-alias=open-webui"]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+        ++ imageLib.mkImageLabels {
+          module = "open-webui";
+          image = cfg.image;
+        };
     };
 
     systemd.services."podman-open-webui" = mkMerge [

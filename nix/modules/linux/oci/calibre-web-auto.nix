@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.calibre-web-auto;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.calibre-web-auto = {
     enable = mkEnableOption "Calibre-Web-Automated";
 
-    image = mkOption {
-      description = "Calibre-Web-Automated container image.";
-      type = types.str;
-      default = "crocodilestick/calibre-web-automated:latest";
+    image = imageLib.mkImageOptions {
+      repository = "crocodilestick/calibre-web-automated";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -124,7 +124,11 @@ in {
   config = mkIf cfg.enable (let
     arr = ociLib.mkArrService {
       name = "calibre-web-auto";
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
+      extraOptions = imageLib.mkImageLabels {
+        module = "calibre-web-auto";
+        image = cfg.image;
+      };
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       mediaMounts = [

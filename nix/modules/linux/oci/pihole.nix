@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.pihole;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 
   dnsServerConf =
     pkgs.writeText "99-custom-dns.conf"
@@ -15,10 +16,9 @@ in {
   options.modules.linux.oci.services.pihole = {
     enable = mkEnableOption "Pi-hole DNS server";
 
-    image = mkOption {
-      description = "Pi-hole container image.";
-      type = types.str;
-      default = "pihole/pihole:2026.04.1";
+    image = imageLib.mkImageOptions {
+      repository = "pihole/pihole";
+      version = "2026.04.1";
     };
 
     baseDir = mkOption {
@@ -126,15 +126,20 @@ in {
     modules.linux.oci._managedPaths.${cfg.baseDir} = {};
 
     virtualisation.oci-containers.containers."pihole" = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
 
       # Host network mode for DNS/DHCP
-      extraOptions = [
-        "--network=host"
-        "--cap-add=NET_ADMIN"
-        "--cap-add=NET_RAW"
-        "--cap-add=SYS_TIME"
-      ];
+      extraOptions =
+        [
+          "--network=host"
+          "--cap-add=NET_ADMIN"
+          "--cap-add=NET_RAW"
+          "--cap-add=SYS_TIME"
+        ]
+        ++ imageLib.mkImageLabels {
+          module = "pihole";
+          image = cfg.image;
+        };
 
       environmentFiles = [
         cfg.webPasswordFile

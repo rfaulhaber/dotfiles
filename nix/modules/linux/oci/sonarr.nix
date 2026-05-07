@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.sonarr;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.sonarr = {
     enable = mkEnableOption "Sonarr TV collection manager";
 
-    image = mkOption {
-      description = "Sonarr container image.";
-      type = types.str;
-      default = "lscr.io/linuxserver/sonarr:latest";
+    image = imageLib.mkImageOptions {
+      repository = "lscr.io/linuxserver/sonarr";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -102,7 +102,11 @@ in {
     portMappings = ["${toString cfg.webPort}:8989"];
     arr = ociLib.mkArrService {
       name = "sonarr";
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
+      extraOptions = imageLib.mkImageLabels {
+        module = "sonarr";
+        image = cfg.image;
+      };
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       mediaMounts = mapAttrsToList (mountPoint: hostPath: "${hostPath}:/${mountPoint}:rw") cfg.mediaDirs;

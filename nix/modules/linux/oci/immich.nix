@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.immich;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
   networkName = "immich";
 
   # Common env vars shared between server and ML containers
@@ -24,18 +25,23 @@ with lib; let
     nvidia = "-cuda";
     intel = "-openvino";
   };
+  # ML image: the GPU suffix is part of the upstream tag scheme
+  # (release-cuda, release-openvino), so it goes between version and any
+  # optional digest — not after the digest, since the digest pins the
+  # already-suffixed manifest.
   mlImage = let
-    base = "ghcr.io/immich-app/immich-machine-learning:${cfg.version}";
+    img = cfg.machineLearning.image;
     suffix = mlImageSuffix.${cfg.gpu} or "";
-  in "${base}${suffix}";
+  in
+    "${img.repository}:${img.version}${suffix}"
+    + optionalString (img.digest != null) "@${img.digest}";
 in {
   options.modules.linux.oci.services.immich = {
     enable = mkEnableOption "Immich photo management";
 
-    version = mkOption {
-      description = "Immich version tag for server and ML images.";
-      type = types.str;
-      default = "release";
+    image = imageLib.mkImageOptions {
+      repository = "ghcr.io/immich-app/immich-server";
+      version = "release";
     };
 
     baseDir = mkOption {
@@ -103,10 +109,9 @@ in {
     };
 
     postgres = {
-      image = mkOption {
-        description = "PostgreSQL container image (must include pgvecto.rs).";
-        type = types.str;
-        default = "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0";
+      image = imageLib.mkImageOptions {
+        repository = "ghcr.io/immich-app/postgres";
+        version = "14-vectorchord0.4.3-pgvectors0.2.0";
       };
 
       user = mkOption {
@@ -123,17 +128,21 @@ in {
     };
 
     redis = {
-      image = mkOption {
-        description = "Redis/Valkey container image.";
-        type = types.str;
-        # The canonical valkey image is at valkey/valkey, not the
-        # docker-hub library namespace (valkey:* doesn't exist on
-        # docker.io/library; podman would 404 trying to pull it).
-        default = "valkey/valkey:8-bookworm";
+      # The canonical valkey image is at valkey/valkey, not the
+      # docker-hub library namespace (valkey:* doesn't exist on
+      # docker.io/library; podman would 404 trying to pull it).
+      image = imageLib.mkImageOptions {
+        repository = "valkey/valkey";
+        version = "8-bookworm";
       };
     };
 
     machineLearning = {
+      image = imageLib.mkImageOptions {
+        repository = "ghcr.io/immich-app/immich-machine-learning";
+        version = "release";
+      };
+
       enable = mkOption {
         description = "Enable the machine learning sidecar for smart search and face detection.";
         type = types.bool;
@@ -222,7 +231,7 @@ in {
       {
         # PostgreSQL with pgvecto.rs
         "immich_postgres" = {
-          image = cfg.postgres.image;
+          image = imageLib.renderImage cfg.postgres.image;
           environment = {
             "POSTGRES_USER" = cfg.postgres.user;
             "POSTGRES_DB" = cfg.postgres.database;
@@ -232,32 +241,42 @@ in {
           volumes = [
             "${dbDir}:/var/lib/postgresql/data"
           ];
-          extraOptions = [
-            "--network-alias=immich_postgres"
-            "--network=${ociLib.networkName networkName}"
-            "--health-cmd=pg_isready -d ${cfg.postgres.database} -U ${cfg.postgres.user}"
-            "--health-interval=10s"
-            "--health-start-period=30s"
-          ];
+          extraOptions =
+            [
+              "--network-alias=immich_postgres"
+              "--network=${ociLib.networkName networkName}"
+              "--health-cmd=pg_isready -d ${cfg.postgres.database} -U ${cfg.postgres.user}"
+              "--health-interval=10s"
+              "--health-start-period=30s"
+            ]
+            ++ imageLib.mkImageLabels {
+              module = "immich.postgres";
+              image = cfg.postgres.image;
+            };
           log-driver = "journald";
         };
 
         # Redis cache
         "immich_redis" = {
-          image = cfg.redis.image;
-          extraOptions = [
-            "--network-alias=immich_redis"
-            "--network=${ociLib.networkName networkName}"
-            "--health-cmd=valkey-cli ping || exit 1"
-            "--health-interval=10s"
-            "--health-start-period=30s"
-          ];
+          image = imageLib.renderImage cfg.redis.image;
+          extraOptions =
+            [
+              "--network-alias=immich_redis"
+              "--network=${ociLib.networkName networkName}"
+              "--health-cmd=valkey-cli ping || exit 1"
+              "--health-interval=10s"
+              "--health-start-period=30s"
+            ]
+            ++ imageLib.mkImageLabels {
+              module = "immich.redis";
+              image = cfg.redis.image;
+            };
           log-driver = "journald";
         };
 
         # Immich server (API + web + microservices)
         "immich_server" = {
-          image = "ghcr.io/immich-app/immich-server:${cfg.version}";
+          image = imageLib.renderImage cfg.image;
           dependsOn = ["immich_postgres" "immich_redis"];
           environment =
             dbEnv
@@ -272,10 +291,15 @@ in {
           ports = [
             "${toString cfg.port}:2283"
           ];
-          extraOptions = [
-            "--network-alias=immich_server"
-            "--network=${ociLib.networkName networkName}"
-          ];
+          extraOptions =
+            [
+              "--network-alias=immich_server"
+              "--network=${ociLib.networkName networkName}"
+            ]
+            ++ imageLib.mkImageLabels {
+              module = "immich";
+              image = cfg.image;
+            };
           log-driver = "journald";
         };
       }
@@ -292,7 +316,11 @@ in {
               "--network=${ociLib.networkName networkName}"
             ]
             ++ optionals (cfg.gpu == "nvidia") ["--device=nvidia.com/gpu=all"]
-            ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri"];
+            ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri"]
+            ++ imageLib.mkImageLabels {
+              module = "immich.machineLearning";
+              image = cfg.machineLearning.image;
+            };
           environment = optionalAttrs (cfg.gpu == "nvidia") {
             "NVIDIA_VISIBLE_DEVICES" = "all";
           };

@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.tautulli;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.tautulli = {
     enable = mkEnableOption "Tautulli Plex statistics monitor";
 
-    image = mkOption {
-      description = "Tautulli container image.";
-      type = types.str;
-      default = "ghcr.io/tautulli/tautulli:latest";
+    image = imageLib.mkImageOptions {
+      repository = "ghcr.io/tautulli/tautulli";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -70,7 +70,11 @@ in {
   config = mkIf cfg.enable (let
     arr = ociLib.mkArrService {
       name = "tautulli";
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
+      extraOptions = imageLib.mkImageLabels {
+        module = "tautulli";
+        image = cfg.image;
+      };
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       inherit (cfg) networks user timezone dependsOn;

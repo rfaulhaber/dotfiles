@@ -7,15 +7,15 @@
 with lib; let
   cfg = config.modules.linux.oci.services.forgejo;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
   networkName = "forgejo";
 in {
   options.modules.linux.oci.services.forgejo = {
     enable = mkEnableOption "Forgejo git server";
 
-    image = mkOption {
-      description = "Forgejo container image.";
-      type = types.str;
-      default = "codeberg.org/forgejo/forgejo:15.0.0";
+    image = imageLib.mkImageOptions {
+      repository = "codeberg.org/forgejo/forgejo";
+      version = "15.0.0";
     };
 
     baseDir = mkOption {
@@ -106,10 +106,9 @@ in {
     };
 
     postgres = {
-      image = mkOption {
-        description = "PostgreSQL container image.";
-        type = types.str;
-        default = "postgres:17.2-alpine";
+      image = imageLib.mkImageOptions {
+        repository = "postgres";
+        version = "17.2-alpine";
       };
 
       user = mkOption {
@@ -168,7 +167,7 @@ in {
 
     virtualisation.oci-containers.containers = {
       "forgejo_db" = {
-        image = cfg.postgres.image;
+        image = imageLib.renderImage cfg.postgres.image;
         environment = {
           "POSTGRES_USER" = cfg.postgres.user;
           "POSTGRES_DB" = cfg.postgres.database;
@@ -178,18 +177,23 @@ in {
           "${cfg.baseDir}/db:/var/lib/postgresql/data"
         ];
         ports = optional (cfg.postgres.port != null) "${toString cfg.postgres.port}:5432";
-        extraOptions = [
-          "--network-alias=forgejo_db"
-          "--network=${ociLib.networkName networkName}"
-          "--health-cmd=pg_isready -U ${cfg.postgres.user}"
-          "--health-interval=10s"
-          "--health-start-period=30s"
-        ];
+        extraOptions =
+          [
+            "--network-alias=forgejo_db"
+            "--network=${ociLib.networkName networkName}"
+            "--health-cmd=pg_isready -U ${cfg.postgres.user}"
+            "--health-interval=10s"
+            "--health-start-period=30s"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "forgejo.postgres";
+            image = cfg.postgres.image;
+          };
         log-driver = "journald";
       };
 
       "forgejo" = {
-        image = cfg.image;
+        image = imageLib.renderImage cfg.image;
         dependsOn = ["forgejo_db"] ++ cfg.dependsOn;
         environment =
           {
@@ -221,10 +225,15 @@ in {
           "${toString cfg.webPort}:3000"
           "${toString cfg.sshPort}:22"
         ];
-        extraOptions = [
-          "--network-alias=forgejo"
-          "--network=${ociLib.networkName networkName}"
-        ];
+        extraOptions =
+          [
+            "--network-alias=forgejo"
+            "--network=${ociLib.networkName networkName}"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "forgejo";
+            image = cfg.image;
+          };
         log-driver = "journald";
       };
     };

@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.grafana;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.grafana = {
     enable = mkEnableOption "Grafana visualization server";
 
-    image = mkOption {
-      description = "Grafana container image.";
-      type = types.str;
-      default = "grafana/grafana:13.0.1";
+    image = imageLib.mkImageOptions {
+      repository = "grafana/grafana";
+      version = "13.0.1";
     };
 
     baseDir = mkOption {
@@ -203,7 +203,7 @@ in {
       };
 
     virtualisation.oci-containers.containers.grafana = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment =
         {
@@ -245,7 +245,11 @@ in {
           "--network-alias=grafana"
           "--user=${toString cfg.user.uid}:${toString cfg.user.gid}"
         ]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+        ++ imageLib.mkImageLabels {
+          module = "grafana";
+          image = cfg.image;
+        };
       log-driver = "journald";
     };
 

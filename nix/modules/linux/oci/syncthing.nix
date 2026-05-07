@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.syncthing;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.syncthing = {
     enable = mkEnableOption "Syncthing file synchronization";
 
-    image = mkOption {
-      description = "Syncthing container image.";
-      type = types.str;
-      default = "lscr.io/linuxserver/syncthing:latest";
+    image = imageLib.mkImageOptions {
+      repository = "lscr.io/linuxserver/syncthing";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -95,7 +95,11 @@ in {
   config = mkIf cfg.enable (let
     arr = ociLib.mkArrService {
       name = "syncthing";
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
+      extraOptions = imageLib.mkImageLabels {
+        module = "syncthing";
+        image = cfg.image;
+      };
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       mediaMounts = mapAttrsToList (mountPoint: hostPath: "${hostPath}:/${mountPoint}:rw") cfg.syncDirs;

@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.linkding;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.linkding = {
     enable = mkEnableOption "Linkding bookmark manager";
 
-    image = mkOption {
-      description = "Linkding container image.";
-      type = types.str;
-      default = "sissbruecker/linkding:latest";
+    image = imageLib.mkImageOptions {
+      repository = "sissbruecker/linkding";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -130,7 +130,7 @@ in {
       };
 
     virtualisation.oci-containers.containers.linkding = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment =
         {
@@ -160,7 +160,11 @@ in {
       ports = ["${toString cfg.webPort}:9090"];
       extraOptions =
         ["--network-alias=linkding"]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+        ++ imageLib.mkImageLabels {
+          module = "linkding";
+          image = cfg.image;
+        };
       log-driver = "journald";
     };
 

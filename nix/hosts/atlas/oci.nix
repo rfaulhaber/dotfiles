@@ -11,7 +11,9 @@
       pool = "data";
     };
 
-    services = {
+    # Image versions/digests come from oci-images.json so an
+    # auto-update workflow can rewrite plain JSON instead of nix.
+    services = lib.recursiveUpdate (lib.importJSON ./oci-images.json) {
       gluetun = {
         enable = true;
         baseDir = "/data/apps/gluetun";
@@ -98,8 +100,6 @@
         downloadsDir = "/data/slskd";
         musicDir = "/data/music";
         useGluetun = true;
-        # The named API key is shared with soularr — both modules point
-        # at the same sops secret so rotating it updates both at once.
         apiKeys.soularr.secretName = "slskd/soularr-api-key";
       };
 
@@ -120,28 +120,16 @@
         baseDir = "/data/apps/soularr";
         slskdDownloadsDir = "/data/slskd";
         useGluetun = true;
-        # Preserve the live placeholder values from the legacy on-disk
-        # config.ini for behavioral continuity. These look like template
-        # examples and can be cleaned up later.
-        searchSettings = {
-          ignoredUsers = ["User1" "User2" "Fred" "Bob"];
-          titleBlacklist = ["Word1" "word2"];
-        };
       };
 
       requestrr = {
         enable = true;
         baseDir = "/data/apps/requestrr";
         useGluetun = true;
-        # Identifying values (Discord IDs, RPC username) all live in sops.
-        # Module defaults already point at the standard secret names, so
-        # this block is mostly empty — we just point at the channel secret.
         discord = {
           monitoredChannelSecrets = ["requestrr/discord-channel-main"];
           notificationChannelSecrets = ["requestrr/discord-channel-main"];
         };
-        # Reuse the same *arr API keys recyclarr uses — single source of
-        # truth per *arr instance.
         radarr = {
           enable = true;
           hostname = "gluetun";
@@ -191,7 +179,7 @@
         };
         machineLearning = {
           enable = false;
-          # Atlas delegates ML to vulcan instead of running a local sidecar.
+          # atlas delegates ML to vulcan instead of running a local sidecar.
           url = "http://vulcan.lan:3003";
         };
       };
@@ -313,9 +301,6 @@
         enable = true;
         baseDir = "/data/apps/grafana";
         openFirewall = true;
-        # LAN-only access. Update to match how you reach atlas from
-        # your browser; the OIDC redirect URI is derived from this and
-        # must be registered exactly in PocketID.
         rootUrl = "http://atlas.lan:3000";
         oidc = {
           enable = true;

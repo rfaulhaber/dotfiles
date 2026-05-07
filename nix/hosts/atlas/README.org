@@ -1,20 +1,15 @@
 #+TITLE: Atlas
 
-~atlas~ is my home server. It runs a minimal, non-GUI installation of this NixOS configuration.
+~atlas~ is my home file server. It runs a minimal, non-GUI installation of this NixOS configuration.
 
-My home server has three components:
+~atlas~ uses zfs to manage file storage for all of the services I host. It is also a low-compute service host in itself. The services used by ~atlas~ are specified in ~./oci.nix~, which specify the OCI modules defined in ~nix/modules/linux/oci~.
 
-- SnapRAID (for pooly-utilized backup)
-- MergerFS (for creating a data pool from the 8 hard drives)
-- Docker
-
-The services hosted by my server are essentially one big Docker Compose file
-(not hosted). NixOS handles all the underlying hardware and system configuration.
+Each OCI module can specify a ZFS dataset to utilize, which will be created and managed on ~atlas~. ~atlas~'s main data pool uses raidz2 by default.
 
 * Specs
-| CPU         | Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz |
-| RAM         | DDR4 32GB (4x8GB)                       |
-| Motherboard | SuperMicro C7Z97-OCE                    |
-| Graphics    | N/A                                     |
-| NVME        | Samsung 970 Evo 500 GB M.2              |
-| HDD         | 8x8TB (64TB total) SAS 7200 RPM         |
+| CPU         | Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz            |
+| RAM         | DDR4 32GB (4x8GB)                                  |
+| Motherboard | SuperMicro C7Z97-OCE                               |
+| Graphics    | N/A                                                |
+| NVME        | Samsung 970 Evo 500 GB M.2                         |
+| HDD         | 20 SAS 7200 RPM variable sized, total space: 128TB |

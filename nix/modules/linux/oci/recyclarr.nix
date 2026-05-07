@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.recyclarr;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 
   instanceOpts = {name, ...}: {
     options = {
@@ -202,10 +203,9 @@ in {
   options.modules.linux.oci.services.recyclarr = {
     enable = mkEnableOption "Recyclarr TRaSH-Guides quality profile sync";
 
-    image = mkOption {
-      description = "Recyclarr container image.";
-      type = types.str;
-      default = "ghcr.io/recyclarr/recyclarr:latest";
+    image = imageLib.mkImageOptions {
+      repository = "ghcr.io/recyclarr/recyclarr";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -317,11 +317,17 @@ in {
 
   config = mkIf cfg.enable (let
     netOpts =
-      if cfg.useGluetun
-      then ["--network=container:${cfg.gluetunContainer}"]
-      else
-        ["--network-alias=recyclarr"]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+      (
+        if cfg.useGluetun
+        then ["--network=container:${cfg.gluetunContainer}"]
+        else
+          ["--network-alias=recyclarr"]
+          ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+      )
+      ++ imageLib.mkImageLabels {
+        module = "recyclarr";
+        image = cfg.image;
+      };
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
 
     # secrets.yml is a flat key→value YAML file. Recyclarr resolves
@@ -344,7 +350,7 @@ in {
     };
 
     virtualisation.oci-containers.containers.recyclarr = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment = {
         "TZ" = cfg.timezone;

@@ -50,7 +50,9 @@ in {
         netbird.enable = true;
       };
 
-      services = {
+      # Image versions/digests come from oci-images.json so an
+      # auto-update workflow can rewrite plain JSON instead of nix.
+      services = lib.recursiveUpdate (lib.importJSON ./oci-images.json) {
         pangolin = {
           enable = true;
           domain = "3679.space";

@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.pocket-id;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.pocket-id = {
     enable = mkEnableOption "Pocket-ID OIDC provider";
@@ -41,9 +42,9 @@ in {
       default = ["default"];
     };
 
-    image = mkOption {
-      type = types.str;
-      default = "ghcr.io/pocket-id/pocket-id";
+    image = imageLib.mkImageOptions {
+      repository = "ghcr.io/pocket-id/pocket-id";
+      version = "latest";
     };
 
     user = {
@@ -70,7 +71,7 @@ in {
     '';
 
     virtualisation.oci-containers.containers."pocket-id" = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       environment = {
         "APP_URL" = cfg.appUrl;
         "TRUST_PROXY" = "true";
@@ -95,7 +96,11 @@ in {
           "--health-timeout=5s"
           "--health-retries=2"
           "--health-start-period=10s"
-        ];
+        ]
+        ++ imageLib.mkImageLabels {
+          module = "pocket-id";
+          image = cfg.image;
+        };
       log-driver = "journald";
     };
 

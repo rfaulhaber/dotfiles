@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.calibre;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.calibre = {
     enable = mkEnableOption "Calibre e-book manager (linuxserver/calibre Kasm build)";
 
-    image = mkOption {
-      description = "Calibre container image.";
-      type = types.str;
-      default = "linuxserver/calibre:latest";
+    image = imageLib.mkImageOptions {
+      repository = "linuxserver/calibre";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -88,7 +88,11 @@ in {
   config = mkIf cfg.enable (let
     arr = ociLib.mkArrService {
       name = "calibre";
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
+      extraOptions = imageLib.mkImageLabels {
+        module = "calibre";
+        image = cfg.image;
+      };
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       mediaMounts = ["${cfg.booksDir}:/books:rw"];

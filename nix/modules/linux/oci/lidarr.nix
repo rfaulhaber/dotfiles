@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.lidarr;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.lidarr = {
     enable = mkEnableOption "Lidarr music collection manager";
 
-    image = mkOption {
-      description = "Lidarr container image.";
-      type = types.str;
-      default = "lscr.io/linuxserver/lidarr:nightly";
+    image = imageLib.mkImageOptions {
+      repository = "lscr.io/linuxserver/lidarr";
+      version = "nightly";
     };
 
     baseDir = mkOption {
@@ -102,7 +102,11 @@ in {
     portMappings = ["${toString cfg.webPort}:8686"];
     arr = ociLib.mkArrService {
       name = "lidarr";
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
+      extraOptions = imageLib.mkImageLabels {
+        module = "lidarr";
+        image = cfg.image;
+      };
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       mediaMounts = mapAttrsToList (mountPoint: hostPath: "${hostPath}:/${mountPoint}:rw") cfg.mediaDirs;

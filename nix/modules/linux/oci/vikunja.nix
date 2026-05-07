@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.vikunja;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 
   oidcEnabled = cfg.auth.openid.enable && cfg.auth.openid.providers != {};
 
@@ -69,10 +70,9 @@ in {
   options.modules.linux.oci.services.vikunja = {
     enable = mkEnableOption "Vikunja task management";
 
-    image = mkOption {
-      description = "Vikunja container image.";
-      type = types.str;
-      default = "vikunja/vikunja:latest";
+    image = imageLib.mkImageOptions {
+      repository = "vikunja/vikunja";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -205,7 +205,7 @@ in {
       };
 
     virtualisation.oci-containers.containers.vikunja = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment =
         {
@@ -224,7 +224,11 @@ in {
       extraOptions =
         ["--network-alias=vikunja"]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
-        ++ ["--user=${cfg.user}"];
+        ++ ["--user=${cfg.user}"]
+        ++ imageLib.mkImageLabels {
+          module = "vikunja";
+          image = cfg.image;
+        };
       log-driver = "journald";
     };
 

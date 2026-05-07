@@ -8,14 +8,14 @@ with lib; let
   cfg = config.modules.linux.oci.services.gluetun;
   ociLib = config.modules.linux.oci.lib;
   ociCfg = config.modules.linux.oci;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.gluetun = {
     enable = mkEnableOption "Gluetun VPN gateway";
 
-    image = mkOption {
-      description = "Gluetun container image.";
-      type = types.str;
-      default = "qmcgaw/gluetun";
+    image = imageLib.mkImageOptions {
+      repository = "qmcgaw/gluetun";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -92,7 +92,7 @@ in {
     '';
 
     virtualisation.oci-containers.containers."gluetun" = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       environment =
         {
           "VPN_SERVICE_PROVIDER" = cfg.vpnProvider;
@@ -115,7 +115,11 @@ in {
           "--device=/dev/net/tun:/dev/net/tun"
           "--network-alias=gluetun"
         ]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+        ++ imageLib.mkImageLabels {
+          module = "gluetun";
+          image = cfg.image;
+        };
       log-driver = "journald";
     };
 

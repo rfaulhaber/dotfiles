@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.soularr;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 
   # Render a single section of the config.ini. Values are emitted
   # verbatim — soularr's configparser doesn't do any quoting, so callers
@@ -76,10 +77,9 @@ in {
   options.modules.linux.oci.services.soularr = {
     enable = mkEnableOption "Soularr (lidarr → slskd bridge)";
 
-    image = mkOption {
-      description = "Soularr container image.";
-      type = types.str;
-      default = "mrusse08/soularr:latest";
+    image = imageLib.mkImageOptions {
+      repository = "mrusse08/soularr";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -339,11 +339,17 @@ in {
 
   config = mkIf cfg.enable (let
     netOpts =
-      if cfg.useGluetun
-      then ["--network=container:${cfg.gluetunContainer}"]
-      else
-        ["--network-alias=soularr"]
-        ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks);
+      (
+        if cfg.useGluetun
+        then ["--network=container:${cfg.gluetunContainer}"]
+        else
+          ["--network-alias=soularr"]
+          ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
+      )
+      ++ imageLib.mkImageLabels {
+        module = "soularr";
+        image = cfg.image;
+      };
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
   in {
     sops.secrets = {
@@ -359,7 +365,7 @@ in {
     };
 
     virtualisation.oci-containers.containers.soularr = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment = {
         "TZ" = cfg.timezone;

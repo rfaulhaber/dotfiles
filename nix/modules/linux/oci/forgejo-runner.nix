@@ -7,15 +7,15 @@
 with lib; let
   cfg = config.modules.linux.oci.services.forgejo-runner;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 
   runnerOpts = {name, ...}: {
     options = {
       enable = mkEnableOption "Forgejo runner '${name}'";
 
-      image = mkOption {
-        description = "Forgejo runner container image.";
-        type = types.str;
-        default = "code.forgejo.org/forgejo/runner:6.2.2";
+      image = imageLib.mkImageOptions {
+        repository = "code.forgejo.org/forgejo/runner";
+        version = "6.2.2";
       };
 
       instanceUrl = mkOption {
@@ -129,7 +129,7 @@ with lib; let
       };
     });
   in {
-    image = runnerCfg.image;
+    image = imageLib.renderImage runnerCfg.image;
     user = "0:0";
     environment = {
       "DOCKER_HOST" = "unix:///var/run/docker.sock";
@@ -159,7 +159,11 @@ with lib; let
     ];
     extraOptions =
       ["--network-alias=forgejo-runner-${name}"]
-      ++ (map (n: "--network=${ociLib.networkName n}") runnerCfg.networks);
+      ++ (map (n: "--network=${ociLib.networkName n}") runnerCfg.networks)
+      ++ imageLib.mkImageLabels {
+        module = "forgejo-runner.${name}";
+        image = runnerCfg.image;
+      };
     log-driver = "journald";
   };
 in {

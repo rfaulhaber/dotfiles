@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.linux.oci.services.miniflux;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
   networkName = "miniflux";
 in {
   options.modules.linux.oci.services.miniflux = {
@@ -56,10 +57,9 @@ in {
     };
 
     postgres = {
-      image = mkOption {
-        description = "PostgreSQL container image.";
-        type = types.str;
-        default = "postgres:18-alpine";
+      image = imageLib.mkImageOptions {
+        repository = "postgres";
+        version = "18-alpine";
       };
 
       user = mkOption {
@@ -87,10 +87,9 @@ in {
       };
     };
 
-    image = mkOption {
-      description = "Miniflux container image.";
-      type = types.str;
-      default = "miniflux/miniflux:latest";
+    image = imageLib.mkImageOptions {
+      repository = "miniflux/miniflux";
+      version = "latest";
     };
 
     adminUsername = mkOption {
@@ -141,7 +140,7 @@ in {
     virtualisation.oci-containers.containers = {
       # PostgreSQL database container
       "miniflux_db" = {
-        image = cfg.postgres.image;
+        image = imageLib.renderImage cfg.postgres.image;
         environment = {
           "POSTGRES_USER" = cfg.postgres.user;
           "POSTGRES_DB" = cfg.postgres.database;
@@ -152,19 +151,24 @@ in {
         volumes = [
           "${cfg.baseDir}:/var/lib/postgresql/data"
         ];
-        extraOptions = [
-          "--network-alias=miniflux_db"
-          "--network=${ociLib.networkName networkName}"
-          "--health-cmd=pg_isready -U ${cfg.postgres.user}"
-          "--health-interval=10s"
-          "--health-start-period=30s"
-        ];
+        extraOptions =
+          [
+            "--network-alias=miniflux_db"
+            "--network=${ociLib.networkName networkName}"
+            "--health-cmd=pg_isready -U ${cfg.postgres.user}"
+            "--health-interval=10s"
+            "--health-start-period=30s"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "miniflux.postgres";
+            image = cfg.postgres.image;
+          };
         log-driver = "journald";
       };
 
       # Miniflux application container
       "miniflux" = {
-        image = cfg.image;
+        image = imageLib.renderImage cfg.image;
         dependsOn = ["miniflux_db"];
         environment =
           {
@@ -196,10 +200,15 @@ in {
         ports = [
           "${toString cfg.port}:8080"
         ];
-        extraOptions = [
-          "--network-alias=miniflux"
-          "--network=${ociLib.networkName networkName}"
-        ];
+        extraOptions =
+          [
+            "--network-alias=miniflux"
+            "--network=${ociLib.networkName networkName}"
+          ]
+          ++ imageLib.mkImageLabels {
+            module = "miniflux";
+            image = cfg.image;
+          };
         log-driver = "journald";
       };
     };

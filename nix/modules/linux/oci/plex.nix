@@ -7,9 +7,15 @@
 with lib; let
   cfg = config.modules.linux.oci.services.plex;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.plex = {
     enable = mkEnableOption "Plex media server";
+
+    image = imageLib.mkImageOptions {
+      repository = "linuxserver/plex";
+      version = "latest";
+    };
 
     baseDir = mkOption {
       description = "Base directory for Plex data (config, transcode).";
@@ -75,7 +81,7 @@ in {
     };
 
     virtualisation.oci-containers.containers."plex" = {
-      image = "linuxserver/plex";
+      image = imageLib.renderImage cfg.image;
       environment =
         {
           "PGID" = toString cfg.user.gid;
@@ -107,7 +113,11 @@ in {
         ["--network-alias=plex"]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ optionals (cfg.gpu == "nvidia") ["--device=nvidia.com/gpu=all"]
-        ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri:/dev/dri"];
+        ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri:/dev/dri"]
+        ++ imageLib.mkImageLabels {
+          module = "plex";
+          image = cfg.image;
+        };
     };
 
     systemd.services."podman-plex" = mkMerge [

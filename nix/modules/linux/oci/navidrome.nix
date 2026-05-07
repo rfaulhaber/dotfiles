@@ -7,14 +7,14 @@
 with lib; let
   cfg = config.modules.linux.oci.services.navidrome;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 in {
   options.modules.linux.oci.services.navidrome = {
     enable = mkEnableOption "Navidrome music streaming server";
 
-    image = mkOption {
-      description = "Navidrome container image.";
-      type = types.str;
-      default = "deluan/navidrome:latest";
+    image = imageLib.mkImageOptions {
+      repository = "deluan/navidrome";
+      version = "latest";
     };
 
     baseDir = mkOption {
@@ -104,7 +104,7 @@ in {
     };
 
     virtualisation.oci-containers.containers.navidrome = {
-      image = cfg.image;
+      image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment = cfg.extraEnv;
       environmentFiles = optional cfg.lastfm.enable config.sops.templates."navidrome-env".path;
@@ -116,7 +116,11 @@ in {
       extraOptions =
         ["--network-alias=navidrome"]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
-        ++ ["--user=${toString cfg.user.uid}:${toString cfg.user.gid}"];
+        ++ ["--user=${toString cfg.user.uid}:${toString cfg.user.gid}"]
+        ++ imageLib.mkImageLabels {
+          module = "navidrome";
+          image = cfg.image;
+        };
       log-driver = "journald";
     };
 

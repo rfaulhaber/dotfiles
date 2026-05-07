@@ -7,23 +7,27 @@
 with lib; let
   cfg = config.modules.linux.oci.services.immich-ml;
   ociLib = config.modules.linux.oci.lib;
+  imageLib = import ./lib.nix {inherit lib;};
 
   mlImageSuffix = {
     nvidia = "-cuda";
     intel = "-openvino";
   };
+  # GPU suffix is part of the upstream tag (release-cuda, release-openvino)
+  # so it goes between version and any optional digest.
   mlImage = let
-    base = "ghcr.io/immich-app/immich-machine-learning:${cfg.version}";
+    img = cfg.image;
     suffix = mlImageSuffix.${cfg.gpu} or "";
-  in "${base}${suffix}";
+  in
+    "${img.repository}:${img.version}${suffix}"
+    + optionalString (img.digest != null) "@${img.digest}";
 in {
   options.modules.linux.oci.services.immich-ml = {
     enable = mkEnableOption "Immich machine learning sidecar (standalone)";
 
-    version = mkOption {
-      description = "Immich ML image version tag.";
-      type = types.str;
-      default = "release";
+    image = imageLib.mkImageOptions {
+      repository = "ghcr.io/immich-app/immich-machine-learning";
+      version = "release";
     };
 
     gpu = mkOption {
@@ -70,7 +74,11 @@ in {
         ["--network-alias=immich_machine_learning"]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ optionals (cfg.gpu == "nvidia") ["--device=nvidia.com/gpu=all"]
-        ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri"];
+        ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri"]
+        ++ imageLib.mkImageLabels {
+          module = "immich-ml";
+          image = cfg.image;
+        };
       environment = optionalAttrs (cfg.gpu == "nvidia") {
         "NVIDIA_VISIBLE_DEVICES" = "all";
       };
