@@ -1,0 +1,77 @@
+name: OCI Image Digest Refresh
+
+on:
+  schedule:
+    # 04:00 UTC daily — a few hours after flake-update so we don't pile up
+    # PRs at the same hour. Floating tags (latest, nightly, develop, release)
+    # tend to move on roughly daily cadences from upstream CI.
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print proposed digest changes without committing or opening a PR"
+        type: boolean
+        required: false
+        default: false
+
+env:
+  NIX_CONFIG: |
+    experimental-features = nix-command flakes ca-derivations pipe-operators
+    extra-substituters = https://install.determinate.systems https://nix-community.cachix.org
+    extra-trusted-public-keys = cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
+  # Same /ci-state convention as flake-update — the refresh job drops
+  # oci-changes.json here for the create-pr step to read without artifact
+  # actions (which require `node` in the image).
+  CI_RUN_DIR: /ci-state/runs/${{ github.run_id }}
+
+jobs:
+  refresh:
+    runs-on: nix
+    timeout-minutes: 30
+    outputs:
+      changed: ${{ steps.refresh.outputs.changed }}
+      branch: ${{ steps.refresh.outputs.branch }}
+      date: ${{ steps.refresh.outputs.date }}
+    steps:
+      - name: Checkout
+        run: |
+          PROTO="${GITHUB_SERVER_URL%%://*}"
+          DOMAIN="${GITHUB_SERVER_URL#*://}"
+          git clone --branch "$GITHUB_REF_NAME" \
+            "${PROTO}://forgejo-actions:${GITHUB_TOKEN}@${DOMAIN}/${GITHUB_REPOSITORY}.git" .
+
+      - name: Refresh OCI digests
+        id: refresh
+        env:
+          # github.event.inputs is only set on workflow_dispatch; default to
+          # false on scheduled runs so the daily cron actually pushes PRs.
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: |
+          # Skopeo handles the OCI distribution-spec auth dance across
+          # docker.io / ghcr.io / lscr.io / codeberg.org / code.forgejo.org.
+          # Pulling it into the shell once means the script's repeated
+          # `^skopeo` calls don't pay nix-shell startup cost per invocation.
+          nix shell nixpkgs#skopeo nixpkgs#nushell --command \
+            nu .forgejo/scripts/update-oci-digests.nu
+
+  create-pr:
+    runs-on: nix
+    needs: refresh
+    if: needs.refresh.outputs.changed == 'true'
+    steps:
+      - name: Checkout update branch
+        run: |
+          PROTO="${GITHUB_SERVER_URL%%://*}"
+          DOMAIN="${GITHUB_SERVER_URL#*://}"
+          git clone --depth 1 --branch "${{ needs.refresh.outputs.branch }}" \
+            "${PROTO}://forgejo-actions:${GITHUB_TOKEN}@${DOMAIN}/${GITHUB_REPOSITORY}.git" .
+
+      - name: Create PR
+        run: |
+          nix run nixpkgs#nushell -- .forgejo/scripts/oci-create-pr.nu \
+            "${{ needs.refresh.outputs.branch }}" \
+            "${{ needs.refresh.outputs.date }}"
+
+      - name: Clean up run directory
+        if: always()
+        run: rm -rf "$CI_RUN_DIR"
