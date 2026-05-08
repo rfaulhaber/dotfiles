@@ -58,6 +58,10 @@
         };
       };
       sudo-rs.enable = true;
+      observability-agent = {
+        enable = true;
+        prometheus.openFirewall = true;
+      };
       systemd.modules = {
         updatedb.enable = true;
       };

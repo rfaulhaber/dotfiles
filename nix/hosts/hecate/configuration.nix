@@ -35,6 +35,11 @@
     };
     services = {
       sudo-rs.enable = true;
+      observability-agent = {
+        enable = true;
+        prometheus.openFirewall = true;
+        loki.extraLabels.role = "dns-backup";
+      };
       ssh = {
         enable = true;
         server = {

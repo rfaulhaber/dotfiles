@@ -38,6 +38,11 @@
     services = {
       zfs.enable = true;
       sudo-rs.enable = true;
+      observability-agent = {
+        enable = true;
+        prometheus.openFirewall = true;
+        loki.extraLabels.role = "ci";
+      };
       ollama = {
         enable = true;
         home = "/apps/ollama";

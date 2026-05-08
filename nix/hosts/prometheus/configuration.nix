@@ -53,6 +53,11 @@
     };
     services = {
       sudo-rs.enable = true;
+      observability-agent = {
+        enable = true;
+        prometheus.openFirewall = true;
+        loki.extraLabels.role = "ci-aarch64";
+      };
       ssh = {
         enable = true;
         server = {

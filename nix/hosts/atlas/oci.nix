@@ -282,15 +282,35 @@
           enable = true;
           baseDir = "/data/apps/prometheus";
           openFirewall = true;
-          # Wire scrape targets here as agents come online on each host.
-          # Example for atlas itself once you add `services.prometheus.exporters.node`:
-          # extraScrapeConfigs = [{
-          #   job_name = "node-atlas";
-          #   static_configs = [{
-          #     targets = ["host.containers.internal:9100"];
-          #     labels.host = "atlas";
-          #   }];
-          # }];
+          extraScrapeConfigs = [
+            {
+              job_name = "node";
+              static_configs = [
+                {
+                  # atlas self-scrape uses podman's host-gateway DNS to avoid
+                  # a circular dependency through the local pi-hole.
+                  targets = ["host.containers.internal:9100"];
+                  labels.host = "atlas";
+                }
+                {
+                  targets = ["vulcan.lan:9100"];
+                  labels.host = "vulcan";
+                }
+                {
+                  targets = ["pallas.lan:9100"];
+                  labels.host = "pallas";
+                }
+                {
+                  targets = ["hecate.lan:9100"];
+                  labels.host = "hecate";
+                }
+                {
+                  targets = ["prometheus.lan:9100"];
+                  labels.host = "prometheus";
+                }
+              ];
+            }
+          ];
         };
 
         loki = {
