@@ -2,61 +2,61 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:820367e71b8ef5203c073e8cbb030f0140ed41c98c9504ca0bfac6f983086b0a"
+      "digest": "sha256:0d60fc67b2847ffb9b3ec2b42a4f5523c38e0e464974e71a640e8dcf0a52a0ee"
     }
   },
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:bf92decd1387527be35139dc03e2d8c2c078a727f927ab474aef0f21f684107a"
+      "digest": "sha256:473a313dfcc0f307f2bd122009784d2523e0d8ab1051713cb56dfdd4bcce86cc"
     }
   },
   "flaresolverr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:524715c5b5d045ff77ae409ffa1d6c0fcf9f23a2e5e957eb44da4f2fc53e6876"
+      "digest": "sha256:7962759d99d7e125e108e0f5e7f3cdbcd36161776d058d1d9b7153b92ef1af9e"
     }
   },
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:6d7472626cf6588937f79497da7f326792cc4faf76aa0f4afb20fafc09e32621"
+      "digest": "sha256:1776ab8b030fdb198e7e2dae407a01b06c14360e9fb95f459c7e38914026da79"
     }
   },
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:139e2bff7cc3adda719137c372f6cdee996aea7100f732050cb413690f97ac6e"
+      "digest": "sha256:659e5f20500948b1491f31dd85c6f99a43508ce3e46595793e1e15aa955bf6d7"
     }
   },
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:502e210044e437192cf55a0043f25966a52f36d51dc72c20f1b0d33d5211f001"
+      "digest": "sha256:bed3afb5d46fde809290997760f2e19d41e57d1eb34f507c485d5a8979c7cd8d"
     }
   },
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:334d4284c869e9c76fc402e981be497176c79f7f89eae0d2df95bf9ad5184cd4"
+      "digest": "sha256:7adfe3ede9ce3562098a6f944fb644da16bdf245220e707260f89f1507c87b54"
     }
   },
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:5312935db161f34f80577eab72f3456b5bd1e9d5170e49b7fe7876abd088dd6c"
+      "digest": "sha256:e3bad57e1b3b15eba33a83c1f710e7108216d339e6e9a84037d1d916ef73c81d"
     }
   },
   "slskd": {
     "image": {
       "version": "latest",
-      "digest": "sha256:4fe0c6f628efaa9218bf2fa5cc779cac4fe261e74ff617514587af1dc36c8d54"
+      "digest": "sha256:ab9ed50e028b524cefdb7c1dd8ebca368a076e18441ee8ac2326473eb850b4c3"
     }
   },
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:44137fb9425c116ef55be5bfef11cd6d21e32baea0115672ac457a64a72c160b"
+      "digest": "sha256:854684b3df33139a8907fa3e316a3c030676e8e753b7fac78b98d297b8cc6fe0"
     }
   },
   "soularr": {
@@ -85,13 +85,13 @@
     "postgres": {
       "image": {
         "version": "14-vectorchord0.4.3-pgvectors0.2.0",
-        "digest": "sha256:b1d33572a9a0634aa6d344077467ad32847812a37fa3859f702952cba22a2f55"
+        "digest": "sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23"
       }
     },
     "redis": {
       "image": {
         "version": "8-bookworm",
-        "digest": "sha256:4a7d243f2890e13198440dcfc8d24c9adf9d4fc4092389c89c12a6fda43d3704"
+        "digest": "sha256:fea8b3e67b15729d4bb70589eb03367bab9ad1ee89c876f54327fc7c6e618571"
       }
     }
   },
@@ -103,26 +103,26 @@
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:1b13c640ae11f2f165d1e89667e5862b0017baf4c80fec2fb7377d86319859ba"
+        "digest": "sha256:54451ecb8ab38c24c3ec123f2fd501303a3a1856a5c66e98cecf2460d5e1e9d7"
       }
     }
   },
   "forgejo": {
     "image": {
       "version": "15.0.0",
-      "digest": "sha256:a03488b0c0f26c994bcabcd049debde839a564b957b673e70760c9860831756c"
+      "digest": "sha256:e87297f8ec332240228d24f2d6f0b408e30749f4ed166c1e5cf30a2288723794"
     },
     "postgres": {
       "image": {
         "version": "17.2-alpine",
-        "digest": "sha256:5d706d5aa3ad311722f373fdc09e6a22b454bec70d34d9786383983fd83c5e46"
+        "digest": "sha256:7e5df973a74872482e320dcbdeb055e178d6f42de0558b083892c50cda833c96"
       }
     }
   },
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:3353fd4d23c39d1d08b8196e7070abaa805212e87880455ff54fa2c99d29697c"
+      "digest": "sha256:02f1bfe7194e11c56958a2181dd0526e4312cd3d843e9f0ea0e1f60e4aa1d698"
     }
   },
   "calibre-web-auto": {
@@ -134,19 +134,19 @@
   "filebrowser": {
     "image": {
       "version": "latest",
-      "digest": "sha256:27518a5fdf1f2c47d425a24ec02a15fb8e9d7327d122911ebefcfd2d10f81a6a"
+      "digest": "sha256:68e8efbc21661f5247e9b100009529bc750d38c3e502733d20e134713cc99762"
     }
   },
   "linkding": {
     "image": {
       "version": "latest",
-      "digest": "sha256:5bc84e0766268b0d119c0a4e10131a2fd12d91da66493f8d395df5c5e7b8d6d5"
+      "digest": "sha256:61b2eb9eed8e5772a473fb7f1f8923e046cb8cbbeb50e88150afd5ff287d4060"
     }
   },
   "navidrome": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6d0b0a670a488adc3ee8101aa9e054378c024f4c9d934cfaf6f5ce2a112fbb9e"
+      "digest": "sha256:9fa40b3d8dec43ceb2213d1fa551da3dcfef6ac6d19c2e534efb92527c2bafd2"
     }
   },
   "syncthing": {
@@ -158,25 +158,25 @@
   "tautulli": {
     "image": {
       "version": "latest",
-      "digest": "sha256:0234a07e9352578dfcce51d70d6d4f6fde7aebb7210b0fda8da8b7a6d4e3a141"
+      "digest": "sha256:fc92dea07c592580231102a11459dc7a267de21f05b7b005244281470dac3a2f"
     }
   },
   "vikunja": {
     "image": {
       "version": "latest",
-      "digest": "sha256:9e664c859f30c605c454aeb8712494ec20550a8e5220cb2d509e49a85d3effd4"
+      "digest": "sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93"
     }
   },
   "prometheus": {
     "image": {
       "version": "v3.11.3",
-      "digest": "sha256:387d460e3b15ec55d2837fc9275388a4730dbc8c0287926d3f662c5298ce7385"
+      "digest": "sha256:e4254400b85610324913f0dc4acf92603d9984e7519414c5a12811aa6146acc3"
     }
   },
   "loki": {
     "image": {
       "version": "3.7.1",
-      "digest": "sha256:1694e9237e2b3d7cd4ad959bae1f21e12b6184d886d7412bd1b939fb0dd4e75c"
+      "digest": "sha256:73e905b51a7f917f7a1075e4be68759df30226e03dcb3cd2213b989cc0dc8eb4"
     }
   },
   "grafana": {
@@ -188,7 +188,7 @@
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:13039b0a424d153730c0e6d7581743ed943e8ce44bbe1a1b9ae614e5d89a4fa1"
+      "digest": "sha256:6369c0e0872d0634461ed477dea684431f4ddb92a9c30e485c07d1904623582d"
     }
   }
 }

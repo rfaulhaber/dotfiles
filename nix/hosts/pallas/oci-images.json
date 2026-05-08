@@ -2,13 +2,13 @@
   "pihole": {
     "image": {
       "version": "2026.04.1",
-      "digest": "sha256:0b26b891bddc2af2cea282201d47ad92e54a53d4dd45d52e377600434d3ebb47"
+      "digest": "sha256:1c32c36b862a12762656b6471c854cebc01fe945639ba3a893611337c2c95e99"
     }
   },
   "caddy": {
     "image": {
       "version": "2-alpine",
-      "digest": "sha256:99d4fce1d4c3efbcb1e171edfb8189a51fc650ce0bc8553806efac4984ecc639"
+      "digest": "sha256:834468128c7696cec0ceea6172f7d692daf645ae51983ca76e39da54a97c570d"
     }
   }
 }
