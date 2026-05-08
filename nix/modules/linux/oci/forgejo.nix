@@ -181,9 +181,6 @@ in {
           [
             "--network-alias=forgejo_db"
             "--network=${ociLib.networkName networkName}"
-            "--health-cmd=pg_isready -U ${cfg.postgres.user}"
-            "--health-interval=10s"
-            "--health-start-period=30s"
           ]
           ++ imageLib.mkImageLabels {
             module = "forgejo.postgres";

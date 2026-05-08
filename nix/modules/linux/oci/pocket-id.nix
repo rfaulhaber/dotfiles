@@ -90,13 +90,6 @@ in {
       extraOptions =
         ["--network-alias=pocket-id"]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
-        ++ [
-          "--health-cmd=curl -f http://localhost:1411/healthz || exit 1"
-          "--health-interval=90s"
-          "--health-timeout=5s"
-          "--health-retries=2"
-          "--health-start-period=10s"
-        ]
         ++ imageLib.mkImageLabels {
           module = "pocket-id";
           image = cfg.image;

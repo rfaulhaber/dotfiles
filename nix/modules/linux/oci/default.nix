@@ -233,6 +233,28 @@ in {
     };
   };
 
+  # Disable image-level HEALTHCHECKs across the board for every container
+  # registered via virtualisation.oci-containers. Podman spawns a transient
+  # `systemd-run` timer + service per container with a HEALTHCHECK, and the
+  # first firing races container start-up: the check command exits 1 (app
+  # not ready), the transient unit goes to `failed`, and
+  # switch-to-configuration treats that as activation failure — which makes
+  # deploy-rs roll back even though every container actually came up fine.
+  # `--health-start-period` only suppresses podman's `health_status` flag,
+  # not the CLI's exit code, so it does not fix this. systemd's
+  # `Restart=always` (set in mkServiceConfig) handles the actual "process
+  # died, restart it" behaviour we used the healthcheck for. Real
+  # liveness/readiness lives in the Prometheus blackbox path instead.
+  #
+  # We extend the submodule type rather than reading the merged containers
+  # attrset (which causes infinite recursion) — this injects extraOptions
+  # into every container regardless of where it's defined.
+  options.virtualisation.oci-containers.containers = mkOption {
+    type = types.attrsOf (types.submodule {
+      config.extraOptions = mkAfter ["--no-healthcheck"];
+    });
+  };
+
   config = mkIf cfg.enable {
     # Exposed for service modules to reference
     modules.linux.oci.lib = {

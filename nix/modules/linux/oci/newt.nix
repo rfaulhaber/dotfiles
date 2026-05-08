@@ -71,7 +71,7 @@ in {
         "/run/podman/podman.sock:/var/run/docker.sock:ro"
       ];
       extraOptions =
-        ["--network-alias=newt" "--no-healthcheck"]
+        ["--network-alias=newt"]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "newt";

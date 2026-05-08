@@ -287,11 +287,6 @@ in {
           [
             "--network-alias=pangolin"
             "--network=${ociLib.networkName networkName}"
-            "--health-cmd=curl -f http://localhost:3001/api/v1/ || exit 1"
-            "--health-interval=3s"
-            "--health-timeout=3s"
-            "--health-retries=15"
-            "--health-start-period=15s"
           ]
           ++ imageLib.mkImageLabels {
             module = "pangolin.pangolin";

@@ -245,9 +245,6 @@ in {
             [
               "--network-alias=immich_postgres"
               "--network=${ociLib.networkName networkName}"
-              "--health-cmd=pg_isready -d ${cfg.postgres.database} -U ${cfg.postgres.user}"
-              "--health-interval=10s"
-              "--health-start-period=30s"
             ]
             ++ imageLib.mkImageLabels {
               module = "immich.postgres";
@@ -263,9 +260,6 @@ in {
             [
               "--network-alias=immich_redis"
               "--network=${ociLib.networkName networkName}"
-              "--health-cmd=valkey-cli ping || exit 1"
-              "--health-interval=10s"
-              "--health-start-period=30s"
             ]
             ++ imageLib.mkImageLabels {
               module = "immich.redis";
