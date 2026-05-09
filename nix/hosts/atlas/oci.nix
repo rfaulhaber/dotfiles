@@ -309,6 +309,37 @@
                   labels.host = "prometheus";
                 }
               ];
+              # Copy the explicit `host` label onto `instance` so community
+              # node-exporter dashboards (which template on `instance`) show
+              # readable host names instead of `vulcan.lan:9100`.
+              relabel_configs = [
+                {
+                  source_labels = ["host"];
+                  target_label = "instance";
+                }
+              ];
+            }
+            {
+              job_name = "cadvisor";
+              static_configs = [
+                {
+                  # atlas's cadvisor shares the observability network with
+                  # prometheus, so the container alias resolves directly —
+                  # no host port hop, no firewall dependency.
+                  targets = ["cadvisor:8080"];
+                  labels.host = "atlas";
+                }
+                {
+                  targets = ["vulcan.lan:8090"];
+                  labels.host = "vulcan";
+                }
+              ];
+              relabel_configs = [
+                {
+                  source_labels = ["host"];
+                  target_label = "instance";
+                }
+              ];
             }
           ];
         };
@@ -319,11 +350,19 @@
           openFirewall = true;
         };
 
+        cadvisor = {
+          enable = true;
+          # Same host as prometheus — no LAN exposure needed; the scrape
+          # uses the observability network alias.
+          openFirewall = false;
+        };
+
         grafana = {
           enable = true;
           baseDir = "/data/apps/grafana";
           openFirewall = true;
           rootUrl = "http://atlas.lan:3000";
+          dashboardsPath = ./dashboards;
           oidc = {
             enable = true;
             issuerUrl = "https://auth.3679.space";

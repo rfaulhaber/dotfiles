@@ -133,6 +133,7 @@ in {
   imports = [
     ./bazarr.nix
     ./caddy.nix
+    ./cadvisor.nix
     ./calibre.nix
     ./calibre-web-auto.nix
     ./filebrowser.nix

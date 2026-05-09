@@ -103,6 +103,14 @@
               hosts = ["photos.home.lan"];
               upstream = "192.168.0.3:2283";
             };
+            grafana = {
+              hosts = ["grafana.home.lan"];
+              upstream = "192.168.0.3:3000";
+            };
+            prometheus = {
+              hosts = ["prometheus.home.lan"];
+              upstream = "192.168.0.3:9090";
+            };
           };
           index = {
             enable = true;

@@ -135,6 +135,11 @@
           pangolinEndpoint = "https://pangolin.3679.space";
           dns = "192.168.0.2";
         };
+        cadvisor = {
+          enable = true;
+          openFirewall = true;
+        };
+
         forgejo-runner = {
           enable = true;
           runners = {

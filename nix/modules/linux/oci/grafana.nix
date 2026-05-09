@@ -99,6 +99,11 @@ in {
       default = [
         {
           name = "Prometheus";
+          # Explicit UID so dashboards can reference it deterministically
+          # in the modern `{"type": "...", "uid": "..."}` datasource form.
+          # Without this, Grafana would generate a random UID per
+          # provisioning and any pinned reference would break.
+          uid = "prometheus";
           type = "prometheus";
           access = "proxy";
           url = "http://prometheus:9090";
@@ -106,11 +111,104 @@ in {
         }
         {
           name = "Loki";
+          uid = "loki";
           type = "loki";
           access = "proxy";
           url = "http://loki:3100";
         }
       ];
+    };
+
+    dashboardsPath = mkOption {
+      description = ''
+        Nix path to a directory of dashboard *.json files. The path is
+        copied into the Nix store, so the bind-mount is read-only —
+        edits made in the UI live in the SQLite DB until the next
+        rebuild changes the store path, after which the file version
+        wins. Treat the UI as a scratchpad and the JSON files as truth.
+      '';
+      type = types.nullOr types.path;
+      default = null;
+      example = literalExpression "./dashboards";
+    };
+
+    datasourceSubstitutions = mkOption {
+      description = ''
+        Build-time substitutions converting legacy `__inputs`-style
+        datasource placeholders into modern object-form references.
+        For each key K with value `{type, uid}`, the literal pattern
+        `"''${K}"` (including the surrounding quotes) in dashboard
+        JSONs is replaced with `{"type": "<type>", "uid": "<uid>"}`.
+
+        The string-form reference (`"datasource": "Prometheus"`) that
+        community dashboards like #13639 and #14282 emit is no longer
+        reliably resolved by Grafana 13's renderer for older panel
+        types (`graph`, `logs`, `singlestat`). Converting to the
+        object form fixes "no data sources available" errors.
+
+        Each `uid` here MUST match a `uid` set on a corresponding
+        entry in `cfg.datasources`, otherwise the substitution
+        produces a reference to a non-existent datasource.
+
+        Set to `{}` to disable.
+      '';
+      type = types.attrsOf (types.submodule {
+        options = {
+          type = mkOption {
+            type = types.str;
+            description = "Datasource plugin type (e.g. prometheus, loki).";
+          };
+          uid = mkOption {
+            type = types.str;
+            description = "Datasource UID — must match a UID in cfg.datasources.";
+          };
+        };
+      });
+      default = {
+        DS_PROMETHEUS = {
+          type = "prometheus";
+          uid = "prometheus";
+        };
+        DS_LOKI = {
+          type = "loki";
+          uid = "loki";
+        };
+      };
+    };
+
+    datasourceUidSubstitutions = mkOption {
+      description = ''
+        Bare `''${K}` placeholders that should be replaced with a literal
+        UID string at build time. Use this when a community dashboard has
+        already adopted Grafana's modern object-form datasource reference
+        but parameterizes the UID through a template variable, e.g.
+
+          "datasource": { "type": "prometheus", "uid": "''${ds_prometheus}" }
+
+        Grafana 13's `provisioning` module evaluates these references
+        eagerly during boot and crashes the whole module ("Datasource
+        provisioning error: data source not found") if the UID isn't
+        already a registered datasource — template variables haven't
+        been resolved yet at that point. Substituting at build time
+        sidesteps the eager-validation crash.
+
+        Differs from `datasourceSubstitutions` in two ways: the pattern
+        has no surrounding quotes (matches a UID string value, not a
+        whole datasource value), and the replacement is a plain UID
+        string, not a JSON object. Each value MUST match a `uid` set
+        on a corresponding entry in `cfg.datasources`.
+
+        Runs AFTER `datasourceSubstitutions`, so a key present in both
+        maps would only see the bare substitution applied to whatever
+        the legacy pass left untouched.
+
+        Set to `{}` to disable.
+      '';
+      type = types.attrsOf types.str;
+      default = {
+        ds_prometheus = "prometheus";
+        ds_loki = "loki";
+      };
     };
 
     oidc = {
@@ -164,6 +262,34 @@ in {
       apiVersion = 1;
       datasources = cfg.datasources;
     };
+
+    # If substitutions are configured, copy the dashboards into a
+    # writable derivation output and run sed across the JSON files.
+    # When both substitution maps are empty, mount the source path
+    # directly to skip the rebuild step.
+    processedDashboardsPath =
+      if cfg.dashboardsPath == null
+      then null
+      else if cfg.datasourceSubstitutions == {} && cfg.datasourceUidSubstitutions == {}
+      then cfg.dashboardsPath
+      else
+        pkgs.runCommand "grafana-dashboards-processed" {} (''
+            mkdir -p $out
+            cp -r ${cfg.dashboardsPath}/. $out/
+            chmod -R u+w $out
+          ''
+          + concatStringsSep "\n" (
+            (mapAttrsToList (
+                k: v: let
+                  objectRef = builtins.toJSON {inherit (v) type uid;};
+                in "${pkgs.gnused}/bin/sed -i 's|\"\${${k}}\"|${objectRef}|g' $out/*.json"
+              )
+              cfg.datasourceSubstitutions)
+            ++ (mapAttrsToList (
+                k: uid: "${pkgs.gnused}/bin/sed -i 's|\${${k}}|${uid}|g' $out/*.json"
+              )
+              cfg.datasourceUidSubstitutions)
+          ));
   in {
     modules.linux.oci._managedPaths.${cfg.baseDir}.properties = cfg.configProperties;
 
@@ -200,6 +326,26 @@ in {
           GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${config.sops.placeholder."grafana/oidc-client-id"}
           GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${config.sops.placeholder."grafana/oidc-client-secret"}
         '';
+      }
+      // optionalAttrs (cfg.dashboardsPath != null) {
+        "grafana-dashboards-provider" = {
+          content = builtins.toJSON {
+            apiVersion = 1;
+            providers = [
+              {
+                name = "default";
+                orgId = 1;
+                folder = "";
+                type = "file";
+                disableDeletion = true;
+                updateIntervalSeconds = 30;
+                allowUiUpdates = true;
+                options.path = "/etc/grafana/provisioning/dashboards/files";
+              }
+            ];
+          };
+          mode = "0444";
+        };
       };
 
     virtualisation.oci-containers.containers.grafana = {
@@ -235,10 +381,15 @@ in {
       environmentFiles =
         [config.sops.templates."grafana-env".path]
         ++ optional cfg.oidc.enable config.sops.templates."grafana-oidc-env".path;
-      volumes = [
-        "${cfg.baseDir}:/var/lib/grafana"
-        "${config.sops.templates."grafana-datasources".path}:/etc/grafana/provisioning/datasources/datasources.yaml:ro"
-      ];
+      volumes =
+        [
+          "${cfg.baseDir}:/var/lib/grafana"
+          "${config.sops.templates."grafana-datasources".path}:/etc/grafana/provisioning/datasources/datasources.yaml:ro"
+        ]
+        ++ optionals (cfg.dashboardsPath != null) [
+          "${processedDashboardsPath}:/etc/grafana/provisioning/dashboards/files:ro"
+          "${config.sops.templates."grafana-dashboards-provider".path}:/etc/grafana/provisioning/dashboards/provider.yaml:ro"
+        ];
       ports = ["${toString cfg.port}:3000"];
       extraOptions =
         [
