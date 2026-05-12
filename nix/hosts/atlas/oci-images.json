@@ -2,13 +2,13 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:0d60fc67b2847ffb9b3ec2b42a4f5523c38e0e464974e71a640e8dcf0a52a0ee"
+      "digest": "sha256:bd84f4f090ca61170c8329a72d4f451255b01f6489486a621bfcb89749fb80ab"
     }
   },
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:473a313dfcc0f307f2bd122009784d2523e0d8ab1051713cb56dfdd4bcce86cc"
+      "digest": "sha256:62a88fbc210fc62d867eab9c67a0f5474db7257013ce598173a9efc1043e97b8"
     }
   },
   "flaresolverr": {
@@ -26,13 +26,13 @@
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:659e5f20500948b1491f31dd85c6f99a43508ce3e46595793e1e15aa955bf6d7"
+      "digest": "sha256:15417a594ebda4c660a9fa9748e7199d33e2d17b31bbc5ad7ba2e86f0b414763"
     }
   },
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:bed3afb5d46fde809290997760f2e19d41e57d1eb34f507c485d5a8979c7cd8d"
+      "digest": "sha256:60f3b6b5c7647ba2bafd81163acfe34b11117b9b834ebd7fbcc3e5f1b309c7ef"
     }
   },
   "bazarr": {
@@ -44,7 +44,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:e3bad57e1b3b15eba33a83c1f710e7108216d339e6e9a84037d1d916ef73c81d"
+      "digest": "sha256:9411ec5427087209528779a085c18fb73902502bdc2466cb0f083d00132833b8"
     }
   },
   "slskd": {
@@ -122,7 +122,7 @@
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:02f1bfe7194e11c56958a2181dd0526e4312cd3d843e9f0ea0e1f60e4aa1d698"
+      "digest": "sha256:5de29fd2c2c680e21fb91383cdb524eec8b8fb72e5d67c57b2f79416c69093e3"
     }
   },
   "calibre-web-auto": {
@@ -152,7 +152,7 @@
   "syncthing": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6a5f5d3412f80539289cee9bd0a6df9645f8540ecaed7d34f1bd0930bfd8c55e"
+      "digest": "sha256:50025b5b39c0c1b0ae28e2a40f1a17b28b1575a1249e6ffc0cc477b66914b2c7"
     }
   },
   "tautulli": {
@@ -188,7 +188,7 @@
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6369c0e0872d0634461ed477dea684431f4ddb92a9c30e485c07d1904623582d"
+      "digest": "sha256:3c009663332145cae39b940b07857469038d5e9d71aacb1497e78795ba4e3b9b"
     }
   }
 }

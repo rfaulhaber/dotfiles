@@ -35,14 +35,14 @@
       },
       "coturn": {
         "version": "latest",
-        "digest": "sha256:f4c2af06c3c535c4f49d64e14d484104e7e4fcc98c4cb83d6e1544f64d1e6158"
+        "digest": "sha256:867607152c6ed9504a0b59a2546a9bd2872dcf74313b3bc6cf9b69cc81be6fb3"
       }
     }
   },
   "pocket-id": {
     "image": {
       "version": "latest",
-      "digest": "sha256:1cc51e5b36fa7ec31368d3efb24ba362be6dce20f3cc0a2852843527bd5110f0"
+      "digest": "sha256:45bdeaf3fcd6d07cf8721e98785d93324bb8e65b586498874c05a3d489c8094e"
     }
   }
 }

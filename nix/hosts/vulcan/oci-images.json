@@ -2,25 +2,25 @@
   "plex": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c5e295f023b4e92b3ca467626dbc2ba8a9b5e53934810df74d99c14e38ae1857"
+      "digest": "sha256:8d937dd32659bb1defa02d713a3b1cc99919f12aa17a072d588e770a6f1d7d26"
     }
   },
   "jellyfin": {
     "image": {
       "version": "latest",
-      "digest": "sha256:0c7af94c048cd17f7438cd22c4d9c78d4c9c381d565352846aac847dd3cd74f4"
+      "digest": "sha256:e622a48adf7193c7d626c2325a40f9b01c932c8e7bf3f50ffa40e7e9b6ce1d39"
     }
   },
   "open-webui": {
     "image": {
       "version": "main",
-      "digest": "sha256:c2e4723fdbca5de8f9f0529e22b78acf5bc312a88da730bed88860063d028fe8"
+      "digest": "sha256:74093dadc9c6aabc23987a74fd8c2fb8d995b1a5b22e83b0036fb9d6af590e8c"
     }
   },
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6369c0e0872d0634461ed477dea684431f4ddb92a9c30e485c07d1904623582d"
+      "digest": "sha256:3c009663332145cae39b940b07857469038d5e9d71aacb1497e78795ba4e3b9b"
     }
   },
   "forgejo-runner": {
