@@ -53,7 +53,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    user.programs = with pkgs; [
+    user.packages = with pkgs; [
       # some of the plugins below use python3 and assume it's globally available, which of course it isn't
       python3
     ];
