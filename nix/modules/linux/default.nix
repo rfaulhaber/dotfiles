@@ -12,7 +12,6 @@
     # generic set of packages that I use on all my Linux machines
     user.packages = with pkgs; [
       bat
-      btop
       fd
       fzf
       ripgrep

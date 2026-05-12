@@ -3,6 +3,7 @@
     ./1password
     ./age
     ./aspell
+    ./btop
     ./claude
     ./direnv
     ./emacs

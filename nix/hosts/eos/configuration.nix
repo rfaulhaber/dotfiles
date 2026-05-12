@@ -19,6 +19,7 @@
       };
     };
     programs = {
+      btop.enable = true;
       claude.enable = true;
       emacs = {
         enable = true;

@@ -19,6 +19,7 @@ in {
 
   modules = {
     programs = {
+      btop.enable = true;
       nushell = {
         enable = true;
         setDefault = true;

@@ -39,6 +39,7 @@
 
   modules = {
     programs = {
+      btop.enable = true;
       emacs = {
         enable = true;
         package = pkgs.emacs-git;
