@@ -53,6 +53,11 @@ in {
   };
 
   config = mkIf cfg.enable {
+    user.programs = with pkgs; [
+      # some of the plugins below use python3 and assume it's globally available, which of course it isn't
+      python3
+    ];
+
     home.programs.claude-code = {
       enable = true;
       enableMcpIntegration = true;
