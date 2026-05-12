@@ -78,6 +78,7 @@ in {
           ''${url}/loki/api/v1/push.
         '';
         type = types.str;
+        # TODO avoid hard-coding atlas
         default = "http://atlas.lan:3100";
       };
 

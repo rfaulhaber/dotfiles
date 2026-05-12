@@ -361,7 +361,7 @@
           enable = true;
           baseDir = "/data/apps/grafana";
           openFirewall = true;
-          rootUrl = "http://atlas.lan:3000";
+          rootUrl = "http://grafana.lan:3000";
           dashboardsPath = ./dashboards;
           oidc = {
             enable = true;
