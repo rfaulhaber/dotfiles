@@ -89,6 +89,13 @@ in {
           # mode; narrowing it requires per-cap experimentation that's
           # not worth doing for an internal observability sidecar.
           "--privileged"
+          # Podman defaults to cgroupns=private on cgroupv2, so each
+          # container sees only its own cgroup as `/`. That hides every
+          # sibling from cAdvisor and reduces metrics to a single root
+          # series. Sharing the host cgroup namespace is the documented
+          # fix; Docker defaults this way, which is why upstream's
+          # example run command doesn't mention it.
+          "--cgroupns=host"
           "--device=/dev/kmsg"
         ]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)

@@ -18,7 +18,7 @@ in {
 
     image = imageLib.mkImageOptions {
       repository = "pihole/pihole";
-      version = "2026.04.1";
+      version = "2026.05.0";
     };
 
     baseDir = mkOption {

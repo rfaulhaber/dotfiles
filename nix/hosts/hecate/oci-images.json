@@ -4,11 +4,5 @@
       "version": "2026.05.0",
       "digest": "sha256:70a9c11171ded2eee735d88c127996da209284a329d50f5ae59c06b861d401b3"
     }
-  },
-  "caddy": {
-    "image": {
-      "version": "2-alpine",
-      "digest": "sha256:834468128c7696cec0ceea6172f7d692daf645ae51983ca76e39da54a97c570d"
-    }
   }
 }
