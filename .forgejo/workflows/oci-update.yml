@@ -5,7 +5,7 @@ on:
     # 04:00 UTC daily — a few hours after flake-update so we don't pile up
     # PRs at the same hour. Floating tags (latest, nightly, develop, release)
     # tend to move on roughly daily cadences from upstream CI.
-    - cron: "0 4 * * *"
+    - cron: "0 4 * * 0"
   workflow_dispatch:
     inputs:
       dry_run:
