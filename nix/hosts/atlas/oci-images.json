@@ -20,13 +20,13 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:1776ab8b030fdb198e7e2dae407a01b06c14360e9fb95f459c7e38914026da79"
+      "digest": "sha256:e55d41d4b24e8be63212c9292aa5cd20bb4cb330dfb4a896dd35c43d2a092931"
     }
   },
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:15417a594ebda4c660a9fa9748e7199d33e2d17b31bbc5ad7ba2e86f0b414763"
+      "digest": "sha256:079e48870584baf2a3e7e43e7ba6d3c834555931851a59c82c51cc792d285caf"
     }
   },
   "sonarr": {
@@ -38,13 +38,13 @@
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:7adfe3ede9ce3562098a6f944fb644da16bdf245220e707260f89f1507c87b54"
+      "digest": "sha256:4b7bb6d861c08bbf0c388b936ada8b2ba57669ca9974323f504e974577d19d63"
     }
   },
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:9411ec5427087209528779a085c18fb73902502bdc2466cb0f083d00132833b8"
+      "digest": "sha256:56e92b2eb265b79bbf502a8fc8a59aa9d5dbf48d9681a251b92bce1c1718ecae"
     }
   },
   "slskd": {
@@ -98,12 +98,12 @@
   "miniflux": {
     "image": {
       "version": "latest",
-      "digest": "sha256:8810dfe7f4d9979f9dc1385607695c116f049daa586c635a9a1fb3c58936b074"
+      "digest": "sha256:65266db84761d09d999946218adfc91fd7abbd4a1086f74b3ad0e51083e30df2"
     },
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:54451ecb8ab38c24c3ec123f2fd501303a3a1856a5c66e98cecf2460d5e1e9d7"
+        "digest": "sha256:96d56f7f57c6aacd1fcb908bc83b345ec5f83231ee486dd66a1baadce274db88"
       }
     }
   },
@@ -134,7 +134,7 @@
   "filebrowser": {
     "image": {
       "version": "latest",
-      "digest": "sha256:68e8efbc21661f5247e9b100009529bc750d38c3e502733d20e134713cc99762"
+      "digest": "sha256:a96c08fd0f3d789131107d603fe82ad72cebe4eb2a40b69519ee4b8b410c00b7"
     }
   },
   "linkding": {
@@ -152,7 +152,7 @@
   "syncthing": {
     "image": {
       "version": "latest",
-      "digest": "sha256:50025b5b39c0c1b0ae28e2a40f1a17b28b1575a1249e6ffc0cc477b66914b2c7"
+      "digest": "sha256:ab9bd1fbc77288617eae1ecb9035d17934aaa92bb1f303893cd06882dac8943d"
     }
   },
   "tautulli": {

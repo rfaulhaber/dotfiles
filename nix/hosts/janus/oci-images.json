@@ -3,7 +3,7 @@
     "images": {
       "pangolin": {
         "version": "latest",
-        "digest": "sha256:94e04ae48eec8a2f2c9925f1f12b8016abe5093f41f6f9829a0fca98e06b7fe0"
+        "digest": "sha256:4b99f893935f1068c8625156cf52b6b3ea3e61cc3e54001f5aa64c5cd91f95e2"
       },
       "gerbil": {
         "version": "latest",
@@ -19,19 +19,19 @@
     "images": {
       "dashboard": {
         "version": "latest",
-        "digest": "sha256:e3ee15351a46345d338a5f9d20cf49bcc3d3594d6d61bc4e5d6f640dda2cbdb0"
+        "digest": "sha256:4011794da67b88d21f05985cf8dd8ece632a3d11195628b3f7775643b44aab41"
       },
       "signal": {
         "version": "latest",
-        "digest": "sha256:452d47206f5b04f8b87522a637c10049a33af52e9d063c92072e20c8e051e0be"
+        "digest": "sha256:d7d406f6424501b112ae6fa5bff56f468b38c2ebcb653b5aff06308b39e0cadb"
       },
       "relay": {
         "version": "latest",
-        "digest": "sha256:2ce2603d22ca7daba0f5d60cf2381dc524fc57cd9f722b5f9c15a4df5c46995a"
+        "digest": "sha256:915b0ef8bfe24513fa68173a4fc512fda82c90df1d2acead0d34e00a378a240b"
       },
       "management": {
         "version": "latest",
-        "digest": "sha256:ff97f01b40f6d006dce7c66ff987f5591565cdc1dd5482a2f4667bd5d36bf7f1"
+        "digest": "sha256:65ed9dd3b6b55b5221862560593e4a20e1b901a49bc027c92a74d785adcfd6c2"
       },
       "coturn": {
         "version": "latest",
