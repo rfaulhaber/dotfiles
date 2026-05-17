@@ -16,7 +16,31 @@ in {
     inputs.niri-flake.nixosModules.niri
   ];
 
-  options.modules.desktop.environment.niri.enable = mkEnableOption false;
+  options.modules.desktop.environment.niri = {
+    enable = mkEnableOption false;
+    outputs = mkOption {
+      description = ''
+        Per-output Niri display configuration, forwarded verbatim to
+        `programs.niri.settings.outputs`. Keyed by connector name
+        (e.g. "DP-0", "eDP-1"). See the niri-flake HM module for the
+        accepted shape (`mode`, `scale`, `transform`, `position`, etc.).
+      '';
+      type = types.attrsOf (types.attrsOf types.anything);
+      default = {};
+      example = literalExpression ''
+        {
+          "DP-0" = {
+            mode = { width = 2560; height = 1440; refresh = 60.0; };
+            position = { x = 0; y = 0; };
+          };
+          "DP-1" = {
+            mode = { width = 3840; height = 2160; refresh = 59.997; };
+            position = { x = 2560; y = 0; };
+          };
+        }
+      '';
+    };
+  };
 
   config = mkIf cfg.enable {
     nix.settings = {
@@ -77,19 +101,7 @@ in {
         };
       };
 
-      outputs."DP-1" = {
-        mode = {
-          width = 3840;
-          height = 2160;
-          refresh = 59.997;
-        };
-        scale = 1;
-        transform.rotation = 0;
-        position = {
-          x = 1280;
-          y = 0;
-        };
-      };
+      outputs = cfg.outputs;
 
       layout = import ./layout.nix {inherit colors;};
 

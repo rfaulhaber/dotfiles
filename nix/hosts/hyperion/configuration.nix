@@ -129,12 +129,42 @@
     };
     desktop = {
       enable = true;
-      environment.niri.enable = true;
+      environment.niri = {
+        enable = true;
+        outputs = {
+          "DP-3" = {
+            mode = {
+              width = 2560;
+              height = 1440;
+              refresh = 180.063;
+            };
+            scale = 1;
+            transform.rotation = 0;
+            position = {
+              x = 0;
+              y = 0;
+            };
+          };
+          "DP-1" = {
+            mode = {
+              width = 3840;
+              height = 2160;
+              refresh = 59.997;
+            };
+            scale = 1;
+            transform.rotation = 0;
+            position = {
+              x = 2560;
+              y = 0;
+            };
+          };
+        };
+      };
       random-wallpaper = {
         enable = true;
         token = config.sops.secrets.unsplash.path;
       };
-      monitors = ["DP-0"];
+      monitors = ["DP-3" "DP-1"];
       sound.enable = true;
       firefox = {
         enable = true;
