@@ -29,6 +29,15 @@ in {
       default = "";
     };
 
+    perDisplay = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        When enabled, fetch a separate wallpaper for each connected display.
+        Otherwise the same wallpaper is shown on every display.
+      '';
+    };
+
     token = mkOption {
       description = "API token for wallpaper API.";
       type = types.either types.str types.path;
@@ -46,13 +55,15 @@ in {
           if isWayland
           then "wayland"
           else "xserver";
-        exec = "${scriptPath}/bin/random-wallpaper --desktop ${desktop} --token-file ${cfg.token} ${cfg.query}";
+        perDisplayFlag = lib.optionalString cfg.perDisplay " --per-display";
+        exec = "${scriptPath}/bin/random-wallpaper --desktop ${desktop}${perDisplayFlag} --token-file ${cfg.token} ${cfg.query}";
       in {
         inherit description;
         path = with pkgs;
           [nushell]
           ++ lib.optional isWayland inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
-          ++ lib.optional isX11 feh;
+          ++ lib.optional isX11 feh
+          ++ lib.optional (isX11 && cfg.perDisplay) xorg.xrandr;
         after = ["graphical-session.target"] ++ lib.optional isWayland "swww.service" ++ lib.optional config.modules.desktop.environment.niri.enable "niri.service";
         partOf = ["graphical-session.target"];
         wantedBy = ["graphical-session.target"];

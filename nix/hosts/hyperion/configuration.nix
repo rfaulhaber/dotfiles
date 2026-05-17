@@ -162,6 +162,7 @@
       };
       random-wallpaper = {
         enable = true;
+        perDisplay = true;
         token = config.sops.secrets.unsplash.path;
       };
       monitors = ["DP-3" "DP-1"];

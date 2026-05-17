@@ -22,6 +22,15 @@ in {
       default = "";
     };
 
+    perDisplay = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        When enabled, fetch a separate wallpaper for each connected display.
+        Otherwise the same wallpaper is shown on every display.
+      '';
+    };
+
     token = mkOption {
       description = "API token for wallpaper API.";
       type = types.either types.str types.path;
@@ -41,6 +50,7 @@ in {
         if cfg.query != ""
         then [cfg.query]
         else [];
+      perDisplayArgs = lib.optional cfg.perDisplay "--per-display";
     in {
       serviceConfig = {
         Label = "com.user.random-wallpaper";
@@ -50,6 +60,7 @@ in {
             "--desktop"
             "darwin"
           ]
+          ++ perDisplayArgs
           ++ tokenArgs
           ++ queryArgs;
         StartInterval = cfg.interval;
