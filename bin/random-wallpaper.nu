@@ -33,6 +33,20 @@ def get_outputs [desktop: string]: nothing -> list<string> {
     }
 }
 
+# Apply a single wallpaper to all displays for the given desktop. Used both
+# for the non-perDisplay case and as the fallback when output enumeration
+# fails under --per-display.
+def set_single [desktop: string, filename: string] {
+    match $desktop {
+        "wayland" => { ^swww img $filename },
+        "xserver" => { ^feh --bg-fill $filename },
+        "darwin" => {
+            let script = $'tell application "System Events" to tell every desktop to set picture to POSIX file "($filename)"'
+            ^osascript -e $script
+        }
+    }
+}
+
 # Fetch one wallpaper from Unsplash, save it to $tmpdir, append a log record,
 # and return the path to the downloaded file.
 def fetch_wallpaper [key: string, query: string, tmpdir: string, log_file: string]: nothing -> string {
@@ -99,29 +113,14 @@ def main [
 
     if not $per_display {
         let filename = (fetch_wallpaper $key $q $tmpdir $log_file)
-
-        match $desktop {
-            "wayland" => { ^swww img $filename },
-            "xserver" => { ^feh --bg-fill $filename },
-            "darwin" => {
-                let script = $'tell application "System Events" to tell every desktop to set picture to POSIX file "($filename)"'
-                ^osascript -e $script
-            }
-        }
+        set_single $desktop $filename
     } else {
         let outputs = (get_outputs $desktop)
 
         if ($outputs | is-empty) {
             print -e $"Could not enumerate outputs for desktop '($desktop)'; falling back to single wallpaper."
             let filename = (fetch_wallpaper $key $q $tmpdir $log_file)
-            match $desktop {
-                "wayland" => { ^swww img $filename },
-                "xserver" => { ^feh --bg-fill $filename },
-                "darwin" => {
-                    let script = $'tell application "System Events" to tell every desktop to set picture to POSIX file "($filename)"'
-                    ^osascript -e $script
-                }
-            }
+            set_single $desktop $filename
             return
         }
 
