@@ -5,18 +5,21 @@
 # looks up each entry's repository via `nix eval` against the host config,
 # fetches the current registry digest with skopeo, and rewrites the JSON in
 # place when digests have moved. After rewriting, evaluates each affected
-# host's toplevel as a sanity check, then commits and pushes a branch.
+# host's toplevel as a sanity check.
+#
+# This script does NOT touch git — it leaves modified files in the working
+# tree for the caller (a CI follow-up step, or a human running locally) to
+# review and commit. See commit-oci-digests.nu for the CI git side.
 #
 # Env:
-#   DRY_RUN — when "true", print proposed changes without writing files,
-#             evaluating, or pushing.
-#   CI_RUN_DIR — bind-mounted /ci-state subdir; receives oci-changes.json
-#                for downstream PR creation.
+#   DRY_RUN — when "true", print proposed changes without writing files
+#             or evaluating.
+#   CI_RUN_DIR — bind-mounted /ci-state subdir (in CI) or any writable dir
+#                (locally); receives oci-changes.json. Falls back to /tmp.
 #
 # Outputs (via $env.GITHUB_OUTPUT):
-#   changed — "true" if any digest moved (and we committed)
-#   branch  — name of the update branch (only when changed=true)
-#   date    — UTC date used in the branch name and PR title
+#   changed — "true" if any digest moved
+#   date    — UTC date stamp for downstream branch/PR naming
 
 let dry_run = (($env.DRY_RUN? | default "false") == "true")
 
@@ -124,7 +127,7 @@ let output_file = ($env.GITHUB_OUTPUT? | default "/dev/null")
 
 if ($all_changes | is-empty) {
   print "No digest updates."
-  $"changed=false\nbranch=\ndate=\n" | save --append $output_file
+  $"changed=false\ndate=\n" | save --append $output_file
   exit 0
 }
 
@@ -132,8 +135,8 @@ let affected_hosts = ($all_changes | get host | uniq)
 print $"Updated ($all_changes | length) image\(s\) across ($affected_hosts | length) host\(s\)."
 
 if $dry_run {
-  print "DRY_RUN=true — not committing."
-  $"changed=false\nbranch=\ndate=\n" | save --append $output_file
+  print "DRY_RUN=true — not writing files or validating."
+  $"changed=false\ndate=\n" | save --append $output_file
   exit 0
 }
 
@@ -152,19 +155,9 @@ for h in $affected_hosts {
 }
 
 let date_str = (date now | date to-timezone UTC | format date "%Y%m%d")
-let branch_name = $"oci-update-($date_str)"
-
-print ""
-print $"=== Committing OCI digest updates to ($branch_name) ==="
-git config user.name "forgejo-actions[bot]"
-git config user.email "forgejo-actions[bot]@noreply.localhost"
-git checkout -b $branch_name
-git add nix/hosts/*/oci-images.json
-git commit -m $"oci: refresh image digests ($date_str)"
-git push -u origin $branch_name --force-with-lease
 
 let report_dir = ($env.CI_RUN_DIR? | default "/tmp")
 mkdir $report_dir
 $all_changes | to json | save -f $"($report_dir)/oci-changes.json"
 
-$"changed=true\nbranch=($branch_name)\ndate=($date_str)\n" | save --append $output_file
+$"changed=true\ndate=($date_str)\n" | save --append $output_file
