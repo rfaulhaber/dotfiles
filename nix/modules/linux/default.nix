@@ -16,6 +16,7 @@
       fzf
       ripgrep
       rsync
+      sd
       unzip
       zip
     ];
