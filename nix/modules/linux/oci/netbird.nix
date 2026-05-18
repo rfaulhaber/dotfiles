@@ -418,6 +418,7 @@ in {
       "podman-netbird-dashboard" = ociLib.mkServiceConfig {
         networks = [networkName];
         volumes = ["netbird-letsencrypt"];
+        sopsTemplates = ["netbird-dashboard-env"];
       };
 
       "podman-netbird-signal" = ociLib.mkServiceConfig {
@@ -427,12 +428,14 @@ in {
 
       "podman-netbird-relay" = ociLib.mkServiceConfig {
         networks = [networkName];
+        sopsTemplates = ["netbird-relay-env"];
       };
 
       "podman-netbird-mgmt" = mkMerge [
         (ociLib.mkServiceConfig {
           networks = [networkName];
           volumes = ["netbird-mgmt" "netbird-letsencrypt"];
+          sopsTemplates = ["netbird-management"];
         })
         {
           after = ["podman-netbird-dashboard.service"];

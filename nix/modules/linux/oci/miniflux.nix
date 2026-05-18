@@ -214,12 +214,16 @@ in {
     systemd.services = {
       "podman-miniflux_db" = ociLib.mkServiceConfig {
         networks = [networkName];
+        sopsTemplates = ["miniflux-db-env"];
       };
 
       "podman-miniflux" = ociLib.mkServiceConfig {
         networks = [networkName];
         extraAfter = ["podman-miniflux_db.service"];
         extraRequires = ["podman-miniflux_db.service"];
+        sopsTemplates =
+          ["miniflux-admin-env" "miniflux-db-env"]
+          ++ optional cfg.oidc.enable "miniflux-oidc-env";
       };
     };
   };

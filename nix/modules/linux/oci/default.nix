@@ -110,9 +110,19 @@ with lib; let
     volumes ? [],
     extraAfter ? [],
     extraRequires ? [],
+    # Names of sops.templates the container reads at startup (typically
+    # mounted via volumes or environmentFiles). The pre-rendered content
+    # is hashed into restartTriggers so a switch-to-configuration
+    # restarts the container when the template's source changes — without
+    # this the container holds stale config across deploys because its
+    # mount path is stable while only the file content changed.
+    sopsTemplates ? [],
   }: let
     zfsDeps = optional zfsCfg.enable "zfs-manage-datasets.service";
+    templateTriggers =
+      map (n: config.sops.templates.${n}.content) sopsTemplates;
   in {
+    restartTriggers = templateTriggers;
     serviceConfig = {
       Restart = mkOverride 90 "always";
     };
@@ -158,6 +168,7 @@ in {
     ./pihole.nix
     ./plex.nix
     ./pocket-id.nix
+    ./podman-exporter.nix
     ./prometheus.nix
     ./prowlarr.nix
     ./radarr.nix
@@ -301,6 +312,7 @@ in {
         },
         timezone ? "America/New_York",
         capAdd ? [],
+        sopsTemplates ? [],
       }: let
         netOpts =
           if useGluetun
@@ -337,6 +349,7 @@ in {
             else networks;
           extraAfter = gluetunDeps;
           extraRequires = gluetunDeps;
+          inherit sopsTemplates;
         };
 
         managedPaths = {

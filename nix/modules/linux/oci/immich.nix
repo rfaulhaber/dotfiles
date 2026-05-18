@@ -327,6 +327,7 @@ in {
       {
         "podman-immich_postgres" = ociLib.mkServiceConfig {
           networks = [networkName];
+          sopsTemplates = ["immich-db-env"];
         };
 
         "podman-immich_redis" = ociLib.mkServiceConfig {
@@ -343,6 +344,7 @@ in {
             "podman-immich_postgres.service"
             "podman-immich_redis.service"
           ];
+          sopsTemplates = ["immich-db-env"];
           # zfs-load-key-immich.service ordering is wired via the
           # encryptedDatasets `consumers` field above.
         };

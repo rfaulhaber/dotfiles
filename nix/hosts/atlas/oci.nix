@@ -320,17 +320,17 @@
               ];
             }
             {
-              job_name = "cadvisor";
+              job_name = "podman-exporter";
               static_configs = [
                 {
-                  # atlas's cadvisor shares the observability network with
-                  # prometheus, so the container alias resolves directly —
+                  # atlas's podman-exporter shares the observability network
+                  # with prometheus, so the container alias resolves directly —
                   # no host port hop, no firewall dependency.
-                  targets = ["cadvisor:8080"];
+                  targets = ["podman-exporter:9882"];
                   labels.host = "atlas";
                 }
                 {
-                  targets = ["vulcan.lan:8090"];
+                  targets = ["vulcan.lan:9882"];
                   labels.host = "vulcan";
                 }
               ];
@@ -350,7 +350,7 @@
           openFirewall = true;
         };
 
-        cadvisor = {
+        podman-exporter = {
           enable = true;
           # Same host as prometheus — no LAN exposure needed; the scrape
           # uses the observability network alias.

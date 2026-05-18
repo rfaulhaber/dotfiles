@@ -185,6 +185,12 @@
       "digest": "sha256:0f86bada30d65ef9d0183b90c1e2682ac92d53d95da8bed322b984ea78a4a73a"
     }
   },
+  "podman-exporter": {
+    "image": {
+      "version": "v1.21.0",
+      "digest": "sha256:2ebb9e09101d8cc1e28e3f306b56a722450918e628208435201ed39bd62403cb"
+    }
+  },
   "newt": {
     "image": {
       "version": "latest",

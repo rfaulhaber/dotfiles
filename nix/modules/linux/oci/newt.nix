@@ -82,6 +82,7 @@ in {
 
     systemd.services."podman-newt" = ociLib.mkServiceConfig {
       networks = cfg.networks;
+      sopsTemplates = ["newt-env"];
     };
   };
 }

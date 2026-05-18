@@ -293,6 +293,7 @@ in {
 
     systemd.services."podman-filebrowser" = ociLib.mkServiceConfig {
       networks = cfg.networks;
+      sopsTemplates = ["filebrowser-config" "filebrowser-env"];
     };
   });
 }

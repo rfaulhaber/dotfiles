@@ -234,6 +234,9 @@ in {
 
     systemd.services."podman-vikunja" = ociLib.mkServiceConfig {
       networks = cfg.networks;
+      sopsTemplates =
+        ["vikunja-env"]
+        ++ optional oidcEnabled "vikunja-config-yml";
     };
   };
 }

@@ -352,7 +352,10 @@ in {
     # -- Systemd service configuration --
     systemd.services = {
       "podman-pangolin" = mkMerge [
-        (ociLib.mkServiceConfig {networks = [networkName];})
+        (ociLib.mkServiceConfig {
+          networks = [networkName];
+          sopsTemplates = ["pangolin-config"];
+        })
         {
           serviceConfig.ExecStartPre = [
             "${pkgs.writeShellScript "pangolin-config-init" ''

@@ -57,12 +57,29 @@ in {
       type = types.str;
       default = "10s";
     };
+
+    podmanIntegration = mkOption {
+      description = ''
+        Bind-mount the host's Podman API socket into the container at
+        /var/run/docker.sock so cAdvisor can resolve cgroup IDs to
+        container names. Without this, podman containers appear as
+        anonymous cgroup paths (`name` label is empty) because cAdvisor
+        only natively talks Docker / containerd / k8s.
+
+        Implies `virtualisation.podman.dockerSocket.enable = true` so
+        the API socket is actually started.
+      '';
+      type = types.bool;
+      default = true;
+    };
   };
 
   config = mkIf cfg.enable {
     modules.linux.oci.networks = listToAttrs (
       map (n: nameValuePair n {enable = true;}) cfg.networks
     );
+
+    virtualisation.podman.dockerSocket.enable = mkIf cfg.podmanIntegration true;
 
     virtualisation.oci-containers.containers.cadvisor = {
       image = imageLib.renderImage cfg.image;
@@ -73,13 +90,29 @@ in {
         # adding much signal — turn them off and rely on `name`/`id`.
         "--store_container_labels=false"
       ];
-      volumes = [
-        "/:/rootfs:ro,rslave"
-        "/var/run:/var/run:ro"
-        "/sys:/sys:ro"
-        "/var/lib/containers/storage:/var/lib/containers/storage:ro"
-        "/dev/disk/:/dev/disk:ro"
-      ];
+      volumes =
+        [
+          "/:/rootfs:ro,rslave"
+          "/sys:/sys:ro"
+          "/var/lib/containers/storage:/var/lib/containers/storage:ro"
+          "/dev/disk/:/dev/disk:ro"
+        ]
+        ++ (
+          if cfg.podmanIntegration
+          # cAdvisor v0.49+ has a NATIVE podman factory that talks the
+          # podman REST API directly — not via the docker-compat surface.
+          # It expects the socket at /var/run/podman/podman.sock inside
+          # the container. Don't mount it to /var/run/docker.sock: the
+          # docker factory then registers, tries to enumerate podman
+          # cgroups using Docker's storage layout
+          # (/var/lib/containers/storage/image/overlay/layerdb/...) which
+          # podman doesn't use, and floods the logs with "failed to
+          # identify the read-write layer ID" errors.
+          then ["/run/podman/podman.sock:/var/run/podman/podman.sock:ro"]
+          # Without podman integration, expose the host's /var/run so any
+          # ambient docker.sock or runc state is reachable.
+          else ["/var/run:/var/run:ro"]
+        );
       ports = ["${toString cfg.port}:8080"];
       extraOptions =
         [

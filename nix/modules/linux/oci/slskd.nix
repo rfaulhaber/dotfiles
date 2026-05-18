@@ -294,6 +294,7 @@ in {
           else cfg.networks;
         extraAfter = gluetunDeps;
         extraRequires = gluetunDeps;
+        sopsTemplates = ["slskd-env" "slskd-yml"];
       })
       {
         serviceConfig.ExecStartPre = ["${configInitScript}"];

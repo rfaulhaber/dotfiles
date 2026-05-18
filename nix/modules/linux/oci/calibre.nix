@@ -103,6 +103,7 @@ in {
         "${toString cfg.httpsPort}:8181"
         "${toString cfg.contentPort}:8081"
       ];
+      sopsTemplates = ["calibre-env"];
     };
   in {
     sops.secrets."calibre/password" = {};

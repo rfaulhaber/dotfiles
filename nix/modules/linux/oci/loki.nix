@@ -175,7 +175,10 @@ in {
     };
 
     systemd.services."podman-loki" = mkMerge [
-      (ociLib.mkServiceConfig {networks = cfg.networks;})
+      (ociLib.mkServiceConfig {
+        networks = cfg.networks;
+        sopsTemplates = ["loki-config"];
+      })
       {
         serviceConfig.ExecStartPre = [
           "+${pkgs.coreutils}/bin/install -d -o ${toString cfg.user.uid} -g ${toString cfg.user.gid} -m 0755 ${cfg.baseDir}"

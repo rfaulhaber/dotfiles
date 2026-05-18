@@ -376,6 +376,7 @@ in {
         else cfg.networks;
       extraAfter = gluetunDeps;
       extraRequires = gluetunDeps;
+      sopsTemplates = ["recyclarr-secrets-yml"];
     };
 
     modules.linux.oci._managedPaths.${cfg.baseDir}.properties = cfg.configProperties;

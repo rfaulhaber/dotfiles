@@ -295,6 +295,7 @@ in {
       environmentFiles = [config.sops.templates."transmission-env".path];
       ports = portMappings;
       gluetunPorts = portMappings;
+      sopsTemplates = ["transmission-env"];
     };
 
     configInitScript = pkgs.writeShellScript "transmission-config-init" ''

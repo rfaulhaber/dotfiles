@@ -152,6 +152,7 @@ in {
         // cfg.extraEnv;
       environmentFiles = optional cfg.hardcover.enable config.sops.templates."calibre-web-auto-env".path;
       ports = ["${toString cfg.webPort}:${toString cfg.cwaPort}"];
+      sopsTemplates = optional cfg.hardcover.enable "calibre-web-auto-env";
     };
   in {
     sops.secrets = mkIf cfg.hardcover.enable {

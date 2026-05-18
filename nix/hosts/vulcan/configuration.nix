@@ -136,8 +136,9 @@
           pangolinEndpoint = "https://pangolin.3679.space";
           dns = "192.168.0.2";
         };
-        cadvisor = {
+        podman-exporter = {
           enable = true;
+          # Open so atlas's Prometheus can scrape over the LAN at :9882.
           openFirewall = true;
         };
 

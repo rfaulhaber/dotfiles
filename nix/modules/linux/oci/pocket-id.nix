@@ -100,6 +100,7 @@ in {
     systemd.services."podman-pocket-id" = mkMerge [
       (ociLib.mkServiceConfig {
         networks = cfg.networks;
+        sopsTemplates = ["pocket-id-env"];
       })
       {
         serviceConfig.ExecStartPre = [

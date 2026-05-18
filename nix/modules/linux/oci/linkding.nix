@@ -170,6 +170,9 @@ in {
 
     systemd.services."podman-linkding" = ociLib.mkServiceConfig {
       networks = cfg.networks;
+      sopsTemplates =
+        ["linkding-superuser-env"]
+        ++ optional cfg.oidc.enable "linkding-oidc-env";
     };
   };
 }

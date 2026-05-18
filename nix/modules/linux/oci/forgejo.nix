@@ -238,12 +238,14 @@ in {
     systemd.services = {
       "podman-forgejo_db" = ociLib.mkServiceConfig {
         networks = [networkName];
+        sopsTemplates = ["forgejo-db-env"];
       };
 
       "podman-forgejo" = ociLib.mkServiceConfig {
         networks = [networkName];
         extraAfter = ["podman-forgejo_db.service"];
         extraRequires = ["podman-forgejo_db.service"];
+        sopsTemplates = ["forgejo-db-env"];
       };
     };
   };

@@ -488,6 +488,7 @@ in {
           else cfg.networks;
         extraAfter = gluetunDeps;
         extraRequires = gluetunDeps;
+        sopsTemplates = ["requestrr-settings-json"];
       })
       {
         serviceConfig.ExecStartPre = ["${configInitScript}"];

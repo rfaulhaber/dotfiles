@@ -405,7 +405,13 @@ in {
     };
 
     systemd.services."podman-grafana" = mkMerge [
-      (ociLib.mkServiceConfig {networks = cfg.networks;})
+      (ociLib.mkServiceConfig {
+        networks = cfg.networks;
+        sopsTemplates =
+          ["grafana-datasources" "grafana-env"]
+          ++ optional (cfg.dashboardsPath != null) "grafana-dashboards-provider"
+          ++ optional cfg.oidc.enable "grafana-oidc-env";
+      })
       {
         # Grafana's container user (default 472:0) needs to own the
         # bind-mount target. `install -d` is idempotent: creates the

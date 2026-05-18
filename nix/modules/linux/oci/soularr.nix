@@ -389,6 +389,7 @@ in {
         else cfg.networks;
       extraAfter = gluetunDeps;
       extraRequires = gluetunDeps;
+      sopsTemplates = ["soularr-config-ini"];
     };
 
     modules.linux.oci._managedPaths.${cfg.baseDir}.properties = cfg.configProperties;

@@ -125,6 +125,7 @@ in {
 
     systemd.services."podman-gluetun" = ociLib.mkServiceConfig {
       networks = cfg.networks;
+      sopsTemplates = ["gluetun-env"];
     };
   };
 }

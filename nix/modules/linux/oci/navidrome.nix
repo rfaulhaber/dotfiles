@@ -126,6 +126,7 @@ in {
 
     systemd.services."podman-navidrome" = ociLib.mkServiceConfig {
       networks = cfg.networks;
+      sopsTemplates = optional cfg.lastfm.enable "navidrome-env";
     };
   };
 }
