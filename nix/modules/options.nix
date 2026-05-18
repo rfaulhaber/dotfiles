@@ -23,26 +23,12 @@ in {
       type = attrs;
     };
     home = {
-      accounts =
-        mkOptDesc attrs {}
-        "Accounts managed by home-manager. Used primarily for email";
-      configFile = mkOptDesc attrs {} "Files to place in $XDG_CONFIG_HOME";
-      dataFile = mkOptDesc attrs {} "Files to place in $XDG_DATA_HOME";
-      file = mkOptDesc attrs {} "Files to place directly in $HOME";
-      packages = mkOptDesc attrs [] "User-level installed packages";
-      programs =
-        mkOptDesc attrs {} "Programs managed directly from home-manager";
-      services =
-        mkOptDesc attrs {} "Services managed directly from home-manager";
-      xsession =
-        mkOptDesc attrs {} "Xsession settings managed from home-manager";
-      wayland =
-        mkOptDesc attrs {} "Wayland settings managed from home-manager";
-      xdg =
-        mkOptDesc attrs {} "XDG config files to write to directly.";
-      dconf.settings =
-        mkOptDesc attrs {} "dconf config from home-manager";
-      autostart = mkOptDesc attrs {} "Things to automatically start for xdg autostart";
+      configFile = mkOptDesc attrs {} "Files to place in $XDG_CONFIG_HOME (aliased to home-manager xdg.configFile).";
+      file = mkOptDesc attrs {} "Files to place directly in $HOME (aliased to home-manager home.file).";
+      programs = mkOptDesc attrs {} "Programs managed directly from home-manager.";
+      services = mkOptDesc attrs {} "Services managed directly from home-manager.";
+      dconf.settings = mkOptDesc attrs {} "dconf config from home-manager (Linux only).";
+      autostart = mkOptDesc attrs {} "XDG autostart entries (Linux only).";
     };
 
     env = mkOption {
@@ -113,14 +99,12 @@ in {
         {
           home = {
             file = mkAliasDefinitions options.home.file;
-            packages = mkAliasDefinitions options.home.packages;
             stateVersion =
               if isLinux
               then config.system.stateVersion
               else "25.05";
           };
 
-          accounts = mkAliasDefinitions options.home.accounts;
           programs = mkAliasDefinitions options.home.programs;
           services = mkAliasDefinitions options.home.services;
         }
@@ -128,14 +112,12 @@ in {
           xdg =
             {
               configFile = mkAliasDefinitions options.home.configFile;
-              dataFile = mkAliasDefinitions options.home.dataFile;
             }
             // lib.optionalAttrs isLinux {
               autostart = mkAliasDefinitions options.home.autostart;
             };
         }
         // lib.optionalAttrs isLinux {
-          xsession = mkAliasDefinitions options.home.xsession;
           dconf.settings = mkAliasDefinitions options.home.dconf.settings;
         };
     };
