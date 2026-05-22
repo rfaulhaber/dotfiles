@@ -41,6 +41,7 @@ in {
           };
           init.defaultBranch = "main";
           merge.conflictStyle = "zdiff3";
+          push.autoSetupRemote = true;
         };
 
         signing = {
