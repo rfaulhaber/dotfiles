@@ -9,10 +9,20 @@ const log_file_path = "~/.local/share/random-wallpaper/log.json"
 def get_outputs [desktop: string]: nothing -> list<string> {
     match $desktop {
         "wayland" => {
+            # swww query lines look like "<namespace>: <output>: <details>",
+            # where the default namespace is empty (so lines start with ": ").
+            # Older swww versions omitted the namespace prefix entirely. Pick
+            # the first non-empty colon-split token to handle both.
             ^swww query
                 | lines
-                | each {|l| $l | split row ":" | get 0 | str trim }
-                | where {|n| ($n | str length) > 0 }
+                | each {|l|
+                    $l
+                    | split row ":"
+                    | each {|p| $p | str trim }
+                    | where {|p| ($p | str length) > 0 }
+                    | get 0?
+                  }
+                | compact
         },
         "xserver" => {
             ^xrandr --listactivemonitors
