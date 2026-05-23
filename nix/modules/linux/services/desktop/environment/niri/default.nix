@@ -71,13 +71,16 @@ in {
 
     services = {
       gnome.gnome-keyring.enable = true;
-      displayManager.gdm = {
+      greetd = {
         enable = true;
-        wayland = true;
+        settings.default_session = {
+          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd '${niriPkg}/bin/niri-session'";
+          user = "greeter";
+        };
       };
     };
 
-    security.pam.services.gdm.enableGnomeKeyring = true;
+    security.pam.services.greetd.enableGnomeKeyring = true;
 
     user.packages = with pkgs; [
       fuzzel
