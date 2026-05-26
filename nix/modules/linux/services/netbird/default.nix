@@ -34,9 +34,21 @@ in {
         # Point the client at the self-hosted Netbird control plane. Merged
         # into /var/lib/netbird/config.json at preStart, so the daemon enrolls
         # against the right management server (default would be api.netbird.io).
+        #
+        # ManagementURL/AdminURL are typed `*url.URL` in netbird's Config; Go's
+        # encoding/json serializes them as nested objects and cannot unmarshal
+        # a plain string here. Match the on-disk shape netbird itself writes.
+        # The management API is exposed on :33073 by the OCI module
+        # (nix/modules/linux/oci/netbird.nix); the dashboard is on :443.
         config = {
-          ManagementURL = "https://netbird.3679.space";
-          AdminURL = "https://netbird.3679.space";
+          ManagementURL = {
+            Scheme = "https";
+            Host = "netbird.3679.space:33073";
+          };
+          AdminURL = {
+            Scheme = "https";
+            Host = "netbird.3679.space:443";
+          };
         };
         login = mkIf (cfg.setupKeyFile != null) {
           enable = true;
