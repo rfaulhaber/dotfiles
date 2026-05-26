@@ -14,7 +14,6 @@
     # applies the vendor kernel, firmware, and bootloader overlays.
     nixos-raspberrypi.lib.inject-overlays
     nixos-raspberrypi.nixosModules.raspberry-pi-5.base
-    nixos-raspberrypi.nixosModules.raspberry-pi-5.page-size-16k
     nixos-raspberrypi.nixosModules.trusted-nix-caches
     # Provides system.build.sdImage and the firmware-partition wiring; also
     # selects the "kernel" generational bootloader for Pi 5 automatically.
@@ -49,6 +48,7 @@
         secrets = {
           "forgejo-runner/token" = {};
           "codeberg-runner/token" = {};
+          nix-cache = {};
         };
       };
     };
@@ -67,6 +67,17 @@
         };
       };
       netbird.enable = true;
+      # Serve aarch64 builds back over the LAN so future CI runs and
+      # nixos-rebuilds on this host hit local cache instead of recompiling
+      # against cache.nixos.org / cachix. Port matches vulcan's harmonia
+      # for consistency. Public key needs to be added to the workflow's
+      # extra-trusted-public-keys before clients will trust paths from here.
+      nix-cache = {
+        enable = true;
+        port = 4965;
+        interface = "end0";
+        secretKeyFile = config.sops.secrets.nix-cache.path;
+      };
     };
 
     themes.active = "moonlight";
@@ -82,10 +93,6 @@
   };
 
   hardware.enableRedistributableFirmware = true;
-
-  # Pi 5's 16K-page-size aarch64 kernel rejects NixOS's default of 33 because
-  # ARCH_MMAP_RND_BITS_MAX is lower for 16K pages. 18 sits safely below it.
-  boot.kernel.sysctl."vm.mmap_rnd_bits" = 18;
 
   console.enable = false;
 

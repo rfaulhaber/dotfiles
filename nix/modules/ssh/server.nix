@@ -67,8 +67,26 @@ in {
         ports = [cfg.port];
       };
 
-      # Ensure Ghostty terminfo is available for incoming SSH sessions
-      environment.systemPackages = [pkgs.ghostty.terminfo];
+      # Make Ghostty terminfo available for incoming SSH sessions. When
+      # ghostty itself is in the closure (desktop hosts) the multi-output
+      # `.terminfo` reference is free. On headless hosts, referencing it
+      # would force a full ghostty rebuild (gtk4, libadwaita, pipewire,
+      # gstreamer, zig stack) any time cache.nixos.org doesn't have the
+      # current commit — 90+ minutes on aarch64. Compile the vendored
+      # terminfo source instead; pulls only ncurses.
+      environment.systemPackages = [
+        (
+          if config.modules.programs.ghostty.enable
+          then pkgs.ghostty.terminfo
+          else
+            pkgs.runCommandLocal "ghostty-terminfo" {
+              nativeBuildInputs = [pkgs.ncurses];
+            } ''
+              mkdir -p $out/share/terminfo
+              tic -x -o $out/share/terminfo ${./ghostty.terminfo}
+            ''
+        )
+      ];
 
       # TODO support multiple users?
       user.openssh.authorizedKeys.keys = keys;
