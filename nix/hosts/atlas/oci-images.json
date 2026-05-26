@@ -2,13 +2,13 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:bca4ddb017c25bc37e498a1907f3165371c0eae011cb2d9ea73856ca2d806f2c"
+      "digest": "sha256:10b4895fde4499c2d1d9fbd8e681d040ede0efe8c6cfe5d0c51daf0461836ee8"
     }
   },
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:7d1f96f26f433d5bfa518f6392021e17fc74a7eb0322190746981143644ce29e"
+      "digest": "sha256:64ac33a613ebf6d611d738f645bc2f2dd471f95b2601bb2ab662fa4c01f3640f"
     }
   },
   "flaresolverr": {
@@ -56,7 +56,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:2643e3751213f544ca3fa082f41c5557efe7cf733989bc33e1455e3b2b523cd5"
+      "digest": "sha256:1e6019d60c5f16e73d4656a1d97d1f6ec48c8389695c0670a845fe8932b106a2"
     }
   },
   "soularr": {
