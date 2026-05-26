@@ -39,15 +39,16 @@ def main [host: string] {
     # tail in the build report. `err>|` pipes nix's stderr into tee's stdin;
     # tee writes one copy to disk via the closure and passes the stream
     # through, which `print` forwards to the terminal. `do --ignore-errors`
-    # swallows a non-zero nix exit so we can inspect $env.LAST_EXIT_CODE
-    # ourselves.
+    # swallows a non-zero nix exit; we determine success below by checking
+    # whether the toplevel materialized in /nix/store, because LAST_EXIT_CODE
+    # is unreliable here (do --ignore-errors clears it to 0 unconditionally,
+    # and the tee pipeline would mask it too).
     #
     # We intentionally do NOT use `--print-out-paths` + stdout capture here:
     # combining stdout capture with a tee'd stderr pipeline is fragile across
-    # nushell versions. Instead, after a successful build we resolve the
-    # toplevel store path via `nix eval --raw …outPath`, which is both
-    # deterministic and ~free (the attribute is already in nix's eval cache
-    # from the build we just ran).
+    # nushell versions. Instead we resolve the toplevel store path via
+    # `nix eval --raw …outPath`, which is deterministic and ~free (the
+    # attribute is already in nix's eval cache from the build we just ran).
     let stderr_file = (^mktemp --suffix .log | str trim)
     # Parens wrap the pipeline so nushell attaches `err>| tee …` to the
     # `^nix build` invocation across line breaks; without them the parser
@@ -59,7 +60,6 @@ def main [host: string] {
             | print
         )
     }
-    let exit_code = $env.LAST_EXIT_CODE
     let stderr_content = if ($stderr_file | path exists) {
         open --raw $stderr_file | decode utf-8
     } else { "" }
@@ -67,42 +67,37 @@ def main [host: string] {
 
     let elapsed = (date now) - $start | format duration min
 
-    let report = if $exit_code == 0 {
-        # Resolve the just-built toplevel path. If this fails the build
-        # "succeeded" but we have no path to copy — treat the host as failed
-        # rather than silently running `nix copy` with no arguments (which
-        # falls back to .#packages.<system>.default and surfaces a
-        # confusing "flake does not provide attribute" error).
-        let eval_result = (^nix eval --raw $"($attr).outPath" | complete)
-        let out_path = ($eval_result.stdout | str trim)
-        if $eval_result.exit_code != 0 or ($out_path | is-empty) {
-            let err_tail = ($eval_result.stderr | lines | last 10 | str join "\n")
-            print $"  ✗ ($host) built but could not resolve out path"
-            print $"    ($err_tail)"
-            { host: $host, status: "failed", elapsed: $elapsed, error: $"out path resolution failed: ($err_tail)", paths: [] }
-        } else {
-            let out_paths = [$out_path]
-            print $"  ✓ ($host) built successfully \(($elapsed)\)"
+    # Determine success by checking whether the toplevel actually materialized
+    # in /nix/store, not by `$env.LAST_EXIT_CODE`. `do --ignore-errors` clears
+    # LAST_EXIT_CODE to 0 regardless of what nix exited with, and piping nix's
+    # stderr through `tee` (kept for live CI log streaming) would mask it too.
+    # The store path is the authoritative signal: if it's present the closure
+    # is ready to copy, if not the build failed regardless of what nix reported.
+    let eval_result = (^nix eval --raw $"($attr).outPath" | complete)
+    let out_path = ($eval_result.stdout | str trim)
 
-            # Copy the built closure to the host daemon so other machines can
-            # pull it via harmonia. --no-check-sigs is required because we
-            # build unsigned inside the container; the daemon socket's root
-            # user is a trusted-user on vulcan.
-            print $"=== Copying ($host) closure to host nix daemon ==="
-            let copy_result = ^nix copy --to daemon --no-check-sigs ...$out_paths | complete
-            if $copy_result.exit_code == 0 {
-                print $"  ✓ ($host) copied to host store"
-                # Refresh this host's seed state for the next run. Only
-                # written after a full success so a transient copy failure
-                # doesn't erase the warm cache.
-                persist_seed $host $out_paths
-                { host: $host, status: "success", elapsed: $elapsed, error: "", paths: $out_paths }
-            } else {
-                let err_tail = ($copy_result.stderr | lines | last 10 | str join "\n")
-                print $"  ✗ ($host) copy failed"
-                print $"    ($err_tail)"
-                { host: $host, status: "failed", elapsed: $elapsed, error: $"copy to daemon failed: ($err_tail)", paths: $out_paths }
-            }
+    let report = if $eval_result.exit_code == 0 and (not ($out_path | is-empty)) and ($out_path | path exists) {
+        let out_paths = [$out_path]
+        print $"  ✓ ($host) built successfully \(($elapsed)\)"
+
+        # Copy the built closure to the host daemon so other machines can
+        # pull it via harmonia. --no-check-sigs is required because we
+        # build unsigned inside the container; the daemon socket's root
+        # user is a trusted-user on vulcan.
+        print $"=== Copying ($host) closure to host nix daemon ==="
+        let copy_result = ^nix copy --to daemon --no-check-sigs ...$out_paths | complete
+        if $copy_result.exit_code == 0 {
+            print $"  ✓ ($host) copied to host store"
+            # Refresh this host's seed state for the next run. Only
+            # written after a full success so a transient copy failure
+            # doesn't erase the warm cache.
+            persist_seed $host $out_paths
+            { host: $host, status: "success", elapsed: $elapsed, error: "", paths: $out_paths }
+        } else {
+            let err_tail = ($copy_result.stderr | lines | last 10 | str join "\n")
+            print $"  ✗ ($host) copy failed"
+            print $"    ($err_tail)"
+            { host: $host, status: "failed", elapsed: $elapsed, error: $"copy to daemon failed: ($err_tail)", paths: $out_paths }
         }
     } else {
         let err_tail = ($stderr_content | lines | last 20 | str join "\n")

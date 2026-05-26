@@ -8,8 +8,12 @@ on:
 env:
   NIX_CONFIG: |
     experimental-features = nix-command flakes ca-derivations pipe-operators
-    extra-substituters = https://install.determinate.systems https://nix-community.cachix.org https://nixos-raspberrypi.cachix.org https://niri.cachix.org
-    extra-trusted-public-keys = cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI= niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=
+    extra-substituters = https://install.determinate.systems https://nix-community.cachix.org https://nixos-raspberrypi.cachix.org https://niri.cachix.org http://vulcan.lan:4965
+    extra-trusted-public-keys = cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI= niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964= vulcan.lan-1:Zu8N+6EtaIeDTyCVpR15uvIYYByZqMmd8W09vu8GKl8=
+    # cache.nixos.org over HTTP/2 occasionally drops large NARs mid-download
+    # with framing errors; default of 5 attempts isn't always enough to resume
+    # through to the end. Retries resume from the last byte via range requests.
+    download-attempts = 15
   # All jobs share /ci-state (bind-mounted into every job container by the
   # forgejo-runner's jobStateDir). Each workflow run gets its own subdirectory
   # to pass data (input-changes.json, per-host build reports) between jobs
