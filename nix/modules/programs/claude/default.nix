@@ -105,7 +105,7 @@ in {
       };
 
       skills = "${config.dotfiles.configDir}/claude/skills";
-      context = "${config.dotfiles.configDir}/claude/CLAUDE.md";
+      context = ../../../../config/claude/CLAUDE.md;
     };
   };
 }
