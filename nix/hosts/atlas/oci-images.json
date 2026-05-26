@@ -2,13 +2,13 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:bd84f4f090ca61170c8329a72d4f451255b01f6489486a621bfcb89749fb80ab"
+      "digest": "sha256:bca4ddb017c25bc37e498a1907f3165371c0eae011cb2d9ea73856ca2d806f2c"
     }
   },
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:62a88fbc210fc62d867eab9c67a0f5474db7257013ce598173a9efc1043e97b8"
+      "digest": "sha256:7d1f96f26f433d5bfa518f6392021e17fc74a7eb0322190746981143644ce29e"
     }
   },
   "flaresolverr": {
@@ -20,7 +20,7 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:e55d41d4b24e8be63212c9292aa5cd20bb4cb330dfb4a896dd35c43d2a092931"
+      "digest": "sha256:f54c31267f17a0d504c069950e3052d610633a95f4970e704d87de79cea68409"
     }
   },
   "radarr": {
@@ -32,19 +32,19 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:60f3b6b5c7647ba2bafd81163acfe34b11117b9b834ebd7fbcc3e5f1b309c7ef"
+      "digest": "sha256:0b5c4803f92456fb9b65bae8375716ea120b4ea17b3cced7da32b63f0085782b"
     }
   },
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:4b7bb6d861c08bbf0c388b936ada8b2ba57669ca9974323f504e974577d19d63"
+      "digest": "sha256:95f27692c3de6dbe130cd035d342d8138ec74ade7b62cfc52e11ae222c52c855"
     }
   },
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:56e92b2eb265b79bbf502a8fc8a59aa9d5dbf48d9681a251b92bce1c1718ecae"
+      "digest": "sha256:56556fe5a0acc3a120012e6324ce47b1151a60a6cf7d95d237e4e832e8bec1e0"
     }
   },
   "slskd": {
@@ -56,7 +56,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:854684b3df33139a8907fa3e316a3c030676e8e753b7fac78b98d297b8cc6fe0"
+      "digest": "sha256:2643e3751213f544ca3fa082f41c5557efe7cf733989bc33e1455e3b2b523cd5"
     }
   },
   "soularr": {
@@ -122,7 +122,7 @@
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:5de29fd2c2c680e21fb91383cdb524eec8b8fb72e5d67c57b2f79416c69093e3"
+      "digest": "sha256:f6291cf726d711dff13f943c719da691cbcd351908e0605fc78abe891cc1f4a1"
     }
   },
   "calibre-web-auto": {
@@ -134,7 +134,7 @@
   "filebrowser": {
     "image": {
       "version": "latest",
-      "digest": "sha256:a96c08fd0f3d789131107d603fe82ad72cebe4eb2a40b69519ee4b8b410c00b7"
+      "digest": "sha256:eb3733681db8757412632c61a99ad656f0d94ed6781bb2ea114b4d70babab78c"
     }
   },
   "linkding": {
@@ -152,7 +152,7 @@
   "syncthing": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ab9bd1fbc77288617eae1ecb9035d17934aaa92bb1f303893cd06882dac8943d"
+      "digest": "sha256:833b349a4247d10c4740aa3264df289537e0091e778ceefc2998ec694770f706"
     }
   },
   "tautulli": {
