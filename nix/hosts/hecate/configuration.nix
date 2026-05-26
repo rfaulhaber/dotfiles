@@ -31,6 +31,7 @@
         keyFile = null;
         secrets = {
           pihole-web-password = {};
+          "netbird/setup-key" = {};
         };
       };
     };
@@ -48,7 +49,10 @@
           port = 17263;
         };
       };
-      netbird.enable = true;
+      netbird = {
+        enable = true;
+        setupKeyFile = config.sops.secrets."netbird/setup-key".path;
+      };
       keepalived = {
         enable = true;
         interface = "enu1u1u1";

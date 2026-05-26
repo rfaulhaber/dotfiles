@@ -33,6 +33,7 @@
         keyFile = null;
         secrets = {
           nix-cache = {};
+          "netbird/setup-key" = {};
         };
       };
     };
@@ -63,7 +64,10 @@
           port = 13308;
         };
       };
-      netbird.enable = true;
+      netbird = {
+        enable = true;
+        setupKeyFile = config.sops.secrets."netbird/setup-key".path;
+      };
       nix-cache = {
         enable = true;
         port = 4965;

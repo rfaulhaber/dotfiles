@@ -29,7 +29,9 @@ in {
       sops = {
         enable = true;
         keyFile = null;
-        secrets = {};
+        secrets = {
+          "netbird-client/setup-key" = {};
+        };
       };
     };
     services = {
@@ -41,7 +43,10 @@ in {
           port = 6674;
         };
       };
-      netbird.enable = true;
+      netbird = {
+        enable = true;
+        setupKeyFile = config.sops.secrets."netbird-client/setup-key".path;
+      };
     };
 
     themes.active = "tokyo-night-dark";

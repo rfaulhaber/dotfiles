@@ -88,6 +88,7 @@
           # used by nix.extraOptions to set access-tokens for github.com
           # and avoid rate limits when fetching flake inputs
           github = {};
+          "netbird/setup-key" = {};
         };
       };
       claude.enable = true;
@@ -117,7 +118,7 @@
       cachix.enable = true;
       netbird = {
         enable = true;
-        autoStart = true;
+        setupKeyFile = config.sops.secrets."netbird/setup-key".path;
       };
     };
     hardware = {
