@@ -28,136 +28,134 @@ in {
       enable = true;
       enableDefaultConfig = false;
 
-      matchBlocks = let
+      settings = let
         mkLocalHostname = n: "192.168.0.${n}";
         sshPath = cfg.sshPath;
         defaultIdentityFile = "${sshPath}/id_host";
       in {
-        "*" = {
-          identitiesOnly = true;
-          identityFile = defaultIdentityFile;
-          hashKnownHosts = true;
-          addKeysToAgent = "yes";
+        "*" =
+          {
+            IdentitiesOnly = true;
+            IdentityFile = defaultIdentityFile;
+            HashKnownHosts = true;
+            AddKeysToAgent = "yes";
 
-          # home-manager's programs.ssh default configuration
-          forwardAgent = false;
-          compression = false;
-          serverAliveInterval = 0;
-          serverAliveCountMax = 3;
-          userKnownHostsFile = "~/.ssh/known_hosts";
-          controlMaster = "no";
-          controlPath = "~/.ssh/master-%r@%n:%p";
-          controlPersist = "no";
-
-          # macOS: use Keychain for SSH key passphrases
-          extraOptions = optionalAttrs isDarwin {
-            "UseKeychain" = "yes";
+            # home-manager's programs.ssh default configuration
+            ForwardAgent = false;
+            Compression = false;
+            ServerAliveInterval = 0;
+            ServerAliveCountMax = 3;
+            UserKnownHostsFile = "~/.ssh/known_hosts";
+            ControlMaster = "no";
+            ControlPath = "~/.ssh/master-%r@%n:%p";
+            ControlPersist = "no";
+          }
+          // optionalAttrs isDarwin {
+            # macOS: use Keychain for SSH key passphrases
+            UseKeychain = "yes";
           };
-        };
 
         "atlas" = {
-          hostname = mkLocalHostname "3";
-          user = config.user.name;
-          port = 10222;
-          forwardAgent = true;
+          HostName = mkLocalHostname "3";
+          User = config.user.name;
+          Port = 10222;
+          ForwardAgent = true;
         };
 
         "atlas-netbird" = {
-          hostname = "atlas.netbird.selfhosted";
-          user = config.user.name;
-          port = 10222;
-          forwardAgent = true;
+          HostName = "atlas.netbird.selfhosted";
+          User = config.user.name;
+          Port = 10222;
+          ForwardAgent = true;
         };
 
         "codeberg.org" = {
-          hostname = "codeberg.org";
-          extraOptions = {
-            "PreferredAuthentications" = "publickey";
-            "AddressFamily" = "inet";
-          };
+          HostName = "codeberg.org";
+          PreferredAuthentications = "publickey";
+          AddressFamily = "inet";
         };
 
         "github.com" = {
-          hostname = "github.com";
-          extraOptions."PreferredAuthentications" = "publickey";
+          HostName = "github.com";
+          PreferredAuthentications = "publickey";
         };
 
         "gitlab.com" = {
-          hostname = "github.com";
-          extraOptions."PreferredAuthentications" = "publickey";
+          HostName = "gitlab.com";
+          PreferredAuthentications = "publickey";
         };
 
         "git.3679.space" = {
-          hostname = "git.3679.space";
-          port = 3402;
-          extraOptions."PreferredAuthentications" = "publickey";
+          HostName = "git.3679.space";
+          Port = 3402;
+          PreferredAuthentications = "publickey";
         };
 
         "pallas" = {
-          hostname = mkLocalHostname "2";
-          forwardAgent = true;
-          user = "ryan";
-          port = 12981;
+          HostName = mkLocalHostname "2";
+          ForwardAgent = true;
+          User = "ryan";
+          Port = 12981;
         };
 
         "pallas-netbird" = {
-          hostname = "pallas.netbird.selfhosted";
-          forwardAgent = true;
-          user = "ryan";
-          port = 12981;
+          HostName = "pallas.netbird.selfhosted";
+          ForwardAgent = true;
+          User = "ryan";
+          Port = 12981;
         };
 
-        "*sr.ht".extraOptions = {
-          "PreferredAuthentications" = "publickey";
-          "AddressFamily" = "inet";
+        "*sr.ht" = {
+          PreferredAuthentications = "publickey";
+          AddressFamily = "inet";
         };
 
         "nix-installer" = {
-          hostname = mkLocalHostname "190";
-          user = "nixos";
-          extraOptions."AddKeysToAgent" = "yes";
+          HostName = mkLocalHostname "190";
+          User = "nixos";
+          AddKeysToAgent = "yes";
         };
 
         "steamdeck" = {
-          hostname = mkLocalHostname "226";
-          user = "deck";
-          forwardAgent = true;
-          port = 27077;
+          HostName = mkLocalHostname "226";
+          User = "deck";
+          ForwardAgent = true;
+          Port = 27077;
         };
 
         "janus" = {
-          hostname = "66.63.168.153";
-          user = config.user.name;
-          forwardAgent = true;
-          port = 6674;
+          HostName = "66.63.168.153";
+          User = config.user.name;
+          ForwardAgent = true;
+          Port = 6674;
         };
 
         "janus-netbird" = {
-          hostname = "janus.netbird.selfhosted";
-          user = config.user.name;
-          forwardAgent = true;
-          port = 6674;
+          HostName = "janus.netbird.selfhosted";
+          User = config.user.name;
+          ForwardAgent = true;
+          Port = 6674;
         };
 
         "hecate" = {
-          hostname = mkLocalHostname "77";
-          forwardAgent = true;
-          user = "ryan";
-          port = 17263;
+          HostName = mkLocalHostname "77";
+          ForwardAgent = true;
+          User = "ryan";
+          Port = 17263;
         };
 
         "vulcan" = {
-          hostname = mkLocalHostname "105";
-          forwardAgent = true;
-          user = "ryan";
-          port = 13308;
+          HostName = mkLocalHostname "105";
+          ForwardAgent = true;
+          User = "ryan";
+          Port = 13308;
         };
 
         "prometheus" = {
-          hostname = mkLocalHostname "228";
-          forwardAgent = true;
-          user = "ryan";
-          port = 13571;
+          HostName = mkLocalHostname "228";
+          ForwardAgent = true;
+          User = "ryan";
+          Port = 13571;
         };
       };
     };
