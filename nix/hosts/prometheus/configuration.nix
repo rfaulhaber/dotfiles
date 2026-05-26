@@ -49,6 +49,7 @@
           "forgejo-runner/token" = {};
           "codeberg-runner/token" = {};
           nix-cache = {};
+          "netbird/setup-key" = {};
         };
       };
     };
@@ -66,7 +67,10 @@
           port = 13571;
         };
       };
-      netbird.enable = true;
+      netbird = {
+        enable = true;
+        setupKeyFile = config.sops.secrets."netbird/setup-key".path;
+      };
       # Serve aarch64 builds back over the LAN so future CI runs and
       # nixos-rebuilds on this host hit local cache instead of recompiling
       # against cache.nixos.org / cachix. Port matches vulcan's harmonia
