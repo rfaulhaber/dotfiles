@@ -308,6 +308,13 @@
                   targets = ["prometheus.lan:9100"];
                   labels.host = "prometheus";
                 }
+                {
+                  # janus is a cloud VPS — no LAN DNS, reached over the
+                  # netbird overlay. Resolution works inside this container
+                  # because podman inherits the host's resolver.
+                  targets = ["janus.netbird.selfhosted:9100"];
+                  labels.host = "janus";
+                }
               ];
               # Copy the explicit `host` label onto `instance` so community
               # node-exporter dashboards (which template on `instance`) show
@@ -332,6 +339,10 @@
                 {
                   targets = ["vulcan.lan:9882"];
                   labels.host = "vulcan";
+                }
+                {
+                  targets = ["janus.netbird.selfhosted:9882"];
+                  labels.host = "janus";
                 }
               ];
               relabel_configs = [

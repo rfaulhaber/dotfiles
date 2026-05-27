@@ -13,7 +13,8 @@ in {
 
     image = imageLib.mkImageOptions {
       repository = "quay.io/navidys/prometheus-podman-exporter";
-      version = "v1.13.4";
+      version = "v1.21.0";
+      digest = "sha256:2ebb9e09101d8cc1e28e3f306b56a722450918e628208435201ed39bd62403cb";
     };
 
     port = mkOption {

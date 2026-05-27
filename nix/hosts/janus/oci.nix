@@ -47,6 +47,8 @@ in {
           baseDir = "/docker/config/pocket-id";
           networks = ["pangolin"];
         };
+
+        podman-exporter.enable = true;
       };
   };
 }

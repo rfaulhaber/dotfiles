@@ -36,6 +36,18 @@ in {
     };
     services = {
       sudo-rs.enable = true;
+      observability-agent = {
+        enable = true;
+        loki = {
+          # atlas.lan doesn't resolve on a cloud VPS — reach atlas's loki
+          # over the netbird overlay instead.
+          url = "http://atlas.netbird.selfhosted:3100";
+          extraLabels.role = "cloud-vps";
+        };
+        # Leave prometheus.openFirewall = false (default); 9100 is narrowed
+        # to the wt0 interface below so node_exporter isn't exposed to the
+        # public internet on janus's ens3.
+      };
       ssh = {
         enable = true;
         server = {
@@ -77,5 +89,12 @@ in {
         }
       ];
     };
+
+    # Expose the metrics exporters only over the netbird overlay; ens3 is
+    # public, so we deliberately don't toggle `openFirewall` on the agent.
+    firewall.interfaces.wt0.allowedTCPPorts = [
+      9100 # node_exporter
+      9882 # podman-exporter
+    ];
   };
 }
