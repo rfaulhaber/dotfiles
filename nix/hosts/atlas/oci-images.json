@@ -161,6 +161,24 @@
       "digest": "sha256:fc92dea07c592580231102a11459dc7a267de21f05b7b005244281470dac3a2f"
     }
   },
+  "sure": {
+    "image": {
+      "version": "stable",
+      "digest": "sha256:ece3be9e4a588b281e54fdce0ede764e6e04bef52b466e242252a9bc148b8981"
+    },
+    "postgres": {
+      "image": {
+        "version": "16-alpine",
+        "digest": "sha256:16bc17c64a573ef34162af9298258d1aec548232985b33ed7b1eac33ba35c229"
+      }
+    },
+    "redis": {
+      "image": {
+        "version": "8-alpine",
+        "digest": "sha256:09160599abd229764c0fb44cb6be640294e1d360a54b19985ab4843dcf2d90f1"
+      }
+    }
+  },
   "vikunja": {
     "image": {
       "version": "latest",

@@ -250,6 +250,26 @@
           lastfm.enable = true;
         };
 
+        sure = {
+          enable = true;
+          baseDir = "/data/apps/sure";
+          appUrl = "https://sure.3679.space";
+          oidc = {
+            enable = true;
+            issuer = "https://auth.3679.space";
+          };
+          onboardingState = "closed";
+          localLogin.enabled = false;
+          dbEncryption = {
+            enable = true;
+            keyFile = ./secrets/sure-db-zfs-key;
+          };
+          storageEncryption = {
+            enable = true;
+            keyFile = ./secrets/sure-storage-zfs-key;
+          };
+        };
+
         syncthing = {
           enable = true;
           baseDir = "/data/apps/syncthing";
@@ -386,7 +406,7 @@
           enable = true;
           pangolinEndpoint = "https://pangolin.3679.space";
           dns = "192.168.0.2";
-          networks = ["default" "immich" "forgejo"];
+          networks = ["default" "immich" "forgejo" "sure"];
         };
       };
   };

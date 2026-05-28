@@ -177,6 +177,7 @@ in {
     ./slskd.nix
     ./sonarr.nix
     ./soularr.nix
+    ./sure.nix
     ./syncthing.nix
     ./tautulli.nix
     ./transmission.nix

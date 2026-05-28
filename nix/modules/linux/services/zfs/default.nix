@@ -138,8 +138,14 @@ in {
       # One unlock unit per encrypted dataset. Ordering rationale:
       #   - After=sops-install-secrets.service guarantees the keyfile exists.
       #   - After=zfs-import.target guarantees the dataset is importable.
-      #   - Before=zfs-manage-datasets.service so any property tweaks
-      #     (recordsize, mountpoint) apply against an unlocked dataset.
+      #   - After=zfs-manage-datasets.service guarantees the dataset itself
+      #     has been created. The earlier version of this module ordered
+      #     Before=zfs-manage on the theory that mutable property tweaks
+      #     needed an unlocked dataset, but that's wrong — mutable props
+      #     (recordsize, mountpoint, keylocation) accept zfs set against
+      #     a locked dataset just fine. Running After lets zfs-manage do
+      #     the create-with-encryption-and-keylocation atomic step, after
+      #     which this unit's idempotent guards turn into mount-only.
       # Consumers (e.g. podman containers using this dataset's mountpoint)
       # should add `After`/`Requires` on this unit themselves.
       (mkMerge (mapAttrsToList (name: ds: {
@@ -151,11 +157,11 @@ in {
             # depend on. By the time `zfs-import.target` is reached, the
             # activation script has already populated /run/secrets/, so
             # the keyfile this unit reads is guaranteed to exist.
-            after = ["zfs-import.target"];
+            after = ["zfs-import.target" "zfs-manage-datasets.service"];
             # `before = consumers` ensures consumers wait; `requiredBy = consumers`
             # adds the hard dependency so a failed unlock fails the consumer
             # cleanly rather than letting it start with a missing bind-mount source.
-            before = ["zfs-manage-datasets.service"] ++ ds.consumers;
+            before = ds.consumers;
             requiredBy = ds.consumers;
             path = [pkgs.zfs];
             serviceConfig = {

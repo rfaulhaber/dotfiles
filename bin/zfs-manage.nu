@@ -18,11 +18,19 @@ def main [spec?: string, --file: string, --dry-run] {
     exit 1
   }
 
-  # Properties that can only be set at creation time and cannot be changed afterwards.
-  # NOTE: `keylocation` is intentionally NOT in this list — it is mutable via `zfs set`,
-  # which is what lets us migrate a dataset's key from a plain on-disk path to a
-  # sops-rendered path under /run/secrets without recreating the dataset.
-  let create_only_props = [
+  # Properties that ZFS makes immutable after the dataset exists. This list
+  # gates the post-create `zfs set` loop — anything in here is skipped when
+  # updating an existing dataset, since ZFS would reject the set. It does
+  # NOT gate what gets passed at create time: new datasets receive every
+  # property as a `-o` flag (see below), which is required for atomic
+  # creation of encrypted datasets where `keyformat=raw` demands
+  # `keylocation` be set in the same call.
+  #
+  # `keylocation` is intentionally NOT here: on an already-encrypted dataset
+  # it stays mutable via `zfs set`, which is what lets us migrate a dataset's
+  # key path from on-disk to a sops-rendered path under /run/secrets without
+  # recreating the dataset.
+  let immutable_after_create = [
     "casesensitivity" "normalization" "utf8only" "encryption" "keyformat"
   ]
 
@@ -37,10 +45,15 @@ def main [spec?: string, --file: string, --dry-run] {
         let is_new = not ($dataset_name | dataset exists)
 
         if $is_new {
-            # Build creation options from create-only properties
+            # Pass ALL properties at create time. Encrypted datasets need
+            # `encryption`, `keyformat`, and `keylocation` set atomically in
+            # the same `zfs create` call — without `keylocation`, ZFS defaults
+            # to `keylocation=prompt`, which for `keyformat=raw` tries to read
+            # 32 bytes from stdin and fails immediately under systemd. Passing
+            # mutable properties as `-o` flags is equivalent to a follow-up
+            # `zfs set`, so there's no downside to bundling everything here.
             let create_opts = $properties
               | transpose "key" "value"
-              | where { |p| $p.key in $create_only_props }
               | each { |p| [-o $"($p.key)=($p.value)"] }
               | flatten
 
@@ -63,10 +76,17 @@ def main [spec?: string, --file: string, --dry-run] {
             print $"Dataset ($dataset_name) exists"
         }
 
-        # Apply mutable properties (skip create-only props on existing datasets)
-        let mutable_props = $properties
-          | transpose "key" "value"
-          | where { |p| $is_new or ($p.key not-in $create_only_props) }
+        # On existing datasets, apply the subset of properties ZFS still
+        # accepts via `zfs set`. On newly-created datasets every property was
+        # already applied via `-o` above, so this list is empty and the loop
+        # is a no-op.
+        let mutable_props = if $is_new {
+            []
+          } else {
+            $properties
+              | transpose "key" "value"
+              | where { |p| $p.key not-in $immutable_after_create }
+          }
 
         for pair in $mutable_props {
             let prop = $pair | get key

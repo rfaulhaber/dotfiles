@@ -31,6 +31,8 @@ in {
         "Bash(ls *)"
         "Bash(man *)"
         "Bash(which *)"
+        "Bash(nix run nixpkgs#ripgrep *)"
+        "Bash(nix run nixpkgs#jq *)"
         "Read(*)"
         "WebFetch(domain:crates.io)"
         "WebFetch(domain:docs.rs)"
