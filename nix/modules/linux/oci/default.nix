@@ -146,6 +146,7 @@ in {
     ./cadvisor.nix
     ./calibre.nix
     ./calibre-web-auto.nix
+    ./crowdsec.nix
     ./filebrowser.nix
     ./flaresolverr.nix
     ./forgejo.nix

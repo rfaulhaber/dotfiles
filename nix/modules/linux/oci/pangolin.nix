@@ -10,6 +10,42 @@ with lib; let
   imageLib = import ./lib.nix {inherit lib;};
   networkName = "pangolin";
 
+  # When CrowdSec is enabled we attach its bouncer as a default middleware on
+  # both HTTP entrypoints so it covers every router — including the tunneled
+  # resources Pangolin generates dynamically via the http provider.
+  # `@file` resolves the middleware against the file provider where it is
+  # actually defined (dynamic_config.yml).
+  #
+  # Column accounting: the outer '' block has 4-space minimum source indent.
+  # After strip, `web:` is at col 2 and `address:` at col 4. The interpolated
+  # values below must place their content at the right column relative to
+  # those landmarks.
+  webEntryPointHttp =
+    optionalString cfg.crowdsec.enable
+    "\n    http:\n      middlewares:\n        - \"crowdsec-bouncer@file\"";
+
+  # Source has `    ${...}` (4 leading spaces → post-strip col 0). To land
+  # `middlewares:` at col 6 (child of websecure's http: at col 4) the value
+  # itself supplies 6 leading spaces. The `- "..."` line carries its own
+  # full 8-space lead since `\n` resets to col 0.
+  websecureMiddlewares =
+    optionalString cfg.crowdsec.enable
+    "      middlewares:\n        - \"crowdsec-bouncer@file\"";
+
+  # Inserted at end of `version: "v1.2.0"` line in source (which sits at
+  # col 6 after the static config's 4-space strip). We need
+  # `crowdsec-bouncer-traefik-plugin:` to land at col 4 (sibling of `badger:`)
+  # and its children at col 6/8.
+  crowdsecPluginEntry =
+    optionalString cfg.crowdsec.enable (
+      "\n"
+      + concatMapStringsSep "\n" (line: "    " + line) [
+        "crowdsec-bouncer-traefik-plugin:"
+        "  moduleName: \"github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin\""
+        "  version: \"${cfg.crowdsec.pluginVersion}\""
+      ]
+    );
+
   # Static traefik configuration (no secrets)
   traefikStaticConfig = pkgs.writeText "traefik_config.yml" ''
     api:
@@ -27,11 +63,16 @@ with lib; let
       plugins:
         badger:
           moduleName: "github.com/fosrl/badger"
-          version: "v1.2.0"
+          version: "v1.2.0"${crowdsecPluginEntry}
 
     log:
       level: "INFO"
       format: "common"
+
+    accessLog:
+      filePath: "/var/log/traefik/access.log"
+      format: "json"
+      bufferingSize: 0
 
     certificatesResolvers:
       letsencrypt:
@@ -44,13 +85,14 @@ with lib; let
 
     entryPoints:
       web:
-        address: ":80"
+        address: ":80"${webEntryPointHttp}
       websecure:
         address: ":443"
         transport:
           respondingTimeouts:
             readTimeout: "30m"
         http:
+    ${websecureMiddlewares}
           tls:
             certResolver: "letsencrypt"
       tcp-${toString cfg.gerbil.tcpPort}:
@@ -60,13 +102,39 @@ with lib; let
       insecureSkipVerify: true
   '';
 
-  # Dynamic traefik routing config (no secrets)
+  # Built as an indented list of YAML lines so nix '' strip-indent doesn't
+  # eat our nesting. Each list entry is the YAML body; we prefix 4 spaces
+  # because the dynamic_config outer '' has 4-space min-strip, and we want
+  # `crowdsec-bouncer:` to land at col 4 (sibling of `redirect-to-https:`).
+  crowdsecMiddlewareInline = optionalString cfg.crowdsec.enable (
+    "\n"
+    + concatMapStringsSep "\n" (line: "    " + line) [
+      "crowdsec-bouncer:"
+      "  plugin:"
+      "    crowdsec-bouncer-traefik-plugin:"
+      "      enabled: true"
+      "      logLevel: INFO"
+      "      crowdsecMode: ${cfg.crowdsec.mode}"
+      "      updateIntervalSeconds: ${toString cfg.crowdsec.updateIntervalSeconds}"
+      "      defaultDecisionSeconds: ${toString cfg.crowdsec.defaultDecisionSeconds}"
+      "      crowdsecLapiScheme: http"
+      "      crowdsecLapiHost: \"${cfg.crowdsec.lapiHost}\""
+      "      crowdsecLapiKeyFile: \"${cfg.crowdsec.bouncerKeyContainerPath}\""
+      "      forwardedHeadersTrustedIPs: []"
+      "      clientTrustedIPs: []"
+    ]
+  );
+
+  # Dynamic traefik routing config (no secrets). The CrowdSec bouncer key
+  # itself is mounted as a file (see the traefik volumes block) and read by
+  # the plugin via crowdsecLapiKeyFile, so the API key never appears in this
+  # rendered file even when crowdsec.enable = true.
   traefikDynamicConfig = pkgs.writeText "dynamic_config.yml" ''
     http:
       middlewares:
         redirect-to-https:
           redirectScheme:
-            scheme: https
+            scheme: https${crowdsecMiddlewareInline}
 
       routers:
         main-app-router-redirect:
@@ -206,17 +274,116 @@ in {
       type = types.bool;
       default = false;
     };
+
+    rateLimit = {
+      windowMinutes = mkOption {
+        description = "Rate-limit window for Pangolin's external API (port 3000).";
+        type = types.int;
+        default = 1;
+      };
+      maxRequests = mkOption {
+        description = ''
+          Max requests per window across all clients for Pangolin's external
+          API. This caps dashboard + login + admin traffic only. Tunneled
+          resources (e.g. Jellyfin) bypass it because they hit Pangolin's
+          internal port (3001) via badger, not the external 3000.
+        '';
+        type = types.int;
+        default = 30;
+      };
+    };
+
+    traefikLogPath = mkOption {
+      description = ''
+        Host path Traefik writes its JSON access log to. Reference from
+        CrowdSec's acquisitions config when wiring intrusion detection.
+      '';
+      type = types.str;
+      default = "${cfg.baseDir}/traefik/access.log";
+      defaultText = literalExpression ''"''${cfg.baseDir}/traefik/access.log"'';
+    };
+
+    crowdsec = {
+      enable = mkEnableOption ''
+        CrowdSec bouncer integration in Traefik. Loads the bouncer plugin and
+        attaches it as a global middleware on web/websecure entrypoints. The
+        CrowdSec engine itself is configured separately via
+        modules.linux.oci.services.crowdsec
+      '';
+
+      pluginVersion = mkOption {
+        description = "Version tag of crowdsec-bouncer-traefik-plugin to load.";
+        type = types.str;
+        default = "v1.4.2";
+      };
+
+      mode = mkOption {
+        description = ''
+          Bouncer decision-fetch mode. `stream` polls LAPI on a fixed interval
+          and caches decisions in memory (no per-request latency). `live`
+          queries LAPI synchronously on every request (more accurate, slight
+          per-request cost).
+        '';
+        type = types.enum ["stream" "live" "alone" "appsec"];
+        default = "stream";
+      };
+
+      updateIntervalSeconds = mkOption {
+        description = "How often (seconds) to refresh the decision cache in stream mode.";
+        type = types.int;
+        default = 60;
+      };
+
+      defaultDecisionSeconds = mkOption {
+        description = "Cache TTL for individual decisions in live mode.";
+        type = types.int;
+        default = 60;
+      };
+
+      lapiHost = mkOption {
+        description = ''
+          host:port of the CrowdSec LAPI as resolvable from inside the Traefik
+          container. Default assumes the CrowdSec engine runs as
+          --network-alias=crowdsec on the same podman network as gerbil
+          (Traefik joins gerbil's netns).
+        '';
+        type = types.str;
+        default = "crowdsec:8080";
+      };
+
+      bouncerKeyFile = mkOption {
+        description = ''
+          Host path to the sops-rendered file containing the bouncer API key.
+          Bind-mounted into the Traefik container at bouncerKeyContainerPath
+          and read by the plugin via crowdsecLapiKeyFile (so the key never
+          appears in any rendered nix file).
+        '';
+        type = types.str;
+        default = config.sops.secrets."crowdsec/bouncer-api-key".path or "";
+        defaultText = literalExpression ''config.sops.secrets."crowdsec/bouncer-api-key".path'';
+      };
+
+      bouncerKeyContainerPath = mkOption {
+        description = "Where to mount bouncerKeyFile inside the Traefik container.";
+        type = types.str;
+        default = "/secrets/crowdsec-bouncer-key";
+      };
+    };
   };
 
   config = mkIf cfg.enable {
     modules.linux.oci.networks.${networkName}.enable = true;
 
     # -- Secrets (expected in host's secrets.yaml) --
-    sops.secrets = {
-      "pangolin/server-secret" = {};
-      "pangolin/smtp-pass" = {};
-      "pangolin/admin-password" = {};
-    };
+    sops.secrets =
+      {
+        "pangolin/server-secret" = {};
+        "pangolin/smtp-pass" = {};
+        "pangolin/admin-password" = {};
+      }
+      // optionalAttrs cfg.crowdsec.enable {
+        "crowdsec/bouncer-api-key" = {};
+      };
 
     # -- Pangolin config.yml template (has embedded secrets) --
     sops.templates."pangolin-config" = {
@@ -255,8 +422,8 @@ in {
             subnet_group: "${cfg.gerbil.subnetGroup}"
         rate_limits:
             global:
-                window_minutes: 1
-                max_requests: 100
+                window_minutes: ${toString cfg.rateLimit.windowMinutes}
+                max_requests: ${toString cfg.rateLimit.maxRequests}
         email:
             smtp_host: "${cfg.email.smtpHost}"
             smtp_port: ${toString cfg.email.smtpPort}
@@ -332,11 +499,15 @@ in {
         image = imageLib.renderImage cfg.images.traefik;
         dependsOn = ["pangolin"];
         cmd = ["--configFile=/etc/traefik/traefik_config.yml"];
-        volumes = [
-          "${traefikStaticConfig}:/etc/traefik/traefik_config.yml:ro"
-          "${traefikDynamicConfig}:/etc/traefik/dynamic_config.yml:ro"
-          "${cfg.baseDir}/letsencrypt:/letsencrypt:rw"
-        ];
+        volumes =
+          [
+            "${traefikStaticConfig}:/etc/traefik/traefik_config.yml:ro"
+            "${traefikDynamicConfig}:/etc/traefik/dynamic_config.yml:ro"
+            "${cfg.baseDir}/letsencrypt:/letsencrypt:rw"
+            "${cfg.baseDir}/traefik:/var/log/traefik:rw"
+          ]
+          ++ optional cfg.crowdsec.enable
+          "${cfg.crowdsec.bouncerKeyFile}:${cfg.crowdsec.bouncerKeyContainerPath}:ro";
         extraOptions =
           [
             "--network=container:gerbil"
@@ -394,7 +565,11 @@ in {
         wantedBy = ["${ociLib.rootTargetName}.target"];
         serviceConfig.ExecStartPre = [
           "${pkgs.writeShellScript "traefik-dir-init" ''
-            mkdir -p ${cfg.baseDir}/letsencrypt
+            mkdir -p ${cfg.baseDir}/letsencrypt ${cfg.baseDir}/traefik
+            # Pre-create the access log so the CrowdSec sidecar's bind-mount
+            # has a file to read on its first start, even if Traefik hasn't
+            # served a request yet.
+            touch ${cfg.baseDir}/traefik/access.log
           ''}"
         ];
       };
