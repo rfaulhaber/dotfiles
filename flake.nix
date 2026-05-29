@@ -264,14 +264,15 @@
         };
 
         devShells.default = pkgs.mkShell {
-          packages =
+          packages = with pkgs;
             [
               inputs'.deploy-rs.packages.default
               inputs'.nil.packages.default
               inputs'.sops-nix.packages.default
-              pkgs.dix
-              pkgs.rage
-              pkgs.sops
+              dix
+              rage
+              skopeo
+              sops
             ]
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
               inputs'.nix-darwin.packages.default
