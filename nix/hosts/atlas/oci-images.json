@@ -161,6 +161,24 @@
       "digest": "sha256:fc92dea07c592580231102a11459dc7a267de21f05b7b005244281470dac3a2f"
     }
   },
+  "paperless": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:6c86cad803970ea782683a8e80e7403444c5bf3cf70de63b4d3c8e87500db92f"
+    },
+    "postgres": {
+      "image": {
+        "version": "18-alpine",
+        "digest": "sha256:96d56f7f57c6aacd1fcb908bc83b345ec5f83231ee486dd66a1baadce274db88"
+      }
+    },
+    "redis": {
+      "image": {
+        "version": "8-alpine",
+        "digest": "sha256:09160599abd229764c0fb44cb6be640294e1d360a54b19985ab4843dcf2d90f1"
+      }
+    }
+  },
   "sure": {
     "image": {
       "version": "stable",

@@ -250,6 +250,28 @@
           lastfm.enable = true;
         };
 
+        paperless = {
+          enable = true;
+          baseDir = "/data/apps/paperless";
+          url = "https://paperless.3679.space";
+          dataEncryption = {
+            enable = true;
+            keyFile = ./secrets/paperless-data-zfs-key;
+          };
+          mediaEncryption = {
+            enable = true;
+            keyFile = ./secrets/paperless-media-zfs-key;
+          };
+          dbEncryption = {
+            enable = true;
+            keyFile = ./secrets/paperless-db-zfs-key;
+          };
+          oidc = {
+            enable = true;
+            serverUrl = "https://auth.3679.space/.well-known/openid-configuration";
+          };
+        };
+
         sure = {
           enable = true;
           baseDir = "/data/apps/sure";
@@ -406,7 +428,7 @@
           enable = true;
           pangolinEndpoint = "https://pangolin.3679.space";
           dns = "192.168.0.2";
-          networks = ["default" "immich" "forgejo" "sure"];
+          networks = ["default" "immich" "forgejo" "sure" "paperless"];
         };
       };
   };

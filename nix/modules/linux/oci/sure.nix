@@ -379,27 +379,29 @@ in {
         };
       };
 
-    sops.templates = {
-      # Shared by sure_db (POSTGRES_PASSWORD consumed by initdb on first
-      # boot) and by the web + worker containers (POSTGRES_PASSWORD read
-      # by Rails' config/database.yml at runtime via ENV.fetch).
-      "sure-db-env".content = ''
-        POSTGRES_PASSWORD=${config.sops.placeholder."sure/db-password"}
-      '';
+    sops.templates =
+      {
+        # Shared by sure_db (POSTGRES_PASSWORD consumed by initdb on first
+        # boot) and by the web + worker containers (POSTGRES_PASSWORD read
+        # by Rails' config/database.yml at runtime via ENV.fetch).
+        "sure-db-env".content = ''
+          POSTGRES_PASSWORD=${config.sops.placeholder."sure/db-password"}
+        '';
 
-      # Read by the web + worker containers. SECRET_KEY_BASE signs
-      # cookies/sessions and derives the ActiveRecord encryption keys, so
-      # rotating it invalidates all sessions and breaks any pre-existing
-      # encrypted columns.
-      "sure-app-env".content = ''
-        SECRET_KEY_BASE=${config.sops.placeholder."sure/secret-key-base"}
-      '';
-    } // optionalAttrs cfg.oidc.enable {
-      "sure-oidc-env".content = ''
-        OIDC_CLIENT_ID=${config.sops.placeholder."sure/oidc-client-id"}
-        OIDC_CLIENT_SECRET=${config.sops.placeholder."sure/oidc-client-secret"}
-      '';
-    };
+        # Read by the web + worker containers. SECRET_KEY_BASE signs
+        # cookies/sessions and derives the ActiveRecord encryption keys, so
+        # rotating it invalidates all sessions and breaks any pre-existing
+        # encrypted columns.
+        "sure-app-env".content = ''
+          SECRET_KEY_BASE=${config.sops.placeholder."sure/secret-key-base"}
+        '';
+      }
+      // optionalAttrs cfg.oidc.enable {
+        "sure-oidc-env".content = ''
+          OIDC_CLIENT_ID=${config.sops.placeholder."sure/oidc-client-id"}
+          OIDC_CLIENT_SECRET=${config.sops.placeholder."sure/oidc-client-secret"}
+        '';
+      };
 
     virtualisation.oci-containers.containers = let
       appEnv =

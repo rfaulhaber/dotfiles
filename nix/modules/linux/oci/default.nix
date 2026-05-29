@@ -165,6 +165,7 @@ in {
     ./open-webui.nix
     ./netbird.nix
     ./pangolin.nix
+    ./paperless.nix
     ./pihole.nix
     ./plex.nix
     ./pocket-id.nix
