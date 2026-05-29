@@ -47,6 +47,8 @@ in {
         "WebFetch(domain:crates.io)"
         "WebFetch(domain:docs.rs)"
         "WebFetch(domain:github.com)"
+        "WebFetch(domain:nixos.wiki)"
+        "WebFetch(domain:search.nixos.org)"
         "WebSearch"
       ];
       description = ''
