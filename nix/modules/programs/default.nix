@@ -5,6 +5,7 @@
     ./aspell
     ./btop
     ./claude
+    ./crush
     ./direnv
     ./emacs
     ./firefox

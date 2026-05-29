@@ -89,9 +89,15 @@
           # and avoid rate limits when fetching flake inputs
           github = {};
           "netbird/setup-key" = {};
+          anthropic-api-key = {
+            owner = config.user.name;
+            group = config.user.group;
+            mode = "0400";
+          };
         };
       };
       claude.enable = true;
+      crush.enable = true;
     };
     services = {
       zfs.enable = true;
