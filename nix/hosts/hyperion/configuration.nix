@@ -141,9 +141,9 @@
         outputs = {
           "DP-3" = {
             mode = {
-              width = 2560;
-              height = 1440;
-              refresh = 180.063;
+              width = 3840;
+              height = 2160;
+              refresh = 59.997;
             };
             scale = 1;
             transform.rotation = 0;
@@ -161,7 +161,7 @@
             scale = 1;
             transform.rotation = 0;
             position = {
-              x = 2560;
+              x = 3840;
               y = 0;
             };
           };
