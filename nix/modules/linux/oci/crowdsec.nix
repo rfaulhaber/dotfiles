@@ -15,11 +15,13 @@ with lib; let
   # The acquis.yaml mounted on top of the persisted /etc/crowdsec directory.
   # Multiple acquisitions are concatenated with --- document separators, which
   # CrowdSec parses as a multi-document YAML stream.
-  acquisDocs = mapAttrsToList (name: a: {
-    source = "file";
-    filenames = ["/var/log/${name}/${baseNameOf a.hostPath}"];
-    labels = {type = a.type;};
-  }) enabledAcquisitions;
+  acquisDocs =
+    mapAttrsToList (name: a: {
+      source = "file";
+      filenames = ["/var/log/${name}/${baseNameOf a.hostPath}"];
+      labels = {type = a.type;};
+    })
+    enabledAcquisitions;
 
   acquisYaml = pkgs.writeText "acquis.yaml" (
     concatStringsSep "\n---\n" (map (d: builtins.toJSON d) acquisDocs)
@@ -346,15 +348,16 @@ in {
               done
 
               ${concatMapStringsSep "\n" (item: let
-                parts = lib.splitString "/" item;
-                itemType = lib.head parts;
-                itemName = lib.concatStringsSep "/" (lib.tail parts);
-              in ''
-                # Remove ${item}. --force suppresses "in use by collection"
-                # warnings; the collection install itself is left untouched.
-                ${pkgs.podman}/bin/podman exec crowdsec \
-                  cscli ${itemType} remove "${itemName}" --force || true
-              '') cfg.disabledHubItems}
+                  parts = lib.splitString "/" item;
+                  itemType = lib.head parts;
+                  itemName = lib.concatStringsSep "/" (lib.tail parts);
+                in ''
+                  # Remove ${item}. --force suppresses "in use by collection"
+                  # warnings; the collection install itself is left untouched.
+                  ${pkgs.podman}/bin/podman exec crowdsec \
+                    cscli ${itemType} remove "${itemName}" --force || true
+                '')
+                cfg.disabledHubItems}
 
               # Tell the daemon to re-scan its config so the removed items
               # stop being active without a container restart.

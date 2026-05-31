@@ -36,15 +36,14 @@ with lib; let
   # col 6 after the static config's 4-space strip). We need
   # `crowdsec-bouncer-traefik-plugin:` to land at col 4 (sibling of `badger:`)
   # and its children at col 6/8.
-  crowdsecPluginEntry =
-    optionalString cfg.crowdsec.enable (
-      "\n"
-      + concatMapStringsSep "\n" (line: "    " + line) [
-        "crowdsec-bouncer-traefik-plugin:"
-        "  moduleName: \"github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin\""
-        "  version: \"${cfg.crowdsec.pluginVersion}\""
-      ]
-    );
+  crowdsecPluginEntry = optionalString cfg.crowdsec.enable (
+    "\n"
+    + concatMapStringsSep "\n" (line: "    " + line) [
+      "crowdsec-bouncer-traefik-plugin:"
+      "  moduleName: \"github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin\""
+      "  version: \"${cfg.crowdsec.pluginVersion}\""
+    ]
+  );
 
   # Static traefik configuration (no secrets)
   traefikStaticConfig = pkgs.writeText "traefik_config.yml" ''
