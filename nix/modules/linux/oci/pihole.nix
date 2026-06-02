@@ -9,9 +9,26 @@ with lib; let
   ociLib = config.modules.linux.oci.lib;
   imageLib = import ./lib.nix {inherit lib;};
 
-  dnsServerConf =
-    pkgs.writeText "99-custom-dns.conf"
-    "dhcp-option=option:dns-server,${cfg.dhcp.dnsServer}";
+  # Extra raw dnsmasq directives rendered into /etc/dnsmasq.d. Pi-hole (FTL)
+  # loads these when misc.etc_dnsmasq_d is enabled.
+  dnsmasqExtraLines =
+    optional (cfg.dhcp.enable && cfg.dhcp.dnsServer != null)
+    "dhcp-option=option:dns-server,${cfg.dhcp.dnsServer}"
+    ++ optional (cfg.dhcp.enable && cfg.dhcp.ipv6 && !cfg.dhcp.ipv6Router)
+    # Keep sending Router Advertisements — so the RDNSS option still tells
+    # IPv6 clients to use Pi-hole for DNS (RFC 8106 decouples RDNSS lifetime
+    # from the router lifetime) — but set the router lifetime to 0 so clients
+    # do NOT install this host as a default IPv6 gateway. Without this a
+    # DNS-only appliance with dhcp.ipv6 becomes a black-hole default route.
+    # ra-param fields: <interface>,<ra-interval>,<router-lifetime>
+    # (an interval of 0 selects dnsmasq's default interval).
+    "ra-param=${cfg.interface},0,0";
+
+  customDnsmasqConf =
+    pkgs.writeText "99-pihole-custom.conf"
+    (concatStringsSep "\n" dnsmasqExtraLines + "\n");
+
+  hasCustomDnsmasqConf = dnsmasqExtraLines != [];
 in {
   options.modules.linux.oci.services.pihole = {
     enable = mkEnableOption "Pi-hole DNS server";
@@ -76,6 +93,19 @@ in {
         description = "Enable IPv6 for DHCP.";
         type = types.bool;
         default = true;
+      };
+      ipv6Router = mkOption {
+        description = ''
+          Whether Pi-hole's IPv6 Router Advertisements announce this host as a
+          default router. A DNS/DHCP appliance is normally NOT your gateway, so
+          this defaults to false: RAs still carry the RDNSS DNS-server
+          announcement (so IPv6 clients use Pi-hole for DNS, per RFC 8106), but
+          the RA router lifetime is set to 0 so clients do not install this host
+          as a default IPv6 route. Only enable if this host is genuinely your
+          IPv6 gateway with working upstream IPv6 transit.
+        '';
+        type = types.bool;
+        default = false;
       };
       rapidCommit = mkOption {
         description = "Enable DHCP rapid commit.";
@@ -167,7 +197,7 @@ in {
           "FTLCONF_dhcp_ipv6" = boolToString cfg.dhcp.ipv6;
           "FTLCONF_dhcp_rapidCommit" = boolToString cfg.dhcp.rapidCommit;
         }
-        // optionalAttrs (cfg.dhcp.enable && cfg.dhcp.dnsServer != null) {
+        // optionalAttrs hasCustomDnsmasqConf {
           "FTLCONF_misc_etc_dnsmasq_d" = "true";
         };
 
@@ -176,8 +206,8 @@ in {
           "${cfg.baseDir}/etc-pihole:/etc/pihole"
           # "${cfg.baseDir}/etc-dnsmasq.d:/etc/dnsmasq.d"
         ]
-        ++ optional (cfg.dhcp.enable && cfg.dhcp.dnsServer != null)
-        "${dnsServerConf}:/etc/dnsmasq.d/99-custom-dns.conf:ro";
+        ++ optional hasCustomDnsmasqConf
+        "${customDnsmasqConf}:/etc/dnsmasq.d/99-pihole-custom.conf:ro";
 
       log-driver = "journald";
     };
