@@ -135,7 +135,6 @@ Nushell scripts in `/bin/` for system tasks:
 - `random-wallpaper.nu` - Unsplash wallpaper rotation
 - `mullvad-config.nu` - VPN configuration
 - `exec-emacs-project.nu` - Run a command in the context of a projectile project
-- `tmp-downloads.nu` - Temporary downloads directory helper
 
 ### CI / Automation
 

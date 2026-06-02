@@ -1,38 +1,32 @@
 {
   config,
   lib,
-  pkgs,
   ...
-}:
-with lib; let
+}: let
+  inherit (lib) mkEnableOption mkOption mkIf types;
   cfg = config.modules.services.systemd.modules.tmp-downloads;
 in {
   options.modules.services.systemd.modules.tmp-downloads = {
-    enable = mkEnableOption false;
+    enable = mkEnableOption "ephemeral tmpfs Downloads directory";
     targetDir = mkOption {
-      description = "Where to place Downloads directory.";
-      type = types.oneOf [types.path types.str];
-      default = "/home/${config.user.name}/Downloads";
+      description = ''
+        Where to place the Downloads symlink. Supports tmpfiles.d
+        specifiers such as %h (home) and %u (username).
+      '';
+      type = types.str;
+      default = "%h/Downloads";
     };
   };
 
   config = mkIf cfg.enable {
-    systemd.user.services.tmp-downloads = let
-      scriptPath =
-        builtins.readFile "${config.dotfiles.binDir}/tmp-downloads.nu"
-        |> lib.my.writeNushellScriptBin pkgs "tmp-downloads";
-      cmd = "${scriptPath}/bin/tmp-downloads --link ${cfg.targetDir}";
-    in {
-      path = [pkgs.nushell];
-      after = ["local-fs.target"];
-      wants = ["local-fs.target"];
-      wantedBy = ["default.target"];
-      description = "Sets up temporary Downloads directory in tmpfs.";
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = "yes";
-        ExecStart = cmd;
-      };
-    };
+    # Point Downloads at a per-user directory in /tmp (tmpfs, wiped on
+    # reboot). systemd-tmpfiles recreates the directory each session, so the
+    # symlink is never left dangling after a /tmp clean.
+    #   d   create the backing directory
+    #   L+  create the symlink, force-removing anything already at targetDir
+    systemd.user.tmpfiles.rules = [
+      "d /tmp/%u-downloads 0755 - - -"
+      "L+ ${cfg.targetDir} - - - - /tmp/%u-downloads"
+    ];
   };
 }
