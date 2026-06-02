@@ -531,7 +531,11 @@ in {
             "${pkgs.writeShellScript "pangolin-config-init" ''
               mkdir -p ${cfg.baseDir}/pangolin
               cp -f ${config.sops.templates."pangolin-config".path} ${cfg.baseDir}/pangolin/config.yml
-              chmod 0640 ${cfg.baseDir}/pangolin/config.yml
+              # config.yml embeds the server secret, SMTP password and admin
+              # password — keep it root-only (0640 + group `users` left it
+              # readable by any second account on the box).
+              chown root:root ${cfg.baseDir}/pangolin/config.yml
+              chmod 0600 ${cfg.baseDir}/pangolin/config.yml
             ''}"
           ];
         }
@@ -573,6 +577,19 @@ in {
         ];
       };
     };
+
+    # The Pangolin DB (and its timestamped backups) hold bcrypt password
+    # hashes and live session tokens. Keep both directories root-only so a
+    # second host account or a container that bind-mounts a parent path can't
+    # read them, and age-prune the backups so old credential snapshots don't
+    # accumulate indefinitely. `d ... 30d` enforces the directory mode on
+    # every tmpfiles run and removes contents older than 30 days on the daily
+    # clean; `z` reasserts the live DB file mode.
+    systemd.tmpfiles.rules = [
+      "d ${cfg.baseDir}/pangolin/db 0700 root root -"
+      "z ${cfg.baseDir}/pangolin/db/db.sqlite 0600 root root -"
+      "d ${cfg.baseDir}/pangolin/db/backups 0700 root root 30d"
+    ];
 
     networking.firewall = mkIf cfg.openFirewall {
       allowedTCPPorts = [80 443 cfg.gerbil.tcpPort];

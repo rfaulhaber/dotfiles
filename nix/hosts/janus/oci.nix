@@ -1,7 +1,10 @@
 {lib, ...}: let
-  inherit (lib.importJSON ./ips.json) pangolin netbird;
+  inherit (lib.importJSON ./ips.json) pangolin netbird netbirdOverlay;
   pangolinIp = pangolin;
   netbirdIp = netbird;
+  # janus's address on the netbird overlay (wt0). Used to keep host-published
+  # container ports off the public ens3 addresses — see podman-exporter below.
+  netbirdOverlayIp = netbirdOverlay;
 in {
   modules.linux.oci = {
     enable = true;
@@ -44,7 +47,14 @@ in {
         pocket-id = {
           enable = true;
           appUrl = "https://auth.3679.space";
-          bindAddress = pangolinIp;
+          # Loopback-only host publish. Pocket-ID is reached as
+          # https://auth.3679.space *through Traefik*, which routes to the
+          # container by its podman alias (http://pocket-id:1411) over the
+          # shared `pangolin` network — that path is unaffected by the host
+          # bind. Publishing on a public ens3 IP only created a second
+          # ingress that bypassed Traefik (and the CrowdSec bouncer). Keep a
+          # loopback publish for local debugging; nothing external needs it.
+          bindAddress = "127.0.0.1";
           baseDir = "/docker/config/pocket-id";
           networks = ["pangolin"];
         };
@@ -65,12 +75,11 @@ in {
             enable = true;
             instanceName = "janus";
           };
-          # Don't enforce the CrowdSec community blocklist: it inherits all
-          # of CAPI's false positives (banned residential ISPs, mobile carrier
-          # ranges, VPN exits) and we don't know our Pangolin users' IPs in
-          # advance, so we can't safely allowlist them. Local detection keeps
-          # working — actual brute force / probing against janus still triggers
-          # the configured scenarios and bans the source.
+          # Enforce the CrowdSec community blocklist (CAPI). Pulls the
+          # community-curated blocklist for enforcement and shares local
+          # detections back. Accepts the tradeoff that CAPI can occasionally
+          # flag shared/residential/mobile ranges; tune via allowlist.cidrs if
+          # a legitimate user IP gets caught.
           communityBlocklist.enable = true;
 
           # LePresidente/http-generic-403-bf is a community scenario that
@@ -87,7 +96,16 @@ in {
           disabledHubItems = ["scenarios/LePresidente/http-generic-403-bf"];
         };
 
-        podman-exporter.enable = true;
+        podman-exporter = {
+          enable = true;
+          # Pin the publish to the netbird overlay IP. podman's host-port DNAT
+          # bypasses the NixOS firewall, so the `firewall.interfaces.wt0`
+          # narrowing in configuration.nix does NOT cover this container —
+          # without a bind address it was reachable on the public ens3 IPs.
+          # atlas scrapes it at janus.netbird.selfhosted:9882, which resolves
+          # to this overlay address.
+          bindAddress = netbirdOverlayIp;
+        };
       };
   };
 }

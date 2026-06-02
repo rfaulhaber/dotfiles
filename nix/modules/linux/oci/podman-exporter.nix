@@ -23,6 +23,21 @@ in {
       default = 9882;
     };
 
+    bindAddress = mkOption {
+      description = ''
+        Host address to publish the metrics port on. `null` binds all
+        interfaces (0.0.0.0) — appropriate on a trusted LAN where the
+        host firewall gates access. Set to a specific address (e.g. a
+        VPN overlay IP) on multi-homed or public hosts: podman publishes
+        host ports via a nat/PREROUTING DNAT that bypasses the NixOS
+        firewall, so `networking.firewall` cannot narrow this port —
+        scoping the publish to one address is the only way to keep it off
+        untrusted interfaces.
+      '';
+      type = types.nullOr types.str;
+      default = null;
+    };
+
     openFirewall = mkOption {
       description = ''
         Open the exporter port in the host firewall. Required when
@@ -79,7 +94,13 @@ in {
         # Read-only mount; the exporter only queries the API.
         "/run/podman/podman.sock:/run/podman/podman.sock:ro"
       ];
-      ports = ["${toString cfg.port}:9882"];
+      ports = [
+        (
+          if cfg.bindAddress == null
+          then "${toString cfg.port}:9882"
+          else "${cfg.bindAddress}:${toString cfg.port}:9882"
+        )
+      ];
       extraOptions =
         [
           "--network-alias=podman-exporter"
