@@ -14,6 +14,13 @@ with lib; let
   dnsmasqExtraLines =
     optional (cfg.dhcp.enable && cfg.dhcp.dnsServer != null)
     "dhcp-option=option:dns-server,${cfg.dhcp.dnsServer}"
+    ++ optional (cfg.dhcp.enable && cfg.dhcp.ipv6 && cfg.dhcp.dnsServerV6 != null)
+    # Pin the IPv6 DNS server advertised via the RDNSS option (in RAs) and
+    # DHCPv6. Without this, dnsmasq auto-selects one of the host's own
+    # addresses, which can change across restarts and — critically — does NOT
+    # survive keepalived failover. Point it at the floating VIP so v6 DNS
+    # follows whichever node currently holds it, mirroring the v4 dnsServer.
+    "dhcp-option=option6:dns-server,[${cfg.dhcp.dnsServerV6}]"
     ++ optional (cfg.dhcp.enable && cfg.dhcp.ipv6 && !cfg.dhcp.ipv6Router)
     # Keep sending Router Advertisements — so the RDNSS option still tells
     # IPv6 clients to use Pi-hole for DNS (RFC 8106 decouples RDNSS lifetime
@@ -117,6 +124,19 @@ in {
         type = types.nullOr types.str;
         default = null;
         example = "192.168.0.254";
+      };
+      dnsServerV6 = mkOption {
+        description = ''
+          IPv6 DNS server advertised to clients via the RA RDNSS option and
+          DHCPv6. Set this to your floating/HA DNS address (e.g. a keepalived
+          VIP) rather than letting dnsmasq auto-select one of the host's own
+          addresses — otherwise the advertised address can change across
+          restarts and will not survive failover. Brackets are added
+          automatically. Only takes effect when dhcp.ipv6 is enabled.
+        '';
+        type = types.nullOr types.str;
+        default = null;
+        example = "2600:1702:6710:117f::fe";
       };
     };
 

@@ -21,6 +21,7 @@
             ipv6 = true;
             rapidCommit = true;
             dnsServer = "192.168.0.254";
+            dnsServerV6 = "2600:1702:6710:117F::FE";
           };
         };
         caddy = {
