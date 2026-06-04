@@ -179,24 +179,6 @@
       }
     }
   },
-  "sure": {
-    "image": {
-      "version": "stable",
-      "digest": "sha256:67089f799ac99ca65266d7d218d2207aa19fef1fda562fc2797ef04ee858b71a"
-    },
-    "postgres": {
-      "image": {
-        "version": "16-alpine",
-        "digest": "sha256:16bc17c64a573ef34162af9298258d1aec548232985b33ed7b1eac33ba35c229"
-      }
-    },
-    "redis": {
-      "image": {
-        "version": "8-alpine",
-        "digest": "sha256:09160599abd229764c0fb44cb6be640294e1d360a54b19985ab4843dcf2d90f1"
-      }
-    }
-  },
   "vikunja": {
     "image": {
       "version": "latest",
@@ -231,6 +213,12 @@
     "image": {
       "version": "latest",
       "digest": "sha256:3c009663332145cae39b940b07857469038d5e9d71aacb1497e78795ba4e3b9b"
+    }
+  },
+  "job-ops": {
+    "image": {
+      "version": "v0.9.0",
+      "digest": "sha256:588b571fb44c3fdd86b462035dacd0abb7f434146c1b76199be1081dec5df25a"
     }
   }
 }

@@ -272,24 +272,10 @@
           };
         };
 
-        sure = {
+        job-ops = {
           enable = true;
-          baseDir = "/data/apps/sure";
-          appUrl = "https://sure.3679.space";
-          oidc = {
-            enable = true;
-            issuer = "https://auth.3679.space";
-          };
-          onboardingState = "closed";
-          localLogin.enabled = false;
-          dbEncryption = {
-            enable = true;
-            keyFile = ./secrets/sure-db-zfs-key;
-          };
-          storageEncryption = {
-            enable = true;
-            keyFile = ./secrets/sure-storage-zfs-key;
-          };
+          baseDir = "/data/apps/job-ops";
+          publicBaseUrl = "https://jobs.3679.space";
         };
 
         syncthing = {

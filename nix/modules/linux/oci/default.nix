@@ -156,6 +156,7 @@ in {
     ./immich.nix
     ./immich-ml.nix
     ./jellyfin.nix
+    ./job-ops.nix
     ./lidarr.nix
     ./linkding.nix
     ./loki.nix
