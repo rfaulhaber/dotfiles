@@ -94,10 +94,19 @@
             group = config.user.group;
             mode = "0400";
           };
+          openrouter-crush-api-key = {
+            owner = config.user.name;
+            group = config.user.group;
+            mode = "0400";
+          };
         };
       };
       claude.enable = true;
-      crush.enable = true;
+      crush = {
+        enable = true;
+        openrouterApiKeySecret = "openrouter-crush-api-key";
+        providers.openrouter = {};
+      };
     };
     services = {
       zfs.enable = true;

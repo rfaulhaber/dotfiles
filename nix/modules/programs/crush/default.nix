@@ -7,7 +7,16 @@
 with lib; let
   cfg = config.modules.programs.crush;
 
-  hasAnthropicSecret = cfg.anthropicApiKeySecret != null;
+  # Map of crush provider id -> sops secret name, restricted to providers
+  # that actually have a secret wired up. When this is empty we skip sops
+  # entirely and render a plain crush.json.
+  apiKeySecrets =
+    filterAttrs (_: secret: secret != null) {
+      anthropic = cfg.anthropicApiKeySecret;
+      openrouter = cfg.openrouterApiKeySecret;
+    };
+
+  hasAnySecret = apiKeySecrets != {};
 
   baseConfig =
     {
@@ -18,21 +27,28 @@ with lib; let
     }
     // cfg.extraConfig;
 
-  # Inject the sops placeholder into providers.anthropic.api_key when a
-  # secret is wired up. The placeholder is substituted by sops-nix at
-  # activation time when rendering the template.
-  withAnthropicKey =
+  # Inject the sops placeholder into providers.<id>.api_key for every
+  # provider that has a secret. The placeholder is substituted by sops-nix
+  # at activation time when rendering the template. `(... or {})` ensures the
+  # provider entry exists even if the user didn't pre-declare it in
+  # `providers`.
+  withApiKeys =
     baseConfig
     // {
       providers =
-        baseConfig.providers
-        // optionalAttrs hasAnthropicSecret {
-          anthropic =
-            (baseConfig.providers.anthropic or {})
+        foldl' (
+          providers: providerId:
+            providers
             // {
-              api_key = config.sops.placeholder.${cfg.anthropicApiKeySecret};
-            };
-        };
+              ${providerId} =
+                (providers.${providerId} or {})
+                // {
+                  api_key = config.sops.placeholder.${apiKeySecrets.${providerId}};
+                };
+            }
+        )
+        baseConfig.providers
+        (attrNames apiKeySecrets);
     };
 
   outerConfig = config;
@@ -54,6 +70,18 @@ in {
         declared in `modules.programs.sops.secrets.<name>`. Set to `null` to
         skip sops integration entirely (e.g. when relying on a shell env var
         for `$ANTHROPIC_API_KEY`).
+      '';
+    };
+
+    openrouterApiKeySecret = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      example = "openrouter-crush-api-key";
+      description = ''
+        Name of the sops secret containing the OpenRouter API key. Must be
+        declared in `modules.programs.sops.secrets.<name>`. Defaults to `null`
+        (opt-in); set it to wire OpenRouter's `api_key` from sops. Remember to
+        also add `openrouter` to `providers` and reference it from `models`.
       '';
     };
 
@@ -113,23 +141,21 @@ in {
   };
 
   config = mkIf cfg.enable {
-    assertions = [
-      {
-        assertion =
-          hasAnthropicSecret
-          -> (config.sops.secrets ? ${cfg.anthropicApiKeySecret});
+    assertions =
+      mapAttrsToList (providerId: secretName: {
+        assertion = config.sops.secrets ? ${secretName};
         message = ''
-          modules.programs.crush.anthropicApiKeySecret is set to "${toString cfg.anthropicApiKeySecret}"
+          modules.programs.crush.${providerId}ApiKeySecret is set to "${secretName}"
           but no matching secret is declared in modules.programs.sops.secrets.
         '';
-      }
-    ];
+      })
+      apiKeySecrets;
 
     user.packages = [cfg.package];
 
-    sops.templates = mkIf hasAnthropicSecret {
+    sops.templates = mkIf hasAnySecret {
       "crush.json" = {
-        content = builtins.toJSON withAnthropicKey;
+        content = builtins.toJSON withApiKeys;
         owner = config.user.name;
         group = config.user.group;
         mode = "0400";
@@ -138,7 +164,7 @@ in {
 
     home-manager.users.${config.user.name} = {config, ...}: {
       xdg.configFile."crush/crush.json".source =
-        if hasAnthropicSecret
+        if hasAnySecret
         then
           config.lib.file.mkOutOfStoreSymlink
           outerConfig.sops.templates."crush.json".path
