@@ -32,3 +32,13 @@ Bash is fine **only** when:
 - The command is a single external invocation with no shell control flow (e.g., `git status`, `nix build .#foo`) — these are identical in both shells.
 
 If you're unsure whether a construct works in nushell, prefer the explicit nushell form over guessing.
+
+# Code Comments
+
+Write comments for the next person who reads this code in its committed, finished state — not as a log of how you arrived at it.
+
+- Comment the *why*, not the *what*. Explain intent, constraints, and non-obvious reasoning. Don't narrate what the code plainly says.
+- No process or conversational comments. Never leave notes about the change you're making, alternatives you considered, what the code does "now" versus before, instructions you were given, or who/what made the decision. If a comment only makes sense in the context of our conversation, it doesn't belong in the file.
+- Reserve comments for things that genuinely help a future reader: an unusual or surprising decision, a workaround for an external bug or constraint, a subtle invariant, or a warning about a non-obvious consequence.
+- Prefer fewer, durable comments over many situational ones. When in doubt, leave it out — clear naming and structure beat a comment.
+- Match the surrounding code's existing comment style and density.
