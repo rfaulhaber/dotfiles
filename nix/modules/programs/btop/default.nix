@@ -71,6 +71,7 @@ in {
         color_theme = themeName;
         theme_background = false;
         vim_keys = cfg.vimKeys;
+        update_ms = 1000;
       };
     };
 
