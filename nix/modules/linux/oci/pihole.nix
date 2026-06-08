@@ -235,8 +235,12 @@ in {
     # Pi-hole uses host networking, so it doesn't need the normal network dependencies
     # but still wants to be part of the root target for lifecycle management
     systemd.services."podman-pihole" = {
+      # See mkServiceConfig in default.nix: keep retrying through transient
+      # startup failures rather than latching to the start-limit.
+      startLimitIntervalSec = mkOverride 90 0;
       serviceConfig = {
         Restart = mkOverride 90 "always";
+        RestartSec = mkOverride 90 10;
       };
       partOf = ["${ociLib.rootTargetName}.target"];
       wantedBy = ["${ociLib.rootTargetName}.target"];

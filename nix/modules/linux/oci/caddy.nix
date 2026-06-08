@@ -276,8 +276,15 @@ in {
 
     # Caddy uses host networking, wire to root target
     systemd.services."podman-caddy" = {
+      # Self-heal through transient DNS/registry outages during deploys (e.g.
+      # Pi-hole bouncing while caddy pulls a bumped image) rather than hitting
+      # the start-limit and staying dead. See mkServiceConfig in default.nix
+      # for the full rationale; caddy wires its unit by hand because it uses
+      # host networking, so the settings are repeated here.
+      startLimitIntervalSec = mkOverride 90 0;
       serviceConfig = {
         Restart = mkOverride 90 "always";
+        RestartSec = mkOverride 90 10;
       };
       # Depend on pihole if it's enabled (DNS resolution)
       after = optional config.modules.linux.oci.services.pihole.enable "podman-pihole.service";
