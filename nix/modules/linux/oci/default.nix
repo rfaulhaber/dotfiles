@@ -123,8 +123,20 @@ with lib; let
       map (n: config.sops.templates.${n}.content) sopsTemplates;
   in {
     restartTriggers = templateTriggers;
+    # Keep retrying through transient startup failures instead of latching to
+    # systemd's default start-limit (5 starts / 10s) and giving up. Motivating
+    # case: on hosts that resolve DNS through their own Pi-hole container, a
+    # deploy that bumps a service's pinned image digest forces a registry pull
+    # at the same moment Pi-hole is restarting — the pull fails with "no such
+    # host", burns all 5 starts in ~2s, and the unit stays dead until a human
+    # intervenes even though DNS recovers seconds later. RestartSec spaces
+    # retries past that gap; disabling the start-limit lets Restart=always mean
+    # what it says. Genuine liveness is watched via the Prometheus blackbox
+    # path, not systemd's failed state.
+    startLimitIntervalSec = mkOverride 90 0;
     serviceConfig = {
       Restart = mkOverride 90 "always";
+      RestartSec = mkOverride 90 10;
     };
     after =
       zfsDeps

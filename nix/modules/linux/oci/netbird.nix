@@ -446,13 +446,34 @@ in {
               cp -f ${config.sops.templates."netbird-management".path} ${cfg.baseDir}/management.json
               chmod 0640 ${cfg.baseDir}/management.json
             ''}"
+            # netbird-management exits 1 at boot if it can't fetch the IdP's
+            # OIDC discovery doc. During a co-deploy the reverse proxy +
+            # pocket-id chain returns 404 for a few seconds while traefik loads
+            # its routes, which burns netbird-mgmt's restart budget
+            # (start-limit-hit) and fails the switch. systemd ordering (after=)
+            # can't gate on this: the proxy unit is `active` before it actually
+            # routes. So probe the real URL netbird uses until it 200s.
+            "${pkgs.writeShellScript "netbird-mgmt-wait-oidc" ''
+              url="https://${cfg.authDomain}/.well-known/openid-configuration"
+              for _ in $(seq 1 60); do
+                code=$(${pkgs.curl}/bin/curl -s -o /dev/null -w '%{http_code}' --max-time 5 "$url" || true)
+                if [ "$code" = "200" ]; then exit 0; fi
+                sleep 2
+              done
+              echo "netbird-mgmt: OIDC discovery $url not ready after ~120s" >&2
+              exit 1
+            ''}"
           ];
         }
       ];
 
       # Coturn uses host networking — no podman network deps
       "podman-netbird-coturn" = {
+        # See mkServiceConfig in default.nix: keep retrying through transient
+        # startup failures rather than latching to the start-limit.
+        startLimitIntervalSec = mkOverride 90 0;
         serviceConfig.Restart = mkOverride 90 "always";
+        serviceConfig.RestartSec = mkOverride 90 10;
         partOf = ["${ociLib.rootTargetName}.target"];
         wantedBy = ["${ociLib.rootTargetName}.target"];
       };

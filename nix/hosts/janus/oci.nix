@@ -94,6 +94,20 @@ in {
           # Auth brute force is still covered by crowdsecurity/http-bf (which
           # watches 401s) and the rest of base-http-scenarios.
           disabledHubItems = ["scenarios/LePresidente/http-generic-403-bf"];
+
+          # The Newt tunnel agents on atlas and vulcan reach Pangolin from the
+          # home network's single public WAN IP — the same address a browser
+          # uses. Newt POSTs /api/v1/auth/newt/get-token and, whenever that IP
+          # is already bounced, the bouncer's own 403 response feeds 403-counting
+          # scenarios; Newt then retries every few seconds forever, pinning a
+          # self-renewing ban on the whole household. Whitelisting the tunnel
+          # control-plane path stops that traffic from ever scoring as an attack.
+          # Safe because the endpoint requires a valid Newt token, so it isn't a
+          # meaningful brute-force surface. IP-agnostic, so it survives the home
+          # IP changing.
+          allowlist.expressions = [
+            "evt.Meta.log_type in ['http_access-log', 'http_error-log'] && evt.Meta.http_path startsWith '/api/v1/auth/newt/'"
+          ];
         };
 
         podman-exporter = {

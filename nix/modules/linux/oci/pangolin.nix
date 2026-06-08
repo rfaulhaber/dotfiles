@@ -556,7 +556,11 @@ in {
 
       # Traefik uses container:gerbil networking — no podman network deps
       "podman-traefik" = {
+        # See mkServiceConfig in default.nix: keep retrying through transient
+        # startup failures rather than latching to the start-limit.
+        startLimitIntervalSec = mkOverride 90 0;
         serviceConfig.Restart = mkOverride 90 "always";
+        serviceConfig.RestartSec = mkOverride 90 10;
         after = [
           "podman-pangolin.service"
           "podman-gerbil.service"

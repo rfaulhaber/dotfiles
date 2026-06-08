@@ -197,6 +197,24 @@ in {
         default = [];
         example = ["10.0.0.0/8" "203.0.113.42/32"];
       };
+      expressions = mkOption {
+        description = ''
+          expr-lang expressions evaluated at the s02-enrich parser stage.
+          Any event for which an expression returns true is whitelisted and
+          never reaches a scenario bucket — use this to exclude known-benign
+          traffic that would otherwise feed brute-force/scanner scenarios.
+
+          Fields are those set by upstream parsers; guard HTTP-only fields
+          with the log_type so non-HTTP events don't error, e.g.
+          `evt.Meta.log_type in ['http_access-log', 'http_error-log'] && evt.Meta.http_path startsWith '/foo/'`.
+
+          Unlike cidrs, expressions match regardless of source IP, so they
+          survive a client's IP changing.
+        '';
+        type = types.listOf types.str;
+        default = [];
+        example = ["evt.Meta.http_path startsWith '/api/v1/auth/newt/'"];
+      };
       reason = mkOption {
         description = "Annotation attached to whitelisted events for debugging.";
         type = types.str;
@@ -284,16 +302,20 @@ in {
 
     systemd.services."podman-crowdsec" = let
       allowlistYaml =
-        if cfg.allowlist.cidrs == []
+        if cfg.allowlist.cidrs == [] && cfg.allowlist.expressions == []
         then null
         else
           pkgs.writeText "local-allowlist.yaml" (builtins.toJSON {
             name = "local/allowlist";
-            description = "Trusted IPs/CIDRs that bypass local CrowdSec scenarios.";
-            whitelist = {
-              reason = cfg.allowlist.reason;
-              cidr = cfg.allowlist.cidrs;
-            };
+            description = "Trusted IPs/CIDRs and benign expressions that bypass local CrowdSec scenarios.";
+            whitelist =
+              {reason = cfg.allowlist.reason;}
+              // optionalAttrs (cfg.allowlist.cidrs != []) {
+                cidr = cfg.allowlist.cidrs;
+              }
+              // optionalAttrs (cfg.allowlist.expressions != []) {
+                expression = cfg.allowlist.expressions;
+              };
           });
     in
       mkMerge [
@@ -324,7 +346,7 @@ in {
                 ''
               }
               ${
-                optionalString (cfg.allowlist.cidrs == []) ''
+                optionalString (cfg.allowlist.cidrs == [] && cfg.allowlist.expressions == []) ''
                   # No allowlist configured — clean up any previous render so
                   # the parser doesn't keep applying a stale list.
                   rm -f ${cfg.baseDir}/config/parsers/s02-enrich/local-allowlist.yaml
