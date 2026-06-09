@@ -10,3 +10,6 @@ result
 .sass-cache
 
 *.img
+
+.env
+.mcp.json
