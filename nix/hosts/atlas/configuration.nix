@@ -109,10 +109,6 @@
             path = "/data/tv";
             clients = "192.168.0.105(rw,sync,no_subtree_check,no_root_squash)";
           };
-          llm-models = {
-            path = "/data/llm/models";
-            clients = "192.168.0.105(rw,sync,no_subtree_check,no_root_squash)";
-          };
         };
       };
     };
