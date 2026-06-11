@@ -62,6 +62,11 @@ in {
         Comma-separated list of collectors to enable. The exporter has
         many; the default keeps the high-signal container-level metrics
         and skips per-pod/per-volume noise that explodes cardinality.
+
+        The `container` collector is always on (the exporter enables it by
+        default and exposes no flag to toggle it), so it is rendered as a
+        no-op here — listing it is harmless. Every other name maps to a
+        `--collector.<name>` flag.
       '';
       type = types.str;
       default = "container,system";
@@ -86,10 +91,18 @@ in {
         # but an explicit value makes intent clear in `podman inspect`.
         "CONTAINER_HOST" = "unix:///run/podman/podman.sock";
       };
-      cmd = [
-        "--collector.enable-all=false"
-        "--web.listen-address=:9882"
-      ];
+      cmd =
+        [
+          "--collector.enable-all=false"
+          "--web.listen-address=:9882"
+        ]
+        # `container` is enabled by default and has no flag; every other
+        # requested collector needs an explicit `--collector.<name>`.
+        # Without this the `system` (etc.) metrics the option promises are
+        # never scraped.
+        ++ (map (c: "--collector.${c}") (
+          filter (c: c != "container") (splitString "," cfg.collectors)
+        ));
       volumes = [
         # Read-only mount; the exporter only queries the API.
         "/run/podman/podman.sock:/run/podman/podman.sock:ro"

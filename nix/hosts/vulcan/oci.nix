@@ -34,6 +34,16 @@
         enable = true;
         gpu = "intel";
         openFirewall = true;
+        # Pinned here, not in oci-images.json: gpu="intel" makes the effective
+        # tag `release-openvino`, but update-oci-digests.nu inspects
+        # `repository:version` without the GPU suffix. A JSON pin would be
+        # rewritten with the plain `release` digest on the next update run,
+        # silently swapping the Intel-optimized image for the generic one.
+        # Keeping it out of the JSON walk avoids that clobber; refresh by hand:
+        #   skopeo inspect --no-tags --format "{{.Digest}}" \
+        #     docker://ghcr.io/immich-app/immich-machine-learning:release-openvino
+        image.version = "release";
+        image.digest = "sha256:71cd5a681823c4b818f4b24b3f05816eccc3d085559e7615f695bde77e64f1f2";
       };
       newt = {
         enable = true;
@@ -46,6 +56,18 @@
         openFirewall = true;
       };
 
+      # SECURITY TRUST BOUNDARY: every runner here grants its job containers
+      # the host Nix daemon socket, and the runner daemon itself holds the
+      # podman socket (needed to spawn job containers). A job that runs as
+      # root therefore connects to the Nix daemon as a *trusted* user — it can
+      # import arbitrary store paths that harmonia then re-signs and serves to
+      # atlas/prometheus, i.e. it can poison the LAN binary cache. Nothing in
+      # Nix gates this; the only control is that workflow runs from untrusted
+      # contributors require maintainer approval before they execute. That is
+      # enforced forge-side, not here. Before adding a runner against any forge
+      # where external contributors can trigger CI without approval, this model
+      # breaks — isolate that runner (drop the host nix-daemon socket, or front
+      # the podman socket with a restricting proxy) rather than reusing this.
       forgejo-runner = {
         enable = true;
         runners = {
@@ -72,6 +94,9 @@
             ];
             containerOptions = "-v /nix/var/nix/daemon-socket/socket:/nix/var/nix/daemon-socket/socket";
           };
+          # Public forge: this runner is the one the trust boundary above
+          # hinges on. Keep Codeberg's "require approval for outside
+          # collaborators" setting on for every repo this runner serves.
           codeberg = {
             enable = true;
             instanceUrl = "https://codeberg.org";
