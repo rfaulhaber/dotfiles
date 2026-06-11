@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 with lib; let
@@ -67,6 +68,10 @@ in {
   };
 
   config = mkIf cfg.enable {
+    # Replaces pkgs.claude-code (and thus the home-manager module's default
+    # package) with the always-current build from the claude-code-nix flake.
+    nixpkgs.overlays = [inputs.claude-code.overlays.default];
+
     user.packages = with pkgs; [
       # some of the plugins below use python3 and assume it's globally available, which of course it isn't
       python3

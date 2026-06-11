@@ -22,6 +22,14 @@
 
     emacs-overlay.url = "github:nix-community/emacs-overlay";
 
+    # nixpkgs' claude-code is a vendored binary manifest that lags upstream by
+    # several releases. This flake's CI tracks the `latest` channel daily, so a
+    # routine `nix flake update` pulls the newest Claude Code for free.
+    claude-code = {
+      url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     ragenix = {
       url = "github:yaxitech/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
