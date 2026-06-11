@@ -1,0 +1,82 @@
+name: Build and Cache Hosts
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# A newer push to main supersedes any in-flight build of an older commit:
+# cancel the running matrix so we don't queue several full fan-outs on the
+# runners. Keyed on the ref so manual dispatch and pushes share one group.
+concurrency:
+  group: build-and-cache-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # See flake-update.yml for why NIX_CONFIG is composed per-job rather than
+  # set here. CI_RUN_DIR is the per-run scratch dir under /ci-state (bind
+  # mounted into every job container) where build-one-host.nu drops its
+  # per-host report; the report job reads them back and cleans up.
+  CI_RUN_DIR: /ci-state/runs/${{ github.run_id }}
+
+jobs:
+  # Build every host against the exact pushed commit and copy each closure to
+  # the host nix daemon (feeding harmonia) so the first deploy after a merge
+  # pulls from cache instead of rebuilding locally. x86_64 hosts build on
+  # vulcan's `nix` runner; aarch64 hosts on prometheus's `nix-aarch64` runner.
+  build:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - { host: hyperion, runner: nix }
+          - { host: atlas, runner: nix }
+          - { host: janus, runner: nix }
+          - { host: vulcan, runner: nix }
+          - { host: prometheus, runner: nix-aarch64 }
+          - { host: pallas, runner: nix-aarch64 }
+          - { host: hecate, runner: nix-aarch64 }
+    steps:
+      # Full clone + checkout of the triggering SHA (not a shallow --branch
+      # clone) so every matrix leg builds the same commit even if a later push
+      # has already advanced main before this leg starts.
+      - name: Checkout pushed commit
+        run: |
+          PROTO="${GITHUB_SERVER_URL%%://*}"
+          DOMAIN="${GITHUB_SERVER_URL#*://}"
+          git clone \
+            "${PROTO}://forgejo-actions:${GITHUB_TOKEN}@${DOMAIN}/${GITHUB_REPOSITORY}.git" .
+          git checkout "${GITHUB_SHA}"
+
+      - name: Configure Nix
+        run: nix run nixpkgs#nushell -- .forgejo/scripts/configure-nix.nu
+
+      - name: Build ${{ matrix.host }}
+        run: nix run nixpkgs#nushell -- .forgejo/scripts/build-one-host.nu ${{ matrix.host }}
+
+  # Collect per-host reports for a single pass/fail summary and prune this
+  # run's scratch dir. Runs even when some build legs fail (always()) so the
+  # summary reflects partial failures; the matrix legs themselves already mark
+  # the workflow red, so this job does not re-fail.
+  report:
+    runs-on: nix
+    needs: build
+    if: always()
+    steps:
+      - name: Checkout pushed commit
+        run: |
+          PROTO="${GITHUB_SERVER_URL%%://*}"
+          DOMAIN="${GITHUB_SERVER_URL#*://}"
+          git clone --depth 1 \
+            "${PROTO}://forgejo-actions:${GITHUB_TOKEN}@${DOMAIN}/${GITHUB_REPOSITORY}.git" .
+
+      - name: Summarize build reports
+        run: nix run nixpkgs#nushell -- .forgejo/scripts/merge-reports.nu
+
+      - name: Clean up run directory
+        if: always()
+        run: rm -rf "$CI_RUN_DIR"
