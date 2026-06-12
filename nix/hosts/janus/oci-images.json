@@ -2,8 +2,8 @@
   "pangolin": {
     "images": {
       "pangolin": {
-        "version": "latest",
-        "digest": "sha256:4b99f893935f1068c8625156cf52b6b3ea3e61cc3e54001f5aa64c5cd91f95e2"
+        "version": "1.19.1",
+        "digest": "sha256:327d609df506c4dd8bc934a170f6b5bbba8c50a4e77a6c5a6b5bf9788108b49f"
       },
       "gerbil": {
         "version": "latest",
@@ -23,15 +23,15 @@
       },
       "signal": {
         "version": "latest",
-        "digest": "sha256:58edc23a0adee8905b3bc16af543bea174d6510f5c8daa9e8e298da015cdb81d"
+        "digest": "sha256:b44e016047e7bedb9c69603cb4deff04f6cc8077b07d6fc01b90b034806fc6b7"
       },
       "relay": {
         "version": "latest",
-        "digest": "sha256:fec7207dd5178a273631136cb2d252b38e35cd8cb385450f00ae540c45be5940"
+        "digest": "sha256:69efb9388a1f2908459757e407cdd63fc33d65751fc9e3f6749bfd4d14e5e5da"
       },
       "management": {
         "version": "latest",
-        "digest": "sha256:882686e01a4443c68bf51d1cb4ecb9cdeb52a39f00629425f02100d248bccdfa"
+        "digest": "sha256:ebda1b31cfbc907e4a29abf9b16534e508e19c1d36d82d1454c6180c5f83a49d"
       },
       "coturn": {
         "version": "latest",

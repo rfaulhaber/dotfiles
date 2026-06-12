@@ -2,13 +2,13 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:5665416a97ad2823dda6986a581b8913cc3af1b196ac768f5130abad4b0d4f62"
+      "digest": "sha256:343ddffa6bf9be7740bdd27317df2a2ecfc7e6d12e5532f98d23f5052f15be11"
     }
   },
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:aa4926b22bc25e89820acf427f8a5d1426c34a7ae9bd834e06eda43b12d839c3"
+      "digest": "sha256:ec464a74779392475c7243e7bad7d3d87db5c7bd332bf4dda7e091a84f16c3a9"
     }
   },
   "flaresolverr": {
@@ -20,13 +20,13 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:e6b0cd601b61d2d165b9333fc56dd3a63f7a087c7806114399b770796f0de951"
+      "digest": "sha256:6848d92453fbdfa88634304fcdcbac596541816e8d17260cff7e71e9e7538dc3"
     }
   },
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c0a4335d4249b46102f64cf6fa27ffc3bddfd9138fac1e4ddf238afd37f02d1f"
+      "digest": "sha256:4c490ccd44d31feb49dc4cc542f2148a420fc1ae0c1ba94e59b39ba4bf112716"
     }
   },
   "sonarr": {
@@ -56,7 +56,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:2ea39aceab900ef3dd3a027ce96c8f552952f8eefd80c92419c7be0d8da92107"
+      "digest": "sha256:bcd0d60ab77e2fc6bbc19fe286281bd80c22929029026a0728ce723e13711343"
     }
   },
   "soularr": {
@@ -122,7 +122,7 @@
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:f745d349a6ef81620d6f64dd77123f4d0f20112719b5d99647c67ac4ccb29ffb"
+      "digest": "sha256:c31a3dd191057e71a03322f6ca7c5e2c450740eebd222fac9d788b69fe9ebc8d"
     }
   },
   "calibre-web-auto": {
@@ -212,7 +212,7 @@
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:3c009663332145cae39b940b07857469038d5e9d71aacb1497e78795ba4e3b9b"
+      "digest": "sha256:63d956c8fdee889255e441ec405193b47b1fd2d975b505492ec848a8007f4fc3"
     }
   },
   "job-ops": {
