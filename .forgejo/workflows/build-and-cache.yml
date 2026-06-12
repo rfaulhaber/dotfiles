@@ -53,7 +53,9 @@ jobs:
           git checkout "${GITHUB_SHA}"
 
       - name: Configure Nix
-        run: nix run nixpkgs#nushell -- .forgejo/scripts/configure-nix.nu
+        run: |
+          nix --extra-experimental-features 'nix-command flakes' \
+            run nixpkgs#nushell -- .forgejo/scripts/configure-nix.nu
 
       - name: Build ${{ matrix.host }}
         run: nix run nixpkgs#nushell -- .forgejo/scripts/build-one-host.nu ${{ matrix.host }}
@@ -74,8 +76,13 @@ jobs:
           git clone --depth 1 \
             "${PROTO}://forgejo-actions:${GITHUB_TOKEN}@${DOMAIN}/${GITHUB_REPOSITORY}.git" .
 
+      # No Configure Nix here: this job only reads reports from /ci-state, so
+      # it doesn't need substituters — but the bootstrap still needs the
+      # feature flags (see flake-update.yml).
       - name: Summarize build reports
-        run: nix run nixpkgs#nushell -- .forgejo/scripts/merge-reports.nu
+        run: |
+          nix --extra-experimental-features 'nix-command flakes' \
+            run nixpkgs#nushell -- .forgejo/scripts/merge-reports.nu
 
       - name: Clean up run directory
         if: always()

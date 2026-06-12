@@ -10,7 +10,10 @@
 # so the bootstrap `nix run nixpkgs#nushell -- configure-nix.nu` falls
 # through to the host nix-daemon's own substituters (which never include
 # the host's own cache). That avoids the self-reference timeout long
-# enough to set the richer per-job NIX_CONFIG written here.
+# enough to set the richer per-job NIX_CONFIG written here. The bootstrap
+# invocation must pass --extra-experimental-features 'nix-command flakes'
+# itself: the nixos/nix image ships no experimental-features in its
+# nix.conf, and the gate is checked by the CLI, not the daemon.
 #
 # RUNNER_NAME is "<host>-<label>" per forgejo-runner.nix's runnerName
 # default; the first segment is the host.
