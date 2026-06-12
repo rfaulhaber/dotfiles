@@ -15,16 +15,23 @@
 # itself: the nixos/nix image ships no experimental-features in its
 # nix.conf, and the gate is checked by the CLI, not the daemon.
 #
-# RUNNER_NAME is "<host>-<label>" per forgejo-runner.nix's runnerName
-# default; the first segment is the host.
+# CI_RUNNER_HOST is injected into every job container by forgejo-runner.nix
+# (set to the host the runner sits on). We deliberately do NOT fall back to
+# RUNNER_NAME: not every Forgejo instance populates it (Codeberg's does
+# not), and an empty value used to leave the self-referencing cache in the
+# list — nix then retried it 15 times with exponential backoff, hanging the
+# job for hours. If the host can't be identified, drop BOTH host caches: a
+# missing cache only costs a slower build, a self-reference costs a hang.
 
 if ($env.GITHUB_ENV? | is-empty) {
   print -e "configure-nix.nu: GITHUB_ENV not set; refusing to run outside CI."
   exit 1
 }
 
-let runner_name = ($env.RUNNER_NAME? | default "")
-let local_host = ($runner_name | split row "-" | first)
+let local_host = ($env.CI_RUNNER_HOST? | default "")
+if ($local_host | is-empty) {
+  print -e "configure-nix.nu: CI_RUNNER_HOST unset; excluding all host caches to avoid a self-reference hang."
+}
 
 let base_substituters = [
   "https://install.determinate.systems"
@@ -35,7 +42,7 @@ let base_substituters = [
 
 let host_substituters = (
   ["vulcan" "prometheus"]
-  | where {|h| $h != $local_host}
+  | where {|h| ($local_host | is-not-empty) and ($h != $local_host)}
   | each {|h| $"http://($h).lan:4965"}
 )
 
@@ -62,4 +69,4 @@ download-attempts = 15
 $"NIX_CONFIG<<__NIX_CONFIG_EOF__\n($nix_config)__NIX_CONFIG_EOF__\n"
 | save --append $env.GITHUB_ENV
 
-print $"Configured NIX_CONFIG for runner '($runner_name)' \(host='($local_host)'\); substituters: ($substituters)"
+print $"Configured NIX_CONFIG for host '($local_host)'; substituters: ($substituters)"
