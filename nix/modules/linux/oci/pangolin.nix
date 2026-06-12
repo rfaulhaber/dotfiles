@@ -32,7 +32,7 @@ with lib; let
     optionalString cfg.crowdsec.enable
     "      middlewares:\n        - \"crowdsec-bouncer@file\"";
 
-  # Inserted at end of `version: "v1.2.0"` line in source (which sits at
+  # Inserted at end of the badger `version:` line in source (which sits at
   # col 6 after the static config's 4-space strip). We need
   # `crowdsec-bouncer-traefik-plugin:` to land at col 4 (sibling of `badger:`)
   # and its children at col 6/8.
@@ -62,7 +62,7 @@ with lib; let
       plugins:
         badger:
           moduleName: "github.com/fosrl/badger"
-          version: "v1.2.0"${crowdsecPluginEntry}
+          version: "v1.4.1"${crowdsecPluginEntry}
 
     log:
       level: "INFO"

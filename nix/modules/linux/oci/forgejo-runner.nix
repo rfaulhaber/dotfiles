@@ -105,8 +105,16 @@ with lib; let
   # appears in every job container spawned by that runner. forgejo-runner
   # additionally validates every -v mount in `options` against the
   # `valid_volumes` whitelist, so the path must be added to both lists.
+  #
+  # CI_RUNNER_HOST identifies the host this runner sits on so job scripts
+  # (configure-nix.nu) can drop the self-referencing binary cache, which
+  # hairpins through the podman bridge and times out. It is injected here
+  # rather than read from RUNNER_NAME because not every Forgejo instance
+  # populates RUNNER_NAME in the job env — Codeberg's does not — and a
+  # missing value silently re-enables the self-reference.
   effectiveContainerOptions = runnerCfg:
-    runnerCfg.containerOptions
+    "--env CI_RUNNER_HOST=${config.networking.hostName}"
+    + (optionalString (runnerCfg.containerOptions != "") " ${runnerCfg.containerOptions}")
     + (optionalString (runnerCfg.jobStateDir != null)
       " -v ${runnerCfg.jobStateDir}:/ci-state");
 

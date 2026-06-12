@@ -78,6 +78,19 @@ in {
       map (n: nameValuePair n {enable = true;}) cfg.networks
     );
 
+    # When bindAddress points at a VPN overlay IP, that address can be absent
+    # while the unit starts: a nixos-rebuild restarts the VPN client in the
+    # same switch, and podman's host-port reservation then fails with
+    # EADDRNOTAVAIL, failing the unit and (under deploy-rs) rolling back the
+    # whole deploy. Worse, on hosts where the overlay's control plane itself
+    # runs in containers here, the address only returns minutes later — after
+    # the full container stack converges — so no start-ordering or retry
+    # window can bridge it. Allow binding non-local addresses instead; the
+    # listener simply receives no traffic until the interface is back.
+    boot.kernel.sysctl = mkIf (cfg.bindAddress != null) {
+      "net.ipv4.ip_nonlocal_bind" = 1;
+    };
+
     # The exporter talks to the Podman REST API over its UNIX socket; the
     # socket service must be running. Don't gate this on an option — the
     # exporter is useless without it.
