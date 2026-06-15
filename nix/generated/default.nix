@@ -22,6 +22,9 @@
     colors = colors.withHashtag;
     font = defaults.font;
     fontSize = defaults.ghostty.fontSize;
+    extraConfig = ''
+      command = /opt/homebrew/bin/nu --login
+    '';
   };
 
   nushellConfigs = import ../lib/configs/nushell.nix {
