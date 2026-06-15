@@ -22,11 +22,6 @@ in {
         {
           app = "/Users/ryan/Applications/Emacs.app";
         }
-        #        (
-        #          lib.optionalAttrs (config.modules.programs.wezterm.enable) {
-        #            app = "${config.modules.programs.wezterm.weztermPackage}/Applications/WezTerm.app";
-        #          }
-        #        )
         (
           lib.optionalAttrs (config.modules.programs.ghostty.enable) {
             app = "${config.modules.programs.ghostty.package}/Applications/Ghostty.app";

@@ -38,6 +38,13 @@ in {
           ++ queryArgs;
         StartInterval = cfg.interval;
         RunAtLoad = true;
+        # The token is a sops-nix secret under /run/secrets, decrypted at boot by
+        # the system-domain org.nixos.sops-install-secrets daemon. A user agent
+        # can't order itself after a system-domain job, so the RunAtLoad run can
+        # win the race and fail with the secret still absent. Since that failure
+        # exits non-zero, KeepAlive relaunches (throttled) until the secret lands,
+        # then leaves the job alone on success; StartInterval drives the cadence.
+        KeepAlive = {SuccessfulExit = false;};
         StandardOutPath = "/tmp/random-wallpaper.log";
         StandardErrorPath = "/tmp/random-wallpaper.err";
       };
