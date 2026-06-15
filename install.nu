@@ -8,6 +8,10 @@ def main [
 ] {
     let repo_dir = ($env.FILE_PWD)
     let config_dir = ($env.XDG_CONFIG_HOME? | default ($env.HOME | path join ".config"))
+    # Nushell reads its config from a platform-specific location ($nu.config-path):
+    # ~/.config/nushell on Linux, ~/Library/Application Support/nushell on macOS.
+    # The generated config.nu/env.nu wrappers must land there, not under ~/.config.
+    let nushell_dir = $nu.default-config-dir
     let platform = (detect-platform)
 
     print $"Installing dotfiles \(platform: ($platform))"
@@ -23,7 +27,7 @@ def main [
     let platform_dir = ($repo_dir | path join "generated" $platform)
     if ($platform_dir | path exists) {
         print $"Linking generated configs \(($platform)):"
-        link-generated $platform_dir $config_dir $dry_run
+        link-generated $platform_dir $config_dir $nushell_dir $dry_run
         print ""
     } else {
         print $"  [WARN] No generated configs found at ($platform_dir)"
@@ -36,7 +40,7 @@ def main [
     let override_dir = ($repo_dir | path join "generated" "overrides" $hostname)
     if ($override_dir | path exists) {
         print $"Linking host overrides \(($hostname)):"
-        link-generated $override_dir $config_dir $dry_run
+        link-generated $override_dir $config_dir $nushell_dir $dry_run
         print ""
     }
 
@@ -89,12 +93,19 @@ def make-link [source: path, target: path, dry_run: bool] {
     }
 }
 
-def link-generated [gen_dir: path, config_dir: path, dry_run: bool] {
+def link-generated [gen_dir: path, config_dir: path, nushell_dir: path, dry_run: bool] {
     glob ($gen_dir | path join "**" "*")
     | where ($it | path type) == "file"
     | each { |file|
         let rel = ($file | str replace $"($gen_dir)/" "")
-        make-link $file ($config_dir | path join $rel) $dry_run
+        # nushell's entry config must live in its platform-specific config dir;
+        # everything else follows the XDG layout under ~/.config.
+        let target = if ($rel | str starts-with "nushell/") {
+            $nushell_dir | path join ($rel | str replace "nushell/" "")
+        } else {
+            $config_dir | path join $rel
+        }
+        make-link $file $target $dry_run
     }
     null
 }

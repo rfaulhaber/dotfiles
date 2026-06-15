@@ -10,7 +10,7 @@
 }: {
   config = ''
     source ${dotfilesConfigDir}/config.nu
-    source ~/.config/nushell/generated-theme.nu
+    source ($nu.default-config-dir | path join "generated-theme.nu")
 
     # zoxide and carapace init must be sourced at the top level: `source` is a
     # parse-time keyword whose `def`/`alias` definitions are confined to the
