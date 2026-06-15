@@ -1,6 +1,3 @@
-if ("~/.cache/carapace/init.nu" | path exists) {
-  source ~/.cache/carapace/init.nu
-}
 # the following is adapted from the home-manager implementation of direnv support for nushell
 # which seems to be better than the standard hook
 # see https://github.com/nix-community/home-manager/blob/098e365dd83311cc8236f83ea6be42abb49a6c76/modules/programs/direnv.nix#L177-L206

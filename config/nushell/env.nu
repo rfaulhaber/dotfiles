@@ -25,6 +25,30 @@ if ([$emacs_bin_path $emacs_config_path] | path exists | any { |v| $v == true } 
     $env.PATH = ($env.PATH | split row (char esep) | prepend $emacs_config_paths)
 }
 
+# Generate the zoxide and carapace init scripts for standalone (non-home-manager)
+# hosts. `source` is a parse-time keyword whose `def`/`alias` definitions only
+# reach the interactive scope when the source statement is unnested, so the
+# generated entry wrapper (nix/lib/configs/nushell.nix) sources these files at
+# its top level and calls this to produce them. Home-manager hosts wire up
+# zoxide/carapace through their own module and never call this. An empty stub
+# keeps the wrapper's unconditional source parse-safe when a tool is absent.
+def setup-shell-integrations [] {
+  let zoxide_init = "~/.zoxide.nu"
+  if (which zoxide | is-not-empty) {
+    ^zoxide init nushell | save -f $zoxide_init
+  } else {
+    "" | save -f $zoxide_init
+  }
+
+  mkdir ~/.cache/carapace
+  let carapace_init = "~/.cache/carapace/init.nu"
+  if (which carapace | is-not-empty) {
+    ^carapace _carapace nushell | save -f $carapace_init
+  } else {
+    "" | save -f $carapace_init
+  }
+}
+
 # platform-specific env
 match $nu.os-info.name {
       "macos" => { source "./hosts/env/darwin.nu" },

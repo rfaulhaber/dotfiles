@@ -1,3 +1,3 @@
-# zoxide and carapace are sourced at the top level of the generated wrapper
-# (nix/lib/configs/nushell.nix), not here: sourcing them from inside this
-# host-matched file confines their `def`/`alias` definitions to the block.
+# No host-specific config. zoxide/carapace init is generated per-platform in
+# env.nu (setup-shell-integrations) and sourced at the top level of the entry
+# config wrapper; see nix/lib/configs/nushell.nix.
