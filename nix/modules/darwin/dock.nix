@@ -20,7 +20,7 @@ in {
           app = "/Applications/Firefox.app";
         }
         {
-          app = "/Users/ryan/Applications/Emacs.app";
+          app = "${config.user.home}/Applications/Emacs.app";
         }
         (
           lib.optionalAttrs (config.modules.programs.ghostty.enable) {
@@ -42,7 +42,7 @@ in {
       ];
       persistent-others = [
         "/Applications"
-        "/Users/ryan/Downloads"
+        "${config.user.home}/Downloads"
       ];
     };
   };

@@ -10,25 +10,9 @@ $env.PATH = (
 let nix_link = "/nix/var/nix/profiles/default"
 $env.NIX_LINK = $nix_link
 $env.NIX_LINK_NEW = $nix_link
-
 $env.NIX_PROFILES = $"/nix/var/nix/profiles/default ($nix_link)"
-
 $env.NIX_SSL_CERT_FILE = "/nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt"
-
 $env.PATH = ($env.PATH | split row (char esep) | append $"($nix_link)/bin")
 
-# add zoxide
-if (which zoxide | length) > 0 {
-    zoxide init nushell | save -f ~/.zoxide.nu
-} else {
-    print 'zoxide not installed'
-}
-
-# set up carapace
-if (which carapace | length) > 0 {
-  mkdir ~/.cache/carapace
-  carapace _carapace nushell | save -f ~/.cache/carapace/init.nu
-} else {
-  print "carapace not installed"
-}
+$env.SHELL = "/run/current-system/sw/bin/nu"
 
