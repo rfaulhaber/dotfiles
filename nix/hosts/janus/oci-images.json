@@ -7,7 +7,7 @@
       },
       "gerbil": {
         "version": "latest",
-        "digest": "sha256:9bcd405b5ec969201b018c40f8eb345ed9f241c7cbd29487d91b0419b906c559"
+        "digest": "sha256:431aaed724dab25e7b7b5519abd756a37401956cd4d1f9b696fedbb16f9e4ae6"
       },
       "traefik": {
         "version": "v3.4.0",
@@ -35,14 +35,14 @@
       },
       "coturn": {
         "version": "latest",
-        "digest": "sha256:161cedd63c5414c2136f306098e02e9aede74606cedad8b9b8581aae1da4e732"
+        "digest": "sha256:6a1d1a281b8f64ca1a343429bb0232fa70c5f0eae3c8424ba0859b696e880974"
       }
     }
   },
   "pocket-id": {
     "image": {
       "version": "latest",
-      "digest": "sha256:a073640418b2cfc8587c488a7270580b3ab95cae2c543f5d64bbbe1fd7ccbae8"
+      "digest": "sha256:a2a38a96699d7483d65b5849b015d954f294938306a03a9c0699bc5b79554e86"
     }
   },
   "podman-exporter": {

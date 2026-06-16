@@ -2,7 +2,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:343ddffa6bf9be7740bdd27317df2a2ecfc7e6d12e5532f98d23f5052f15be11"
+      "digest": "sha256:0e999c910d8077458ffbd869acfd9faa2a49decbca02afec6370277854587b3e"
     }
   },
   "transmission": {
@@ -26,13 +26,13 @@
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:4c490ccd44d31feb49dc4cc542f2148a420fc1ae0c1ba94e59b39ba4bf112716"
+      "digest": "sha256:7b45af3b660f5ff5f7d6d625bfa99960cb9265e902f1bef136486f6d2be73ee9"
     }
   },
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:0b3f344388bd7bed4f2f770058de795e76447e4a481b83c8d5f8fed489371fde"
+      "digest": "sha256:02bc962946fef994e67a38152446df25c10a52f8583aefeeb6467f9dd44cab99"
     }
   },
   "bazarr": {
@@ -44,7 +44,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:fafa04ac8cffa735282917778f78f8343db6db5aa44da6df90e3c57d4cc7183e"
+      "digest": "sha256:9fd97d831a5cfc9749afbdb6b5f5623128eb06f42dbe91053478fd14f00e42b0"
     }
   },
   "slskd": {
