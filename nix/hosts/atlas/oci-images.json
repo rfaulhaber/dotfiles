@@ -8,7 +8,7 @@
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ec464a74779392475c7243e7bad7d3d87db5c7bd332bf4dda7e091a84f16c3a9"
+      "digest": "sha256:90ca6073778ea3f5a77b05db2014cd10a9425aeb6a79e8d557b15f8862b2d495"
     }
   },
   "flaresolverr": {
@@ -158,7 +158,7 @@
   "tautulli": {
     "image": {
       "version": "latest",
-      "digest": "sha256:fc92dea07c592580231102a11459dc7a267de21f05b7b005244281470dac3a2f"
+      "digest": "sha256:f66f65c3e5b60b94eb9dc9848fbe983009b4705f1795e4c979b961251c9637ad"
     }
   },
   "paperless": {
