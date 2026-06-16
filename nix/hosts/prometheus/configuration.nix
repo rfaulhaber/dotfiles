@@ -104,6 +104,26 @@
   # which ZFS would need; opting out keeps the build a pure cache fetch.
   boot.supportedFilesystems.zfs = false;
 
+  # nixpkgs >= 26.11 makes the raspberrypi bootloader module read
+  # `config.boot.kernelPackages.kernel.target`, but the Pi 5 vendor kernel is
+  # built by an older nixpkgs pin that never added that passthru, so eval fails
+  # with "attribute 'target' missing". mkForce can't help: the module-system
+  # priority filter forces the broken definition before discarding it. Instead,
+  # graft the platform-default target ("Image") onto the kernel's passthru.
+  # passthru doesn't affect the derivation, so the store path is unchanged and
+  # the cached kernel still hits. Remove once upstream's vendor kernel carries
+  # a `target` attribute.
+  boot.kernelPackages = let
+    rpi5 = nixos-raspberrypi.packages.${pkgs.stdenv.hostPlatform.system}.linuxPackages_rpi5;
+  in
+    rpi5.extend (_final: prev: {
+      kernel = prev.kernel.overrideAttrs (old: {
+        passthru = (old.passthru or {}) // {
+          target = old.passthru.target or pkgs.stdenv.hostPlatform.linux-kernel.target;
+        };
+      });
+    });
+
   environment.systemPackages = with pkgs; [
     libraspberrypi
     raspberrypi-eeprom
