@@ -4,7 +4,20 @@
   pkgs,
   inputs,
   ...
-}: {
+}: let
+  # Pin NTP to literal IPs so time sync never depends on DNS. This RTC-less node
+  # otherwise deadlocks on cold boot: a stale clock makes DNSSEC validation
+  # SERVFAIL, but correcting the clock needs NTP, which can't resolve its pool
+  # hostnames while DNS (Pi-hole) is down. networking.timeServers only feeds
+  # timesyncd's FallbackNTP; set servers too so the primary NTP= line is IPs as
+  # well, leaving no DNS-dependent path on either list.
+  ntpServers = [
+    "162.159.200.1" # time.cloudflare.com
+    "162.159.200.123" # time.cloudflare.com (secondary)
+    "216.239.35.0" # time.google.com
+    "216.239.35.4" # time.google.com
+  ];
+in {
   imports = [
     ./hardware-configuration.nix
     ../../modules
@@ -91,9 +104,12 @@
     libraspberrypi
   ];
 
+  services.timesyncd.servers = ntpServers;
+
   networking = {
     hostName = "hecate";
     useDHCP = true;
+    timeServers = ntpServers;
 
     interfaces.enu1u1u1 = {
       ipv6.addresses = let

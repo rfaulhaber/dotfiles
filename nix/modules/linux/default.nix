@@ -12,6 +12,7 @@
     # generic set of packages that I use on all my Linux machines
     user.packages = with pkgs; [
       bat
+      dnsutils # dig, nslookup, host — DNS debugging on headless nodes
       fd
       fzf
       ripgrep
