@@ -65,6 +65,13 @@ in {
       netbird = {
         enable = true;
         setupKeyFile = config.sops.secrets."netbird/setup-key".path;
+        # pallas IS the network's Pi-hole resolver. Leave resolv.conf under
+        # NixOS control so the declared non-Pi-hole fallback below survives
+        # Pi-hole downtime; otherwise Netbird points the host at its own
+        # embedded resolver (which depends on Pi-hole) and an image-bump deploy
+        # deadlocks: stopping the old container kills DNS, and the new
+        # container's image pull then can't resolve the registry.
+        manageDNS = false;
       };
       keepalived = {
         enable = true;
@@ -111,7 +118,18 @@ in {
     hostName = "pallas";
     useDHCP = false;
     defaultGateway = "192.168.0.1";
-    nameservers = ["127.0.0.1" "1.1.1.1"];
+    # Local Pi-hole first; the public resolvers are the failover path the host
+    # falls through to (connection-refused on a stopped Pi-hole) so registry
+    # and NTP-by-name lookups keep working while the container is down. Only
+    # effective because Netbird DNS management is disabled above — otherwise it
+    # would overwrite this list. glibc honours at most the first three.
+    nameservers = ["127.0.0.1" "1.1.1.1" "1.0.0.1"];
+    # openresolv defaults resolv_conf_local_only=YES: when a loopback resolver
+    # is in the list it writes ONLY 127.0.0.1 to resolv.conf and silently drops
+    # the public fallback above — reinstating the very deadlock this is meant to
+    # prevent. Force it to emit every nameserver so glibc can fail over to the
+    # public resolvers when the local Pi-hole container is down.
+    resolvconf.extraConfig = "resolv_conf_local_only=NO\n";
     timeServers = ntpServers;
 
     defaultGateway6 = {

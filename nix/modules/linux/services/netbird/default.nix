@@ -14,6 +14,24 @@ in {
       default = true;
       description = "Whether or not to auto start the default netbird interface.";
     };
+    manageDNS = mkOption {
+      type = types.bool;
+      default = true;
+      description = ''
+        Whether Netbird manages system DNS by rewriting /etc/resolv.conf to
+        point at its embedded resolver.
+
+        Set this to false on a host that is itself the network's Pi-hole
+        resolver. Netbird takes over resolv.conf exclusively, replacing the
+        declared `networking.nameservers` with a single entry pointing at its
+        own resolver — which ultimately depends on Pi-hole. When the Pi-hole
+        container briefly stops (e.g. mid-activation during an image-bump
+        deploy) the host is left with no working resolver, so outbound lookups
+        — including the container image pull itself — fail and deadlock the
+        deploy. Disabling DNS management keeps NixOS in control of resolv.conf
+        so the declared non-Pi-hole fallback survives Pi-hole downtime.
+      '';
+    };
     setupKeyFile = mkOption {
       type = types.nullOr types.str;
       default = null;
@@ -40,16 +58,20 @@ in {
         # a plain string here. Match the on-disk shape netbird itself writes.
         # The management API is exposed on :33073 by the OCI module
         # (nix/modules/linux/oci/netbird.nix); the dashboard is on :443.
-        config = {
-          ManagementURL = {
-            Scheme = "https";
-            Host = "netbird.3679.space:33073";
-          };
-          AdminURL = {
-            Scheme = "https";
-            Host = "netbird.3679.space:443";
-          };
-        };
+        config =
+          {
+            ManagementURL = {
+              Scheme = "https";
+              Host = "netbird.3679.space:33073";
+            };
+            AdminURL = {
+              Scheme = "https";
+              Host = "netbird.3679.space:443";
+            };
+          }
+          # Netbird's client Config field; suppresses all resolv.conf/embedded
+          # resolver management so NixOS keeps ownership of system DNS.
+          // optionalAttrs (!cfg.manageDNS) {DisableDNS = true;};
         login = mkIf (cfg.setupKeyFile != null) {
           enable = true;
           setupKeyFile = cfg.setupKeyFile;
