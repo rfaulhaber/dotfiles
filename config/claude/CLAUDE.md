@@ -16,22 +16,22 @@ Do not attempt to modify the system configuration or use `nix-env`.
 
 # Shell
 
-My default interactive and scripting shell on every machine is **Nushell** (`nu`), not bash or zsh.
+My default shell on every machine is **Nushell** (`nu`). Any shell command you hand me to run myself — anything in a code block I'm meant to copy/paste or read as "run this" — must be nushell syntax.
 
-When you give me shell code to run — one-liners, pipelines, or scripts — write it in **nushell-compatible syntax**, not POSIX/bash. This includes:
+**Self-check before writing any command block:** does it use a variable, a pipe, an env var, redirection, globbing, quoting, or control flow? If yes → nushell, no exceptions. Those are exactly the spots where bash habits leak in.
 
-- Use `let x = ...` for variables, not `x=...`; reference them as `$x`.
-- Use nushell's structured pipelines (`| where`, `| get`, `| select`, `| from json`, etc.) instead of `grep`/`awk`/`sed`/`jq` chains when the data is structured.
-- Use `^cmd` to invoke an external command when its name collides with a builtin, or when you need bypass nushell's parser.
-- String interpolation uses `$"..."`; subshells use `(...)`, not `$(...)`.
-- Environment variables are set with `$env.FOO = "bar"` (or `with-env { FOO: bar } { ... }` for scoped), not `export FOO=bar`.
-- Conditionals use `if ... { ... } else { ... }`; there is no `[[ ... ]]` or `&&`/`||` between statements (use `if` or pipeline error handling).
+- Variables: `let x = ...` / `$x`, not `x=...`.
+- Pipelines: nushell ops (`| where`, `| get`, `| select`, `| from json`), not `grep`/`awk`/`sed`/`jq` chains on structured data.
+- External command behind a builtin name: `^cmd`.
+- Interpolation `$"..."`; subshell `(...)`, not `$(...)`.
+- Env: `$env.FOO = "bar"` or `with-env { FOO: bar } { ... }`, not `export FOO=bar`.
+- Conditionals `if ... { ... } else { ... }`; no `[[ ... ]]`, no `&&`/`||` chaining (use `if` or pipeline error handling).
 
-Bash is fine **only** when:
-- I explicitly ask for bash, or
-- The command is a single external invocation with no shell control flow (e.g., `git status`, `nix build .#foo`) — these are identical in both shells.
+This rule governs commands handed to **me**. It is NOT about the Bash *tool* you use for your own work — there a single external invocation (`git status`, `nix build .#foo`) is identical in both shells and bash is fine. The leak happens when you carry that bash-tool default into a command you write for me. Bash in a handoff command is only OK when I explicitly ask for it.
 
-If you're unsure whether a construct works in nushell, prefer the explicit nushell form over guessing.
+**Every machine I own runs nushell, including remote hosts.** When you run a command over SSH from the Bash tool, the `ssh` call itself is a local external invocation, but the command *string* you send executes in the remote login shell — which is nushell. So `ssh host '<cmd>'` requires `<cmd>` to be nushell syntax, even though the `ssh` wrapper is bash. The same applies to anything that ships a command to a remote machine for execution (`deploy-rs` run hooks, remote `nix` activation scripts, etc.). If you need a POSIX shell on the far end, invoke it explicitly (`ssh host 'bash -c "..."'`).
+
+When unsure a construct works in nushell, prefer the explicit nushell form over guessing.
 
 # Code Comments
 

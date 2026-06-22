@@ -91,6 +91,22 @@ in {
           deny = cfg.deniedTools;
         };
 
+        # Re-inject the nushell rule on every prompt. UserPromptSubmit stdout is
+        # added to model context, which counters the salience decay of a rule
+        # that's otherwise only loaded once from CLAUDE.md at session start.
+        hooks = {
+          UserPromptSubmit = [
+            {
+              hooks = [
+                {
+                  type = "command";
+                  command = "echo 'Reminder: any shell command you hand me to run goes in nushell syntax, not bash (the Bash tool you run yourself is exempt for single external invocations).'";
+                }
+              ];
+            }
+          ];
+        };
+
         enabledPlugins = {
           "feature-dev@claude-plugins-official" = true;
           "code-review@claude-plugins-official" = true;
