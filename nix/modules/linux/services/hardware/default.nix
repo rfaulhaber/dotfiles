@@ -1,1 +1,1 @@
-{imports = [./bluetooth ./intel-gpu ./nvidia ./zsa];}
+{imports = [./intel-gpu ./nvidia ./zsa];}

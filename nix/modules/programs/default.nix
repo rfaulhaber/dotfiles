@@ -8,11 +8,9 @@
     ./crush
     ./direnv
     ./emacs
-    ./firefox
     ./ghostty
     ./git
     ./kitty
-    ./neovim
     ./nushell
     ./sops
   ];

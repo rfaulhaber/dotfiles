@@ -4,5 +4,5 @@
   pkgs,
   ...
 }: {
-  imports = [./docker-cleanup.nix ./backup-docker-config.nix ./updatedb.nix ./ssh-agent.nix ./tmp-downloads.nix];
+  imports = [./updatedb.nix ./ssh-agent.nix ./tmp-downloads.nix];
 }

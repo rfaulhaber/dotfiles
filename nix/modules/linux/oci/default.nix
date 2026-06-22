@@ -155,7 +155,6 @@ in {
   imports = [
     ./bazarr.nix
     ./caddy.nix
-    ./cadvisor.nix
     ./calibre.nix
     ./calibre-web-auto.nix
     ./crowdsec.nix
@@ -176,7 +175,6 @@ in {
     ./navidrome.nix
     ./newt.nix
     ./nzbget.nix
-    ./open-webui.nix
     ./netbird.nix
     ./pangolin.nix
     ./paperless.nix
@@ -192,7 +190,6 @@ in {
     ./slskd.nix
     ./sonarr.nix
     ./soularr.nix
-    ./sure.nix
     ./syncthing.nix
     ./tautulli.nix
     ./transmission.nix

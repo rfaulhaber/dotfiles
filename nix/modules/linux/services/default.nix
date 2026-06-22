@@ -2,7 +2,6 @@
   imports = [
     ./cachix
     ./desktop
-    ./docker
     ./hardware
     ./keepalived
     ./mullvad
@@ -10,8 +9,6 @@
     ./nfs
     ./nix-cache
     ./observability-agent
-    ./ollama
-    ./podman
     ./printing
     ./samba
     ./sudo-rs
