@@ -153,6 +153,11 @@ Used in loading config specific to those systems.")
 ;; use treesit instead of emacs-tree-sitter for rust
 (setq rust-mode-treesitter-derive t)
 
+;; enable global-sops-mode
+(after! sops
+  (global-sops-mode 1))
+
+
 ;; --------------------------------- org mode ---------------------------------
 (after! org
   (load! "./self/org-templates.el")
