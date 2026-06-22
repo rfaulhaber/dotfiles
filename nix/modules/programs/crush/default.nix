@@ -10,11 +10,10 @@ with lib; let
   # Map of crush provider id -> sops secret name, restricted to providers
   # that actually have a secret wired up. When this is empty we skip sops
   # entirely and render a plain crush.json.
-  apiKeySecrets =
-    filterAttrs (_: secret: secret != null) {
-      anthropic = cfg.anthropicApiKeySecret;
-      openrouter = cfg.openrouterApiKeySecret;
-    };
+  apiKeySecrets = filterAttrs (_: secret: secret != null) {
+    anthropic = cfg.anthropicApiKeySecret;
+    openrouter = cfg.openrouterApiKeySecret;
+  };
 
   hasAnySecret = apiKeySecrets != {};
 
