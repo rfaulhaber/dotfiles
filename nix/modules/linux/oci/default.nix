@@ -168,6 +168,7 @@ in {
     ./immich-ml.nix
     ./jellyfin.nix
     ./job-ops.nix
+    ./kitchenowl.nix
     ./lidarr.nix
     ./linkding.nix
     ./loki.nix

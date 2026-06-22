@@ -292,6 +292,16 @@
           baseDir = "/data/apps/tautulli";
         };
 
+        kitchenowl = {
+          enable = true;
+          baseDir = "/data/apps/kitchenowl";
+          frontUrl = "https://kitchenowl.3679.space";
+          oidc = {
+            enable = true;
+            issuer = "https://auth.3679.space";
+          };
+        };
+
         vikunja = {
           enable = true;
           baseDir = "/data/apps/vikunja";

@@ -1,122 +1,8 @@
 {
-  "gluetun": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:0e999c910d8077458ffbd869acfd9faa2a49decbca02afec6370277854587b3e"
-    }
-  },
-  "transmission": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:90ca6073778ea3f5a77b05db2014cd10a9425aeb6a79e8d557b15f8862b2d495"
-    }
-  },
-  "flaresolverr": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:139dfee1c6f89249c8d665d1333a42e8ec74ec0a86bc6bb1c8461e10d3a66a47"
-    }
-  },
-  "prowlarr": {
-    "image": {
-      "version": "develop",
-      "digest": "sha256:6848d92453fbdfa88634304fcdcbac596541816e8d17260cff7e71e9e7538dc3"
-    }
-  },
-  "radarr": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:7b45af3b660f5ff5f7d6d625bfa99960cb9265e902f1bef136486f6d2be73ee9"
-    }
-  },
-  "sonarr": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:02bc962946fef994e67a38152446df25c10a52f8583aefeeb6467f9dd44cab99"
-    }
-  },
   "bazarr": {
     "image": {
       "version": "latest",
       "digest": "sha256:4b5e510042bf471c8bafab89cada9774fba2fb25f16ec64235151cacbe847c10"
-    }
-  },
-  "nzbget": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:9fd97d831a5cfc9749afbdb6b5f5623128eb06f42dbe91053478fd14f00e42b0"
-    }
-  },
-  "slskd": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:ab9ed50e028b524cefdb7c1dd8ebca368a076e18441ee8ac2326473eb850b4c3"
-    }
-  },
-  "lidarr": {
-    "image": {
-      "version": "nightly",
-      "digest": "sha256:bcd0d60ab77e2fc6bbc19fe286281bd80c22929029026a0728ce723e13711343"
-    }
-  },
-  "soularr": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:a46d4b0af667e54e816e2058ec574a03337519ee74476e17875d4c5cb3a3c288"
-    }
-  },
-  "requestrr": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:74392e2e633b8c574aa93a93945e5ed481df5059441cc31d120796a72e3a7ff2"
-    }
-  },
-  "recyclarr": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:55afe316d3e4e4e3b9120cef7c79436b1b5311f6a18d4ef4b7653e720499c90a"
-    }
-  },
-  "immich": {
-    "image": {
-      "version": "release",
-      "digest": "sha256:c15bff75068effb03f4355997d03dc7e0fc58720c2b54ad6f7f10d1bc57efaa5"
-    },
-    "postgres": {
-      "image": {
-        "version": "14-vectorchord0.4.3-pgvectors0.2.0",
-        "digest": "sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23"
-      }
-    },
-    "redis": {
-      "image": {
-        "version": "8-bookworm",
-        "digest": "sha256:fea8b3e67b15729d4bb70589eb03367bab9ad1ee89c876f54327fc7c6e618571"
-      }
-    }
-  },
-  "miniflux": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:42f14382a035e9d9bbc33910ca53f72d47177f75c3c638d2c5a85adf5582d538"
-    },
-    "postgres": {
-      "image": {
-        "version": "18-alpine",
-        "digest": "sha256:96d56f7f57c6aacd1fcb908bc83b345ec5f83231ee486dd66a1baadce274db88"
-      }
-    }
-  },
-  "forgejo": {
-    "image": {
-      "version": "15.0.0",
-      "digest": "sha256:e87297f8ec332240228d24f2d6f0b408e30749f4ed166c1e5cf30a2288723794"
-    },
-    "postgres": {
-      "image": {
-        "version": "17.2-alpine",
-        "digest": "sha256:7e5df973a74872482e320dcbdeb055e178d6f42de0558b083892c50cda833c96"
-      }
     }
   },
   "calibre": {
@@ -137,10 +23,94 @@
       "digest": "sha256:eb3733681db8757412632c61a99ad656f0d94ed6781bb2ea114b4d70babab78c"
     }
   },
+  "flaresolverr": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:139dfee1c6f89249c8d665d1333a42e8ec74ec0a86bc6bb1c8461e10d3a66a47"
+    }
+  },
+  "forgejo": {
+    "image": {
+      "version": "15.0.0",
+      "digest": "sha256:e87297f8ec332240228d24f2d6f0b408e30749f4ed166c1e5cf30a2288723794"
+    },
+    "postgres": {
+      "image": {
+        "version": "17.2-alpine",
+        "digest": "sha256:7e5df973a74872482e320dcbdeb055e178d6f42de0558b083892c50cda833c96"
+      }
+    }
+  },
+  "gluetun": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:0e999c910d8077458ffbd869acfd9faa2a49decbca02afec6370277854587b3e"
+    }
+  },
+  "grafana": {
+    "image": {
+      "version": "13.0.1",
+      "digest": "sha256:0f86bada30d65ef9d0183b90c1e2682ac92d53d95da8bed322b984ea78a4a73a"
+    }
+  },
+  "immich": {
+    "image": {
+      "version": "release",
+      "digest": "sha256:c15bff75068effb03f4355997d03dc7e0fc58720c2b54ad6f7f10d1bc57efaa5"
+    },
+    "postgres": {
+      "image": {
+        "version": "14-vectorchord0.4.3-pgvectors0.2.0",
+        "digest": "sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23"
+      }
+    },
+    "redis": {
+      "image": {
+        "version": "8-bookworm",
+        "digest": "sha256:fea8b3e67b15729d4bb70589eb03367bab9ad1ee89c876f54327fc7c6e618571"
+      }
+    }
+  },
+  "job-ops": {
+    "image": {
+      "version": "v0.9.0",
+      "digest": "sha256:588b571fb44c3fdd86b462035dacd0abb7f434146c1b76199be1081dec5df25a"
+    }
+  },
+  "kitchenowl": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:34061684cd23f422bd8aafcb49f05929ac49d059883cd1f3ebbc5cdeef31e6ba"
+    }
+  },
+  "lidarr": {
+    "image": {
+      "version": "nightly",
+      "digest": "sha256:bcd0d60ab77e2fc6bbc19fe286281bd80c22929029026a0728ce723e13711343"
+    }
+  },
   "linkding": {
     "image": {
       "version": "latest",
       "digest": "sha256:61b2eb9eed8e5772a473fb7f1f8923e046cb8cbbeb50e88150afd5ff287d4060"
+    }
+  },
+  "loki": {
+    "image": {
+      "version": "3.7.1",
+      "digest": "sha256:73e905b51a7f917f7a1075e4be68759df30226e03dcb3cd2213b989cc0dc8eb4"
+    }
+  },
+  "miniflux": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:42f14382a035e9d9bbc33910ca53f72d47177f75c3c638d2c5a85adf5582d538"
+    },
+    "postgres": {
+      "image": {
+        "version": "18-alpine",
+        "digest": "sha256:96d56f7f57c6aacd1fcb908bc83b345ec5f83231ee486dd66a1baadce274db88"
+      }
     }
   },
   "navidrome": {
@@ -149,16 +119,16 @@
       "digest": "sha256:c4b5cb36a790b3eb63ca6a68bbe2fe149c2d7fa2e586f7a480e61db630e6664b"
     }
   },
-  "syncthing": {
+  "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:b1a5a0ea4b32ecf2672db7c4c56443c5e222cca12d397724ea93c07a6c7564d0"
+      "digest": "sha256:63d956c8fdee889255e441ec405193b47b1fd2d975b505492ec848a8007f4fc3"
     }
   },
-  "tautulli": {
+  "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:f66f65c3e5b60b94eb9dc9848fbe983009b4705f1795e4c979b961251c9637ad"
+      "digest": "sha256:9fd97d831a5cfc9749afbdb6b5f5623128eb06f42dbe91053478fd14f00e42b0"
     }
   },
   "paperless": {
@@ -179,10 +149,10 @@
       }
     }
   },
-  "vikunja": {
+  "podman-exporter": {
     "image": {
-      "version": "latest",
-      "digest": "sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93"
+      "version": "v1.21.0",
+      "digest": "sha256:2ebb9e09101d8cc1e28e3f306b56a722450918e628208435201ed39bd62403cb"
     }
   },
   "prometheus": {
@@ -191,34 +161,70 @@
       "digest": "sha256:e4254400b85610324913f0dc4acf92603d9984e7519414c5a12811aa6146acc3"
     }
   },
-  "loki": {
+  "prowlarr": {
     "image": {
-      "version": "3.7.1",
-      "digest": "sha256:73e905b51a7f917f7a1075e4be68759df30226e03dcb3cd2213b989cc0dc8eb4"
+      "version": "develop",
+      "digest": "sha256:6848d92453fbdfa88634304fcdcbac596541816e8d17260cff7e71e9e7538dc3"
     }
   },
-  "grafana": {
-    "image": {
-      "version": "13.0.1",
-      "digest": "sha256:0f86bada30d65ef9d0183b90c1e2682ac92d53d95da8bed322b984ea78a4a73a"
-    }
-  },
-  "podman-exporter": {
-    "image": {
-      "version": "v1.21.0",
-      "digest": "sha256:2ebb9e09101d8cc1e28e3f306b56a722450918e628208435201ed39bd62403cb"
-    }
-  },
-  "newt": {
+  "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:63d956c8fdee889255e441ec405193b47b1fd2d975b505492ec848a8007f4fc3"
+      "digest": "sha256:7b45af3b660f5ff5f7d6d625bfa99960cb9265e902f1bef136486f6d2be73ee9"
     }
   },
-  "job-ops": {
+  "recyclarr": {
     "image": {
-      "version": "v0.9.0",
-      "digest": "sha256:588b571fb44c3fdd86b462035dacd0abb7f434146c1b76199be1081dec5df25a"
+      "version": "latest",
+      "digest": "sha256:55afe316d3e4e4e3b9120cef7c79436b1b5311f6a18d4ef4b7653e720499c90a"
+    }
+  },
+  "requestrr": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:74392e2e633b8c574aa93a93945e5ed481df5059441cc31d120796a72e3a7ff2"
+    }
+  },
+  "slskd": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:ab9ed50e028b524cefdb7c1dd8ebca368a076e18441ee8ac2326473eb850b4c3"
+    }
+  },
+  "sonarr": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:02bc962946fef994e67a38152446df25c10a52f8583aefeeb6467f9dd44cab99"
+    }
+  },
+  "soularr": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:a46d4b0af667e54e816e2058ec574a03337519ee74476e17875d4c5cb3a3c288"
+    }
+  },
+  "syncthing": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:b1a5a0ea4b32ecf2672db7c4c56443c5e222cca12d397724ea93c07a6c7564d0"
+    }
+  },
+  "tautulli": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:f66f65c3e5b60b94eb9dc9848fbe983009b4705f1795e4c979b961251c9637ad"
+    }
+  },
+  "transmission": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:90ca6073778ea3f5a77b05db2014cd10a9425aeb6a79e8d557b15f8862b2d495"
+    }
+  },
+  "vikunja": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93"
     }
   }
 }
