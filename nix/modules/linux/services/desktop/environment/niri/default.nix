@@ -120,7 +120,7 @@ in {
       screenshot-path = "~/pictures/screenshots/screenshot-%Y-%m-%d-%H:%M:%S.png";
 
       window-rules = import ./window-rules.nix;
-      binds = import ./binds.nix;
+      binds = import ./binds.nix {inherit config lib pkgs;};
     };
   };
 }

@@ -30,6 +30,14 @@
   nushellConfigs = import ../lib/configs/nushell.nix {
     colors = colors.withHashtag;
     themeName = colors.scheme;
+    # Source the static config from a content-addressed store path instead of a
+    # manually-cloned ~/.config/dotfiles. Makes generated-configs self-contained
+    # on non-NixOS nix hosts (e.g. a work macOS without nix-darwin) and resolves
+    # to the same `nushell-config` store path the home-manager hosts use.
+    dotfilesConfigDir = builtins.path {
+      path = ../../config/nushell;
+      name = "nushell-config";
+    };
   };
 
   ghosttyConfig = pkgs.writeText "ghostty-config" ghosttyConfigs.config;

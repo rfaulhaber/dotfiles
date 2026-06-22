@@ -1,7 +1,19 @@
-let
+{
+  config,
+  lib,
+  pkgs,
+}: let
   spawn = args: {action.spawn = args;};
   action = name: {action.${name} = [];};
   actionVal = name: val: {action.${name} = val;};
+
+  # Package the launcher script as its own content-addressed derivation rather
+  # than spawning it from the ~/.config/dotfiles mirror, so the bind depends
+  # only on the script's contents (reproducible) and not on a symlinked source
+  # tree whose store path varies by flake fetch method.
+  execEmacsProject =
+    builtins.readFile "${config.dotfiles.binDir}/exec-emacs-project.nu"
+    |> lib.my.writeNushellScriptBin pkgs "exec-emacs-project";
 in {
   "Mod+Shift+Slash" = action "show-hotkey-overlay";
 
@@ -10,7 +22,7 @@ in {
   "Mod+D" = spawn "fuzzel";
   "Mod+Alt+D" = spawn ["fuzzel" "--list-executables-in-path"];
   "Super+Alt+L" = spawn "swaylock";
-  "Mod+E" = spawn "~/.config/dotfiles/bin/exec-emacs-project.nu";
+  "Mod+E" = spawn "${execEmacsProject}/bin/exec-emacs-project";
 
   # Volume control
   "XF86AudioRaiseVolume" = {

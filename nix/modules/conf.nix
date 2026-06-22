@@ -6,6 +6,17 @@
   ...
 }: {
   config = {
+    # The generated NixOS manual builds an options.json that embeds custom
+    # modules' declaration paths — i.e. the flake `-source` store path — "without
+    # a proper context". That leaks a fetch-method-dependent path into every
+    # host's toplevel, making it non-reproducible and unsharable via the binary
+    # cache. Dropping the manual removes the leak and trims the closure.
+    # optionalAttrs (not mkIf): documentation.nixos doesn't exist on Darwin, so
+    # the key must be absent there rather than merely disabled.
+    documentation = lib.optionalAttrs isLinux {
+      nixos.enable = false;
+    };
+
     nix = {
       gc = lib.mkIf (config.nix.enable || isLinux) ({
           automatic = true;

@@ -41,7 +41,15 @@ in {
     # TODO import config into nu configuration from here
     home.programs = {
       nushell = let
-        configDir = "${config.home.file.dotfiles.target}/config/nushell";
+        # Source the static nushell config from its own content-addressed store
+        # path rather than the ~/.config/dotfiles mirror. config.nu/env.nu source
+        # their siblings with relative paths (`source "./hosts/..."`, `use
+        # themes`), which resolve within this store dir since the whole
+        # config/nushell subtree is imported together.
+        configDir = builtins.path {
+          path = "${config.dotfiles.configDir}/nushell";
+          name = "nushell-config";
+        };
       in {
         enable = true;
 

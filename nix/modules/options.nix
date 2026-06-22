@@ -107,6 +107,12 @@ in {
 
           programs = mkAliasDefinitions options.home.programs;
           services = mkAliasDefinitions options.home.services;
+
+          # home-manager's manual builds an options.json from module
+          # declarations, embedding the flake `-source` store path into the
+          # closure — the same non-reproducibility leak as the NixOS manual.
+          # We don't ship the per-user manpage, so drop it.
+          manual.manpages.enable = false;
         }
         // {
           xdg =
