@@ -25,6 +25,9 @@
                                      ("YYYYMMDD" . "%Y%m%d"))
   "Various date formats used in interactive functions.")
 
+(defvar self/dotfiles-location "~/Projects/dotfiles"
+  "Location of dotfiles.")
+
 ;; ------------------------------ function aliases -----------------------------
 
 ;; I can never remember the envrc functions
@@ -384,6 +387,26 @@ hello world
             (projectile-switch-project-by-name selected-project)
             (+workspace/display))))
     (user-error "Something is wrong with projectile config!")))
+
+(defun self/find-file-in-private-config ()
+  "Like `doom/find-file-in-private-config', but relative to my own dotfiles."
+  (interactive)
+  (unless self/dotfiles-location
+    (user-error "No dotfiles location set!"))
+  (unless (file-directory-p self/dotfiles-location)
+    (error "Directory %S does not exist" self/dotfiles-location))
+  (unless (file-readable-p self/dotfiles-location)
+    (error "Directory %S isn't readable" self/dotfiles-location))
+  ;; Mirrors `projectile-find-file-in-directory', but restricted to Elisp.
+  ;; Going through projectile (rather than `doom-project-find-file') keeps the
+  ;; listing on `git ls-files' instead of project.el's external `find' fallback.
+  (let* ((dir (expand-file-name self/dotfiles-location))
+         (default-directory dir)
+         (files (seq-filter (lambda (f) (string-suffix-p ".el" f))
+                            (projectile-dir-files dir)))
+         (file (projectile-completing-read "Find Elisp file: " files)))
+    (find-file (expand-file-name file dir))
+    (run-hooks 'projectile-find-file-hook)))
 
 ;; ----------------------------- utility functions -----------------------------
 
