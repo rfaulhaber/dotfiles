@@ -154,7 +154,4 @@ in {
       allowedUDPPorts = [53 123];
     };
   };
-
-  # temporary, make nix settings modular
-  nix.gc.automatic = lib.mkForce false;
 }

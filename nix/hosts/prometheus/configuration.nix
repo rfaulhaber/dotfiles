@@ -118,9 +118,11 @@
   in
     rpi5.extend (_final: prev: {
       kernel = prev.kernel.overrideAttrs (old: {
-        passthru = (old.passthru or {}) // {
-          target = old.passthru.target or pkgs.stdenv.hostPlatform.linux-kernel.target;
-        };
+        passthru =
+          (old.passthru or {})
+          // {
+            target = old.passthru.target or pkgs.stdenv.hostPlatform.linux-kernel.target;
+          };
       });
     });
 
@@ -146,7 +148,4 @@
     cfg.bootloader
     config.boot.kernelPackages.kernel.version
   ];
-
-  # temporary, make nix settings modular
-  nix.gc.automatic = lib.mkForce false;
 }
