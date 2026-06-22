@@ -31,6 +31,8 @@ This rule governs commands handed to **me**. It is NOT about the Bash *tool* you
 
 **Every machine I own runs nushell, including remote hosts.** When you run a command over SSH from the Bash tool, the `ssh` call itself is a local external invocation, but the command *string* you send executes in the remote login shell — which is nushell. So `ssh host '<cmd>'` requires `<cmd>` to be nushell syntax, even though the `ssh` wrapper is bash. The same applies to anything that ships a command to a remote machine for execution (`deploy-rs` run hooks, remote `nix` activation scripts, etc.). If you need a POSIX shell on the far end, invoke it explicitly (`ssh host 'bash -c "..."'`).
 
+Nushell renders lists and tables as bordered "fancy" tables by default. `head` and `tail` aren't Nushell builtins — they're external coreutils — so piping structured data to them makes Nushell render the value to that table text first; the tools then slice the box-drawing display (top border, header, separator…), not the underlying rows. Use `first`/`last` for the first or last *n* rows, and `get <i>` for the *n*th.
+
 When unsure a construct works in nushell, prefer the explicit nushell form over guessing.
 
 # Code Comments
