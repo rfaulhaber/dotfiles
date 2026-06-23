@@ -43,10 +43,6 @@
       emacs = {
         enable = true;
         package = pkgs.emacs-git;
-        doomUnstraightened = {
-          enable = true;
-          setDefault = true;
-        };
       };
       kitty.enable = true;
       ghostty = {
@@ -69,6 +65,9 @@
         plugins = with pkgs.nushellPlugins; [
           polars
         ];
+        # `hints` (command-history ghost text) defaults to the bright-blue ANSI
+        # slot; dim it to the comment grey so it reads as a suggestion, not input.
+        colorOverrides.hints = config.modules.themes.colors.grey;
       };
       direnv.enable = true;
       age.enable = true;
@@ -200,7 +199,21 @@
         ];
       };
     };
-    themes.active = "tokyo-night-dark";
+    desktop.fuzzel.colorOverrides = {
+      # base16's base08 ("red") is a pale lavender here, leaving matched chars
+      # nearly identical to the grey selection highlight. base0F is the scheme's
+      # salmon-red — saturated enough to read on both the dark background and the
+      # light selection row.
+      match = config.modules.themes.colors.base0F;
+      selection-match = config.modules.themes.colors.base0F;
+    };
+
+    themes = {
+      active = "tokyo-night-dark";
+      # tokyo-night-dark's base0A ("yellow") slot is actually a cyan-blue, which
+      # turned resolved external commands blue. Restore a true amber globally.
+      overrides.yellow = "#e0af68";
+    };
   };
 
   boot = {

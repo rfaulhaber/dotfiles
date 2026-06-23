@@ -1,5 +1,7 @@
-# this module is not very, well, /modular/. it's pretty specific to my extremely
-# specific emacs configuration I would like to change that!
+# Emacs built around my Doom configuration via nix-doom-emacs-unstraightened.
+# The daemon package is always `emacsWithDoom`: it provides bin/emacs +
+# bin/emacsclient (and, on Darwin, Emacs.app) with the Doom profile baked in,
+# so the service and emacsclient see Doom directly. Works on NixOS and nix-darwin.
 {
   config,
   lib,
@@ -9,12 +11,15 @@
   isDarwin,
   ...
 }: let
-  inherit (lib) mkEnableOption mkOption types mkIf mkMerge optionals optionalAttrs;
+  inherit (lib) mkEnableOption mkOption types mkIf optionals optionalAttrs;
   cfg = config.modules.programs.emacs;
+
   shellAliases = {
     ec = "emacsclient";
     eo = "emacsclient -n"; # "emacs open"
   };
+
+  # Elisp packages Doom expects Nix to supply rather than build via straight.el.
   emacsPackages = epkgs:
     with epkgs; [
       pdf-tools
@@ -25,14 +30,12 @@
       treesit-grammars.with-all-grammars
     ];
 
-  # dependencies for my very specific configuration of doom
-  # see doom.d/init.el for more
-  # we need to include every program either directly or indirectly referenced in config
+  # Programs referenced (directly or indirectly) by doom.d; see doom.d/init.el.
   userPackages = with pkgs;
     [
       alejandra
       ast-grep
-      clang # unfortunately we need a C compiler for various dependencies
+      clang # several packages need a C compiler available
       cmake
       direnv
       djvulibre
@@ -55,44 +58,27 @@
       zstd
     ]
     ++ optionals isDarwin [
-      # emacs can't use nushell ls and macOS ls doesn't work right with dired
+      # emacs can't use nushell ls, and macOS ls misbehaves with dired
       pkgs.uutils-coreutils-noprefix
     ];
 
-  unstraightenedPackage = emacsPkg:
-    emacsPkg {
-      emacs = cfg.package;
-      # TODO point to something else?
-      doomDir = ../../../../doom.d;
-      doomLocalDir = "${config.user.home}/.local/share/nix-doom";
-      extraPackages = emacsPackages;
-      extraBinPackages = userPackages;
-      experimentalFetchTree = true;
-    };
-
-  normalPackage = with pkgs; ((emacsPackagesFor cfg.package).withPackages emacsPackages);
-
-  resolvedEmacsPkg = let
-    emacsPkg =
-      if cfg.doomUnstraightened.setDefault
-      then pkgs.emacsWithDoom
-      else pkgs.doomEmacs;
-  in (unstraightenedPackage emacsPkg);
+  emacsWithDoom = pkgs.emacsWithDoom {
+    emacs = cfg.package;
+    # Must be a path literal so Nix copies doom.d into the store with proper
+    # context; dotfiles.emacsDir is a toString'd path that loses store context.
+    doomDir = ../../../../doom.d;
+    doomLocalDir = "${config.user.home}/.local/share/nix-doom";
+    extraPackages = emacsPackages;
+    extraBinPackages = userPackages;
+    experimentalFetchTree = true;
+  };
 in {
   options.modules.programs.emacs = {
-    enable = mkEnableOption false;
+    enable = mkEnableOption "Emacs with my Doom configuration";
     package = mkOption {
-      description = "Emacs package to use.";
+      description = "Base Emacs package Doom is built on top of.";
       type = types.package;
       default = pkgs.emacs;
-    };
-    doomUnstraightened = {
-      enable = mkEnableOption false;
-      setDefault = mkOption {
-        description = "If true, sets Nix Doom Unstraightened as default Emacs package.";
-        type = types.bool;
-        default = false;
-      };
     };
   };
 
@@ -114,36 +100,24 @@ in {
     services.emacs =
       {
         enable = true;
-        package =
-          if cfg.doomUnstraightened.setDefault
-          then resolvedEmacsPkg
-          else normalPackage;
+        package = emacsWithDoom;
       }
-      // lib.optionalAttrs isLinux {
+      // optionalAttrs isLinux {
         defaultEditor = true;
         install = true;
       };
 
-    # emacs dependency
+    # spell-checking backend for doom's :checkers spell
     modules.programs.aspell.enable = true;
 
-    user.packages =
-      userPackages
-      ++ lib.optional cfg.doomUnstraightened.enable resolvedEmacsPkg;
+    user.packages = userPackages ++ [emacsWithDoom];
 
     home.programs.nushell.shellAliases =
       mkIf config.modules.programs.nushell.enable shellAliases;
 
-    home.file = {
-      doomconfig = mkIf (!cfg.doomUnstraightened.enable) {
-        source = config.dotfiles.emacsDir;
-        target = "${config.user.home}/.config/doom";
-      };
-
-      doomApp = mkIf isDarwin {
-        source = "${config.services.emacs.package}/Applications/Emacs.app";
-        target = "${config.user.home}/Applications/Emacs.app";
-      };
+    home.file.doomApp = mkIf isDarwin {
+      source = "${config.services.emacs.package}/Applications/Emacs.app";
+      target = "${config.user.home}/Applications/Emacs.app";
     };
   };
 }

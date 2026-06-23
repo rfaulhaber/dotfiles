@@ -26,10 +26,6 @@
         # eos temporarily will use stable emacs for faster builds
         # package = pkgs.emacs-git;
         package = pkgs.emacs;
-        doomUnstraightened = {
-          enable = true;
-          setDefault = true;
-        };
       };
       ghostty.enable = true;
       direnv.enable = true;

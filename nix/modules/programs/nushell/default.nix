@@ -35,6 +35,16 @@ in {
       description = "Nushell plugins to include.";
       default = [];
     };
+    colorOverrides = mkOption {
+      type = types.attrsOf types.str;
+      description = ''
+        Per-role overrides for nushell's generated color theme, keyed by the
+        flat color roles in `theme.nix` (e.g. `hints`, `shape_external`). Values
+        may be given with or without a leading `#`. Affects only nushell — the
+        terminal palette and other consumers are untouched.
+      '';
+      default = {};
+    };
   };
 
   config = mkIf cfg.enable {
@@ -90,6 +100,13 @@ in {
       nushellConfigs = import ../../../lib/configs/nushell.nix {
         colors = config.modules.themes.colors.withHashtag;
         themeName = config.modules.themes.colors.scheme;
+        colorOverrides =
+          builtins.mapAttrs
+          (_: v:
+            if lib.hasPrefix "#" v
+            then v
+            else "#" + v)
+          cfg.colorOverrides;
       };
     in {
       target = "${config.user.home}/.config/nushell/generated-theme.nu";
