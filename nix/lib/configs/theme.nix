@@ -9,7 +9,14 @@
   inputs,
   lib,
   themesDir,
-}: {themeName}: let
+}: {
+  themeName,
+  # Host-level palette corrections, keyed by color name (e.g. `yellow`), values
+  # `#`-prefixed. Applied last so an explicit host override beats both the
+  # base16 slot and any per-theme custom file — used to fix base16 schemes whose
+  # named ramp is mislabelled (tokyo-night-dark's `yellow` slot is a blue).
+  overrides ? {},
+}: let
   base16 = pkgs.callPackage inputs.base16.lib {};
   schemePath = "${inputs.tt-schemes}/base16/${themeName}.yaml";
   base = base16.mkSchemeAttrs schemePath;
@@ -42,10 +49,12 @@
     then import customPath
     else {};
   customNoHash = builtins.mapAttrs (_: v: lib.removePrefix "#" v) custom;
+  overridesNoHash = builtins.mapAttrs (_: v: lib.removePrefix "#" v) overrides;
 in
   base
   // semanticAliases base
   // customNoHash
+  // overridesNoHash
   // {
-    withHashtag = base.withHashtag // semanticAliases base.withHashtag // custom;
+    withHashtag = base.withHashtag // semanticAliases base.withHashtag // custom // overrides;
   }

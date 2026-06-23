@@ -75,6 +75,19 @@ in {
       default = {};
     };
 
+    overrides = mkOption {
+      type = types.attrsOf types.str;
+      description = ''
+        Host-level palette corrections merged over the resolved theme, keyed by
+        color name with `#`-prefixed values (e.g. `{ yellow = "#e0af68"; }`).
+        Use this for genuinely global fixes — a base16 named slot that doesn't
+        match its label. For single-consumer tweaks, prefer that consumer's own
+        `colorOverrides` so other consumers (and the terminal palette) are left
+        untouched.
+      '';
+      default = {};
+    };
+
     themeAttrs = mkOption {
       type = types.attrs;
       description = "Resolved theme color attrset with semantic aliases (all values have '#' prefix).";
@@ -95,7 +108,10 @@ in {
       }
     ];
 
-    modules.themes.colors = resolveTheme {themeName = cfg.active;};
+    modules.themes.colors = resolveTheme {
+      themeName = cfg.active;
+      inherit (cfg) overrides;
+    };
     modules.themes.themeAttrs = themeAttrs;
     modules.themes.scss = scss;
   };

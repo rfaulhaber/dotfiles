@@ -6,6 +6,7 @@
 {
   colors,
   themeName,
+  colorOverrides ? {},
   dotfilesConfigDir ? "~/.config/dotfiles/config/nushell",
 }: {
   config = ''
@@ -29,6 +30,6 @@
   '';
 
   generated-theme = import ../../modules/programs/nushell/theme.nix {
-    inherit colors themeName;
+    inherit colors themeName colorOverrides;
   };
 }
