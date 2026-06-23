@@ -1,0 +1,368 @@
+#!/usr/bin/env nu
+
+# Import a batch of Bandcamp purchases into the atlas music library.
+#
+# Bandcamp hands you one .zip per album. This unzips each, reads the embedded
+# tags to derive Artist / Album / Year, previews the plan, and on confirmation
+# rsyncs every album into /data/music/<Artist>/<Album>/ on atlas — the shared
+# directory Navidrome streams from and Lidarr manages.
+#
+# Hybrid registration: after the files land, it asks Lidarr (over its API) to
+# look the artist up in MusicBrainz. On a match the artist is added as an
+# UNMONITORED catalog entry (we already own the music — monitoring would send
+# Lidarr off downloading "missing" albums) and RefreshArtist links the files in
+# place. On no match — common for Bandcamp-exclusive / self-released artists —
+# the files are still on disk and Navidrome serves them; only the Lidarr catalog
+# entry is skipped. Either way the music plays.
+#
+# Lidarr lives behind gluetun on atlas:8686. Its published podman port is
+# reachable on the LAN (DNAT happens before the nixos firewall), so the API
+# calls go straight to http://atlas:8686 — this keeps artist names with quotes
+# (Guns N' Roses) out of any remote shell command line. The API key is read once
+# from atlas's config.xml over ssh. A preflight disables the Lidarr branch
+# cleanly if the API can't be reached.
+#
+# Usage:
+#   nu bin/bandcamp-import.nu ~/Downloads/bandcamp           # transfer + register
+#   nu bin/bandcamp-import.nu ~/Downloads/bandcamp --dry-run # preview only
+#   nu bin/bandcamp-import.nu ~/dl --no-lidarr               # Navidrome only
+#   nu bin/bandcamp-import.nu ~/dl -y                        # skip confirmation
+#
+# Requires locally: unzip, rsync, ffprobe (ffmpeg). If missing:
+#   nix shell nixpkgs#unzip nixpkgs#rsync nixpkgs#ffmpeg
+#
+# Debug logging (opt-in, written to stderr so it never pollutes the result
+# table on stdout): set BANDCAMP_DEBUG to 1/true/yes/on, e.g.
+#   BANDCAMP_DEBUG=1 nu bin/bandcamp-import.nu ~/dl --dry-run
+# The API key is never logged — only its source path and length.
+
+const AUDIO_EXTS = [flac mp3 m4a ogg opus wav aiff aif alac wv]
+
+def debug-on []: nothing -> bool {
+  ($env.BANDCAMP_DEBUG? | default "" | str downcase) in ["1" "true" "yes" "on"]
+}
+
+# Diagnostic line on stderr, gated by BANDCAMP_DEBUG. stdout stays reserved for
+# the result table so the script composes in a pipeline.
+def dbg [msg: string] {
+  if (debug-on) { print -e $"(ansi dark_gray)[debug] ($msg)(ansi reset)" }
+}
+
+# Bandcamp filenames sanitize cleanly, but tags can carry a stray slash that
+# would otherwise fork the path. Only '/' is illegal in a path component on
+# Linux; leave everything else intact so titles round-trip faithfully.
+def sanitize [s: string]: nothing -> string {
+  $s | str replace -a "/" "-" | str trim
+}
+
+# Case-insensitive tag lookup: ffprobe normalizes FLAC vorbis comments to lower
+# case but ID3/MP4 atoms can surface as Artist/ARTIST. Returns the first present
+# name's value, else null.
+def tag-get [tags: record, names: list<string>]: nothing -> any {
+  for n in $names {
+    let hit = ($tags | columns | where {|c| ($c | str downcase) == ($n | str downcase) })
+    if ($hit | is-not-empty) {
+      return ($tags | get ($hit | first))
+    }
+  }
+  null
+}
+
+# Tags sharpen artist/year (e.g. album_artist on compilations) but aren't
+# required — Bandcamp's "Artist - Album" naming carries the fallback. Returns {}
+# when ffprobe is absent so the caller degrades to filename parsing.
+def ffprobe-tags [file: string]: nothing -> record {
+  if (which ffprobe | is-empty) {
+    dbg "ffprobe absent — using filename parsing"
+    return {}
+  }
+  let res = (try { ^ffprobe -v quiet -print_format json -show_format $file | complete } catch { null })
+  if $res == null or $res.exit_code != 0 {
+    dbg $"ffprobe failed on ($file | path basename) (exit ($res.exit_code? | default 'n/a'))"
+    return {}
+  }
+  let tags = (try { $res.stdout | from json | get format.tags? | default {} } catch { {} })
+  dbg $"ffprobe tags for ($file | path basename): [($tags | columns | str join ', ')]"
+  $tags
+}
+
+# List a literal directory's immediate children. Album titles contain glob
+# metacharacters — "( )", "[Deluxe]" — so we glob a relative pattern from inside
+# the dir (scoped cd) rather than feeding the metacharacter-bearing path to glob.
+def kids [dir: string]: nothing -> list<string> {
+  do { cd $dir; glob "*" }
+}
+
+# Strip Bandcamp's single wrapper folder (a zip sometimes extracts to
+# "<stem>/Artist - Album/..."). Descend through any directory that holds exactly
+# one subdir and no files of its own, so the rsync source is the track folder.
+def content-root [dir: string]: nothing -> string {
+  let children = (kids $dir)
+  let files = ($children | where {|p| ($p | path type) == "file" })
+  let subdirs = ($children | where {|p| ($p | path type) == "dir" })
+  if ($files | is-empty) and (($subdirs | length) == 1) {
+    dbg $"descending wrapper folder ($subdirs | first | path basename)"
+    content-root ($subdirs | first)
+  } else {
+    $dir
+  }
+}
+
+def du-bytes [dir: string]: nothing -> int {
+  let r = (^du -sb $dir | complete)
+  if $r.exit_code != 0 { return 0 }
+  try { $r.stdout | split row "\t" | first | into int } catch { 0 }
+}
+
+def four-digit-year [s: string]: nothing -> string {
+  let m = ($s | parse -r '(?<y>\d{4})')
+  if ($m | is-empty) { "" } else { $m | first | get y }
+}
+
+# Read one extracted album dir into a plan row. Prefers tags; falls back to
+# Bandcamp's "Artist - Album" folder naming when tags are thin.
+def describe-album [dir: string]: nothing -> any {
+  let root = (content-root $dir)
+  let audio = (
+    do { cd $root; glob "**/*" --no-dir }
+    | where {|p| ($p | path parse | get extension | str downcase) in $AUDIO_EXTS }
+  )
+  if ($audio | is-empty) { return null }
+
+  let tags = (ffprobe-tags ($audio | first))
+  let stem = ($dir | path basename)
+  let parts = ($stem | split row " - ")
+
+  let artist = (
+    tag-get $tags [album_artist albumartist artist album-artist]
+    | default (if (($parts | length) > 1) { $parts | first } else { $stem })
+  )
+  let album = (
+    tag-get $tags [album]
+    | default (if (($parts | length) > 1) { $parts | skip 1 | str join " - " } else { "Unknown Album" })
+  )
+  let year = (four-digit-year (tag-get $tags [date year originalyear] | default ""))
+  let bytes = (du-bytes $root)
+  let source = (if ($tags | is-empty) { "filename" } else { "tags" })
+  dbg $"parsed ($dir | path basename): artist='($artist)' album='($album)' year='($year)' tracks=($audio | length) via ($source)"
+
+  {
+    artist: (sanitize ($artist | into string))
+    album: (sanitize ($album | into string))
+    year: $year
+    tracks: ($audio | length)
+    size: $bytes
+    src: $root
+  }
+}
+
+# --- Lidarr API (called from this host against http://atlas:8686) -------------
+
+def lidarr-key [host: string]: nothing -> any {
+  let src = "/data/apps/lidarr/config.xml"
+  let res = (^ssh -o ConnectTimeout=10 $host $"cat ($src)" | complete)
+  dbg $"ssh ($host) cat ($src) -> exit ($res.exit_code)"
+  if $res.exit_code != 0 {
+    dbg $"ssh stderr: ($res.stderr | str trim)"
+    return null
+  }
+  let m = ($res.stdout | parse -r '<ApiKey>(?<k>[^<]+)</ApiKey>')
+  if ($m | is-empty) {
+    dbg "no <ApiKey> element found in config.xml"
+    null
+  } else {
+    let k = ($m | first | get k)
+    # Never log the key itself — only enough to confirm it was read.
+    dbg $"API key read from ($src): length ($k | str length)"
+    $k
+  }
+}
+
+def lidarr-get [base: string, key: string, path: string]: nothing -> any {
+  dbg $"GET ($base)/api/v1($path)"
+  http get --headers ["X-Api-Key" $key] $"($base)/api/v1($path)"
+}
+
+def lidarr-post [base: string, key: string, path: string, body: any]: nothing -> any {
+  dbg $"POST ($base)/api/v1($path)"
+  http post --content-type application/json --headers ["X-Api-Key" $key] $"($base)/api/v1($path)" $body
+}
+
+# Ensure the artist exists in Lidarr's catalog, then trigger a disk scan that
+# links the just-placed files. Returns a status record; never throws.
+def lidarr-register [base: string, key: string, root: string, qid: int, mid: int, name: string]: nothing -> record {
+  try {
+    let lookup = (lidarr-get $base $key $"/artist/lookup?(({term: $name} | url build-query))")
+    dbg $"lookup '($name)' -> ($lookup | length) candidate\(s\)"
+    if ($lookup | is-empty) { return {status: "no-match", detail: $name} }
+
+    let cand = ($lookup | first)
+    let fid = $cand.foreignArtistId
+    dbg $"top candidate: '($cand.artistName)' mbid ($fid)"
+    let existing = (lidarr-get $base $key "/artist" | where foreignArtistId == $fid)
+
+    let artist = (if ($existing | is-not-empty) {
+      dbg $"already in Lidarr as artist id ($existing | first | get id)"
+      $existing | first
+    } else {
+      let body = ($cand | merge {
+        qualityProfileId: $qid
+        metadataProfileId: $mid
+        rootFolderPath: $root
+        monitored: false
+        addOptions: { monitor: "none", searchForMissingAlbums: false }
+      })
+      dbg $"adding artist '($cand.artistName)' (root ($root), quality ($qid), metadata ($mid))"
+      lidarr-post $base $key "/artist" $body
+    })
+
+    dbg $"RefreshArtist artist id ($artist.id)"
+    lidarr-post $base $key "/command" { name: "RefreshArtist", artistId: $artist.id } | ignore
+    {
+      status: (if ($existing | is-not-empty) { "exists" } else { "added" })
+      detail: $artist.artistName
+    }
+  } catch {|e|
+    dbg $"lidarr-register error: ($e.msg)"
+    { status: "error", detail: ($e.msg | str substring 0..80) }
+  }
+}
+
+def main [
+  input_dir: path = "."        # directory of Bandcamp .zip files
+  --host: string = "atlas"     # ssh target (also the Lidarr host)
+  --lidarr-url: string = "http://atlas:8686"
+  --music-root: string = "/data/music"
+  --dry-run                    # preview the plan, transfer nothing
+  --no-lidarr                  # skip Lidarr; just place files for Navidrome
+  --yes (-y)                   # skip the confirmation prompt
+] {
+  let zips = (glob $"($input_dir)/*.zip")
+  dbg $"found ($zips | length) zip\(s\) in ($input_dir)"
+  if ($zips | is-empty) {
+    print -e $"(ansi yellow)No .zip files found in ($input_dir).(ansi reset)"
+    exit 1
+  }
+
+  if (which ffprobe | is-empty) {
+    print -e $"(ansi yellow)ffprobe not found — parsing Artist/Album from filenames. For richer tags: nix shell nixpkgs#ffmpeg(ansi reset)"
+  }
+
+  let work = (mktemp -d -t bandcamp.XXXXXX)
+  dbg $"extracting to ($work)"
+  let albums = (
+    $zips
+    | each {|zip|
+        let dest = ($work | path join ($zip | path basename | str replace -r '(?i)\.zip$' ''))
+        mkdir $dest
+        ^unzip -q -o $zip -d $dest
+        let row = (describe-album $dest)
+        if $row == null {
+          print -e $"(ansi yellow)⚠ no audio in ($zip | path basename) — skipping.(ansi reset)"
+          null
+        } else {
+          $row | insert target $"($music_root)/($row.artist)/($row.album)"
+        }
+      }
+    | where {|r| $r != null }
+  )
+
+  if ($albums | is-empty) {
+    rm -rf $work
+    print -e $"(ansi yellow)Nothing to import.(ansi reset)"
+    exit 1
+  }
+
+  print ($albums | select artist album year tracks size target | update size {|r| $r.size | into filesize })
+
+  if $dry_run {
+    rm -rf $work
+    print $"(ansi blue)Dry run — ($albums | length) album\(s\) would transfer to ($host).(ansi reset)"
+    exit 0
+  }
+
+  if not $yes {
+    # input needs a TTY; a non-interactive stdin means "no confirmation given".
+    let ans = (try { input $"Transfer ($albums | length) album\(s\) to ($host)? [y/N] " } catch { "" })
+    if ($ans | str downcase) not-in ["y" "yes"] {
+      rm -rf $work
+      print "Aborted (use -y to skip confirmation)."
+      exit 0
+    }
+  }
+
+  # Resolve Lidarr context once. Any failure here demotes the whole run to
+  # Navidrome-only rather than erroring per album.
+  let lidarr = (if $no_lidarr {
+    null
+  } else {
+    let key = (lidarr-key $host)
+    if $key == null {
+      print -e $"(ansi yellow)⚠ couldn't read Lidarr API key from ($host); registering nothing.(ansi reset)"
+      null
+    } else {
+      try {
+        let ctx = {
+          key: $key
+          root: (lidarr-get $lidarr_url $key "/rootfolder" | first | get path)
+          qid: (lidarr-get $lidarr_url $key "/qualityprofile" | first | get id)
+          mid: (lidarr-get $lidarr_url $key "/metadataprofile" | first | get id)
+        }
+        dbg $"Lidarr context: root ($ctx.root), quality ($ctx.qid), metadata ($ctx.mid)"
+        $ctx
+      } catch {|e|
+        dbg $"Lidarr preflight error: ($e.msg)"
+        print -e $"(ansi yellow)⚠ Lidarr API at ($lidarr_url) unreachable; registering nothing.(ansi reset)"
+        null
+      }
+    }
+  })
+
+  let results = (
+    $albums
+    | each {|a|
+        print $"(ansi cyan)→ ($a.artist) — ($a.album)(ansi reset)"
+        dbg $"rsync ($a.src)/ -> ($host):($a.target)/"
+        # -s/--protect-args keeps spaces in titles intact across the remote
+        # shell; --mkpath creates the Artist/Album parents on atlas. Capture the
+        # exit code (keeping live progress on the terminal, hence no pipe) so the
+        # result reflects what actually transferred.
+        let transferred = (try {
+          ^rsync -a -s --mkpath --info=progress2 $"($a.src)/" $"($host):($a.target)/"
+          $env.LAST_EXIT_CODE == 0
+        } catch {
+          false
+        })
+        if not $transferred {
+          print -e $"(ansi red)✗ rsync failed for ($a.artist) — ($a.album); skipping Lidarr.(ansi reset)"
+        }
+
+        # Registering an artist whose files didn't land would tell Lidarr to scan
+        # an empty folder, so gate it on a successful transfer.
+        let lid = (if not $transferred {
+          "skipped"
+        } else if $lidarr == null {
+          "skipped"
+        } else {
+          let r = (lidarr-register $lidarr_url $lidarr.key $lidarr.root $lidarr.qid $lidarr.mid $a.artist)
+          $r.status
+        })
+        { artist: $a.artist, album: $a.album, transferred: $transferred, lidarr: $lid }
+      }
+  )
+
+  rm -rf $work
+
+  print ($results)
+  let ok = ($results | where transferred)
+  let failed = ($results | where not transferred)
+  let unmatched = ($results | where lidarr == "no-match")
+  if ($unmatched | is-not-empty) {
+    print $"(ansi yellow)($unmatched | length) artist\(s\) not in MusicBrainz — placed for Navidrome, not catalogued in Lidarr.(ansi reset)"
+  }
+  print $"(ansi green)✓ ($ok | length) album\(s\) imported to ($host).(ansi reset)"
+  if ($failed | is-not-empty) {
+    print -e $"(ansi red)✗ ($failed | length) album\(s\) failed to transfer.(ansi reset)"
+    exit 1
+  }
+}
