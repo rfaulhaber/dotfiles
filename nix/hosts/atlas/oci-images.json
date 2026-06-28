@@ -2,13 +2,13 @@
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:8e48a2950e3806a2a914fe031fa21b1c0a0f2824eede4ea747e26213e941fbf2"
+      "digest": "sha256:aaaa087af75a73b7ac765dcc5d748874cfafdb93c23ec9f64fbb481dea291b23"
     }
   },
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:b9a0ea3bc064a127eda5b807b1d887235505eccefb9bcc897fa76066372af0f1"
+      "digest": "sha256:210dc050f7473197109fdc76f3809e9295566d68d2737363e60b1fc5fe170398"
     }
   },
   "calibre-web-auto": {
@@ -44,7 +44,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:0e999c910d8077458ffbd869acfd9faa2a49decbca02afec6370277854587b3e"
+      "digest": "sha256:d180743987bb24da1d749a1d7f3a78026e64ba2d09d2e08cc34b0acee7f7321b"
     }
   },
   "grafana": {
@@ -104,7 +104,7 @@
   "miniflux": {
     "image": {
       "version": "latest",
-      "digest": "sha256:42f14382a035e9d9bbc33910ca53f72d47177f75c3c638d2c5a85adf5582d538"
+      "digest": "sha256:cd353a6af9ce663291f405eddef26fa0d567f486b521c5d34e3fb50e41938b9a"
     },
     "postgres": {
       "image": {
@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:b4e87d914ac382753bbab35f11e43fc1bad0f4e0b6c4f5bbcd384d60c19bce9d"
+      "digest": "sha256:0fcc12bd6ef8937ec8e9e2bccb245e4a774c386c580cf0c480353083c7fc1a82"
     }
   },
   "paperless": {
@@ -145,7 +145,7 @@
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:9eb6a7ba3d344e1958c7e1589fa3dee90373a934e8159c634562a91d622759a0"
+        "digest": "sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005"
       }
     }
   },
@@ -164,7 +164,7 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:bfa06aba3010e8ed352c9576d1b7d270aede967990e4a2b54a0ca2e21628959d"
+      "digest": "sha256:2ebc057c64eaea0fe07f57e0b3f3f67f63fd99ec717d9aaed326a9532144c5c4"
     }
   },
   "radarr": {
@@ -194,7 +194,7 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:02bc962946fef994e67a38152446df25c10a52f8583aefeeb6467f9dd44cab99"
+      "digest": "sha256:fbb15bb4fb14d1ffe017f6be0e3fed8f1b300e4687e329767da0b61f36ba1eed"
     }
   },
   "soularr": {
@@ -206,7 +206,7 @@
   "syncthing": {
     "image": {
       "version": "latest",
-      "digest": "sha256:550509c4e3753abc00071ac07e88b998c611add0aa7f71a2f15e1f719b5fa4fb"
+      "digest": "sha256:56fc719962de84a2bb1033d6925c2796e62e6d59b6504698528dd08d2d5cbe15"
     }
   },
   "tautulli": {
