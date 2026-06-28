@@ -27,7 +27,8 @@ in {
     vpnProvider = mkOption {
       description = "VPN service provider (gluetun VPN_SERVICE_PROVIDER).";
       type = types.str;
-      default = "mullvad";
+      default = "airvpn";
+      example = "mullvad";
     };
 
     vpnType = mkOption {
@@ -37,9 +38,53 @@ in {
     };
 
     ownedOnly = mkOption {
-      description = "Restrict to provider-owned servers only (mullvad-specific).";
+      description = ''
+        Restrict to provider-owned servers only. Mullvad-specific; only
+        emitted as OWNED_ONLY when vpnProvider is "mullvad".
+      '';
       type = types.bool;
       default = true;
+    };
+
+    usePresharedKey = mkOption {
+      description = ''
+        Whether the provider requires a WireGuard preshared key. AirVPN's
+        config generator always issues one; Mullvad does not use them. When
+        true, the gluetun/wireguard-preshared-key sops secret must exist.
+      '';
+      type = types.bool;
+      default = cfg.vpnProvider == "airvpn";
+    };
+
+    serverCountries = mkOption {
+      description = "Restrict server selection to these countries (SERVER_COUNTRIES).";
+      type = types.listOf types.str;
+      default = [];
+      example = ["Netherlands" "Switzerland"];
+    };
+
+    serverCities = mkOption {
+      description = "Restrict server selection to these cities (SERVER_CITIES).";
+      type = types.listOf types.str;
+      default = [];
+    };
+
+    serverNames = mkOption {
+      description = "Restrict server selection to these server names (SERVER_NAMES).";
+      type = types.listOf types.str;
+      default = [];
+    };
+
+    wireguardEndpointPort = mkOption {
+      description = ''
+        Override the UDP port gluetun connects to (WIREGUARD_ENDPOINT_PORT),
+        keeping provider server selection. null leaves gluetun's per-provider
+        default. The value must be one the provider accepts or gluetun aborts
+        at startup; AirVPN allows only 1637 (default) or 47107.
+      '';
+      type = types.nullOr types.port;
+      default = null;
+      example = 47107;
     };
 
     timezone = mkOption {
@@ -79,17 +124,25 @@ in {
       map (n: nameValuePair n {enable = true;}) cfg.networks
     );
 
-    sops.secrets = {
-      "gluetun/wireguard-private-key" = {};
-      # Assigned VPN IP is identifying material — kept in sops so it
-      # never appears in the nix store.
-      "gluetun/wireguard-addresses" = {};
-    };
+    sops.secrets =
+      {
+        "gluetun/wireguard-private-key" = {};
+        # Assigned VPN IP is identifying material — kept in sops so it
+        # never appears in the nix store.
+        "gluetun/wireguard-addresses" = {};
+      }
+      // optionalAttrs cfg.usePresharedKey {
+        "gluetun/wireguard-preshared-key" = {};
+      };
 
-    sops.templates."gluetun-env".content = ''
-      WIREGUARD_PRIVATE_KEY=${config.sops.placeholder."gluetun/wireguard-private-key"}
-      WIREGUARD_ADDRESSES=${config.sops.placeholder."gluetun/wireguard-addresses"}
-    '';
+    sops.templates."gluetun-env".content =
+      ''
+        WIREGUARD_PRIVATE_KEY=${config.sops.placeholder."gluetun/wireguard-private-key"}
+        WIREGUARD_ADDRESSES=${config.sops.placeholder."gluetun/wireguard-addresses"}
+      ''
+      + optionalString cfg.usePresharedKey ''
+        WIREGUARD_PRESHARED_KEY=${config.sops.placeholder."gluetun/wireguard-preshared-key"}
+      '';
 
     virtualisation.oci-containers.containers."gluetun" = {
       image = imageLib.renderImage cfg.image;
@@ -97,11 +150,25 @@ in {
         {
           "VPN_SERVICE_PROVIDER" = cfg.vpnProvider;
           "VPN_TYPE" = cfg.vpnType;
+          "TZ" = cfg.timezone;
+        }
+        // optionalAttrs (cfg.vpnProvider == "mullvad") {
           "OWNED_ONLY" =
             if cfg.ownedOnly
             then "yes"
             else "no";
-          "TZ" = cfg.timezone;
+        }
+        // optionalAttrs (cfg.serverCountries != []) {
+          "SERVER_COUNTRIES" = concatStringsSep "," cfg.serverCountries;
+        }
+        // optionalAttrs (cfg.serverCities != []) {
+          "SERVER_CITIES" = concatStringsSep "," cfg.serverCities;
+        }
+        // optionalAttrs (cfg.serverNames != []) {
+          "SERVER_NAMES" = concatStringsSep "," cfg.serverNames;
+        }
+        // optionalAttrs (cfg.wireguardEndpointPort != null) {
+          "WIREGUARD_ENDPOINT_PORT" = toString cfg.wireguardEndpointPort;
         }
         // cfg.extraEnv;
       environmentFiles = [config.sops.templates."gluetun-env".path];

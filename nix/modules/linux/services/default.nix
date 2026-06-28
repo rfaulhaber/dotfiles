@@ -1,5 +1,6 @@
 {
   imports = [
+    ./airvpn
     ./cachix
     ./desktop
     ./hardware

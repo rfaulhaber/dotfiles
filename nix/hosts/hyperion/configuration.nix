@@ -79,11 +79,6 @@
             group = config.user.group;
             mode = "0440";
           };
-          mullvad = {
-            owner = config.user.name;
-            group = config.user.group;
-            mode = "0440";
-          };
           # used by nix.extraOptions to set access-tokens for github.com
           # and avoid rate limits when fetching flake inputs
           github = {};
@@ -125,15 +120,12 @@
       };
       yubikey.enable = true;
       syncthing.enable = true;
-      mullvad = {
-        enable = true;
-        enableGUI = true;
-      };
       cachix.enable = true;
       netbird = {
         enable = true;
         setupKeyFile = config.sops.secrets."netbird/setup-key".path;
       };
+      airvpn.enable = true;
     };
     hardware = {
       zsa.enable = true;
