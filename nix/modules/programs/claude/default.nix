@@ -82,7 +82,8 @@ in {
       enableMcpIntegration = true;
 
       settings = {
-        model = "opus";
+        includeCoAuthoredBy = false;
+        model = "claude-opus-4-8";
         alwaysThinkingEnabled = true;
         effortLevel = "high";
 
@@ -107,36 +108,45 @@ in {
           ];
         };
 
-        enabledPlugins = {
-          "feature-dev@claude-plugins-official" = true;
-          "code-review@claude-plugins-official" = true;
-          "explanatory-output-style@claude-plugins-official" = true;
-          "frontend-design@claude-plugins-official" = true;
-          "security-guidance@claude-plugins-official" = true;
-          "typescript-lsp@claude-plugins-official" = true;
-          "rust-analyzer-lsp@claude-plugins-official" = true;
-          "code-review-ai@claude-code-workflows" = true;
-          "systems-programming@claude-code-workflows" = true;
-          "agent-orchestration@claude-code-workflows" = true;
-          "api-scaffolding@claude-code-workflows" = true;
-          "api-testing-observability@claude-code-workflows" = true;
-          "tdd-workflows@claude-code-workflows" = true;
-          "backend-api-security@claude-code-workflows" = true;
-          "backend-development@claude-code-workflows" = true;
-          "code-documentation@claude-code-workflows" = true;
-          "code-refactoring@claude-code-workflows" = true;
-          "codebase-cleanup@claude-code-workflows" = true;
-          "data-engineering@claude-code-workflows" = true;
-          "database-design@claude-code-workflows" = true;
-          "database-migrations@claude-code-workflows" = true;
-          "debugging-toolkit@claude-code-workflows" = true;
-          "dependency-management@claude-code-workflows" = true;
-          "deployment-strategies@claude-code-workflows" = true;
-          "documentation-generation@claude-code-workflows" = true;
-          "error-debugging@claude-code-workflows" = true;
-          "error-diagnostics@claude-code-workflows" = true;
-          "functional-programming@claude-code-workflows" = true;
-        };
+        enabledPlugins = let
+          plugins = [
+            "agent-orchestration@claude-code-workflows"
+            "api-scaffolding@claude-code-workflows"
+            "api-testing-observability@claude-code-workflows"
+            "backend-api-security@claude-code-workflows"
+            "backend-development@claude-code-workflows"
+            "claude-code-setup@claude-plugins-official"
+            "claude-md-management@claude-plugins-official"
+            "code-documentation@claude-code-workflows"
+            "code-refactoring@claude-code-workflows"
+            "code-review@claude-plugins-official"
+            "code-simplifier@claude-plugins-official"
+            "codebase-cleanup@claude-code-workflows"
+            "data-engineering@claude-code-workflows"
+            "database-design@claude-code-workflows"
+            "database-migrations@claude-code-workflows"
+            "debugging-toolkit@claude-code-workflows"
+            "dependency-management@claude-code-workflows"
+            "deployment-strategies@claude-code-workflows"
+            "documentation-generation@claude-code-workflows"
+            "error-debugging@claude-code-workflows"
+            "error-diagnostics@claude-code-workflows"
+            "explanatory-output-style@claude-plugins-official"
+            "feature-dev@claude-plugins-official"
+            "frontend-design@claude-plugins-official"
+            "functional-programming@claude-code-workflows"
+            "learning-output-style@claude-plugins-official"
+            "ralph-loop@claude-plugins-official"
+            "rust-analyzer-lsp@claude-plugins-official"
+            "security-guidance@claude-plugins-official"
+            "skill-creator@claude-plugins-official"
+            "superpowers@claude-plugins-official"
+            "systems-programming@claude-code-workflows"
+            "tdd-workflows@claude-code-workflows"
+            "typescript-lsp@claude-plugins-official"
+          ];
+        in
+          builtins.foldl' (acc: el: {"${el}" = true;} // acc) {} plugins;
       };
 
       skills = "${config.dotfiles.configDir}/claude/skills";
