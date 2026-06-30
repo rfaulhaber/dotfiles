@@ -19,7 +19,7 @@
     "images": {
       "dashboard": {
         "version": "latest",
-        "digest": "sha256:05022a0ab704865678f9299a308747cb0878d4258488c00536c27b23f2bd5921"
+        "digest": "sha256:3d3f4980e6162babc0f1c416a76812fc89fcdddf35954390537724752dfa421d"
       },
       "signal": {
         "version": "latest",
