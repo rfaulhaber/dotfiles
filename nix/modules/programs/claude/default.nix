@@ -83,6 +83,7 @@ in {
 
       settings = {
         includeCoAuthoredBy = false;
+        tui = "fullscreen";
         model = "claude-opus-4-8";
         alwaysThinkingEnabled = true;
         effortLevel = "high";
