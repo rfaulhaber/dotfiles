@@ -262,4 +262,10 @@
   # };
 
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  # TODO move
+  virtualisation.podman = {
+    enable = true;
+    dockerCompat = true;
+  };
 }
