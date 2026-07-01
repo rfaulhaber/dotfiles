@@ -424,7 +424,7 @@
           enable = true;
           pangolinEndpoint = "https://pangolin.3679.space";
           dns = "192.168.0.2";
-          networks = ["default" "immich" "forgejo" "sure" "paperless"];
+          networks = ["default" "immich" "forgejo" "sure" "paperless" "miniflux"];
         };
       };
   };
