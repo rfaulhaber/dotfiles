@@ -24,6 +24,7 @@ with lib; let
     script = ''
       ${pkgs.podman}/bin/podman network inspect ${hostname}_${name} || \
         ${pkgs.podman}/bin/podman network create ${hostname}_${name} \
+          ${optionalString (netCfg.driver == null || netCfg.driver == "bridge") "--opt=isolate=${netCfg.isolate}"} \
           ${optionalString (netCfg.driver != null) "--driver=${netCfg.driver}"} \
           ${optionalString (netCfg.subnet != null) "--subnet=${netCfg.subnet}"} \
           ${optionalString (netCfg.gateway != null) "--gateway=${netCfg.gateway}"}
@@ -65,6 +66,11 @@ with lib; let
         type = types.nullOr types.str;
         default = null;
         description = "Gateway IP address";
+      };
+      isolate = mkOption {
+        type = types.enum ["false" "true" "strict"];
+        default = "false";
+        description = "netavark inter-network isolation (bridge driver only). netavark >= 2.0 defaults to strict, which also drops container traffic hairpinning through host-published ports on other networks; the module default restores the pre-2.0 behavior its services assume.";
       };
     };
   };

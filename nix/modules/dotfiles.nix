@@ -3,10 +3,7 @@
 # ~/.config/dotfiles; they import the specific subtree they need via
 # builtins.path (see programs/nushell, niri/binds.nix) so the closure stays
 # content-addressed and reproducible across flake fetch methods.
-{
-  config,
-  ...
-}: {
+{config, ...}: {
   config = {
     assertions = [
       {
