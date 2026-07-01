@@ -194,6 +194,7 @@ in {
     ./syncthing.nix
     ./tautulli.nix
     ./transmission.nix
+    ./tumblr-alt-text-bot.nix
     ./vikunja.nix
   ];
 
