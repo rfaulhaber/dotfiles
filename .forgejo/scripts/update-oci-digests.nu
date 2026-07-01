@@ -23,6 +23,14 @@
 
 let dry_run = (($env.DRY_RUN? | default "false") == "true")
 
+# skopeo >= 1.23 refuses to parse the legacy v1 /etc/containers/registries.conf
+# that the NixOS `virtualisation.containers` module still emits. Every repo in
+# oci-images.json is fully qualified, so the search-registries list is never
+# consulted — point skopeo at a minimal valid v2 file to sidestep the host's.
+let registries_conf = ($nu.temp-dir | path join "oci-digests-registries.conf")
+'unqualified-search-registries = ["docker.io"]' | save -f $registries_conf
+$env.CONTAINERS_REGISTRIES_CONF = $registries_conf
+
 # Walk a parsed JSON tree and yield {path, version, digest} for every leaf
 # record that has both "version" and "digest" keys. Path is a list of
 # attribute names (e.g. ["immich" "postgres" "image"]).
