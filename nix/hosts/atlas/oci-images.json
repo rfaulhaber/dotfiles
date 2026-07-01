@@ -2,13 +2,13 @@
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:aaaa087af75a73b7ac765dcc5d748874cfafdb93c23ec9f64fbb481dea291b23"
+      "digest": "sha256:047222423d6d8556a88581b189175bec57f286f120b52ba29c0390fe6babaa5a"
     }
   },
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:210dc050f7473197109fdc76f3809e9295566d68d2737363e60b1fc5fe170398"
+      "digest": "sha256:03c71a37845c6462060ac555f748129d88bfc472d9954bbf131bec71958471dd"
     }
   },
   "calibre-web-auto": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:706aade16e8b35f3a981e0f32229b062e28d39af20b9c6e8bd19cc9a9d911753"
+      "digest": "sha256:95e138cf8d16f3fe4c48f15c5ca73f1152aa355f51591b19cc551b2f54a26b0e"
     }
   },
   "linkding": {
@@ -218,7 +218,7 @@
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:9e876c15ed4f9e7dbd9c7ad1b80664518b0733e3f7485de07f3e8cc8b436f2c0"
+      "digest": "sha256:30d59b253993df8c7634fe03cbb33e22324d00d200ff3d3cc30e6184fa55f96b"
     }
   },
   "vikunja": {
