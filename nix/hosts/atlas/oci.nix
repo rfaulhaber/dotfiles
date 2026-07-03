@@ -316,6 +316,12 @@
           };
         };
 
+        tumblr-alt-text-bot = {
+          enable = true;
+          baseDir = "/data/apps/tumblr-alt-text-bot";
+          botBlog = "alt-text-bot";
+        };
+
         prometheus = {
           enable = true;
           baseDir = "/data/apps/prometheus";

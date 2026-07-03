@@ -56,11 +56,11 @@
         openFirewall = true;
       };
 
-      # tumblr-alt-text-bot = {
-      #   enable = true;
-      #   baseDir = "/zroot/apps/tumblr-alt-text-bot";
-      #   botBlog = "alt-text-bot";
-      # };
+      tumblr-alt-text-bot = {
+        enable = true;
+        baseDir = "/zroot/apps/tumblr-alt-text-bot";
+        botBlog = "alt-text-bot";
+      };
 
       # SECURITY TRUST BOUNDARY: every runner here grants its job containers
       # the host Nix daemon socket, and the runner daemon itself holds the

@@ -83,19 +83,28 @@ in {
       map (n: nameValuePair n {enable = true;}) cfg.networks
     );
 
-    # Only stable, non-rotating credentials live in sops. The OAuth access and
-    # refresh tokens rotate over the bot's lifetime and are owned by the on-disk
-    # token cache (token.json), so they are deliberately kept out of declarative
-    # config — see the TUMBLR_ACCESS_TOKEN note below and the baseDir seeding step.
+    # The access/refresh tokens here are a *first-boot seed*, not the live
+    # credentials: on an empty baseDir the app copies them into its token cache
+    # (token.json) and the cache is authoritative from then on, absorbing every
+    # rotation the refresh flow produces. Updating the sops values alone
+    # therefore does nothing once the cache exists — to re-seed (e.g. after
+    # re-running `auth` because the refresh token was invalidated), update sops
+    # *and* delete <baseDir>/token.json before restarting. Conversely, don't
+    # reuse the seeded tokens anywhere else: a refresh elsewhere rotates the
+    # refresh token and quietly turns the sops copy stale.
     sops.secrets = {
       "tumblr-alt-text-bot/consumer-key" = {};
       "tumblr-alt-text-bot/consumer-secret" = {};
+      "tumblr-alt-text-bot/access-token" = {};
+      "tumblr-alt-text-bot/refresh-token" = {};
       "tumblr-alt-text-bot/vision-api-key" = {};
     };
 
     sops.templates."tumblr-alt-text-bot-env".content = ''
       TUMBLR_CONSUMER_KEY=${config.sops.placeholder."tumblr-alt-text-bot/consumer-key"}
       TUMBLR_CONSUMER_SECRET=${config.sops.placeholder."tumblr-alt-text-bot/consumer-secret"}
+      TUMBLR_ACCESS_TOKEN=${config.sops.placeholder."tumblr-alt-text-bot/access-token"}
+      TUMBLR_REFRESH_TOKEN=${config.sops.placeholder."tumblr-alt-text-bot/refresh-token"}
       VISION_API_KEY=${config.sops.placeholder."tumblr-alt-text-bot/vision-api-key"}
     '';
 
@@ -103,17 +112,7 @@ in {
       image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
       environment =
-        {
-          BOT_BLOG = cfg.botBlog;
-          # The binary requires TUMBLR_ACCESS_TOKEN to be set, but the on-disk
-          # token cache (token.json, seeded once from `auth`) is authoritative
-          # whenever present, so this value is never used at steady state. It is
-          # an inert sentinel — not a sops secret — precisely so the rotating
-          # OAuth tokens stay out of declarative config. If the cache is missing
-          # the bot seeds from this stub and fails loudly on the first API call,
-          # which is the intended signal to re-seed token.json via `auth`.
-          TUMBLR_ACCESS_TOKEN = "token-json-is-authoritative";
-        }
+        {BOT_BLOG = cfg.botBlog;}
         // optionalAttrs (cfg.visionModel != null) {VISION_MODEL = cfg.visionModel;}
         // optionalAttrs (cfg.pollIntervalSecs != null) {POLL_INTERVAL_SECS = toString cfg.pollIntervalSecs;}
         // cfg.extraEnv;
