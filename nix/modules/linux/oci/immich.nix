@@ -131,9 +131,11 @@ in {
       # The canonical valkey image is at valkey/valkey, not the
       # docker-hub library namespace (valkey:* doesn't exist on
       # docker.io/library; podman would 404 trying to pull it).
+      # Bare "9" matches the immich v3 reference compose; valkey stopped
+      # publishing debian-suffixed tags (9-bookworm is a 404).
       image = imageLib.mkImageOptions {
         repository = "valkey/valkey";
-        version = "8-bookworm";
+        version = "9";
       };
     };
 

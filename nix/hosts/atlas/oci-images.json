@@ -56,7 +56,7 @@
   "immich": {
     "image": {
       "version": "release",
-      "digest": "sha256:c15bff75068effb03f4355997d03dc7e0fc58720c2b54ad6f7f10d1bc57efaa5"
+      "digest": "sha256:46dedfc5848f7313bd6b584ea9f2648057430307aad6de56de968f6710a72cae"
     },
     "postgres": {
       "image": {
@@ -66,8 +66,8 @@
     },
     "redis": {
       "image": {
-        "version": "8-bookworm",
-        "digest": "sha256:fea8b3e67b15729d4bb70589eb03367bab9ad1ee89c876f54327fc7c6e618571"
+        "version": "9",
+        "digest": "sha256:4963247afc4cd33c7d3b2d2816b9f7f8eeebab148d29056c2ca4d7cbc966f2d9"
       }
     }
   },

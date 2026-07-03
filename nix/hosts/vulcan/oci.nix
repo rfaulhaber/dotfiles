@@ -43,7 +43,7 @@
         #   skopeo inspect --no-tags --format "{{.Digest}}" \
         #     docker://ghcr.io/immich-app/immich-machine-learning:release-openvino
         image.version = "release";
-        image.digest = "sha256:71cd5a681823c4b818f4b24b3f05816eccc3d085559e7615f695bde77e64f1f2";
+        image.digest = "sha256:d5561b55333f88ac4fe240f846c89f498693b0a9cedef6b1c45fcca0c7969cc4";
       };
       newt = {
         enable = true;
