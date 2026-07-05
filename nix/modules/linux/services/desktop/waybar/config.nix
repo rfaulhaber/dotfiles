@@ -4,9 +4,15 @@
 }: {
   height = 45;
   layer = "top";
-  modules-left = ["niri/workspaces" "wlr/taskbar" "niri/window"];
+  modules-left = ["niri/workspaces" "niri/window"];
   modules-center = [];
   modules-right = ["tray" "cpu" "memory" "disk" "disk#nix" "clock"];
+  "niri/workspaces" = {
+    "workspace-taskbar" = {
+      enable = true;
+      icon-size = 28;
+    };
+  };
   "wlr/taskbar" = {
     format = "{icon}";
     tooltip-format = "{title} | {app_id}";
