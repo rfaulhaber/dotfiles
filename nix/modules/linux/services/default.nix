@@ -10,6 +10,7 @@
     ./nfs
     ./nix-cache
     ./observability-agent
+    ./ollama
     ./printing
     ./samba
     ./sudo-rs

@@ -11,6 +11,12 @@
       "digest": "sha256:96d21c396f46f10578931c2941e3f2789f7087b5ab0e166afedf29e7385c6aa7"
     }
   },
+  "open-webui": {
+    "image": {
+      "version": "main",
+      "digest": "sha256:a26effeb220e132482bf7e0560b3404843e7bc40d23051144e062960df8df6b0"
+    }
+  },
   "newt": {
     "image": {
       "version": "latest",

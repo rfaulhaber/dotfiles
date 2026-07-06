@@ -43,6 +43,14 @@
     services = {
       zfs = {
         enable = true;
+        datasets = {
+          # LLM model store shared to vulcan over NFS (ollama blobs are
+          # multi-GB sequential files, hence the large recordsize).
+          "data/llm/models".properties = {
+            mountpoint = "/data/llm/models";
+            recordsize = "1M";
+          };
+        };
         encryptedDatasets = {
           filebrowser-files = {
             dataset = "data/apps/filebrowser/files";
@@ -109,6 +117,10 @@
             path = "/data/tv";
             clients = "192.168.0.105(rw,sync,no_subtree_check,no_root_squash)";
           };
+          llm-models = {
+            path = "/data/llm/models";
+            clients = "192.168.0.105(rw,sync,no_subtree_check,no_root_squash)";
+          };
         };
       };
     };
@@ -137,6 +149,10 @@
       forceImportRoot = false;
     };
   };
+
+  # Exporting a path before its dataset is mounted silently drops the export
+  # until a manual `exportfs -r`; order the server behind dataset creation.
+  systemd.services.nfs-server.after = ["zfs-manage-datasets.service"];
 
   sops.secrets = {
     "filebrowser/zfs-key" = {

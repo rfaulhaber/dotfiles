@@ -183,6 +183,7 @@ in {
     ./newt.nix
     ./nzbget.nix
     ./netbird.nix
+    ./open-webui.nix
     ./pangolin.nix
     ./paperless.nix
     ./pihole.nix

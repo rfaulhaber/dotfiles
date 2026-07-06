@@ -46,6 +46,18 @@
         prometheus.openFirewall = true;
         loki.extraLabels.role = "ci";
       };
+      ollama = {
+        enable = true;
+        home = "/apps/ollama";
+        modelsDir = "/mnt/llm/models";
+        gpu = "intel";
+        openFirewall = true;
+        models = ["qwen3:30b-a3b" "qwen3:14b" "gpt-oss:20b"];
+        zfs = {
+          enable = true;
+          pool = "zroot";
+        };
+      };
       ssh = {
         enable = true;
         server = {
@@ -73,6 +85,10 @@
           "/mnt/media/tv" = {
             server = "atlas";
             path = "/data/tv";
+          };
+          "/mnt/llm/models" = {
+            server = "atlas";
+            path = "/data/llm/models";
           };
         };
       };

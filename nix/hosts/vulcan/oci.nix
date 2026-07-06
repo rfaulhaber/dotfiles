@@ -45,6 +45,14 @@
         image.version = "release";
         image.digest = "sha256:d5561b55333f88ac4fe240f846c89f498693b0a9cedef6b1c45fcca0c7969cc4";
       };
+      open-webui = {
+        enable = true;
+        baseDir = "/zroot/apps/open-webui";
+        openFirewall = true;
+        # Native ollama runs on the host (modules.services.ollama), so
+        # reach it via the podman-injected host gateway DNS entry.
+        ollamaBaseUrl = "http://host.containers.internal:11434";
+      };
       newt = {
         enable = true;
         pangolinEndpoint = "https://pangolin.3679.space";
