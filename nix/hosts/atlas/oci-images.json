@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ec4f8271426686ef164ce29b4eed040da6174365daaac640ac97b867d091730d"
+      "digest": "sha256:80b8b912848e4b3587d9304a79f4ec131a3ee0768ab5a7d75827a4a3db3af7bc"
     }
   },
   "paperless": {
@@ -218,7 +218,7 @@
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:30d59b253993df8c7634fe03cbb33e22324d00d200ff3d3cc30e6184fa55f96b"
+      "digest": "sha256:8ae5bb0b1be8289bc4d89f246639f50def76c5bc265eba7223bc56e6aa9e9182"
     }
   },
   "vikunja": {
