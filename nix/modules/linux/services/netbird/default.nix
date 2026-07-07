@@ -69,9 +69,18 @@ in {
               Host = "netbird.3679.space:443";
             };
           }
-          # Netbird's client Config field; suppresses all resolv.conf/embedded
-          # resolver management so NixOS keeps ownership of system DNS.
-          // optionalAttrs (!cfg.manageDNS) {DisableDNS = true;};
+          # On a Pi-hole host (manageDNS = false) Netbird must stay off system
+          # DNS entirely. DisableDNS stops it rewriting resolv.conf, but its
+          # embedded resolver still binds <netbird-ip>:53 — which collides with
+          # Pi-hole's wildcard 0.0.0.0:53 bind (dns.listeningMode = SINGLE),
+          # losing the port-53 race on restart and silently taking Pi-hole's
+          # DNS resolver down. Pinning Netbird's resolver to a loopback high
+          # port keeps port 53 free for Pi-hole. (netbird >=0.74 no longer frees
+          # the socket via DisableDNS alone.)
+          // optionalAttrs (!cfg.manageDNS) {
+            DisableDNS = true;
+            CustomDNSAddress = "127.0.0.1:5053";
+          };
         login = mkIf (cfg.setupKeyFile != null) {
           enable = true;
           setupKeyFile = cfg.setupKeyFile;
