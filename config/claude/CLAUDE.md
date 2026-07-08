@@ -35,6 +35,27 @@ Nushell renders lists and tables as bordered "fancy" tables by default. `head` a
 
 When unsure a construct works in nushell, prefer the explicit nushell form over guessing.
 
+# Model Usage & Delegation
+
+My session model varies with where my weekly usage sits — Fable when budget allows, otherwise Opus. Either way it is an expensive tier, and I want those tokens spent on reasoning, not plumbing. Act as the orchestrator and architect: keep decomposition, design decisions, hard debugging, integration, and final synthesis in the main loop, and delegate execution-heavy but reasoning-light work to subagents on cheaper models.
+
+**Subagents inherit the session model by default.** An Agent call without an explicit `model` spawns another instance of the expensive session model — that delegation saves nothing. Set the tier deliberately every time (Agent tool `model` param; per-stage `model`/`effort` in Workflow scripts):
+
+- `haiku` — mechanical and fully specified: bulk search/enumeration, "where is X defined" scouting, extracting facts from logs or command output, format conversion, summarizing a named document.
+- `sonnet` — scoped work needing some judgment: implementing to an established pattern, drafting tests, multi-file exploration where you need conclusions rather than contents, first-pass review, research fan-out.
+- `opus` — hard subtasks that need deep reasoning but stand alone from the main thread: adversarial verification of critical findings, thorough review of a subtle diff, debugging a well-isolated failure, judge/verify stages in workflows. When the session model is Fable, this is the preferred tier for heavy delegated reasoning; in an Opus session it's the same thing as inheriting, and Opus-spawning-Opus is not a problem worth optimizing away.
+- omit `model` (inherit) — reserve for subtasks that both need the best available reasoning *and* are inseparable from the session's accumulated design context; when in doubt, try `opus` first.
+
+**The test before doing work inline:** does this need my reasoning, or just hands and context space? Work that would pull large file dumps or logs into the main context but only needs a conclusion is a delegation candidate even when it's easy — keeping bulk out of the expensive context window matters as much as cheaper generation.
+
+**Don't delegate when:**
+
+- Writing the handoff prompt costs more than the task itself (a single known-location read or grep).
+- The task depends on accumulated conversation context that's expensive to restate.
+- It's correctness-critical and hard to verify — a cheap wrong answer redone at full price is a net loss over doing it right once.
+
+**You own delegated results.** Spot-check subagent output against the actual code before building on it or relaying it to me. If a cheaper model comes back wrong or useless once, redo that subtask one tier up instead of retrying the same tier.
+
 # Code Comments
 
 Write comments for the next person who reads this code in its committed, finished state — not as a log of how you arrived at it.
