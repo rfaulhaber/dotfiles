@@ -8,7 +8,7 @@
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:125e7fd526cff1a063dda092db08215d90bf35f3c541c750f6fa3390c137a2bb"
+      "digest": "sha256:1993e0bb0be26c031f579f162e34c1fb7ebb0ab3599d79c34a33ebd026ac0957"
     }
   },
   "calibre-web-auto": {
@@ -56,7 +56,7 @@
   "immich": {
     "image": {
       "version": "release",
-      "digest": "sha256:46dedfc5848f7313bd6b584ea9f2648057430307aad6de56de968f6710a72cae"
+      "digest": "sha256:14390f3dc9512dc3273b12ccee6363d9be16c388699abc3f3fe0498bb9829937"
     },
     "postgres": {
       "image": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:95e138cf8d16f3fe4c48f15c5ca73f1152aa355f51591b19cc551b2f54a26b0e"
+      "digest": "sha256:77ea075828b41a08494fb305629fce7a7ba908db2418cd96ead302cb2c885cf1"
     }
   },
   "linkding": {
@@ -109,14 +109,14 @@
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:1b1689b20d16a014a3d195653381cf2caa75a41a92d93b255a9d6ea29fd353aa"
+        "digest": "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
       }
     }
   },
   "navidrome": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c4b5cb36a790b3eb63ca6a68bbe2fe149c2d7fa2e586f7a480e61db630e6664b"
+      "digest": "sha256:7c43af9f651654e97278be871705aae85a4ee0fa4b310337989699a8ada9b3ed"
     }
   },
   "newt": {
@@ -139,7 +139,7 @@
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:1b1689b20d16a014a3d195653381cf2caa75a41a92d93b255a9d6ea29fd353aa"
+        "digest": "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
       }
     },
     "redis": {
@@ -164,13 +164,13 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:a78e6850440c4a89b63a26ecdfc01d6ce2b0a268573fb577781abbbbbd445529"
+      "digest": "sha256:14c714b2f437a65fd27f9105f41b2bcf6760ddb717a232457b0d8c7efd3c1697"
     }
   },
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:39da107b5a9371fdaa651bd188049b863716a815385eb3a30d41071b7e1aeb33"
+      "digest": "sha256:28852d0eacababc206762af48fe86d78594a4f434cc46b358f9764a857098662"
     }
   },
   "recyclarr": {
@@ -194,7 +194,7 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:633e0e66d85ce4e9172608a37d3d24e124b3e485fc0d946f533c3bb5875227e9"
+      "digest": "sha256:4b025354d338999e03bf6dbdadcdde94815d39d4a5aba5de3cdc86a56d7d6c51"
     }
   },
   "soularr": {
@@ -206,7 +206,7 @@
   "syncthing": {
     "image": {
       "version": "latest",
-      "digest": "sha256:8e5894550493d7247912d6c58eef61a46dc8bdcc5ab5f0cbc4ee1381d8585c8b"
+      "digest": "sha256:e8cc12a9d538d6896942bb3055be9c5bf1cf44c713dfa617b5d3e72037de00fb"
     }
   },
   "tautulli": {
