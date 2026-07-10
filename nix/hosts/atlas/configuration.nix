@@ -123,6 +123,10 @@
           };
         };
       };
+      bandcamp-import = {
+        enable = true;
+        zfsDataset = "data/import/bandcamp";
+      };
     };
 
     # NOTE: the open drivers do not work on atlas (GTX 1050 Ti, Pascal)
