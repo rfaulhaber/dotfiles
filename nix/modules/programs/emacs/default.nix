@@ -53,7 +53,7 @@
       pandoc
       ripgrep
       sqlite
-      texlive.combined.scheme-medium
+      texliveMedium
       wordnet
       zstd
     ]
