@@ -23,15 +23,15 @@
       },
       "signal": {
         "version": "latest",
-        "digest": "sha256:c7d5c82a8d7dba49d924818b1a08f5c9ccc7d573a8dc1528c27fecad9ecd5384"
+        "digest": "sha256:6c5b68c965cdbe488b8ef5472c115047ca5cd50407f8dd48ec2fdaa913ae77ab"
       },
       "relay": {
         "version": "latest",
-        "digest": "sha256:9e0b048091e5c3b84531c32611ee49fe5f656bef047a79a28480512eb93deacf"
+        "digest": "sha256:81de66b33a66298af410d761d11c5503afdb54cf57a370b49c3d17ed5a56cbfd"
       },
       "management": {
         "version": "latest",
-        "digest": "sha256:59251c11617f2ce801dc31746aaf71fc5a1d5370a00693b8490ec34f1a1e8bb5"
+        "digest": "sha256:bf9e2cb5a07c8e579613799702544cc5c3d575f8de21763edc58189a9466ea51"
       },
       "coturn": {
         "version": "latest",
@@ -42,7 +42,7 @@
   "pocket-id": {
     "image": {
       "version": "latest",
-      "digest": "sha256:183f1ae8426f3af0b65878fae9ddbe9a0515f6548c04d8ebb640ad1abd9c8fce"
+      "digest": "sha256:b7c37ab3044e53fd29b5f7295eebff5fdc0367dc043f36b41bcbe1815fcd965d"
     }
   },
   "podman-exporter": {

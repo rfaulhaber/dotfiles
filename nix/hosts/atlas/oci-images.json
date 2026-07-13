@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:77ea075828b41a08494fb305629fce7a7ba908db2418cd96ead302cb2c885cf1"
+      "digest": "sha256:32b5fda569319a2b94b65dea705190d3e96c103ef511eabf954fa44f04e9dc25"
     }
   },
   "linkding": {
@@ -116,7 +116,7 @@
   "navidrome": {
     "image": {
       "version": "latest",
-      "digest": "sha256:7c43af9f651654e97278be871705aae85a4ee0fa4b310337989699a8ada9b3ed"
+      "digest": "sha256:9012939114fbb1bb641b81cf96dec5ded15f0aafefe8d47a511d7cb919658e40"
     }
   },
   "newt": {
@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:80b8b912848e4b3587d9304a79f4ec131a3ee0768ab5a7d75827a4a3db3af7bc"
+      "digest": "sha256:20439658454cbe39f8be90b7d8e5027340c7f7ce99e3cac151992acd15785303"
     }
   },
   "paperless": {
@@ -164,13 +164,13 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:14c714b2f437a65fd27f9105f41b2bcf6760ddb717a232457b0d8c7efd3c1697"
+      "digest": "sha256:c234f7e67d01017761662ec058a2a7f74538a63aeb1114f3ee14616fd2af81aa"
     }
   },
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:28852d0eacababc206762af48fe86d78594a4f434cc46b358f9764a857098662"
+      "digest": "sha256:2b2c1c05eb3f648d2c80dfab9486147dd7bb0ad4d77fa972fc1c5de8f1da3738"
     }
   },
   "recyclarr": {
