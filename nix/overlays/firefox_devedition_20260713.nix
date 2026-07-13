@@ -14,7 +14,7 @@
 final: prev: let
   version = "153.0b11";
 in {
-  firefox-devedition-unwrapped = prev.firefox-devedition-unwrapped.overrideAttrs (old: {
+  firefox-devedition-unwrapped = prev.lib.warn "temporary overlay for firefox enabled: firefox_devedition_20260713" (prev.firefox-devedition-unwrapped.overrideAttrs (old: {
     inherit version;
 
     src = final.fetchurl {
@@ -40,5 +40,5 @@ in {
           hash = "sha256-+HiU7RMPmV7I7SIzjP0Q6iSDJL/vBjc3UcwUTg57lNQ=";
         })
       ];
-  });
+  }));
 }
