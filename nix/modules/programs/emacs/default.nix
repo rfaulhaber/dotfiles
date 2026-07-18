@@ -22,9 +22,10 @@
   # Elisp packages Doom expects Nix to supply rather than build via straight.el.
   emacsPackages = epkgs:
     with epkgs; [
+      ghostel
+      evil-ghostel
       pdf-tools
       prettier
-      vterm
       tree-sitter
       tree-sitter-langs
       treesit-grammars.with-all-grammars
@@ -47,7 +48,16 @@
       gnutls
       graphviz
       imagemagick
-      inputs.nil.outputs.packages.${pkgs.stdenv.targetPlatform.system}.nil
+      # Snapshot-test skips for Nix >= 2.35; see the nil override in flake.nix.
+      (inputs.nil.outputs.packages.${pkgs.stdenv.targetPlatform.system}.nil.overrideAttrs (old: {
+        checkFlags =
+          (old.checkFlags or [])
+          ++ [
+            "--skip=tests::sanity"
+            "--skip=ide::hover::tests::builtin_alias"
+            "--skip=ide::hover::tests::builtin_with"
+          ];
+      }))
       languagetool
       mermaid-cli
       pandoc

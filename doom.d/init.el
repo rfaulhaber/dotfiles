@@ -55,7 +55,7 @@
        vc                ; version-control and Emacs, sitting in a tree
 
        :term
-                                        ;vterm             ; the best terminal emulation in Emacs
+       (ghostel +everywhere)
 
        :checkers
        (syntax +flymake +icons)              ; tasing you for every semicolon you forget

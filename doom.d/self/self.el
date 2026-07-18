@@ -362,8 +362,12 @@ hello world
       (make-process
        :name "terminal spawn"
        :buffer (get-buffer-create "*terminal spawn*")
+       ;; Ghostty forwards --working-directory verbatim into the child's
+       ;; $env.PWD, and nushell refuses to start when PWD has a trailing
+       ;; slash — strip projectile's trailing slash and expand ~.
        :command (cons self/external-terminal-command
-                      (funcall self/external-terminal-args-fn location)))
+                      (funcall self/external-terminal-args-fn
+                               (directory-file-name (expand-file-name location)))))
     (user-error "cannot find a directory to open")))
 
 (defun self/update-org-agenda-files ()
