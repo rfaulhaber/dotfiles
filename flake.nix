@@ -65,10 +65,9 @@
     };
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi";
     # so that we can use the pipeline operator lol
-    nil = {
-      url = "github:oxalica/nil/main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+
+    nil.url = "github:oxalica/nil/main";
+
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
     sops-nix = {
       url = "github:Mic92/sops-nix";
@@ -124,9 +123,9 @@
         nixosConfigurations = let
           mkHost = lib.my.mkNixOSHost;
         in {
-          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
-            overlays = [(import ./nix/overlays/firefox_devedition_20260713.nix)];
-          };
+          hyperion =
+            mkHost ./nix/hosts/hyperion/configuration.nix {
+            };
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {};
           janus = mkHost ./nix/hosts/janus/configuration.nix {};
           pallas = mkHost ./nix/hosts/pallas/configuration.nix {};
@@ -277,7 +276,19 @@
           packages = with pkgs;
             [
               inputs'.deploy-rs.packages.default
-              inputs'.nil.packages.default
+              # nil's builtins-doc snapshot tests fail when built with Nix >=
+              # 2.35, which added complexity notes to several builtins' docs;
+              # skip them until upstream (oxalica/nil) refreshes the snapshots.
+              # Same workaround in nix/modules/programs/emacs/default.nix.
+              (inputs'.nil.packages.default.overrideAttrs (old: {
+                checkFlags =
+                  (old.checkFlags or [])
+                  ++ [
+                    "--skip=tests::sanity"
+                    "--skip=ide::hover::tests::builtin_alias"
+                    "--skip=ide::hover::tests::builtin_with"
+                  ];
+              }))
               inputs'.sops-nix.packages.default
               dix
               rage
