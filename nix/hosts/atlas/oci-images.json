@@ -2,13 +2,13 @@
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:5d916d07404296ec35ee726e13e0e558f05952724cf494a7f009d913fb2b12f3"
+      "digest": "sha256:4c30dc0bb9a5d223075e7f5d12c77bd293c4b460f86d696dbe64763104c1e88c"
     }
   },
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:1993e0bb0be26c031f579f162e34c1fb7ebb0ab3599d79c34a33ebd026ac0957"
+      "digest": "sha256:6b8fba77f741987d5c964ae3ce8afb0035ace5c43a0e9f0545ef0352b2e3dc9a"
     }
   },
   "calibre-web-auto": {
@@ -56,7 +56,7 @@
   "immich": {
     "image": {
       "version": "release",
-      "digest": "sha256:14390f3dc9512dc3273b12ccee6363d9be16c388699abc3f3fe0498bb9829937"
+      "digest": "sha256:c716dc20f957aafd89fa9d284a2ec63e25c9e2d8d8e87c6197d540a3dce237db"
     },
     "postgres": {
       "image": {
@@ -67,7 +67,7 @@
     "redis": {
       "image": {
         "version": "9",
-        "digest": "sha256:4963247afc4cd33c7d3b2d2816b9f7f8eeebab148d29056c2ca4d7cbc966f2d9"
+        "digest": "sha256:8e8d64b405ce18f41b8e5ee20aa4687a8ed0022d1298f2ce31cdcf3a76e09411"
       }
     }
   },
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:32b5fda569319a2b94b65dea705190d3e96c103ef511eabf954fa44f04e9dc25"
+      "digest": "sha256:d1a4b3e82289887d2b0af5421cfd0cc3e19f3c33d14923b75b38ae6214173118"
     }
   },
   "linkding": {
@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:20439658454cbe39f8be90b7d8e5027340c7f7ce99e3cac151992acd15785303"
+      "digest": "sha256:87eba87ec46982b003ab1f54cfabd962c5c5e95cb9eb2069cbec7b6370d0784b"
     }
   },
   "paperless": {
@@ -194,7 +194,7 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:4b025354d338999e03bf6dbdadcdde94815d39d4a5aba5de3cdc86a56d7d6c51"
+      "digest": "sha256:24acea2956a0ccb11f103877d9f4f8576600fb34bff34820ed749c2256dab89f"
     }
   },
   "soularr": {
@@ -206,7 +206,7 @@
   "syncthing": {
     "image": {
       "version": "latest",
-      "digest": "sha256:e8cc12a9d538d6896942bb3055be9c5bf1cf44c713dfa617b5d3e72037de00fb"
+      "digest": "sha256:f53c0dd7dd352d63002bc26259d832354de7b0ab9f26003407dac7f2c4168a33"
     }
   },
   "tautulli": {
@@ -218,7 +218,7 @@
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:8ae5bb0b1be8289bc4d89f246639f50def76c5bc265eba7223bc56e6aa9e9182"
+      "digest": "sha256:0913501f5d05c019f5e3555a3299df1d8de420fdf882c92a8857787f9fbf999d"
     }
   },
   "vikunja": {
