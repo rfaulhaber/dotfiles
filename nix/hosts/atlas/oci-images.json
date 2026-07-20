@@ -44,7 +44,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:b0ee2135e6ba52ad3f102aae9663707cd1c9531485117067a380d3b2b6dd991d"
+      "digest": "sha256:ad6b604e0cecc917a5cb6a8de55cd167ba415da8b7ec13456abb871a84be3c30"
     }
   },
   "grafana": {
@@ -122,7 +122,7 @@
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:60c78391e3b5cb8a260490fb26b8b7329ed5448077629da89a564af80d3a9fad"
+      "digest": "sha256:d69d047c816ca7721eae90d5f3cd3be53b615b3d498678be21488d666538ee5c"
     }
   },
   "nzbget": {
@@ -164,13 +164,13 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:c234f7e67d01017761662ec058a2a7f74538a63aeb1114f3ee14616fd2af81aa"
+      "digest": "sha256:8a0501025d6039c8c335415ee9aad499cb0d196b79d8cae7a66a566e6bcf6cd0"
     }
   },
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:2b2c1c05eb3f648d2c80dfab9486147dd7bb0ad4d77fa972fc1c5de8f1da3738"
+      "digest": "sha256:e35056574cdc695a9ee745aa1ecda9eab3842450bf4b7b8471b023790fa3861d"
     }
   },
   "recyclarr": {
@@ -188,7 +188,7 @@
   "slskd": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ab9ed50e028b524cefdb7c1dd8ebca368a076e18441ee8ac2326473eb850b4c3"
+      "digest": "sha256:ecd4026d4f8fb504e2cc55323efa2c1f5b56d20d3686b018249cc36b48ea17a6"
     }
   },
   "sonarr": {
@@ -224,7 +224,7 @@
   "vikunja": {
     "image": {
       "version": "latest",
-      "digest": "sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93"
+      "digest": "sha256:1a5dd2d410b5359f689c77bbd1c66742cde1993f82d4adfe9aefa400ff1dd833"
     }
   }
 }

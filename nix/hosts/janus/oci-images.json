@@ -7,7 +7,7 @@
       },
       "gerbil": {
         "version": "latest",
-        "digest": "sha256:431aaed724dab25e7b7b5519abd756a37401956cd4d1f9b696fedbb16f9e4ae6"
+        "digest": "sha256:0c5a7d9ccdf1b28e074ff7ed9ecd73882e47d46c9591702aa535add434fad566"
       },
       "traefik": {
         "version": "v3.4.0",
@@ -19,7 +19,7 @@
     "images": {
       "dashboard": {
         "version": "latest",
-        "digest": "sha256:789c274741fdd78b870480dc700b8e6a5a67a4c4016abd2b6b0a1f34bd0fdd41"
+        "digest": "sha256:558d95770a4a8c50712a6b6efbd1280cab2090b2e7e777911ba3b018604aefce"
       },
       "signal": {
         "version": "latest",
