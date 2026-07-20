@@ -53,6 +53,10 @@
         gpu = "intel";
         openFirewall = true;
         models = ["qwen3:30b-a3b" "qwen3:14b" "gpt-oss:20b" "gemma4:26b"];
+        # Default context is 4096, which is too small for coding use.
+        # Raise the server-wide default; clients can still override
+        # per-request via num_ctx.
+        extraEnvironment.OLLAMA_CONTEXT_LENGTH = "32768";
         zfs = {
           enable = true;
           pool = "zroot";
