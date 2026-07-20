@@ -52,7 +52,7 @@
         modelsDir = "/mnt/llm/models";
         gpu = "intel";
         openFirewall = true;
-        models = ["qwen3:30b-a3b" "qwen3:14b" "gpt-oss:20b"];
+        models = ["qwen3:30b-a3b" "qwen3:14b" "gpt-oss:20b" "gemma4:26b"];
         zfs = {
           enable = true;
           pool = "zroot";
