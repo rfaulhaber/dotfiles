@@ -100,7 +100,39 @@
       crush = {
         enable = true;
         openrouterApiKeySecret = "openrouter-crush-api-key";
-        providers.openrouter = {};
+        providers = {
+          openrouter = {};
+          # vulcan (192.168.0.105) serves a native Ollama on the LAN with its
+          # firewall open. `discover_models = true` keeps auto-discovery on even
+          # though `models` is non-empty, so every model vulcan hosts still shows
+          # up in the picker (merged via /v1/models + /api/show enrichment).
+          # Discovery auto-triggers only when `models` is empty, so listing Gemma
+          # below would otherwise silently disable it. User-listed models win over
+          # discovered ones by ID, so the Gemma entry keeps its settings.
+          vulcan = {
+            name = "vulcan (ollama)";
+            type = "ollama";
+            base_url = "http://192.168.0.105:11434/v1/";
+            discover_models = true;
+            models = [
+              {
+                name = "Gemma 4 26b";
+                id = "gemma4:26b";
+                context_window = 32768;
+                default_max_tokens = 8192;
+                supports_tools = true;
+                # Gemma 4 reasons by default; at vulcan's ~16 tok/s that burns the
+                # whole token budget on chain-of-thought before it answers. Crush's
+                # `ollama` provider type sends no reasoning control, and Ollama only
+                # honours `reasoning_effort: none` (not enable_thinking, Modelfile
+                # params, or a system prompt). The typed field rejects "none", so
+                # pass it through extra_body, which crush forwards verbatim. Scoped
+                # to this model's `options` so discovered models are unaffected.
+                options.provider_options.extra_body.reasoning_effort = "none";
+              }
+            ];
+          };
+        };
       };
     };
     services = {
