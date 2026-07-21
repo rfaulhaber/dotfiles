@@ -8,6 +8,11 @@ export def "run-unfree" [flake: string]: nothing -> nothing {
   with-env { NIXPKGS_ALLOW_UNFREE: 1 } { ^nix run --impure $flake }
 }
 
+# enter a flake dev shell in nushell instead of the bash `nix develop` hardwires
+export def --wrapped dev [...args: string] {
+  ^nix develop ...$args --command nu
+}
+
 export def "diff-metadata" [before: path, after: path]: nothing -> string  {
   nix store diff-closures $before $after --json
   | from json
