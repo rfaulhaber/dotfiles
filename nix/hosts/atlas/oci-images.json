@@ -226,5 +226,11 @@
       "version": "latest",
       "digest": "sha256:1a5dd2d410b5359f689c77bbd1c66742cde1993f82d4adfe9aefa400ff1dd833"
     }
-  }
+  },
+    "sure": {
+      "image": {
+         "version": "latest",
+          "digest": "sha256:96155b20c0b71f8e2ab960ab5aba8fba9df64c6a40ec581eca20af2b20ab089c"
+        }
+    }
 }

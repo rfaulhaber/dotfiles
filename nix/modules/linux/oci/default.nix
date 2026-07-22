@@ -161,17 +161,17 @@ in {
   imports = [
     ./bazarr.nix
     ./caddy.nix
-    ./calibre.nix
     ./calibre-web-auto.nix
+    ./calibre.nix
     ./crowdsec.nix
     ./filebrowser.nix
     ./flaresolverr.nix
-    ./forgejo.nix
     ./forgejo-runner.nix
+    ./forgejo.nix
     ./gluetun.nix
     ./grafana.nix
-    ./immich.nix
     ./immich-ml.nix
+    ./immich.nix
     ./jellyfin.nix
     ./job-ops.nix
     ./kitchenowl.nix
@@ -180,9 +180,9 @@ in {
     ./loki.nix
     ./miniflux.nix
     ./navidrome.nix
+    ./netbird.nix
     ./newt.nix
     ./nzbget.nix
-    ./netbird.nix
     ./open-webui.nix
     ./pangolin.nix
     ./paperless.nix
@@ -198,6 +198,7 @@ in {
     ./slskd.nix
     ./sonarr.nix
     ./soularr.nix
+    ./sure.nix
     ./syncthing.nix
     ./tautulli.nix
     ./transmission.nix
