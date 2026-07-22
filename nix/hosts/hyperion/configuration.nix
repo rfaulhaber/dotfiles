@@ -71,7 +71,6 @@
         colorOverrides.hints = config.modules.themes.colors.grey;
       };
       direnv.enable = true;
-      tmux.enable = true;
       zellij.enable = true;
       age.enable = true;
       sops = {
