@@ -88,8 +88,13 @@
 
 ;; keep in lockstep with ghostel-flake (v0.44.0): nix grafts the flake's
 ;; prebuilt native module into this package, and the elisp refuses modules
-;; older than its ghostel--minimum-module-version. Doom's own pin lags.
+;; older than its ghostel--minimum-module-version. Doom's own pins lag.
+;; evil-ghostel lives in the same repo and must ride the same rev: its
+;; :around advice on ghostel--redraw must match the native fn's arity
+;; (v0.44.0 added FORCE-SYNC; a stale advice signals
+;; wrong-number-of-arguments on every redraw and blanks the terminal).
 (package! ghostel :pin "2191afe3049fc785c6fd2b1ab6b826daf500ffbe")
+(package! evil-ghostel :pin "2191afe3049fc785c6fd2b1ab6b826daf500ffbe")
 
 ;; non-*elpa packages
 (package! caseconv 
