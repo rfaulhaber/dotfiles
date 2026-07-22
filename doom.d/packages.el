@@ -86,6 +86,11 @@
   :recipe (:host github
            :repo "emacs-rustic/rustic"))
 
+;; keep in lockstep with ghostel-flake (v0.44.0): nix grafts the flake's
+;; prebuilt native module into this package, and the elisp refuses modules
+;; older than its ghostel--minimum-module-version. Doom's own pin lags.
+(package! ghostel :pin "2191afe3049fc785c6fd2b1ab6b826daf500ffbe")
+
 ;; non-*elpa packages
 (package! caseconv 
   :pin "b5395df6a734b70acf5cc76b9d64039ce5305009"
