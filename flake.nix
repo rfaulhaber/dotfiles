@@ -74,6 +74,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rz.url = "github:rfaulhaber/rz";
+    ghostel = {
+      url = "github:rfaulhaber/ghostel-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
