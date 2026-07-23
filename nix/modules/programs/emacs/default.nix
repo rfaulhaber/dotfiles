@@ -48,16 +48,7 @@
       gnutls
       graphviz
       imagemagick
-      # Snapshot-test skips for Nix >= 2.35; see the nil override in flake.nix.
-      (inputs.nil.outputs.packages.${pkgs.stdenv.targetPlatform.system}.nil.overrideAttrs (old: {
-        checkFlags =
-          (old.checkFlags or [])
-          ++ [
-            "--skip=tests::sanity"
-            "--skip=ide::hover::tests::builtin_alias"
-            "--skip=ide::hover::tests::builtin_with"
-          ];
-      }))
+      inputs'.nil.packages.default
       languagetool
       mermaid-cli
       pandoc

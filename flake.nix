@@ -280,19 +280,7 @@
           packages = with pkgs;
             [
               inputs'.deploy-rs.packages.default
-              # nil's builtins-doc snapshot tests fail when built with Nix >=
-              # 2.35, which added complexity notes to several builtins' docs;
-              # skip them until upstream (oxalica/nil) refreshes the snapshots.
-              # Same workaround in nix/modules/programs/emacs/default.nix.
-              (inputs'.nil.packages.default.overrideAttrs (old: {
-                checkFlags =
-                  (old.checkFlags or [])
-                  ++ [
-                    "--skip=tests::sanity"
-                    "--skip=ide::hover::tests::builtin_alias"
-                    "--skip=ide::hover::tests::builtin_with"
-                  ];
-              }))
+              inputs'.nil.packages.default
               inputs'.sops-nix.packages.default
               dix
               rage
