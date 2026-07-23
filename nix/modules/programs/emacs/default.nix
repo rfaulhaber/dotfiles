@@ -48,7 +48,7 @@
       gnutls
       graphviz
       imagemagick
-      inputs'.nil.packages.default
+      inputs.nil.packages.${pkgs.stdenv.targetPlatform.system}.default
       languagetool
       mermaid-cli
       pandoc
