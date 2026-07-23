@@ -73,8 +73,6 @@
 (package! just-mode)
 (package! justl)
 
-;; (package! hyperbole)
-
 (package! mcp
   :pin "2e947d2ddc8cbe655f846e23711e412d41f1bf6a"
   :recipe (:host github
