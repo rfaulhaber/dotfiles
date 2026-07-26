@@ -70,7 +70,7 @@
        (lookup +dictionary +offline +docsets) ; navigate your code and its documentation
        (lsp +eglot +peek)
        magit                                  ; a git porcelain for Emacs
-       pdf                                    ; pdf enhancements
+       (:if (not (featurep :system 'macos)) pdf) 
 
        :lang
        data                                                                             ; config/data formats
