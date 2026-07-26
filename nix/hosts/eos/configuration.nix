@@ -29,6 +29,7 @@
       };
       ghostty.enable = true;
       direnv.enable = true;
+      zellij.enable = true;
       git = {
         enable = true;
         useDelta = true;
@@ -39,9 +40,6 @@
         setDefault = true;
         zoxide.enable = true;
         carapace.enable = true;
-        plugins = with pkgs.nushellPlugins; [
-          polars
-        ];
       };
       sops = {
         enable = true;
