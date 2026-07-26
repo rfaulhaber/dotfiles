@@ -81,7 +81,7 @@
        latex                                                                            ; writing papers in Emacs has never been so fun
        markdown                                                                         ; writing docs for people to ignore
        (nix +lsp)                                                                       ; I hereby declare "nix geht mehr!"
-       (org +hugo +journal +pandoc +present +roam2 +noter +dragndrop +pretty +pomodoro) ; organize your plain life in plain text
+       (org +hugo +journal +pandoc +present +roam2 +dragndrop +pretty +pomodoro) ; organize your plain life in plain text
        (python +lsp +pyright)                                                           ; beautiful is better than ugly
        (rust +lsp)                                                                      ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        (sh +lsp)                                                                        ; she sells {ba,z,fi}sh shells on the C xor
