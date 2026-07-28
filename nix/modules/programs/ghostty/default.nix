@@ -63,7 +63,7 @@ in {
         text = let
           zellijFlags = "-l welcome";
           zellijInit = "${pkgs.zellij}/bin/zellij";
-          zellijCmd = zellijInit + lib.optionalString cfg.startWithZellij.enableWelcomeScreen zellijFlags;
+          zellijCmd = zellijInit + lib.optionalString cfg.startWithZellij.enableWelcomeScreen (" " + zellijFlags);
           zellijCommandSetting = "command = ${zellijCmd}";
         in
           ghosttyConfigs.config
