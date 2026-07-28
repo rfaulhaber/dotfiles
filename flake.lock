@@ -520,11 +520,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785139058,
-        "narHash": "sha256-/dgSSiDyqkhofJo7xuFxgYM/GPCBBxu8GWNF4Ee+agQ=",
+        "lastModified": 1785253249,
+        "narHash": "sha256-sdPMbCipbrnI/mWzGBLn7QxLepoUvsCuHVbsOdrS+9g=",
         "owner": "rfaulhaber",
         "repo": "ghostel-flake",
-        "rev": "099a2b9a6bb77acbfd42a92dbc8f4f40034b5fbb",
+        "rev": "345160f21166c7208a9bb0a3d4d47b2032b39880",
         "type": "github"
       },
       "original": {
