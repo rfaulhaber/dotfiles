@@ -108,26 +108,6 @@
             ];
             containerOptions = "-v /nix/var/nix/daemon-socket/socket:/nix/var/nix/daemon-socket/socket";
           };
-          # Public forge: this runner is the one the trust boundary above
-          # hinges on. Keep Codeberg's "require approval for outside
-          # collaborators" setting on for every repo this runner serves.
-          codeberg = {
-            enable = true;
-            instanceUrl = "https://codeberg.org";
-            capacity = 4;
-            tokenFile = config.sops.templates."codeberg-runner-env".path;
-            labels = [
-              "docker:docker://node:20-bookworm"
-              "ubuntu-latest:docker://ubuntu:latest"
-              "nix:docker://nixos/nix:latest"
-            ];
-            jobStateDir = "/zroot/apps/forgejo-runner/codeberg-state";
-            baseDir = "/zroot/apps/forgejo-runner/codeberg";
-            validVolumes = [
-              "/nix/var/nix/daemon-socket/socket"
-            ];
-            containerOptions = "-v /nix/var/nix/daemon-socket/socket:/nix/var/nix/daemon-socket/socket";
-          };
         };
       };
     };

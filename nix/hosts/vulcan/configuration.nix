@@ -112,7 +112,7 @@
     kernelPackages = pkgs.linuxPackages;
     kernelParams = ["nohibernate"];
     zfs = {
-      extraPools = ["zroot"];
+      extraPools = ["zroot" "store"];
       forceImportRoot = false;
     };
   };
@@ -137,14 +137,10 @@
       "newt/id" = {};
       "newt/secret" = {};
       "forgejo-runner/token" = {};
-      "codeberg-runner/token" = {};
     };
     templates = {
       "forgejo-runner-env".content = ''
         FORGEJO_TOKEN=${config.sops.placeholder."forgejo-runner/token"}
-      '';
-      "codeberg-runner-env".content = ''
-        FORGEJO_TOKEN=${config.sops.placeholder."codeberg-runner/token"}
       '';
     };
   };
