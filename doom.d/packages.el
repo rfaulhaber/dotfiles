@@ -91,8 +91,9 @@
 ;; :around advice on ghostel--redraw must match the native fn's arity
 ;; (v0.44.0 added FORCE-SYNC; a stale advice signals
 ;; wrong-number-of-arguments on every redraw and blanks the terminal).
-(package! ghostel :pin "2191afe3049fc785c6fd2b1ab6b826daf500ffbe")
-(package! evil-ghostel :pin "2191afe3049fc785c6fd2b1ab6b826daf500ffbe")
+(let ((ghostel-pin "a2fe16d781de7b2e2eafb3d9139987a57cded319"))
+  (package! ghostel :pin ghostel-pin)
+  (package! evil-ghostel :pin ghostel-pin))
 
 ;; non-*elpa packages
 (package! caseconv 
