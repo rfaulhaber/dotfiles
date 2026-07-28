@@ -2,13 +2,13 @@
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:4c30dc0bb9a5d223075e7f5d12c77bd293c4b460f86d696dbe64763104c1e88c"
+      "digest": "sha256:ab401a0f361cfad328e444838b13d5b334b189d0f556fc91a3623eb581df36df"
     }
   },
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6b8fba77f741987d5c964ae3ce8afb0035ace5c43a0e9f0545ef0352b2e3dc9a"
+      "digest": "sha256:150db5b3789125a31589a6d296c7419b61ad692e541ee1da78609d8bec9cd4c9"
     }
   },
   "calibre-web-auto": {
@@ -20,7 +20,7 @@
   "filebrowser": {
     "image": {
       "version": "latest",
-      "digest": "sha256:2cd949cd06c058576773c5b8400c854478a64c4f364b1e2bea275819847f099b"
+      "digest": "sha256:fc213590ebc090cb8205125cd3ecdfa9066b9ed4a0b53fe2570972d6a3379e73"
     }
   },
   "flaresolverr": {
@@ -67,7 +67,7 @@
     "redis": {
       "image": {
         "version": "9",
-        "digest": "sha256:8e8d64b405ce18f41b8e5ee20aa4687a8ed0022d1298f2ce31cdcf3a76e09411"
+        "digest": "sha256:3acc0687f2a2e1091fae6450d7842dd658c941338cf0a873ddd9e14b9e4ea4dd"
       }
     }
   },
@@ -80,13 +80,13 @@
   "kitchenowl": {
     "image": {
       "version": "latest",
-      "digest": "sha256:34061684cd23f422bd8aafcb49f05929ac49d059883cd1f3ebbc5cdeef31e6ba"
+      "digest": "sha256:bd821a41b8cb27fd7fcf429acd1fc67e9f889485a2cd1193d68c2d804a8e1bef"
     }
   },
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:d1a4b3e82289887d2b0af5421cfd0cc3e19f3c33d14923b75b38ae6214173118"
+      "digest": "sha256:78888f208e531be21e2d10c02625e0271c08dd07e03a250825d9ee9e792b07a7"
     }
   },
   "linkding": {
@@ -104,7 +104,7 @@
   "miniflux": {
     "image": {
       "version": "latest",
-      "digest": "sha256:cd353a6af9ce663291f405eddef26fa0d567f486b521c5d34e3fb50e41938b9a"
+      "digest": "sha256:49d7b60987616387c306a8023087b31f2c9b7b21288b523026cb04058e8b6dbb"
     },
     "postgres": {
       "image": {
@@ -128,13 +128,13 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:87eba87ec46982b003ab1f54cfabd962c5c5e95cb9eb2069cbec7b6370d0784b"
+      "digest": "sha256:d79a67d21cf63431d9e08e7f10c920ef1f68f06e61c015e602c2c3f79d28a0ac"
     }
   },
   "paperless": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6c86cad803970ea782683a8e80e7403444c5bf3cf70de63b4d3c8e87500db92f"
+      "digest": "sha256:3838b9a4260d23acc5bb63aed407138435e70b56e5806f4baa350ca184e57582"
     },
     "postgres": {
       "image": {
@@ -145,7 +145,7 @@
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005"
+        "digest": "sha256:8096655e437712b07503796fb64d81359256cfcff0ab29d95a7da72863786efb"
       }
     }
   },
@@ -164,7 +164,7 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:8a0501025d6039c8c335415ee9aad499cb0d196b79d8cae7a66a566e6bcf6cd0"
+      "digest": "sha256:2df9ae57c475bf4341abd833e56a9268bb02167cc5f3f828a8347d2d8628f652"
     }
   },
   "radarr": {
@@ -206,7 +206,7 @@
   "syncthing": {
     "image": {
       "version": "latest",
-      "digest": "sha256:f53c0dd7dd352d63002bc26259d832354de7b0ab9f26003407dac7f2c4168a33"
+      "digest": "sha256:ae909bee7c41f516be03fd7de72317a44f4a043bcba76884de941b99407b6957"
     }
   },
   "tautulli": {
@@ -218,7 +218,7 @@
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:0913501f5d05c019f5e3555a3299df1d8de420fdf882c92a8857787f9fbf999d"
+      "digest": "sha256:6b78970a0cb00709d3817fcb47b7cf74da56a43384bbd50d03955ca87e38c5f0"
     }
   },
   "vikunja": {
@@ -227,10 +227,10 @@
       "digest": "sha256:1a5dd2d410b5359f689c77bbd1c66742cde1993f82d4adfe9aefa400ff1dd833"
     }
   },
-    "sure": {
-      "image": {
-         "version": "latest",
-          "digest": "sha256:96155b20c0b71f8e2ab960ab5aba8fba9df64c6a40ec581eca20af2b20ab089c"
-        }
+  "sure": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:1c4e77af614e981325762142d2d07de9de9926ca1713f3de128f9ecd3870580b"
     }
+  }
 }

@@ -2,19 +2,19 @@
   "plex": {
     "image": {
       "version": "latest",
-      "digest": "sha256:59c671e182563040092a2d0901e429dc15e0aba9883acd13ef97857372b79b21"
+      "digest": "sha256:507713a14f9586f827d00c81381ecdcd438009172342b322b62a0e2b65081fdf"
     }
   },
   "jellyfin": {
     "image": {
       "version": "latest",
-      "digest": "sha256:32aa0d4565c633db95af29a58e8a5dc9becdfa58564a3aea68436623fd45f5a1"
+      "digest": "sha256:b8dcc7b71d0ea872b74314da4b995c0cf282b1778438c295996e7be88c70fdda"
     }
   },
   "open-webui": {
     "image": {
       "version": "main",
-      "digest": "sha256:a26effeb220e132482bf7e0560b3404843e7bc40d23051144e062960df8df6b0"
+      "digest": "sha256:6a773e5c3a246b65cbe74ce942b294292c0e5f81c138f703d111bc162f7d7c3d"
     }
   },
   "newt": {

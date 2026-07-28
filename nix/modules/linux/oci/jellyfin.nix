@@ -90,6 +90,12 @@ in {
         }
         // optionalAttrs (cfg.gpu == "nvidia") {
           "NVIDIA_VISIBLE_DEVICES" = "all";
+        }
+        // optionalAttrs (cfg.gpu == "intel") {
+          # The linuxserver image ships no Intel OpenCL runtime, so ffmpeg
+          # aborts (ENODEV) whenever OpenCL tone mapping is enabled; this mod
+          # installs intel/compute-runtime at container start.
+          "DOCKER_MODS" = "linuxserver/mods:jellyfin-opencl-intel";
         };
       volumes =
         [
