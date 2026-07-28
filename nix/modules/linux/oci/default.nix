@@ -405,6 +405,12 @@ in {
       dockerCompat = mkDefault true;
     };
 
+    # The registries.conf v2 rewrite in nixpkgs no longer defines
+    # unqualified-search-registries by default (its [[registry]] blocks alone
+    # don't enable short-name resolution), which breaks every short-name image
+    # reference like "valkey/valkey" at pull time.
+    virtualisation.containers.registries.settings.unqualified-search-registries = ["docker.io"];
+
     # Allow DNS from container interfaces
     networking.firewall.interfaces = let
       matchAll =
