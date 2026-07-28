@@ -8,7 +8,12 @@
 with lib; let
   cfg = config.modules.desktop.environment.niri;
   colors = config.modules.themes.colors;
-  niriPkg = inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  # The host must wire inputs.niri.overlays.default into nixpkgs.overlays
+  # (see flake.nix). Going through pkgs rather than inputs.niri.packages —
+  # which is built against bare nixpkgs.legacyPackages — lets host overlays
+  # reach niri's dependencies. Without the overlay this silently falls back
+  # to nixpkgs' older niri.
+  niriPkg = pkgs.niri;
 in {
   imports = [
     ../../swww

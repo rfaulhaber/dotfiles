@@ -53,7 +53,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     niri-flake = {
-      url = "github:sodiboo/niri-flake";
+      url = "github:epireyn/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     waybar.url = "github:Alexays/waybar";
@@ -129,6 +129,13 @@
         in {
           hyperion =
             mkHost ./nix/hosts/hyperion/configuration.nix {
+              # niri is built from the flake input against this nixpkgs and
+              # consumed by the niri module as pkgs.niri. The dated overlay
+              # overrides prev.niri, so it must come after the niri overlay.
+              overlays = [
+                inputs.niri.overlays.default
+                (import ./nix/overlays/niri_20260728.nix)
+              ];
             };
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {};
           janus = mkHost ./nix/hosts/janus/configuration.nix {};
