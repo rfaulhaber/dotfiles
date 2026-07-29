@@ -48,10 +48,6 @@
       ghostty = {
         enable = true;
         fontSize = 20;
-        startWithZellij = {
-          enable = true;
-          enableWelcomeScreen = true;
-        };
       };
       _1password = {
         enable = true;
