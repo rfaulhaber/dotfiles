@@ -8,7 +8,7 @@
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:150db5b3789125a31589a6d296c7419b61ad692e541ee1da78609d8bec9cd4c9"
+      "digest": "sha256:a65e85852ae4dfec58ff6b65ffa0717fd5d2c21dddf0f5683e778365d87c588d"
     }
   },
   "calibre-web-auto": {
@@ -44,7 +44,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ad6b604e0cecc917a5cb6a8de55cd167ba415da8b7ec13456abb871a84be3c30"
+      "digest": "sha256:e67bd4c664b103a6112a20e44384ce1cbe9394c41eb4de918693035699509956"
     }
   },
   "grafana": {
@@ -56,7 +56,7 @@
   "immich": {
     "image": {
       "version": "release",
-      "digest": "sha256:c716dc20f957aafd89fa9d284a2ec63e25c9e2d8d8e87c6197d540a3dce237db"
+      "digest": "sha256:b434cb9287eea1471c9974845914d4dd328c9c2d652e446ed4930f99944f0ceb"
     },
     "postgres": {
       "image": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:78888f208e531be21e2d10c02625e0271c08dd07e03a250825d9ee9e792b07a7"
+      "digest": "sha256:ab9fdd412e8c84f88dfbe6aaed8819bf69028dacb6041b81dcd7afa584bdf50d"
     }
   },
   "linkding": {
