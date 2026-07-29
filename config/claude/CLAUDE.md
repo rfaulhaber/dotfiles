@@ -37,22 +37,24 @@ When unsure a construct works in nushell, prefer the explicit nushell form over 
 
 # Model Usage & Delegation
 
-My session model varies with where my weekly usage sits — Fable when budget allows, otherwise Opus. Either way it is an expensive tier, and I want those tokens spent on reasoning, not plumbing. Act as the orchestrator and architect: keep decomposition, design decisions, hard debugging, integration, and final synthesis in the main loop, and delegate execution-heavy but reasoning-light work to subagents on cheaper models.
+My session model is always an expensive tier, and I want those tokens spent on reasoning, not plumbing. Act as the orchestrator: keep decomposition, design decisions, hard debugging, integration, and final synthesis in the main loop; push execution-heavy, reasoning-light work to subagents.
 
-**Subagents inherit the session model by default.** An Agent call without an explicit `model` spawns another instance of the expensive session model — that delegation saves nothing. Set the tier deliberately every time (Agent tool `model` param; per-stage `model`/`effort` in Workflow scripts):
+**Never spawn a subagent without an explicit tier.** An Agent call with no `model` inherits the session model, so that delegation saves nothing. Prefer a named agent over `general-purpose` plus a `model:` param — each one pins its own tier and its description says when it applies:
 
-- `haiku` — mechanical and fully specified: bulk search/enumeration, "where is X defined" scouting, extracting facts from logs or command output, format conversion, summarizing a named document.
-- `sonnet` — scoped work needing some judgment: implementing to an established pattern, drafting tests, multi-file exploration where you need conclusions rather than contents, first-pass review, research fan-out.
-- `opus` — hard subtasks that need deep reasoning but stand alone from the main thread: adversarial verification of critical findings, thorough review of a subtle diff, debugging a well-isolated failure, judge/verify stages in workflows. When the session model is Fable, this is the preferred tier for heavy delegated reasoning; in an Opus session it's the same thing as inheriting, and Opus-spawning-Opus is not a problem worth optimizing away.
-- omit `model` (inherit) — reserve for subtasks that both need the best available reasoning *and* are inseparable from the session's accumulated design context; when in doubt, try `opus` first.
+| agent | tier | for |
+|---|---|---|
+| `scout` | haiku | repo-local lookups: where something is defined, call sites, does this pattern exist |
+| `host-inspector` | sonnet | read-only SSH triage on a remote NixOS host: journals, units, podman, ZFS, DNS |
+| `nix-archaeologist` | sonnet | evaluating the Nix graph: option provenance, what an expression evaluates to, closures |
+| `implementer` | sonnet | scoped implementation where the design is settled |
+| `upstream-researcher` | sonnet | ground truth about a third-party project from its own source |
+| `verifier` | opus | adversarial verification of one correctness-critical claim |
 
-**The test before doing work inline:** does this need my reasoning, or just hands and context space? Work that would pull large file dumps or logs into the main context but only needs a conclusion is a delegation candidate even when it's easy — keeping bulk out of the expensive context window matters as much as cheaper generation.
+For ad-hoc calls that don't fit one of those, still set `model` deliberately: `haiku` mechanical and fully specified, `sonnet` scoped work needing some judgment, `opus` hard reasoning that stands alone from the main thread. Omit it only when the subtask needs top-tier reasoning *and* is inseparable from the session's accumulated context. Workflow scripts set `model`/`effort` per stage.
 
-**Don't delegate when:**
+**The test:** does this need my reasoning, or just hands and context space? Work that would pull large file dumps or logs into the main context but only needs a conclusion is a delegation candidate even when it's easy.
 
-- Writing the handoff prompt costs more than the task itself (a single known-location read or grep).
-- The task depends on accumulated conversation context that's expensive to restate.
-- It's correctness-critical and hard to verify — a cheap wrong answer redone at full price is a net loss over doing it right once.
+**Don't delegate** when writing the handoff prompt costs more than the task itself, when the task depends on accumulated conversation context that's expensive to restate, or when it's correctness-critical and hard to verify.
 
 **You own delegated results.** Spot-check subagent output against the actual code before building on it or relaying it to me. If a cheaper model comes back wrong or useless once, redo that subtask one tier up instead of retrying the same tier.
 
