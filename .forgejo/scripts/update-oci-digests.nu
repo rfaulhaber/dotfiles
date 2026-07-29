@@ -116,7 +116,7 @@ def main [...hosts: string]: nothing -> nothing {
     let specs = (find-image-specs $manifest)
     print $"  ($specs | length) image\(s\) declared"
 
-    let host_changes = ($specs | each { |s|
+    let host_changes = ($specs | par-each { |s|
         let repo = (query-repo $h.host $s.path)
         let new_digest = (fetch-digest $repo $s.version)
         if $new_digest == $s.digest {
