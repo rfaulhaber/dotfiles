@@ -63,6 +63,18 @@ in {
 
     systemd.packages = [niriPkg];
 
+    # switch-to-configuration restarts changed *user* units, and any rebuild of
+    # niri's closure changes niri.service's ExecStart store path (even at the
+    # same niri version) — restarting it kills the whole graphical session.
+    # Keep the running compositor; the new build takes over at next login.
+    # Written at the units level (not systemd.user.services.niri.restartIfChanged)
+    # because serviceToUnit would also inject Environment=PATH into the drop-in,
+    # clobbering the session PATH niri uses to spawn waybar/fuzzel/etc.
+    systemd.user.units."niri.service".text = ''
+      [Service]
+      X-RestartIfChanged=false
+    '';
+
     security.polkit.enable = true;
 
     programs = {
