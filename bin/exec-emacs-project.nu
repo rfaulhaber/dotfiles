@@ -6,6 +6,7 @@ def main []: nothing -> nothing {
   let projects = $projects_dir
     | path expand
     | ls $in
+    | where type == "dir"
     | get name
     | each { path basename }
     | uniq
