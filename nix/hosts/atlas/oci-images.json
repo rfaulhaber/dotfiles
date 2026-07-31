@@ -8,7 +8,7 @@
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:a65e85852ae4dfec58ff6b65ffa0717fd5d2c21dddf0f5683e778365d87c588d"
+      "digest": "sha256:6a8c39ee79afe4f7ebb37e50b8d973fa3d21882a6517455a738b96c8e9f27c43"
     }
   },
   "calibre-web-auto": {
@@ -44,7 +44,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:e67bd4c664b103a6112a20e44384ce1cbe9394c41eb4de918693035699509956"
+      "digest": "sha256:988d9cb1982f688ce51f3511057b90c5c8d01889db60a4d56e5230aebf1d3339"
     }
   },
   "grafana": {
@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:d79a67d21cf63431d9e08e7f10c920ef1f68f06e61c015e602c2c3f79d28a0ac"
+      "digest": "sha256:b22a2b8b366d1e68e6341435bdabd9ff859642cc2ff4a04243d0723521d69d2e"
     }
   },
   "paperless": {
@@ -145,7 +145,7 @@
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:8096655e437712b07503796fb64d81359256cfcff0ab29d95a7da72863786efb"
+        "digest": "sha256:e8eb6f2980c06c6a25c08f62cb2e00dc7d2fead9aa492cfdd8b54a42109ae0f2"
       }
     }
   },
@@ -200,7 +200,7 @@
   "soularr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:a46d4b0af667e54e816e2058ec574a03337519ee74476e17875d4c5cb3a3c288"
+      "digest": "sha256:9d17bdc35108afd747c4862dc32a0c1cba821638d170e1374188a977ce255c76"
     }
   },
   "syncthing": {
