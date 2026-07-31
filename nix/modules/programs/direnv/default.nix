@@ -15,36 +15,23 @@ in {
       enableNushellIntegration = mkIf config.modules.programs.nushell.enable true;
       nix-direnv.enable = true;
       stdlib = ''
-        _restore_or_unset() {
-          local key=$1 value=$2
-          if [[ $value == __UNSET__ ]]; then
-            unset "$key"
-          else
-            export "$key=$value"
-          fi
-        }
-
-        # `nix print-dev-env` dumps the build sandbox's SHELL (a store bash)
-        # and a transient TMPDIR into the environment; importing those turns
-        # every $SHELL consumer (tmux default-shell, `exec $env.SHELL`, ...)
-        # into bash and points TMPDIR at a directory nix may delete. Keep the
-        # interactive values instead, mirroring nix-direnv's _nix_import_env.
+        # nix-direnv's _nix_import_env restores TMPDIR & friends after
+        # importing the `nix print-dev-env` dump, but not SHELL, so the dev
+        # shell's store bash would leak into every $SHELL consumer (tmux
+        # default-shell, `exec $env.SHELL`, ...). Wrap its use_flake — direnv
+        # sources lib/*.sh (nix-direnv) before this file — and keep the
+        # interactive SHELL.
+        eval "$(declare -f use_flake | sed '1s/use_flake/_nix_direnv_use_flake/')"
         use_flake() {
-          watch_file flake.nix
-          watch_file flake.lock
-          local -A saved=(
-            [SHELL]=''${SHELL:-__UNSET__}
-            [NIX_BUILD_TOP]=''${NIX_BUILD_TOP:-__UNSET__}
-            [TMP]=''${TMP:-__UNSET__}
-            [TMPDIR]=''${TMPDIR:-__UNSET__}
-            [TEMP]=''${TEMP:-__UNSET__}
-            [TEMPDIR]=''${TEMPDIR:-__UNSET__}
-          )
-          eval "$(nix print-dev-env --profile "$(direnv_layout_dir)/flake-profile")"
-          local key
-          for key in "''${!saved[@]}"; do
-            _restore_or_unset "$key" "''${saved[$key]}"
-          done
+          local saved_shell=''${SHELL:-__UNSET__}
+          _nix_direnv_use_flake "$@"
+          local status=$?
+          if [[ $saved_shell == __UNSET__ ]]; then
+            unset SHELL
+          else
+            export SHELL=$saved_shell
+          fi
+          return $status
         }
       '';
     };
