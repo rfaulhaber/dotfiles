@@ -1,6 +1,6 @@
 ---
 name: org-mode
-description: Use when writing or editing Emacs Org mode content — `.org` files, fenced org code blocks, or when the user asks for documentation, notes, or task lists in org-mode format. Encodes conventions that keep org documents interactive in Emacs (cycleable TODO state, statistics cookies for parent headings, agenda-friendly structure).
+description: Use when writing or editing Emacs Org mode content — `.org` files, fenced org code blocks, or when the user asks for documentation, notes, or task lists in org-mode format. Encodes conventions that keep org documents interactive in Emacs (cycleable TODO state, statistics cookies, agenda-visible dates), org-native markup instead of markdown, and file naming/preamble conventions.
 ---
 
 # Org Mode Skill
@@ -44,9 +44,25 @@ Both render fine visually but Emacs cannot operate on them as TODOs.
 
 `- [ ] item` checkboxes are still interactive (toggled with `C-c C-c`) and are appropriate for *sub-items inside* a TODO headline — e.g., a release checklist nested under one parent task. They are **not** a substitute for top-level TODO items; use `* TODO` for those.
 
+### Use the full keyword set when it adds signal
+
+This Emacs runs Doom's default keywords: `TODO PROJ LOOP STRT WAIT HOLD IDEA | DONE KILL`. `TODO`/`DONE` are always safe, but in a document tracking live work the intermediate states carry real information — `STRT` (in progress), `WAIT`/`HOLD` (blocked), `KILL` (cancelled, distinct from done). Prefer them over prose like "(in progress)" appended to a headline. They are Doom-specific: in org text destined for a vanilla-org reader, stick to `TODO`/`DONE`.
+
+### Scheduling, deadlines, priorities
+
+The planning line goes immediately after the headline; the priority goes in the headline after the keyword:
+
+```org
+* TODO [#A] Migrate the store pool
+  SCHEDULED: <2026-08-03 Mon> DEADLINE: <2026-08-15 Sat>
+```
+
+- **Active** timestamps `<2026-08-03 Mon>` put the entry in the agenda; **inactive** ones `[2026-07-31 Fri]` are for logs and references and stay out of it. Choose deliberately — a "verified on" date should be inactive.
+- Get the weekday right or omit it: `<2026-08-03>` is valid and Emacs inserts the day name on first edit, but a *wrong* day name is displayed as written and misleads until the timestamp is re-edited.
+
 ## Rule 2: Parent headings with TODO/checkbox children get a statistics cookie
 
-When a heading has TODO sub-headings or checkbox children, append a **statistics cookie** — `[/]` (count) or `[%]` (percent) — to the parent headline. Write the cookie *empty*; Emacs fills it in on file open and whenever a child changes state.
+When a heading has TODO sub-headings or checkbox children, append a **statistics cookie** — `[/]` (count) or `[%]` (percent) — to the parent headline. Write the cookie *empty*; Emacs fills it in whenever a child changes state, or on demand with `C-c #`. (It does not update on mere file open — a freshly opened file shows the literal `[/]`, which is fine.)
 
 ### With TODO sub-headings
 
@@ -86,6 +102,35 @@ Renders as `* Migration progress [50%]`.
 
 Write `[/]` or `[%]`, not `[0/3]` or `[0%]`. Emacs computes the values; hand-written counts go stale the moment the user toggles anything.
 
+## Rule 3: New files — snake_case names, a preamble matched to formality
+
+Name any `.org` file you create in lowercase snake_case: `nvme_swap_plan.org`, `atlas_migration.org` — not `NVME-SWAP-PLAN.org`, `nvme-swap-plan.org`, or `NvmeSwapPlan.org`. This matches org ecosystem convention (org-roam's default slugs join title words with underscores).
+
+- Exception: `README.org` keeps its conventional all-caps name — that's a forge/repo convention that outranks the org one.
+- The rule governs files you create; don't rename existing documents to match unless asked.
+
+### Preamble scales with formality
+
+- Project documentation, plans committed to a repo, anything shared or exported: full preamble — `#+TITLE:`, `#+AUTHOR:`, plus `#+STARTUP: overview` when the document is long enough that opening folded helps.
+- Personal working notes: `#+TITLE:` at most. Don't front-load metadata a working document doesn't need.
+
+## Rule 4: Org markup, not markdown
+
+Markdown is the habit to unlearn — inside a `.org` file it is inert text at best. Translate reflexes:
+
+| Markdown habit | Org form |
+|---|---|
+| `# Heading` / `## Subheading` | `* Heading` / `** Subheading` |
+| `**bold**` | `*bold*` |
+| `*italic*` / `_italic_` | `/italic/` |
+| `` `code` `` | `~code~` for code; `=verbatim=` for filenames, keys, literal values |
+| `[text](url)` | `[[url][text]]` |
+| `` ```lang `` fenced block | `#+begin_src lang` … `#+end_src` |
+| `> quote` | `#+begin_quote` … `#+end_quote` |
+
+- Pasted command output belongs in `#+begin_example` … `#+end_example`, not a src block with an invented language.
+- A bare `_` in prose becomes a subscript on export — one more reason filenames and identifiers always get wrapped in `=...=`.
+
 ## Quick reference
 
 | What | Syntax | Notes |
@@ -95,6 +140,11 @@ Write `[/]` or `[%]`, not `[0/3]` or `[0%]`. Emacs computes the values; hand-wri
 | Parent counter (count) | `* Parent [/]` | Auto-fills to e.g. `[1/3]` |
 | Parent counter (percent) | `* Parent [%]` | Auto-fills to e.g. `[33%]` |
 | Checkbox sub-item | `- [ ] item` / `- [X] item` | Toggle with `C-c C-c` |
+| Priority | `* TODO [#A] Description` | `A`–`C`; unmarked defaults to `B` |
+| Schedule / deadline | `SCHEDULED: <2026-08-03 Mon>` | Line under the headline; `DEADLINE:` may share it |
+| Active timestamp | `<2026-08-03 Mon>` | The agenda sees it |
+| Inactive timestamp | `[2026-07-31 Fri]` | Reference only; the agenda ignores it |
+| Code block | `#+begin_src nix` … `#+end_src` | Never markdown fences |
 
 ## When NOT to apply these rules
 
