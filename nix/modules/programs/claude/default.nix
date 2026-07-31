@@ -103,8 +103,8 @@ in {
     # Every field here is optional and its shape varies between releases, so
     # each accessor tolerates the key being absent, null, or the wrong type —
     # a statusline that errors renders as a bare error string on every frame.
-    # Effort is not a documented part of the payload; the accessor is
-    # speculative and simply contributes nothing when the key is missing.
+    # rate_limits only appears on subscription auth, and only after the first
+    # API response of the session.
     statusLineProgram = pkgs.writeText "claude-statusline.jq" ''
       def sstr: select(type == "string" and . != "");
       def tilde:
@@ -118,12 +118,21 @@ in {
         if (.cost | type) == "object" then .cost.total_cost_usd
         elif (.session | type) == "object" then .session.total_cost_usd
         else null end;
+      def effort_level: if (.effort | type) == "object" then .effort.level else null end;
+      def context_pct:
+        if (.context_window | type) == "object" then .context_window.used_percentage else null end;
+      def session_pct:
+        if (.rate_limits | type) == "object" and (.rate_limits.five_hour | type) == "object"
+        then .rate_limits.five_hour.used_percentage
+        else null end;
 
       [ "[" + ((model_name | sstr) // "?") + "]"
       , (work_dir | sstr | tilde)
       , (style_name | sstr | select(. != "default"))
-      , ((.effortLevel // .reasoning_effort) | sstr)
+      , (effort_level | sstr)
       , (cost_usd | select(type == "number" and . > 0) | "$" + (. * 100 | round / 100 | tostring))
+      , (context_pct | select(type == "number") | "ctx " + (round | tostring) + "%")
+      , (session_pct | select(type == "number") | "5h " + (round | tostring) + "%")
       , (select(.exceeds_200k_tokens == true) | "⚠ 200k+")
       ]
       | map(select(. != null and . != ""))
