@@ -183,7 +183,6 @@ in {
         settings = {
           includeCoAuthoredBy = false;
           tui = "fullscreen";
-          disableRemoteControl = true;
           remoteControlAtStartup = false;
 
           permissions = {
