@@ -76,7 +76,7 @@
       nix-cache = {
         enable = true;
         port = 4965;
-        interface = "enp4s0";
+        interface = "lan0";
         secretKeyFile = config.sops.secrets.nix-cache.path;
       };
       nfs.mount = {
@@ -112,7 +112,12 @@
     kernelPackages = pkgs.linuxPackages;
     kernelParams = ["nohibernate"];
     zfs = {
-      extraPools = ["zroot" "store"];
+      # "store" joins this list only once the pool exists. Deploying the
+      # import unit first fails zfs-import.target after the ~60s retry loop,
+      # and on the next boot zfs-mount.service leaves zroot/apps/* unmounted
+      # under the containers (NVME-SWAP-PLAN.org, "extraPools deployed before
+      # the pool exists").
+      extraPools = ["zroot"];
       forceImportRoot = false;
     };
   };
@@ -122,7 +127,17 @@
     hostId = "896980a5";
 
     useDHCP = false;
-    interfaces.enp4s0.useDHCP = true;
+    # The NIC shares the B550 chipset bridge with M2_2, so PCI-slot-derived
+    # names shift whenever a device lands there — installing the store NVMe
+    # renamed enp4s0 to enp5s0 and silently orphaned every reference. lan0 is
+    # pinned to the NIC's MAC via systemd.network.links below.
+    interfaces.lan0.useDHCP = true;
+    # Transitional: keeps the live NIC managed between the switch that ships
+    # the rename and the reboot that applies it. Remove after that reboot.
+    interfaces.enp5s0.useDHCP = true;
+    # Leave addresses configured when dhcpcd stops, so a daemon restart never
+    # severs the SSH session a deploy is riding on.
+    dhcpcd.persistent = true;
 
     # Pin atlas to its LAN IPv4 so NFS mounts use the local path. Without
     # this, DNS returns a public AAAA record and atlas's NFS exports (keyed
@@ -130,6 +145,14 @@
     hosts."192.168.0.3" = ["atlas"];
 
     firewall.enable = true;
+  };
+
+  # Stable name for the onboard Realtek NIC, keyed on hardware identity
+  # instead of PCI topology. Applied by udev at device add — a rename takes
+  # effect on reboot, not at activation.
+  systemd.network.links."10-lan0" = {
+    matchConfig.PermanentMACAddress = "9c:6b:00:d7:3d:f1";
+    linkConfig.Name = "lan0";
   };
 
   sops = {

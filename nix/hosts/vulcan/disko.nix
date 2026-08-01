@@ -40,7 +40,7 @@
       #   ls /dev/disk/by-id/ | find nvme | find -v part
       store = {
         type = "disk";
-        device = "/dev/disk/by-id/REPLACE-WITH-NEW-DRIVE-BY-ID";
+        device = "/dev/disk/by-id/nvme-WD_BLACK_SN7100_2TB_254637801528";
         content = {
           type = "gpt";
           partitions = {
