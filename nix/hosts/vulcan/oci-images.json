@@ -50,5 +50,11 @@
       "version": "latest",
       "digest": "sha256:4c318d93543a3a4a6bb045f6fc0c58aa81a54455179e7b2cf76ab2b7ed168c86"
     }
+  },
+  "wolf": {
+    "image": {
+      "version": "stable",
+      "digest": "sha256:ff82c125c9b79b2e9443de2b0eaec40c904edb03291680d408cccd57c1d59c76"
+    }
   }
 }

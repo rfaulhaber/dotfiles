@@ -204,6 +204,7 @@ in {
     ./transmission.nix
     ./tumblr-alt-text-bot.nix
     ./vikunja.nix
+    ./wolf.nix
   ];
 
   options.modules.linux.oci = {

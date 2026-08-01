@@ -70,6 +70,26 @@
         botBlog = "alt-text-bot";
       };
 
+      # TRUST BOUNDARY: like the forgejo runners below, Wolf holds the rootful
+      # podman socket — anyone who completes Moonlight pairing can trigger
+      # session containers that run with real device access. Pairing requires
+      # PIN confirmation against Wolf's local API, and the protocol ports are
+      # LAN-only (openFirewall, no tunnel exposure) — keep it that way.
+      wolf = {
+        enable = true;
+        baseDir = "/zroot/apps/wolf";
+        # store pool (games NVMe): Proton prefixes and shader caches land on
+        # the small-record dataset. The 1M-record /store/games/steam dataset is
+        # for the Steam library; point Steam at it via the app's mounts in
+        # config.toml once Wolf has generated it — at a subpath like
+        # /home/retro/games, NOT /home/retro itself: Wolf implicitly mounts
+        # the app state folder there and podman rejects the duplicate mount
+        # destination that docker tolerates (wolf issue #461).
+        appStateDir = "/store/games/state";
+        gpu = "intel";
+        openFirewall = true;
+      };
+
       # SECURITY TRUST BOUNDARY: every runner here grants its job containers
       # the host Nix daemon socket, and the runner daemon itself holds the
       # podman socket (needed to spawn job containers). A job that runs as
