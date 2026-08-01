@@ -112,12 +112,7 @@
     kernelPackages = pkgs.linuxPackages;
     kernelParams = ["nohibernate"];
     zfs = {
-      # "store" joins this list only once the pool exists. Deploying the
-      # import unit first fails zfs-import.target after the ~60s retry loop,
-      # and on the next boot zfs-mount.service leaves zroot/apps/* unmounted
-      # under the containers (NVME-SWAP-PLAN.org, "extraPools deployed before
-      # the pool exists").
-      extraPools = ["zroot"];
+      extraPools = ["zroot" "store"];
       forceImportRoot = false;
     };
   };
