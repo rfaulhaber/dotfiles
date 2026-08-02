@@ -41,14 +41,14 @@ My session model is always an expensive tier, and I want those tokens spent on r
 
 **Never spawn a subagent without an explicit tier.** An Agent call with no `model` inherits the session model, so that delegation saves nothing. Prefer a named agent over `general-purpose` plus a `model:` param — each one pins its own tier and its description says when it applies:
 
-| agent | tier | for |
-|---|---|---|
-| `scout` | haiku | repo-local lookups: where something is defined, call sites, does this pattern exist |
-| `host-inspector` | sonnet | read-only SSH triage on a remote NixOS host: journals, units, podman, ZFS, DNS |
-| `nix-archaeologist` | sonnet | evaluating the Nix graph: option provenance, what an expression evaluates to, closures |
-| `implementer` | sonnet | scoped implementation where the design is settled |
-| `upstream-researcher` | sonnet | ground truth about a third-party project from its own source |
-| `verifier` | opus | adversarial verification of one correctness-critical claim |
+| agent                 | tier   | for                                                                                    |
+|-----------------------|--------|----------------------------------------------------------------------------------------|
+| `scout`               | haiku  | repo-local lookups: where something is defined, call sites, does this pattern exist    |
+| `host-inspector`      | sonnet | read-only SSH triage on a remote NixOS host: journals, units, podman, ZFS, DNS         |
+| `nix-archaeologist`   | sonnet | evaluating the Nix graph: option provenance, what an expression evaluates to, closures |
+| `implementer`         | sonnet | scoped implementation where the design is settled                                      |
+| `upstream-researcher` | sonnet | ground truth about a third-party project from its own source                           |
+| `verifier`            | opus   | adversarial verification of one correctness-critical claim                             |
 
 For ad-hoc calls that don't fit one of those, still set `model` deliberately: `haiku` mechanical and fully specified, `sonnet` scoped work needing some judgment, `opus` hard reasoning that stands alone from the main thread. Omit it only when the subtask needs top-tier reasoning *and* is inseparable from the session's accumulated context. Workflow scripts set `model`/`effort` per stage.
 
