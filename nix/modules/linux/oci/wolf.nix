@@ -1,12 +1,28 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 with lib; let
   cfg = config.modules.linux.oci.services.wolf;
   ociLib = config.modules.linux.oci.lib;
   imageLib = import ./lib.nix {inherit lib;};
+  # Wire shape of Wolf's profile API: pin is a per-digit short array, keys
+  # are snake_case. Rendered to JSON and handed to the sync script by path.
+  profilesSpec =
+    mapAttrsToList (id: p: {
+      inherit id;
+      inherit (p) name;
+      pin =
+        if p.pin == null
+        then null
+        else map toInt (stringToCharacters p.pin);
+      icon_png_path = p.iconPngPath;
+      extra_apps = p.extraApps;
+      exclude_apps = p.excludeApps;
+    })
+    cfg.profiles;
 in {
   options.modules.linux.oci.services.wolf = {
     enable = mkEnableOption "Wolf (Games on Whales) Moonlight game streaming server";
@@ -69,6 +85,68 @@ in {
       type = types.attrsOf types.str;
       default = {};
     };
+
+    profiles = mkOption {
+      description = ''
+        Wolf profiles to ensure exist, keyed by profile id. Profiles are app
+        groupings picked in the in-session Wolf UI (the native Moonlight list
+        shows only the special moonlight profile, whose default app is Wolf
+        UI itself); apps launched through a profile keep state under a
+        per-profile directory, so one person gets the same Steam login and
+        library from any device they pair.
+
+        Reconciled after service start through the management API rather
+        than by templating config.toml, which Wolf rewrites on every
+        pairing. Each profile starts from the image-default `user` profile's
+        app list minus excludeApps plus extraApps, and is only rebuilt when
+        its declaration here changes — runtime edits made via the API or
+        Wolf UI survive otherwise. Profiles removed from this set are left
+        in place, not deleted.
+      '';
+      default = {};
+      type = types.attrsOf (types.submodule ({name, ...}: {
+        options = {
+          name = mkOption {
+            description = "Display name shown in the Wolf UI profile picker.";
+            type = types.str;
+            default = name;
+          };
+
+          pin = mkOption {
+            description = ''
+              Numeric PIN the Wolf UI asks for when opening the profile.
+              A convenience gate only: it is enforced client-side and
+              readable in plaintext through the management API and the nix
+              store — not a security boundary.
+            '';
+            type = types.nullOr (types.strMatching "[0-9]+");
+            default = null;
+          };
+
+          iconPngPath = mkOption {
+            description = "Profile icon path as resolved inside the Wolf container.";
+            type = types.nullOr types.str;
+            default = null;
+          };
+
+          extraApps = mkOption {
+            description = ''
+              Extra app definitions appended to this profile, in the JSON
+              shape Wolf's /api/v1/profiles endpoints use (title, runner,
+              etc. — same fields as config.toml apps).
+            '';
+            type = types.listOf (types.attrsOf types.anything);
+            default = [];
+          };
+
+          excludeApps = mkOption {
+            description = "Titles of image-default apps to leave out of this profile.";
+            type = types.listOf types.str;
+            default = [];
+          };
+        };
+      }));
+    };
   };
 
   config = mkIf cfg.enable {
@@ -114,6 +192,17 @@ in {
           # Resolved on the host when Wolf creates session-container mounts —
           # must match the host-side path of the same-path volume below.
           "HOST_APPS_STATE_FOLDER" = cfg.appStateDir;
+          # Holds the pulse/wayland session sockets and the management API
+          # socket ($XDG_RUNTIME_DIR/wolf.sock — /tmp/sockets/wolf.sock in
+          # the container and on the host via the same-path mount). The API
+          # is unauthenticated and root-equivalent (pairs clients, pulls and
+          # runs arbitrary session images); socket file permissions are the
+          # entire access control. Do NOT pin WOLF_SOCKET_PATH here: the
+          # default Wolf UI app entry is generated with a hardcoded
+          # /var/run/wolf/wolf.sock session mount, and Wolf only rewrites
+          # that mount's source to the real socket when its own
+          # WOLF_SOCKET_PATH env is absent — setting it severs the
+          # in-session UI from the API ("failed to connect via localhost:80").
           "XDG_RUNTIME_DIR" = "/tmp/sockets";
         }
         // optionalAttrs (cfg.gpu == "nvidia") {
@@ -169,6 +258,28 @@ in {
       networks = [];
       extraAfter = ["podman.socket"];
       extraRequires = ["podman.socket"];
+    };
+
+    # Profile reconciliation is deliberately best-effort (the script always
+    # exits 0): it runs during activation, and a sync hiccup must not fail —
+    # and thereby roll back — a whole deploy. Check its journal if a declared
+    # profile doesn't show up in the Wolf UI.
+    systemd.services."wolf-profiles-sync" = mkIf (cfg.profiles != {}) {
+      description = "Reconcile declared Wolf profiles via the management API";
+      wantedBy = ["multi-user.target"];
+      after = ["podman-wolf.service"];
+      requires = ["podman-wolf.service"];
+      path = [pkgs.curl];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = let
+          syncScript =
+            lib.my.writeNushellScriptBin pkgs "wolf-profiles-sync"
+            (builtins.readFile ./wolf-profiles-sync.nu);
+          specFile = pkgs.writeText "wolf-profiles.json" (builtins.toJSON profilesSpec);
+        in "${syncScript}/bin/wolf-profiles-sync --file ${specFile} --state-file ${cfg.baseDir}/nix-profiles-last-applied.json --socket /tmp/sockets/wolf.sock";
+      };
     };
 
     networking.firewall = mkIf cfg.openFirewall {

@@ -88,6 +88,21 @@
         appStateDir = "/store/games/state";
         gpu = "intel";
         openFirewall = true;
+        # Picked inside the Wolf UI session; each profile keeps its own
+        # Steam login and per-app state, shared across every device that
+        # person pairs. PINs can be added later via `pin = "...."` — they
+        # gate the picker UI only, nothing cryptographic.
+        profiles = {
+          ryan = {};
+          juni = {};
+        };
+      };
+
+      # Fronts wolf's unauthenticated root-equivalent socket, so it stays
+      # loopback-only; reach it with: ssh -L 8080:127.0.0.1:8080 vulcan
+      wolf-den = {
+        enable = true;
+        baseDir = "/zroot/apps/wolf-den";
       };
 
       # SECURITY TRUST BOUNDARY: every runner here grants its job containers

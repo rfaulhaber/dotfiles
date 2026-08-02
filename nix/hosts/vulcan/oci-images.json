@@ -56,5 +56,11 @@
       "version": "stable",
       "digest": "sha256:ff82c125c9b79b2e9443de2b0eaec40c904edb03291680d408cccd57c1d59c76"
     }
+  },
+  "wolf-den": {
+    "image": {
+      "version": "stable",
+      "digest": "sha256:2e9467a36b240421592735ba85940e22388c2d6d4e217932309632b6b40f7363"
+    }
   }
 }

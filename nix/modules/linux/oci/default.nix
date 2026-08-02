@@ -204,6 +204,7 @@ in {
     ./transmission.nix
     ./tumblr-alt-text-bot.nix
     ./vikunja.nix
+    ./wolf-den.nix
     ./wolf.nix
   ];
 
