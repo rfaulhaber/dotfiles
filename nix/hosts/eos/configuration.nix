@@ -10,6 +10,7 @@
   modules = {
     themes.active = "tokyo-night-dark";
     darwin = {
+      airvpn.enable = true;
       dock = {
         enable = true;
       };
@@ -49,6 +50,9 @@
             group = "staff"; # TODO more dynamic?
             mode = "0440";
           };
+          # WireGuard config from AirVPN's Config Generator; root-only since
+          # only `sudo wg-quick` reads it.
+          "airvpn.conf" = {};
         };
       };
     };

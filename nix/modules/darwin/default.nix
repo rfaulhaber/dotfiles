@@ -8,6 +8,7 @@
     ./preferences.nix
     ./dock.nix
     ./random-wallpaper.nix
+    ./airvpn.nix
   ];
   config = {
     system.primaryUser = config.user.name;
