@@ -403,7 +403,16 @@ in {
 
     virtualisation.podman = {
       enable = true;
-      autoPrune.enable = true;
+      # A bare `podman system prune -f` only reclaims *dangling* images — those
+      # with neither tags nor repo digests. Services here pin images by digest
+      # (oci-images.json), so every superseded image keeps a RepoDigest and is
+      # never dangling: the default prune reclaims nothing and each digest bump
+      # leaks a whole image. `--all` also drops images with no running container.
+      # Consequence: a rolled-back generation must re-pull its pinned digests.
+      autoPrune = {
+        enable = true;
+        flags = ["--all"];
+      };
       dockerCompat = mkDefault true;
     };
 

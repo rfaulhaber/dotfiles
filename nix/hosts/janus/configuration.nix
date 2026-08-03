@@ -72,6 +72,10 @@ in {
     };
   };
 
+  # journald's default cap is 10% of the filesystem; on janus's 29G root that
+  # reserves ~2.9G for logs on a host that has no room to spare.
+  services.journald.extraConfig = "SystemMaxUse=500M";
+
   networking = {
     hostName = "janus";
     hostId = "66a2b43a";
