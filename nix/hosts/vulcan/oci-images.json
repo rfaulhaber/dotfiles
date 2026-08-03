@@ -2,7 +2,7 @@
   "plex": {
     "image": {
       "version": "latest",
-      "digest": "sha256:507713a14f9586f827d00c81381ecdcd438009172342b322b62a0e2b65081fdf"
+      "digest": "sha256:0f57346cb9eda39631da8e6f6517dbf0471b91f8e65621305a3e166f8ffce952"
     }
   },
   "jellyfin": {
