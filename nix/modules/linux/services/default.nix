@@ -4,6 +4,7 @@
     ./bandcamp-import
     ./cachix
     ./desktop
+    ./extract-embedded-subs
     ./hardware
     ./keepalived
     ./mullvad

@@ -127,6 +127,10 @@
         enable = true;
         zfsDataset = "data/import/bandcamp";
       };
+      extract-embedded-subs = {
+        enable = true;
+        linger = true;
+      };
     };
 
     # NOTE: the open drivers do not work on atlas (GTX 1050 Ti, Pascal)
