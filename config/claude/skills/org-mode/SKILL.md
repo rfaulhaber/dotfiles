@@ -1,6 +1,6 @@
 ---
 name: org-mode
-description: Use when writing or editing Emacs Org mode content — `.org` files, fenced org code blocks, or when the user asks for documentation, notes, or task lists in org-mode format. Encodes conventions that keep org documents interactive in Emacs (cycleable TODO state, statistics cookies, agenda-visible dates), org-native markup instead of markdown, and file naming/preamble conventions.
+description: Use when writing or editing Emacs Org mode content — `.org` files, fenced org code blocks, or when the user asks for documentation, notes, or task lists in org-mode format. Encodes conventions that keep org documents interactive in Emacs (cycleable TODO state, statistics cookies, agenda-visible dates, automatic completion logging), org-native markup instead of markdown, and file naming/preamble conventions.
 ---
 
 # Org Mode Skill
@@ -59,6 +59,42 @@ The planning line goes immediately after the headline; the priority goes in the 
 
 - **Active** timestamps `<2026-08-03 Mon>` put the entry in the agenda; **inactive** ones `[2026-07-31 Fri]` are for logs and references and stay out of it. Choose deliberately — a "verified on" date should be inactive.
 - Get the weekday right or omit it: `<2026-08-03>` is valid and Emacs inserts the day name on first edit, but a *wrong* day name is displayed as written and misleads until the timestamp is re-edited.
+
+### Progress logging: when completion time matters, declare it in the file
+
+When it's important to track *when* tasks get finished, don't hand-maintain dates — declare logging in the file and Emacs stamps state changes itself as the user cycles keywords. Marking a task DONE then appends a planning line automatically:
+
+```org
+* DONE Migrate the store pool
+  CLOSED: [2026-08-04 Tue]
+```
+
+The lightest way to enable this is a startup keyword, which layers onto whatever TODO keywords are already active (the Doom set included) without redefining them:
+
+```org
+#+STARTUP: logdone
+```
+
+`logdone` records the `CLOSED:` timestamp; `lognotedone` also prompts for a note.
+
+For per-state control, add markers to a `#+TODO:` line — `!` logs a timestamp on entering that state, `@` prompts for a timestamped note, and a marker after `/` fires on *leaving* the state (only when the target state doesn't log on its own):
+
+```org
+#+TODO: TODO(t) STRT(s) WAIT(w@/!) | DONE(d!) KILL(k@)
+```
+
+Here entering `WAIT` records why the task blocked, leaving it stamps when it unblocked, `DONE` gets a timestamp, and `KILL` records why the task was cancelled. Caution: a `#+TODO:` line *replaces* the buffer's keyword set, so declare every keyword the document needs — not just the logged ones.
+
+A single headline can override all of this with the `:LOGGING:` property. Any non-empty value first resets logging for that entry, then applies only what's listed; `nil` turns logging off entirely:
+
+```org
+* TODO Chase the flaky migration job
+  :PROPERTIES:
+  :LOGGING: TODO(!) DONE(!)
+  :END:
+```
+
+These in-file settings travel with the document, so completion tracking works regardless of the reader's global `org-log-done`. Reference: https://orgmode.org/guide/Progress-Logging.html (and "Tracking TODO state changes" in the full manual for the `:LOGGING:` property).
 
 ## Rule 2: Parent headings with TODO/checkbox children get a statistics cookie
 
@@ -121,7 +157,7 @@ Never encode the parent's status as text in the headline:
 * Implement Phase 1 [DONE 2026-08-01]
 ```
 
-That annotation is inert — `C-c C-t` can't cycle it, the agenda can't see it, and it doesn't count in any ancestor's cookie. If the completion date is worth keeping, put it where org puts it: a `CLOSED: [2026-08-01 Sat]` planning line under the headline — the same line org writes automatically when `org-log-done` is enabled.
+That annotation is inert — `C-c C-t` can't cycle it, the agenda can't see it, and it doesn't count in any ancestor's cookie. If the completion date is worth keeping, put it where org puts it: a `CLOSED: [2026-08-01 Sat]` planning line under the headline — the same line org writes automatically when progress logging is on (see *Progress logging* under Rule 1).
 
 ## Rule 3: New files — snake_case names, a preamble matched to formality
 
@@ -166,6 +202,8 @@ Markdown is the habit to unlearn — inside a `.org` file it is inert text at be
 | Schedule / deadline | `SCHEDULED: <2026-08-03 Mon>` | Line under the headline; `DEADLINE:` may share it |
 | Active timestamp | `<2026-08-03 Mon>` | The agenda sees it |
 | Inactive timestamp | `[2026-07-31 Fri]` | Reference only; the agenda ignores it |
+| Log completion time | `#+STARTUP: logdone` | Emacs appends `CLOSED: [...]` when a task turns DONE |
+| Per-state logging | `#+TODO: ... WAIT(w@/!) \| DONE(d!)` | `!` timestamp, `@` note; after `/` fires on leaving |
 | Code block | `#+begin_src nix` … `#+end_src` | Never markdown fences |
 
 ## When NOT to apply these rules
