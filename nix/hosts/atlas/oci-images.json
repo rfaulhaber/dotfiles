@@ -218,13 +218,13 @@
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6b78970a0cb00709d3817fcb47b7cf74da56a43384bbd50d03955ca87e38c5f0"
+      "digest": "sha256:81787bc706d3833d252e6d8b94545fea46bf2156f616320991a395619a477d2c"
     }
   },
   "vikunja": {
     "image": {
       "version": "latest",
-      "digest": "sha256:1a5dd2d410b5359f689c77bbd1c66742cde1993f82d4adfe9aefa400ff1dd833"
+      "digest": "sha256:22df4c1bc8843c28d383bc5f52b59e7b601bf5f6560b36b29c0a500833c77fa3"
     }
   },
   "sure": {
