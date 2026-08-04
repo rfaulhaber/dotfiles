@@ -1,0 +1,80 @@
+#+title: overlays
+
+Parking lot for temporary out-of-tree patches: when something in nixpkgs (or a
+package built from a flake input) breaks and the fix hasn't landed upstream
+yet, the workaround lives here as an overlay until a flake update makes it
+obsolete.
+
+Most of the time nothing in this directory is wired in. An unreferenced
+overlay is dormant, not dead — don't delete a file just because nothing
+imports it. Delete it when its removal condition is met.
+
+* Enabling an overlay
+
+Overlays are applied per-host in =flake.nix= through the =overlays= argument
+of =mkHost=:
+
+#+begin_src nix
+hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
+  overlays = [
+    inputs.niri.overlays.default
+    (import ./nix/overlays/niri_20260728.nix)
+  ];
+};
+#+end_src
+
+Order matters when a dated overlay patches a package that itself comes from an
+input overlay: the input overlay goes first so that =prev.<pkg>= inside the
+dated overlay is the package being patched.
+
+* Conventions
+
+Follow the pattern set by =firefox_devedition_20260713.nix= and
+=niri_20260728.nix= (undated files here predate these conventions):
+
+- Dated filename :: =<package>_<YYYYMMDD>.nix=, dated to the overlay's
+  creation. The date makes staleness visible at a glance, and the file stem
+  doubles as the identifier used in warning messages.
+
+- Header comment explaining the issue :: every overlay opens with a comment
+  block stating:
+  1. the symptom — what stopped building, quoting the literal error message;
+  2. the root cause;
+  3. the upstream fix it backports or mirrors, with links (nixpkgs PR or
+     issue, upstream bug tracker);
+  4. the removal condition — "Remove once ...", with a
+     [[https://nixpk.gs/pr-tracker.html][pr-tracker]] link when waiting on a
+     nixpkgs PR to reach the pinned channel.
+
+- Warn while enabled :: wrap the overridden package in =lib.warn= so every
+  evaluation announces that a temporary overlay is active:
+
+  #+begin_src nix
+  some-pkg = prev.lib.warn "temporary overlay for some-pkg enabled: some_pkg_20260801"
+    (prev.some-pkg.overrideAttrs (old: {/* ... */}));
+  #+end_src
+
+- Warn when it can be disabled :: when the removal condition is mechanically
+  checkable, compute it and self-disable: once the condition no longer holds,
+  pass the package through untouched and flip the warning into a removal
+  reminder. =niri_20260728.nix= is the exemplar — it reads niri's
+  =Cargo.lock= and nixpkgs' =libdisplay-info= version at eval time:
+
+  #+begin_src nix
+  some-pkg =
+    if overlayNeeded
+    then lib.warn "temporary overlay for some-pkg enabled: some_pkg_20260801" patched
+    else
+      lib.warn "overlay some_pkg_20260801 is superfluous: remove nix/overlays/some_pkg_20260801.nix and its entry in flake.nix"
+      prev.some-pkg;
+  #+end_src
+
+  When the condition can't be computed in Nix (e.g. "the pinned nixpkgs now
+  contains PR #NNNNN"), the header's removal condition plus the
+  enabled-warning is the fallback — the warning noise on every eval is the
+  reminder to go check the tracker.
+
+- Stay scoped :: override only the target package. If the fix needs an older
+  library, inject it into that package alone rather than replacing the
+  library globally — =niri_20260728.nix= builds a private
+  =libdisplay-info 0.3= for niri while every other consumer keeps 0.4.
