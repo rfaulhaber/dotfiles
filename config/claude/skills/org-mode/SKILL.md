@@ -102,6 +102,27 @@ Renders as `* Migration progress [50%]`.
 
 Write `[/]` or `[%]`, not `[0/3]` or `[0%]`. Emacs computes the values; hand-written counts go stale the moment the user toggles anything.
 
+### Parent headings that are themselves tasks get a keyword, not a status annotation
+
+A keyword and a cookie compose on the same headline. When a parent heading — a phase, a milestone — is a work item in its own right, give it its own TODO keyword and mark completion by cycling the keyword, exactly like any other task:
+
+```org
+* DONE Implement Phase 1 [/]
+** DONE Set up scaffolding
+** DONE Write fixtures
+* TODO Implement Phase 2 [/]
+** DONE Extract the parser
+** TODO Port the CLI
+```
+
+Never encode the parent's status as text in the headline:
+
+```org
+* Implement Phase 1 [DONE 2026-08-01]
+```
+
+That annotation is inert — `C-c C-t` can't cycle it, the agenda can't see it, and it doesn't count in any ancestor's cookie. If the completion date is worth keeping, put it where org puts it: a `CLOSED: [2026-08-01 Sat]` planning line under the headline — the same line org writes automatically when `org-log-done` is enabled.
+
 ## Rule 3: New files — snake_case names, a preamble matched to formality
 
 Name any `.org` file you create in lowercase snake_case: `nvme_swap_plan.org`, `atlas_migration.org` — not `NVME-SWAP-PLAN.org`, `nvme-swap-plan.org`, or `NvmeSwapPlan.org`. This matches org ecosystem convention (org-roam's default slugs join title words with underscores).
@@ -139,6 +160,7 @@ Markdown is the habit to unlearn — inside a `.org` file it is inert text at be
 | Completed task | `* DONE Description` | Same family of keywords |
 | Parent counter (count) | `* Parent [/]` | Auto-fills to e.g. `[1/3]` |
 | Parent counter (percent) | `* Parent [%]` | Auto-fills to e.g. `[33%]` |
+| Parent that is itself a task | `* TODO Parent [/]` | Keyword and cookie compose; cycle to `DONE`, never `[DONE <date>]` in the text |
 | Checkbox sub-item | `- [ ] item` / `- [X] item` | Toggle with `C-c C-c` |
 | Priority | `* TODO [#A] Description` | `A`–`C`; unmarked defaults to `B` |
 | Schedule / deadline | `SCHEDULED: <2026-08-03 Mon>` | Line under the headline; `DEADLINE:` may share it |
