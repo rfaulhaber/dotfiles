@@ -24,6 +24,28 @@ in {
       default = true;
       type = types.bool;
     };
+    web = {
+      enable = mkOption {
+        description = ''
+          Run a local web server alongside new sessions and let them be shared
+          into it, reachable at `http://127.0.0.1:<port>/<session>`.
+
+          Both underlying settings are read when a session is created, so
+          already-running sessions keep whatever was in effect at their start —
+          those can still be shared ad-hoc with `<SPACE>` in the share plugin.
+
+          Access is gated on a login token (`zellij web --create-token`), not on
+          this option.
+        '';
+        default = false;
+        type = types.bool;
+      };
+      port = mkOption {
+        description = "Port the web server listens on, bound to localhost.";
+        default = 8082;
+        type = types.port;
+      };
+    };
   };
 
   config = mkIf cfg.enable {
@@ -47,6 +69,14 @@ in {
         # default shell rather than trusting the inherited environment.
         // optionalAttrs config.modules.programs.nushell.enable {
           default_shell = "${pkgs.nushell}/bin/nu";
+        }
+        # `web_sharing` defaults to "off", which does not mean "never" — it
+        # means each session must opt in individually. "on" makes sessions
+        # shareable as soon as the server is up.
+        // optionalAttrs cfg.web.enable {
+          web_server = true;
+          web_sharing = "on";
+          web_server_port = cfg.web.port;
         };
     };
   };

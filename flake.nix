@@ -127,9 +127,11 @@
         nixosConfigurations = let
           mkHost = lib.my.mkNixOSHost;
         in {
-          hyperion =
-            mkHost ./nix/hosts/hyperion/configuration.nix {
-            };
+          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
+            overlays = [
+              (import ./nix/overlays/nushell_polars_20260805)
+            ];
+          };
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {};
           janus = mkHost ./nix/hosts/janus/configuration.nix {};
           pallas = mkHost ./nix/hosts/pallas/configuration.nix {};

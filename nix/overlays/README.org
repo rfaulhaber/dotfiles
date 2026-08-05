@@ -36,6 +36,18 @@ Follow the pattern set by =firefox_devedition_20260713.nix= and
   creation. The date makes staleness visible at a glance, and the file stem
   doubles as the identifier used in warning messages.
 
+  An overlay that needs more than the one =.nix= file — a patch to apply, a
+  file to substitute in — becomes a directory =<package>_<YYYYMMDD>/= holding
+  a =default.nix= alongside its supporting files. The stem, and so the
+  identifier, is unchanged; only the import loses its extension:
+
+  #+begin_src nix
+  (import ./nix/overlays/nushell_polars_20260805)
+  #+end_src
+
+  Keep the supporting files named for their role (=ethnum.patch=), not
+  re-stating the overlay name — the directory already carries it.
+
 - Header comment explaining the issue :: every overlay opens with a comment
   block stating:
   1. the symptom — what stopped building, quoting the literal error message;

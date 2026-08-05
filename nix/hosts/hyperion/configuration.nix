@@ -65,9 +65,15 @@
         # `hints` (command-history ghost text) defaults to the bright-blue ANSI
         # slot; dim it to the comment grey so it reads as a suggestion, not input.
         colorOverrides.hints = config.modules.themes.colors.grey;
+        plugins = with pkgs.nushellPlugins; [
+          polars
+        ];
       };
       direnv.enable = true;
-      zellij.enable = true;
+      zellij = {
+        enable = true;
+        web.enable = true;
+      };
       age.enable = true;
       sops = {
         enable = true;
