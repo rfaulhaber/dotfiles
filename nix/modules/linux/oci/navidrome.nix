@@ -67,7 +67,6 @@ in {
       description = "Additional ND_* environment variables.";
       type = types.attrsOf types.str;
       default = {
-        ND_EXTAUTH_TRUSTEDSOURCES = "0.0.0.0/0";
         ND_LASTFM_SCROBBLEFIRSTARTISTONLY = "true";
       };
     };
