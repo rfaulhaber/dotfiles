@@ -215,10 +215,11 @@
         setDefaultPDFViewer = true;
       };
       extraPackages = with pkgs; [
-        signal-desktop
-        ungoogled-chromium
         feishin
         inputs.rz.packages.${pkgs.stdenv.hostPlatform.system}.with-xz2-bzip2
+        moonlight-qt
+        signal-desktop
+        ungoogled-chromium
       ];
       autostart = {
         enable = true;
