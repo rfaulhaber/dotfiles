@@ -4,6 +4,7 @@
     ./bandcamp-import
     ./cachix
     ./desktop
+    ./docker-socket-proxy
     ./extract-embedded-subs
     ./hardware
     ./keepalived

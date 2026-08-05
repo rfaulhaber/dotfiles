@@ -445,7 +445,25 @@
           pangolinEndpoint = "https://pangolin.3679.space";
           dns = "192.168.0.2";
           networks = ["default" "immich" "forgejo" "sure" "paperless" "miniflux"];
+          # The filtered proxy socket, never the real one — direct access is
+          # root-equivalent, and a compromise of newt (or of the Pangolin
+          # control plane on janus that it trusts) would reach root on atlas.
+          dockerSocket = "unix:///var/run/docker.sock";
+          hostSocket = config.modules.services.docker-socket-proxy.socketPath;
         };
       };
   };
+
+  # Read-only container visibility for newt's target picker: list containers
+  # and watch start/stop, nothing else.
+  modules.services.docker-socket-proxy = {
+    enable = true;
+    allowedApiSections = ["containers" "events"];
+  };
+
+  # Ordering only — the bind-mount source must exist when podman-newt starts
+  # (podman errors on a missing volume source rather than creating it).
+  # Deliberately no Requires=: the picker is optional, the tunnel is not, and
+  # if the proxy is down newt's Restart=always retries cover the gap.
+  systemd.services."podman-newt".after = ["docker-socket-proxy.service"];
 }
