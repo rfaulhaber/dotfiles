@@ -111,18 +111,23 @@
       nfs.serve = {
         enable = true;
         interface = "eno2";
+        # root_squash on purpose: everything on vulcan writes as uid 1000
+        # (jellyfin/plex) or 994 (ollama), never root — verified against
+        # on-disk ownership 2026-08. vulcan's CI trust domain reaches host
+        # root there; squashing keeps a rogue job from writing as root
+        # into these datasets.
         exports = {
           movies = {
             path = "/data/movies";
-            clients = "192.168.0.105(rw,sync,no_subtree_check,no_root_squash)";
+            clients = "192.168.0.105(rw,sync,no_subtree_check,root_squash)";
           };
           tv = {
             path = "/data/tv";
-            clients = "192.168.0.105(rw,sync,no_subtree_check,no_root_squash)";
+            clients = "192.168.0.105(rw,sync,no_subtree_check,root_squash)";
           };
           llm-models = {
             path = "/data/llm/models";
-            clients = "192.168.0.105(rw,sync,no_subtree_check,no_root_squash)";
+            clients = "192.168.0.105(rw,sync,no_subtree_check,root_squash)";
           };
         };
       };
