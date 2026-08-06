@@ -2,13 +2,13 @@
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ab401a0f361cfad328e444838b13d5b334b189d0f556fc91a3623eb581df36df"
+      "digest": "sha256:e464484e7e6cff8ee189036c9ba96977ab054104ea18067ecf6171d0f3f3f8f2"
     }
   },
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6a8c39ee79afe4f7ebb37e50b8d973fa3d21882a6517455a738b96c8e9f27c43"
+      "digest": "sha256:8de8a08f9f798fa22639ac7f9b7c78026544aea7a0852fa990da286939e77eb1"
     }
   },
   "calibre-web-auto": {
@@ -44,7 +44,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:988d9cb1982f688ce51f3511057b90c5c8d01889db60a4d56e5230aebf1d3339"
+      "digest": "sha256:5fe20348352ca20d2d06d9a74b5f55c7eaecef924496c616aae41eba9c8dc718"
     }
   },
   "grafana": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:ab9fdd412e8c84f88dfbe6aaed8819bf69028dacb6041b81dcd7afa584bdf50d"
+      "digest": "sha256:9338936eed6bbf166010441b774e83b303c24abb20a803a2e9712a74c6c4208d"
     }
   },
   "linkding": {
@@ -164,7 +164,7 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:2df9ae57c475bf4341abd833e56a9268bb02167cc5f3f828a8347d2d8628f652"
+      "digest": "sha256:dcb53158072c700ab578e6f89d5b4d6efd784e74496e567f98bfa96cd1db3a31"
     }
   },
   "radarr": {
@@ -206,7 +206,7 @@
   "syncthing": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ae909bee7c41f516be03fd7de72317a44f4a043bcba76884de941b99407b6957"
+      "digest": "sha256:07da4c778027cb13d4a2b9bb8b8d7432ac3a0f0540bb7248b016be3a1cc69788"
     }
   },
   "tautulli": {
@@ -230,7 +230,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:012651224252a0973140041f6dd7cfedc2af47d5333cae3b401c76541232e241"
+      "digest": "sha256:b9f12857933dda730165e737495b357e53bab78e59bdcc853e0d65d8954b7ea5"
     }
   }
 }
