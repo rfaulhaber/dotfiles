@@ -74,7 +74,6 @@
         enable = true;
         web.enable = true;
       };
-      age.enable = true;
       sops = {
         enable = true;
         secrets = {

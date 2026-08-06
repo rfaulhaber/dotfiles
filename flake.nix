@@ -30,11 +30,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ragenix = {
-      url = "github:yaxitech/ragenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     swww.url = "github:LGFae/swww";
     # TODO consider using stylix
     # currently, a wallpaper is required with stylix. this is problematic

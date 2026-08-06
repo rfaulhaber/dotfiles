@@ -1,7 +1,6 @@
 {
   imports = [
     ./1password
-    ./age
     ./aspell
     ./btop
     ./claude
