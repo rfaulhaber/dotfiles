@@ -43,7 +43,10 @@
       sudo-rs.enable = true;
       observability-agent = {
         enable = true;
-        prometheus.openFirewall = true;
+        prometheus = {
+          openFirewall = true;
+          interface = "lan0";
+        };
         loki.extraLabels.role = "ci";
       };
       ollama = {

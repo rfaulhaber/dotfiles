@@ -72,7 +72,10 @@
       sudo-rs.enable = true;
       observability-agent = {
         enable = true;
-        prometheus.openFirewall = true;
+        prometheus = {
+          openFirewall = true;
+          interface = "eno2";
+        };
       };
       systemd.modules = {
         updatedb.enable = true;

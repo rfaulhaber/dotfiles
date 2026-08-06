@@ -125,12 +125,24 @@ in {
       openFirewall = mkOption {
         description = ''
           Open the node_exporter port in the host firewall so Prometheus
-          on atlas can scrape over the LAN. Leave false if you'd rather
-          gate access via WireGuard / netbird interface allows or any
-          other firewall narrowing.
+          on atlas can scrape over the LAN. The allow is scoped to
+          `interface`, which must be set alongside this. Leave false if
+          you'd rather gate access via WireGuard / netbird interface
+          allows or any other firewall narrowing.
         '';
         type = types.bool;
         default = false;
+      };
+
+      interface = mkOption {
+        description = ''
+          Interface the firewall allow is scoped to. Required when
+          openFirewall is set — an unscoped rule would expose the
+          exporter on every interface, including WAN-facing ones.
+        '';
+        type = types.nullOr types.str;
+        default = null;
+        example = "end0";
       };
 
       enabledCollectors = mkOption {
@@ -151,8 +163,23 @@ in {
     (mkIf cfg.prometheus.enable {
       services.prometheus.exporters.node = {
         enable = true;
-        inherit (cfg.prometheus) port enabledCollectors disabledCollectors openFirewall;
+        inherit (cfg.prometheus) port enabledCollectors disabledCollectors;
       };
+
+      # Deliberately NOT forwarding openFirewall upstream: the exporter
+      # module's rule is unscoped (all interfaces, both address families),
+      # which leaks the port out WAN-facing NICs. Scope to the declared
+      # interface like the repo's other serving modules.
+      networking.firewall.interfaces = mkIf (cfg.prometheus.openFirewall && cfg.prometheus.interface != null) {
+        ${cfg.prometheus.interface}.allowedTCPPorts = [cfg.prometheus.port];
+      };
+
+      assertions = [
+        {
+          assertion = cfg.prometheus.openFirewall -> cfg.prometheus.interface != null;
+          message = "modules.services.observability-agent: prometheus.openFirewall = true requires prometheus.interface (an unscoped firewall rule would open the port on every interface).";
+        }
+      ];
     })
 
     (mkIf cfg.loki.enable {

@@ -57,7 +57,10 @@
       sudo-rs.enable = true;
       observability-agent = {
         enable = true;
-        prometheus.openFirewall = true;
+        prometheus = {
+          openFirewall = true;
+          interface = "end0";
+        };
         loki.extraLabels.role = "ci-aarch64";
       };
       ssh = {

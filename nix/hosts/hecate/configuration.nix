@@ -52,7 +52,10 @@ in {
       sudo-rs.enable = true;
       observability-agent = {
         enable = true;
-        prometheus.openFirewall = true;
+        prometheus = {
+          openFirewall = true;
+          interface = "enu1u1u1";
+        };
         loki.extraLabels.role = "dns-backup";
       };
       ssh = {
