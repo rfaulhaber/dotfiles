@@ -9,48 +9,6 @@ with lib; let
   ociLib = config.modules.linux.oci.lib;
   imageLib = import ./lib.nix {inherit lib;};
 
-  instanceOpts = {name, ...}: {
-    options = {
-      kind = mkOption {
-        description = "Recyclarr instance kind.";
-        type = types.enum ["sonarr" "radarr"];
-      };
-
-      baseUrl = mkOption {
-        description = "Base URL recyclarr uses to reach this *arr instance.";
-        type = types.str;
-        example = "http://gluetun:8989";
-      };
-
-      apiKeySecret = mkOption {
-        description = ''
-          Sops secret name holding this instance's API key. The module
-          declares `sops.secrets.<name>` automatically and references the
-          value in secrets.yml as `!secret <instance-name>_api_key`.
-        '';
-        type = types.str;
-        example = "recyclarr/sonarr-main-api-key";
-      };
-
-      body = mkOption {
-        description = ''
-          Raw YAML body for this instance — everything that goes under
-          `<kind>.<name>:` besides `base_url` and `api_key`. Module renders
-          it inline below the auto-generated metadata, indented to match
-          the surrounding instance block.
-        '';
-        type = types.lines;
-        default = "";
-        example = ''
-          quality_definition:
-            type: series
-          include:
-            - template: sonarr-quality-definition-series
-        '';
-      };
-    };
-  };
-
   enabledInstances = {
     # TODO generate yaml more dynamically
     sonarr_main = {
@@ -265,41 +223,6 @@ in {
       type = types.listOf types.str;
       default = [];
       example = ["radarr" "sonarr"];
-    };
-
-    sonarrUrl = mkOption {
-      description = "Url for sonarr";
-      type = types.str;
-      default = null;
-    };
-
-    radarrUrl = mkOption {
-      description = "Url for radarr";
-      type = types.str;
-      default = null;
-    };
-
-    instances = mkOption {
-      description = ''
-        Recyclarr instances. Each entry becomes a `<kind>.<name>:` block
-        in recyclarr.yml with auto-generated `base_url`/`api_key` and the
-        `body` content rendered below.
-      '';
-      type = types.attrsOf (types.submodule instanceOpts);
-      default = {};
-      example = literalExpression ''
-        {
-          sonarr_main = {
-            kind = "sonarr";
-            baseUrl = "http://gluetun:8989";
-            apiKeySecret = "recyclarr/sonarr-main-api-key";
-            body = '''
-              quality_definition:
-                type: series
-            ''';
-          };
-        }
-      '';
     };
 
     extraConfig = mkOption {

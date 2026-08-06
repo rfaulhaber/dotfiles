@@ -25,13 +25,13 @@ in {
 
     tvDir = mkOption {
       description = "Path to tv directory";
-      type = types.str;
+      type = types.nullOr types.str;
       default = null;
     };
 
     moviesDir = mkOption {
       description = "Path to movies directory.";
-      type = types.str;
+      type = types.nullOr types.str;
       default = null;
     };
 
