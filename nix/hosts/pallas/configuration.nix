@@ -83,6 +83,9 @@ in {
         priority = 100;
         virtualIps = ["192.168.0.254/24"];
         virtualIpv6s = ["fe80::FE/64" "2600:1702:6710:117F::FE/64"];
+        # Deliberately in-repo: VRRPv2 PASS auth travels cleartext in every
+        # advert, so this is a peer-sync token, not a secret. Must match
+        # hecate's.
         authPass = "0x7gMrmq";
         healthCheck.enable = true;
       };
