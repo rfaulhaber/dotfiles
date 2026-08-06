@@ -276,6 +276,10 @@ in {
 
     # Caddy uses host networking, wire to root target
     systemd.services."podman-caddy" = {
+      # Podman does not create missing bind-mount sources (statfs error at
+      # container start); _managedPaths only covers baseDir itself, so its
+      # data/config children need creating here.
+      serviceConfig.ExecStartPre = ["${pkgs.coreutils}/bin/mkdir -p ${cfg.baseDir}/data ${cfg.baseDir}/config"];
       # Self-heal through transient DNS/registry outages during deploys (e.g.
       # Pi-hole bouncing while caddy pulls a bumped image) rather than hitting
       # the start-limit and staying dead. See mkServiceConfig in default.nix

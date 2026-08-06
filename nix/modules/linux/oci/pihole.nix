@@ -241,6 +241,11 @@ in {
       serviceConfig = {
         Restart = mkOverride 90 "always";
         RestartSec = mkOverride 90 10;
+        # Podman does not create missing bind-mount sources (statfs error at
+        # container start). _managedPaths/ZFS only materializes baseDir
+        # itself, and pihole's own hosts (pallas/hecate) may not even have
+        # oci.zfs enabled, so etc-pihole is created here unconditionally.
+        ExecStartPre = ["${pkgs.coreutils}/bin/mkdir -p ${cfg.baseDir}/etc-pihole"];
       };
       partOf = ["${ociLib.rootTargetName}.target"];
       wantedBy = ["${ociLib.rootTargetName}.target"];
