@@ -1,0 +1,18 @@
+{
+  "forgejo-runner": {
+    "runners": {
+      "default": {
+        "image": {
+          "version": "6.2.2",
+          "digest": "sha256:fe4f55e1842a50ffa321324f80128987bef3722dce1a911f963eecfd740309e7"
+        }
+      },
+      "codeberg": {
+        "image": {
+          "version": "6.2.2",
+          "digest": "sha256:fe4f55e1842a50ffa321324f80128987bef3722dce1a911f963eecfd740309e7"
+        }
+      }
+    }
+  }
+}
