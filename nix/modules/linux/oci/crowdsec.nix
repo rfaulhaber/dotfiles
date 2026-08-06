@@ -129,10 +129,18 @@ in {
 
     bouncers = mkOption {
       description = ''
-        Bouncers to pre-register on first boot. The container reads
-        `BOUNCER_KEY_<name>=<value>` from its env file and runs
-        `cscli bouncers add` if absent. The key value comes from a sops secret
-        addressable as `config.sops.secrets.<sopsKey>`.
+        Bouncers registered with the LAPI. The container reads
+        `BOUNCER_KEY_<name>=<value>` from its env file; an ExecStartPost hook
+        re-registers each key on every service start so the LAPI's copy always
+        matches the rendered secret (the image entrypoint only adds *absent*
+        bouncers, and its registration DB persists across container
+        recreates). The key value comes from a sops secret addressable as
+        `config.sops.secrets.<sopsKey>`.
+
+        Rotating a key: change the sops value, deploy, then restart this
+        service and every consumer of the same secret (e.g. podman-traefik) —
+        activation re-renders the secret files but running containers keep the
+        old env/mounts until recreated.
       '';
       default = {};
       type = types.attrsOf (types.submodule {
@@ -355,7 +363,34 @@ in {
             ''}"
           ];
           serviceConfig.ExecStartPost =
-            optional (cfg.disabledHubItems != [])
+            optional (enabledBouncers != {})
+            "+${pkgs.writeShellScript "crowdsec-sync-bouncer-keys" ''
+              set -uo pipefail
+              # The image entrypoint only registers a bouncer when it's absent,
+              # and the registration DB under /var/lib/crowdsec persists across
+              # container recreates — so a rotated BOUNCER_KEY_* value would
+              # never reach the LAPI, and the bouncer would start 403ing every
+              # request once its decision cache expired. Delete + re-add on
+              # each start so the LAPI key always matches the rendered env.
+              # Same readiness poll/budget as the hub-items hook below.
+              for i in $(seq 1 60); do
+                if ${pkgs.podman}/bin/podman exec crowdsec cscli bouncers list >/dev/null 2>&1; then
+                  break
+                fi
+                sleep 1
+              done
+
+              ${concatMapStringsSep "\n" (name: ''
+                # The key is referenced by env-var name and expanded inside the
+                # container, so its value never appears on a host command line
+                # or in the journal.
+                if ! ${pkgs.podman}/bin/podman exec crowdsec sh -c \
+                  'cscli bouncers delete ${name} >/dev/null 2>&1; cscli bouncers add ${name} -k "$BOUNCER_KEY_${name}" >/dev/null'; then
+                  echo "failed to re-register bouncer ${name}; LAPI may hold a stale key" >&2
+                fi
+              '') (attrNames enabledBouncers)}
+            ''}"
+            ++ optional (cfg.disabledHubItems != [])
             "+${pkgs.writeShellScript "crowdsec-disable-hub-items" ''
               set -uo pipefail
               # The container has just been created by ExecStart; the daemon
