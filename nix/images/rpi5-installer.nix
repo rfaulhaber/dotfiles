@@ -33,7 +33,15 @@
     useDHCP = true;
   };
 
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    # initialPassword below is public in this repo — keep it console-only.
+    # SSH access is via the baked-in authorized keys.
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+    };
+  };
 
   users.users.root.openssh.authorizedKeys.keys = import ../modules/ssh/keys.nix;
 
