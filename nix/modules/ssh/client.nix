@@ -123,17 +123,18 @@ in {
           Port = 27077;
         };
 
+        # No ForwardAgent for janus: it terminates untrusted internet
+        # traffic, so root there could use a forwarded agent socket as a
+        # signing oracle against every host that trusts these keys.
         "janus" = {
           HostName = "66.63.168.153";
           User = config.user.name;
-          ForwardAgent = true;
           Port = 6674;
         };
 
         "janus-netbird" = {
           HostName = "janus.netbird.selfhosted";
           User = config.user.name;
-          ForwardAgent = true;
           Port = 6674;
         };
 
