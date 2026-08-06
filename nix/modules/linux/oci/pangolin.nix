@@ -373,6 +373,11 @@ in {
   config = mkIf cfg.enable {
     modules.linux.oci.networks.${networkName}.enable = true;
 
+    # Gerbil creates its wg interface purely via netlink and hard-fails if the
+    # wireguard module is absent — the image has no kmod and the container
+    # deliberately lacks SYS_MODULE, so the host must guarantee the module.
+    boot.kernelModules = ["wireguard"];
+
     # -- Secrets (expected in host's secrets.yaml) --
     sops.secrets =
       {
@@ -483,8 +488,11 @@ in {
           [
             "--network-alias=gerbil"
             "--network=${ociLib.networkName networkName}"
+            # Netlink in gerbil's own netns is all interface creation needs;
+            # the wireguard module is preloaded host-side (boot.kernelModules
+            # above). SYS_MODULE would let a compromised public-ingress
+            # container load host kernel modules.
             "--cap-add=NET_ADMIN"
-            "--cap-add=SYS_MODULE"
           ]
           ++ imageLib.mkImageLabels {
             module = "pangolin.gerbil";

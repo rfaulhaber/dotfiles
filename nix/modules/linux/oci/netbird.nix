@@ -58,7 +58,13 @@ with lib; let
       TrustedPeers = ["127.0.0.1/32"];
     };
     Datadir = "";
-    DataStoreEncryptionKey = "";
+    # A real key must be rendered here. Left empty, management generates one
+    # and persists it back into management.json — which the ExecStartPre
+    # template copy re-blanks on the next start, minting a fresh key every
+    # restart and orphaning the AES-GCM-encrypted store fields (user
+    # email/name, invites) under the old one. 32-byte base64
+    # (openssl rand -base64 32).
+    DataStoreEncryptionKey = config.sops.placeholder."netbird/data-store-encryption-key";
     StoreConfig = {
       Engine = "sqlite";
     };
@@ -258,6 +264,7 @@ in {
       "netbird/nb-auth-secret" = {};
       "netbird/turn-password" = {};
       "netbird/relay-secret" = {};
+      "netbird/data-store-encryption-key" = {};
     };
 
     # -- management.json template --
