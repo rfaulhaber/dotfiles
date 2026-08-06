@@ -29,8 +29,6 @@ in {
       package = cfg.package;
     };
 
-    programs.zsh.shellAliases = lib.optionalAttrs config.modules.programs.zsh.enable firefoxAlias;
-
     home.programs.nushell.shellAliases = lib.optionalAttrs config.modules.programs.nushell.enable firefoxAlias;
 
     environment.etc."xdg/mimeapps.list" = lib.mkIf cfg.setDefaultPDFViewer {

@@ -13,11 +13,6 @@ with lib; let
 in {
   options.modules.services.printing = {
     enable = mkEnableOption false;
-    printers = mkOption {
-      type = types.listOf types.str;
-      default = [];
-      description = "Printers available to the system.";
-    };
     server = mkOption {
       type = types.bool;
       description = "If enabled, enables print server.";

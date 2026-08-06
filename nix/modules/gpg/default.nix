@@ -7,7 +7,6 @@
   ...
 }: let
   inherit (lib) mkEnableOption mkIf optionalAttrs optionals;
-  isWayland = isLinux && config.modules.desktop.environment.isWayland;
   cfg = config.modules.services.gpg;
 in {
   options.modules.services.gpg = {

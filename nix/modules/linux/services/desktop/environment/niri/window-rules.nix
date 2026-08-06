@@ -1,9 +1,4 @@
 [
-  # WezTerm initial configure bug workaround
-  {
-    matches = [{app-id = "^org\\.wezfurlong\\.wezterm$";}];
-    default-column-width = {};
-  }
   # Firefox PiP floats
   {
     matches = [
