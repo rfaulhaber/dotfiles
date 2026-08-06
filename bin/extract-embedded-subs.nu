@@ -138,11 +138,6 @@ def probe-subtitle-streams [video: string] {
 }
 
 def find-videos [root: string] {
-  if not ($root | path exists) {
-    print --stderr $"Skipping missing root: ($root)"
-    return []
-  }
-
   ^find $root -type f -regextype posix-extended -iregex '.*\.(mkv|mp4|m4v|avi|ts|m2ts|webm)$'
   | lines
   | where {|l| ($l | str trim) != ""}
@@ -264,6 +259,17 @@ def main [
   }
 
   let roots = if ($roots | is-empty) {["/data/movies" "/data/tv"]} else {$roots}
+
+  # A missing or empty root at sweep time almost always means the dataset/NFS
+  # mount is absent, not an empty library — and an unmounted mountpoint still
+  # `path exists` as an empty directory, so both shapes must be caught or the
+  # run degrades to a silent no-op that reads as success.
+  let unavailable = ($roots | where {|r| (not ($r | path exists)) or (ls $r | is-empty)})
+  if ($unavailable | is-not-empty) {
+    print --stderr $"Missing or empty media root\(s\): ($unavailable | str join ', ') — dataset unmounted?"
+    exit 1
+  }
+
   let videos = ($roots | each {|r| find-videos $r} | flatten)
 
   print --stderr $"Scanning ($videos | length) video files under ($roots | str join ', ')"
@@ -315,6 +321,19 @@ def main [
 
   let failed = ($results | where status == "failed" | length)
   print --stderr $"Done. ($results | where status == 'extracted' | length) sidecar\(s\) written, ($failed) failed, from ($videos | length) files scanned."
+
+  # Type=oneshot with no Restart=/OnFailure=, so a nonzero exit here just marks
+  # the unit failed for `systemctl status`/the journal — it does not trigger a
+  # retry storm. Only an all-failed run of some size exits nonzero: that shape
+  # means something systemic (media unreachable mid-run, ffmpeg broken). The
+  # floor matters because a permanently-unextractable file is re-planned every
+  # night once the backlog drains, so at steady state it can be the *only* job
+  # — without the floor that would pin the unit failed on every sweep and
+  # pollute `systemctl --failed`, which deploy verification reads as a
+  # clean/dirty signal. Small all-failed runs stay visible on stderr only.
+  if $total >= 3 and $failed == $total {
+    exit 1
+  }
 
   $results
 }
