@@ -16,7 +16,7 @@ in {
     baseDir = mkOption {
       description = "Base directory for Miniflux database storage.";
       type = types.str;
-      example = "/data/db/miniflux";
+      example = "/data/apps/miniflux";
     };
 
     port = mkOption {

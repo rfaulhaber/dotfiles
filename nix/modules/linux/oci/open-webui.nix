@@ -20,7 +20,7 @@ in {
     baseDir = mkOption {
       description = "Base directory for Open WebUI persistent state.";
       type = types.str;
-      example = "/apps/open-webui";
+      example = "/data/apps/open-webui";
     };
 
     port = mkOption {
