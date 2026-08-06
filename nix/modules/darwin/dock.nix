@@ -15,31 +15,34 @@ in {
     system.defaults.dock = {
       show-recents = false;
       autohide = true;
-      persistent-apps = [
-        {
-          app = "/Applications/Firefox.app";
-        }
-        {
-          app = "${config.user.home}/Applications/Emacs.app";
-        }
-        (
-          lib.optionalAttrs (config.modules.programs.ghostty.enable) {
+      persistent-apps =
+        [
+          {
+            app = "/Applications/Firefox.app";
+          }
+          {
+            app = "${config.user.home}/Applications/Emacs.app";
+          }
+        ]
+        ++ lib.optionals config.modules.programs.ghostty.enable [
+          {
             app = "${config.modules.programs.ghostty.package}/Applications/Ghostty.app";
           }
-        )
-        {
-          app = "${pkgs.feishin}/Applications/Feishin.app";
-        }
-        {
-          app = "/Applications/Signal.app";
-        }
-        {
-          app = "/System/Applications/Weather.app";
-        }
-        {
-          app = "/System/Applications/System Settings.app";
-        }
-      ];
+        ]
+        ++ [
+          {
+            app = "${pkgs.feishin}/Applications/Feishin.app";
+          }
+          {
+            app = "/Applications/Signal.app";
+          }
+          {
+            app = "/System/Applications/Weather.app";
+          }
+          {
+            app = "/System/Applications/System Settings.app";
+          }
+        ];
       persistent-others = [
         "/Applications"
         "${config.user.home}/Downloads"
