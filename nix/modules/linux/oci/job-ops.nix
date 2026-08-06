@@ -58,8 +58,9 @@ in {
         description = ''
           LLM provider id (LLM_PROVIDER). JobOps scores job fit and ghostwrites
           tailored CVs through this provider. The matching API key (if the
-          provider needs one) is read from the sops env file. "openrouter" reads
-          OPENROUTER_API_KEY.
+          provider needs one) is read from the sops env file: "openrouter"
+          reads OPENROUTER_API_KEY, every other provider reads the universal
+          LLM_API_KEY.
         '';
         type = types.enum ["openrouter" "openai" "gemini" "glm" "ollama" "lmstudio" "openai_compatible" "codex" "gemini_cli"];
         default = "openrouter";
@@ -228,21 +229,17 @@ in {
       };
 
     # All secret-bearing env is rendered here so values never live in the Nix
-    # store. The provider key is written under the provider's expected env name
-    # (OPENROUTER_API_KEY for the default) — podman performs no $VAR expansion,
-    # so each value must be literal.
+    # store. Upstream job-ops only reads two provider-key env vars:
+    # OPENROUTER_API_KEY for the openrouter provider, and LLM_API_KEY (a
+    # universal slot) for every other provider — there is no per-provider
+    # OPENAI_API_KEY/GEMINI_API_KEY/etc. — so the mapping only ever picks
+    # between those two. podman performs no $VAR expansion, so the value
+    # must be literal.
     sops.templates."job-ops-env".content = let
       providerKeyVar =
-        {
-          openrouter = "OPENROUTER_API_KEY";
-          openai = "OPENAI_API_KEY";
-          gemini = "GEMINI_API_KEY";
-          glm = "GLM_API_KEY";
-        }
-        .${
-          cfg.llm.provider
-        }
-        or "LLM_API_KEY";
+        if cfg.llm.provider == "openrouter"
+        then "OPENROUTER_API_KEY"
+        else "LLM_API_KEY";
     in
       concatStringsSep "\n" (
         optional cfg.llm.apiKey.enable
