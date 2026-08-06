@@ -413,7 +413,9 @@
           enable = true;
           baseDir = "/data/apps/grafana";
           openFirewall = true;
-          rootUrl = "http://grafana.home.lan";
+          # https since pallas's caddy serves this name with tls internal;
+          # the PocketID client's redirect URI must match the https form.
+          rootUrl = "https://grafana.home.lan";
           dashboardsPath = ./dashboards;
           oidc = {
             enable = true;

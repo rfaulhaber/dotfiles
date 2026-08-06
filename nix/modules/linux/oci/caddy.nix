@@ -14,9 +14,12 @@ with lib; let
     # Generate a reverse proxy block
     mkProxyBlock = name: proxy: let
       hosts = concatStringsSep ",\n" (map (h: "${proxy.scheme}://${h}") proxy.hosts);
+      directives =
+        optional (proxy.tls == "internal") "tls internal"
+        ++ ["reverse_proxy ${proxy.upstream}"];
     in ''
       ${hosts} {
-        reverse_proxy ${proxy.upstream}
+        ${concatStringsSep "\n  " directives}
       }
     '';
 
@@ -106,6 +109,19 @@ with lib; let
         type = types.enum ["http" "https"];
         default = "http";
         description = "URL scheme for the frontend";
+      };
+
+      tls = mkOption {
+        type = types.nullOr (types.enum ["internal"]);
+        default = null;
+        description = ''
+          TLS issuance for this site. "internal" has caddy mint the
+          certificate from its built-in local CA — right for LAN-only
+          names that public ACME can't validate. The CA persists under
+          baseDir/data; the root cert devices must trust lives at
+          data/caddy/pki/authorities/local/root.crt. Requires
+          scheme = "https".
+        '';
       };
 
       displayName = mkOption {
@@ -234,6 +250,13 @@ in {
   };
 
   config = mkIf cfg.enable {
+    assertions =
+      mapAttrsToList (name: p: {
+        assertion = p.tls == null || p.scheme == "https";
+        message = "modules.linux.oci.services.caddy.reverseProxies.${name}: tls = \"internal\" requires scheme = \"https\" (the site address decides whether caddy serves TLS at all).";
+      })
+      cfg.reverseProxies;
+
     modules.linux.oci._managedPaths.${cfg.baseDir} = {};
 
     # Add the index file server if enabled
@@ -276,6 +299,11 @@ in {
 
     # Caddy uses host networking, wire to root target
     systemd.services."podman-caddy" = {
+      # The container resolves the /etc/caddy/Caddyfile symlink into a store
+      # path at start and keeps that inode; a switch that only changes the
+      # Caddyfile content would otherwise leave the old config serving until
+      # someone restarts the unit by hand.
+      restartTriggers = [config.environment.etc."caddy/Caddyfile".text];
       # Podman does not create missing bind-mount sources (statfs error at
       # container start); _managedPaths only covers baseDir itself, so its
       # data/config children need creating here.

@@ -355,6 +355,13 @@ in {
         {
           "TZ" = "America/New_York";
           "GF_SERVER_ROOT_URL" = cfg.rootUrl;
+          # Grafana does not infer the secure-cookie flag from the root
+          # URL; without it the session cookie would still be offered on
+          # any plain-http path to the same name.
+          "GF_SECURITY_COOKIE_SECURE" =
+            if hasPrefix "https://" cfg.rootUrl
+            then "true"
+            else "false";
           "GF_SECURITY_ADMIN_USER" = "admin";
           # Disable anonymous telemetry; we opt in to nothing by default.
           "GF_ANALYTICS_REPORTING_ENABLED" = "false";

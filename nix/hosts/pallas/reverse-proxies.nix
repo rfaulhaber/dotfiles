@@ -83,6 +83,11 @@ in {
   grafana = {
     hosts = ["grafana.home.lan"];
     upstream = "${atlas}:3000";
+    # OIDC session cookie + auth code shouldn't cross the LAN cleartext.
+    # caddy auto-redirects http://grafana.home.lan here. NOTE: TLS
+    # terminates on pallas — the hop to atlas:3000 is still plain http.
+    scheme = "https";
+    tls = "internal";
   };
   prometheus = {
     hosts = ["prometheus.home.lan"];
