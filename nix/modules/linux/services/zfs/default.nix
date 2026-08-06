@@ -9,18 +9,6 @@ with lib; let
 in {
   options.modules.services.zfs = {
     enable = mkEnableOption false;
-    shares = mkOption {
-      description = "ZFS shares.";
-      type = types.attrsOf (types.submodule {
-        options = {
-          path = mkOption {
-            description = "Dataset to share.";
-            type = types.str;
-            example = "data/something_to_share";
-          };
-        };
-      });
-    };
     datasets = mkOption {
       description = "Declarative ZFS datasets.";
       default = {};
@@ -109,8 +97,13 @@ in {
       homes = cfg.encryptedHome;
     };
 
-    # TODO need way to override for multiple encrypted datasets
-    boot.zfs.requestEncryptionCredentials = cfg.encryptedHome == null;
+    # Datasets in `encryptedDatasets` get a dedicated zfs-load-key-<name> unit
+    # below. Leaving upstream's blanket sweep on would load the same keys a
+    # second time during pool import, and a single failure there fails
+    # zfs-import-<pool>.service and every mount that requires it. Note this
+    # also disables the initrd root-pool passphrase prompt; a host needing
+    # both must use upstream's list form instead of this boolean.
+    boot.zfs.requestEncryptionCredentials = cfg.encryptedHome == null && cfg.encryptedDatasets == {};
 
     systemd.services = mkMerge [
       (mkIf (cfg.datasets != {}) {
