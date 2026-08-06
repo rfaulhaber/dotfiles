@@ -158,6 +158,18 @@ in {
       };
     };
 
+    ntpSync = mkOption {
+      description = ''
+        Let FTL's built-in NTP client steer the host clock (grants
+        SYS_TIME). Off by default: NixOS hosts already run
+        systemd-timesyncd, and a second clock-steering daemon adds a
+        host-clock write capability for nothing. FTL's NTP *server*
+        works either way.
+      '';
+      type = types.bool;
+      default = false;
+    };
+
     user = {
       uid = mkOption {
         description = "UID for pihole inside container.";
@@ -182,10 +194,21 @@ in {
       extraOptions =
         [
           "--network=host"
+        ]
+        # Plain DNS serving needs none of these (NET_BIND_SERVICE is in
+        # podman's default set). DHCP needs BOTH together: dnsmasq pings
+        # a candidate lease (NET_RAW) and updates the ARP cache
+        # (NET_ADMIN), and DHCPv6/RA opens a raw ICMPv6 socket needing
+        # the pair. Never grant just one — the entrypoint only checks
+        # NET_ADMIN, and FTL missing NET_RAW keeps the web UI alive with
+        # DNS+DHCP silently dead (FTL v6.7 main.c catches dnsmasq's die()
+        # and idles). Upstream's README omits NET_RAW only because
+        # docker's default cap set has it; podman's does not.
+        ++ optionals cfg.dhcp.enable [
           "--cap-add=NET_ADMIN"
           "--cap-add=NET_RAW"
-          "--cap-add=SYS_TIME"
         ]
+        ++ optional cfg.ntpSync "--cap-add=SYS_TIME"
         ++ imageLib.mkImageLabels {
           module = "pihole";
           image = cfg.image;
@@ -208,6 +231,10 @@ in {
           "FTLCONF_dns_dnssec" = boolToString cfg.dns.dnssec;
           "FTLCONF_dns_domainNeeded" = boolToString cfg.dns.domainNeeded;
           "FTLCONF_dns_bogusPriv" = boolToString cfg.dns.bogusPriv;
+          # Keep FTL's clock-sync intent in lockstep with the SYS_TIME
+          # grant so it doesn't retry failing clock-set calls when the
+          # cap is absent.
+          "FTLCONF_ntp_sync_active" = boolToString cfg.ntpSync;
         }
         // optionalAttrs cfg.dhcp.enable {
           "FTLCONF_dhcp_active" = "true";
