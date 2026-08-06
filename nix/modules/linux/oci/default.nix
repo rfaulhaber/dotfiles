@@ -117,11 +117,13 @@ with lib; let
     extraAfter ? [],
     extraRequires ? [],
     # Names of sops.templates the container reads at startup (typically
-    # mounted via volumes or environmentFiles). The pre-rendered content
-    # is hashed into restartTriggers so a switch-to-configuration
-    # restarts the container when the template's source changes — without
-    # this the container holds stale config across deploys because its
-    # mount path is stable while only the file content changed.
+    # mounted via volumes or environmentFiles). What gets hashed into
+    # restartTriggers is the template's *pre-render* content — placeholder
+    # tokens, not decrypted values — so a switch restarts the container
+    # when the template text or its placeholder set changes, but NOT when
+    # a secret's value rotates: the rendered file updates on disk while
+    # the running container keeps its stale copy. Secret rotations need a
+    # manual `systemctl restart podman-<svc>` after the deploy.
     sopsTemplates ? [],
   }: let
     zfsDeps = optional zfsCfg.enable "zfs-manage-datasets.service";
