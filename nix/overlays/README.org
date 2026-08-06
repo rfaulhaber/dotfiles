@@ -29,8 +29,8 @@ dated overlay is the package being patched.
 
 * Conventions
 
-Follow the pattern set by =firefox_devedition_20260713.nix= and
-=niri_20260728.nix= (undated files here predate these conventions):
+Follow the pattern set by =niri_20260728.nix= (undated files here predate
+these conventions):
 
 - Dated filename :: =<package>_<YYYYMMDD>.nix=, dated to the overlay's
   creation. The date makes staleness visible at a glance, and the file stem

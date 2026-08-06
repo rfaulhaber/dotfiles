@@ -1,6 +1,0 @@
-config-file = darwin
-
-command = /opt/homebrew/bin/nu --login
-
-window-width = 130
-window-height = 40

@@ -1,3 +1,0 @@
-#+title: Configuration
-
-Contains any configuration that has side-effects.
