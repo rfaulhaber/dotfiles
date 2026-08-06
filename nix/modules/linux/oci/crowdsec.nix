@@ -27,12 +27,15 @@ with lib; let
     concatStringsSep "\n---\n" (map (d: builtins.toJSON d) acquisDocs)
   );
 
-  # Acquisition mounts: each log file lives in its own dir inside the
-  # container so CrowdSec's tail buffer is per-source. Read-only to make
-  # sure we never overwrite the producer's log.
+  # Acquisition mounts: bind the log's containing directory, not the file —
+  # a file bind pins the inode, so a producer recreating its log (rotation,
+  # container recreate) would silently blind detection. Each source gets its
+  # own dir inside the container so the tail buffer is per-source; read-only
+  # so we can never overwrite the producer's log. Keep hostPath in a
+  # dedicated log directory: every sibling file is visible to the container.
   acquisMounts =
     mapAttrsToList
-    (name: a: "${a.hostPath}:/var/log/${name}/${baseNameOf a.hostPath}:ro")
+    (name: a: "${dirOf a.hostPath}:/var/log/${name}:ro")
     enabledAcquisitions;
 in {
   options.modules.linux.oci.services.crowdsec = {
@@ -99,9 +102,11 @@ in {
 
     acquisitions = mkOption {
       description = ''
-        Log sources to ingest. Each entry mounts `hostPath` into the container at
-        `/var/log/<name>/<basename>` and registers it in acquis.yaml with the
-        given parser type.
+        Log sources to ingest. Each entry mounts the directory containing
+        `hostPath` into the container at `/var/log/<name>/` and registers
+        `/var/log/<name>/<basename>` in acquis.yaml with the given parser
+        type. hostPath should live in a dedicated log directory — all of its
+        siblings become readable by the CrowdSec container.
       '';
       default = {};
       type = types.attrsOf (types.submodule {

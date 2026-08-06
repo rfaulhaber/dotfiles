@@ -30,7 +30,11 @@ with lib; let
         }
       ];
       CredentialsTTL = "12h";
-      Secret = "secret";
+      # Only consumed when TimeBasedCredentials = true (HMAC secret for
+      # ephemeral TURN credentials). Coturn here validates the static
+      # user=self:<turn-password> lt-cred-mech pair instead, so this value
+      # is never used for auth.
+      Secret = "unused";
       TimeBasedCredentials = false;
     };
     Relay = {
@@ -47,7 +51,11 @@ with lib; let
     ReverseProxy = {
       TrustedHTTPProxies = [];
       TrustedHTTPProxiesCount = 0;
-      TrustedPeers = ["0.0.0.0/0"];
+      # Nothing proxies for the management API — its port publishes directly
+      # on bindAddress — so no client should be able to spoof its address via
+      # forwarded headers. Upstream treats an EMPTY list as 0.0.0.0/0 (trust
+      # everyone), so loopback is the tightest expressible value.
+      TrustedPeers = ["127.0.0.1/32"];
     };
     Datadir = "";
     DataStoreEncryptionKey = "";
@@ -184,12 +192,21 @@ in {
         default = "wiretrustee.com";
       };
       minPort = mkOption {
+        description = "Lower bound of coturn's UDP relay allocation range (also opened in the firewall).";
         type = types.port;
         default = 49152;
       };
       maxPort = mkOption {
+        description = ''
+          Upper bound of the relay allocation range. Each concurrent TURN
+          allocation consumes one port, and TURN is only NetBird's fallback
+          when a direct WireGuard path can't be established — 200 ports is
+          generous for a small fleet. Upstream's compose opens the whole
+          ephemeral range (49152-65535) on the public IP; don't restore
+          that without a concrete allocation-exhaustion signal.
+        '';
         type = types.int;
-        default = 65535;
+        default = 49351;
       };
     };
 

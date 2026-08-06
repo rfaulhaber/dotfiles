@@ -47,10 +47,10 @@ with lib; let
 
   # Static traefik configuration (no secrets)
   traefikStaticConfig = pkgs.writeText "traefik_config.yml" ''
-    api:
-      insecure: true
-      dashboard: true
-
+    # No api: block — upstream's reference config ships api.insecure (the
+    # unauthenticated :8080 dashboard), but nothing in the stack consumes
+    # traefik's API, and inside gerbil's netns it is reachable by every
+    # container on the pangolin network.
     providers:
       http:
         endpoint: "http://pangolin:3001/api/v1/traefik-config"
@@ -573,13 +573,26 @@ in {
         serviceConfig.ExecStartPre = [
           "${pkgs.writeShellScript "traefik-dir-init" ''
             mkdir -p ${cfg.baseDir}/letsencrypt ${cfg.baseDir}/traefik
-            # Pre-create the access log so the CrowdSec sidecar's bind-mount
-            # has a file to read on its first start, even if Traefik hasn't
-            # served a request yet.
+            # Pre-create the access log so CrowdSec's tailer finds the
+            # configured filename immediately (its acquisition mounts the
+            # directory, so this is a convenience, not a requirement).
             touch ${cfg.baseDir}/traefik/access.log
           ''}"
         ];
       };
+    };
+
+    # Traefik keeps the access log's fd open inside the container, so rotate
+    # with copytruncate rather than signaling a reopen across the netns
+    # boundary. CrowdSec tails by filename and follows the truncation.
+    services.logrotate.settings."pangolin-traefik-access" = {
+      files = cfg.traefikLogPath;
+      frequency = "weekly";
+      rotate = 8;
+      compress = true;
+      copytruncate = true;
+      missingok = true;
+      notifempty = true;
     };
 
     # The Pangolin DB (and its timestamped backups) hold bcrypt password
