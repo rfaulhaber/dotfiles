@@ -12,6 +12,9 @@
   inherit (types) attrs attrsOf oneOf str path listOf either;
 in {
   options = {
+    # `attrs` merges shallowly: if two modules set the same top-level key
+    # under `user` (or under `home.*` below), the later definition wins
+    # outright rather than merging — a silent clobber, not a conflict error.
     user = mkOption {
       description = "Name of the primary account.";
       default = {};
@@ -22,6 +25,9 @@ in {
       default = {};
       type = attrs;
     };
+    # Same shallow-merge caveat as `user` above — each of these is forwarded
+    # into a single home-manager option via mkAliasDefinitions, so modules
+    # sharing a top-level key here clobber each other silently too.
     home = {
       configFile = mkOptDesc attrs {} "Files to place in $XDG_CONFIG_HOME (aliased to home-manager xdg.configFile).";
       file = mkOptDesc attrs {} "Files to place directly in $HOME (aliased to home-manager home.file).";
