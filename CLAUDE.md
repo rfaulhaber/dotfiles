@@ -27,7 +27,7 @@ darwin-rebuild switch --flake .#eos
 # Deploy to a remote host using deploy-rs
 nix run '.#deploy-rs' '.#<hostname>'
 
-# Available remote hosts: atlas, pallas, hecate, janus, vulcan
+# Available remote hosts: atlas, pallas, hecate, janus, vulcan, prometheus
 ```
 
 ### Development Environment
@@ -85,7 +85,7 @@ Module locations:
 ### Library Functions
 
 Custom helpers in `nix/lib/` (see `nix/lib/nixos.nix` and `nix/lib/default.nix`):
-- `mkNixOSHost` / `mkDarwinHost` / `mkRaspberryPiNixOSHost` - Create host configurations (auto-import `nix/modules` and wire home-manager)
+- `mkNixOSHost` / `mkDarwinHost` - Create host configurations (auto-import `nix/modules` and wire home-manager)
 - `mkOpt` / `mkOptDesc` - Option definition helpers
 - `writeNushellScriptBin` - Wrap a Nushell script as a package
 - `hostnameFromPath` - Derive hostname from `nix/hosts/<hostname>/configuration.nix`
@@ -102,9 +102,10 @@ Host builders pass `specialArgs` containing `inputs`, `lib`, `hostname`, `hostDi
 | janus | x86_64-linux | Cloud VPS (disko-managed disk) |
 | pallas | aarch64-linux | Raspberry Pi 4 server |
 | hecate | aarch64-linux | Raspberry Pi 3 backup DNS / keepalived peer |
+| prometheus | aarch64-linux | Raspberry Pi 5, vendor kernel, forgejo/codeberg CI runner |
 | eos | aarch64-darwin | macOS development machine |
 
-Host directories under `nix/hosts/` without a corresponding `nixosConfigurations` entry in `flake.nix` (e.g., `helios`, `hestia`, `nexus`, `nike`) are retired/unused — do not assume they build.
+Host directories under `nix/hosts/` without a corresponding `nixosConfigurations` entry in `flake.nix` are retired/unused — do not assume they build.
 
 ### Secrets Management
 
@@ -125,16 +126,19 @@ modules.themes.active = "tokyo-night-dark";
 Application configs live in `/config/` and are symlinked to `~/.config/`. Notable:
 - `/doom.d/` - Doom Emacs configuration
 - `/config/nushell/` - Nushell with host-specific configs in `hosts/`
-- `/config/niri/`, `/config/hypr/`, `/config/sway/` - Wayland compositor configs
+- Niri (the active Wayland compositor) is configured inline in `nix/modules/linux/services/desktop/environment/niri/`, not under `/config/`
 
 ### Custom Scripts
 
 Nushell scripts in `/bin/` for system tasks:
 - `zfs-manage.nu` - ZFS pool/dataset management
-- `backup_zfs_dataset.nu` - ZFS dataset snapshot + send/recv backup
+- `extract-embedded-subs.nu` - Extract embedded subtitle tracks to sidecar files to avoid Jellyfin's full-container NFS demux
 - `random-wallpaper.nu` - Unsplash wallpaper rotation
-- `mullvad-config.nu` - VPN configuration
 - `exec-emacs-project.nu` - Run a command in the context of a projectile project
+- `open-zellij-workspace.nu` - Fuzzel-pick a project and open it in a zellij session
+- `bandcamp-import.nu` - Import Bandcamp purchases into the atlas music library, with Lidarr catalog registration
+- `build-fan-out.nu` - Build every host's toplevel in parallel
+- `nix-lines-history.nu` - Emit CSV of file line counts sampled across git history
 
 ### CI / Automation
 

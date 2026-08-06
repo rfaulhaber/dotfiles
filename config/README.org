@@ -1,3 +1,14 @@
 #+title: config
 
-Program-specific configuration. Notably this houses my nushell and awesome configs.
+Program-specific configuration, symlinked into place by the modules under
+=nix/modules/programs/=. Currently houses:
+
+- =nushell/= :: shell config, env, prompt, and per-host overrides under
+  =nushell/hosts/=. Wired by =nix/modules/programs/nushell=.
+- =claude/= :: Claude Code skills and agents, wired by
+  =nix/modules/programs/claude=.
+
+Doom Emacs configuration lives at the repo root in =doom.d/=, not under here.
+Niri (the active Wayland compositor) is configured inline in
+=nix/modules/linux/services/desktop/environment/niri/=, with no dotfiles
+under this directory.
