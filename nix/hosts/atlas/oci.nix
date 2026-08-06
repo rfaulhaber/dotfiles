@@ -401,9 +401,12 @@
 
         podman-exporter = {
           enable = true;
-          # Same host as prometheus — no LAN exposure needed; the scrape
-          # uses the observability network alias.
-          openFirewall = false;
+          # Prometheus scrapes via the shared observability network alias,
+          # so the host-port publish is unused here — pin it to loopback.
+          # Without a bindAddress podman publishes on 0.0.0.0 through a
+          # PREROUTING DNAT the NixOS firewall never sees, so openFirewall
+          # = false alone does not keep :9882 off the LAN.
+          bindAddress = "127.0.0.1";
         };
 
         grafana = {

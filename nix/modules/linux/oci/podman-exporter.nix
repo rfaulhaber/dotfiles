@@ -87,14 +87,17 @@ in {
     # the full container stack converges — so no start-ordering or retry
     # window can bridge it. Allow binding non-local addresses instead; the
     # listener simply receives no traffic until the interface is back.
-    boot.kernel.sysctl = mkIf (cfg.bindAddress != null) {
+    # Loopback is exempt: 127.0.0.0/8 is always bindable, so a loopback
+    # bindAddress shouldn't loosen this host-wide sysctl for nothing.
+    boot.kernel.sysctl = mkIf (cfg.bindAddress != null && !(hasPrefix "127." cfg.bindAddress)) {
       "net.ipv4.ip_nonlocal_bind" = 1;
     };
 
-    # The exporter talks to the Podman REST API over its UNIX socket; the
-    # socket service must be running. Don't gate this on an option — the
-    # exporter is useless without it.
-    virtualisation.podman.dockerSocket.enable = true;
+    # The exporter reads the Podman REST API at /run/podman/podman.sock.
+    # podman.socket serves that path whenever virtualisation.podman is
+    # enabled (which the oci stack guarantees) — deliberately NOT setting
+    # dockerSocket.enable: its only effect is a host-wide /run/docker.sock
+    # compat symlink onto the same socket, which nothing here consumes.
 
     virtualisation.oci-containers.containers.podman-exporter = {
       image = imageLib.renderImage cfg.image;
@@ -117,7 +120,10 @@ in {
           filter (c: c != "container") (splitString "," cfg.collectors)
         ));
       volumes = [
-        # Read-only mount; the exporter only queries the API.
+        # :ro protects only the socket inode — the API behind it is fully
+        # read-write and a rootful podman socket is host-root-equivalent
+        # (it can start privileged containers). This mount IS a deliberate
+        # grant of that power to the exporter; the flag is not a safeguard.
         "/run/podman/podman.sock:/run/podman/podman.sock:ro"
       ];
       ports = [
@@ -133,9 +139,10 @@ in {
           # The exporter image runs as a non-root user by default. The
           # podman socket is owned by root:podman with mode 0660, so the
           # container process needs to be in the podman group OR run as
-          # root. Easiest: run as root inside the container, which has
-          # no effective privilege escalation because the container is
-          # otherwise unprivileged and read-only mounts the socket.
+          # root. Run as root inside the container: it adds nothing on
+          # top of what the socket mount already grants — holding the
+          # rootful socket is host-root-equivalent regardless of the
+          # container's own user.
           "--user=0:0"
         ]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
