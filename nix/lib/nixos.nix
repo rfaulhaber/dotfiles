@@ -60,21 +60,6 @@ in rec {
           };
       }));
 
-  mkRaspberryPiNixOSHost = path: attrs:
-    inputs.nixos-raspberrypi.lib.nixosSystem (mkHost path (attrs
-      // {
-        extraModules =
-          (attrs.extraModules or [])
-          ++ [inputs.home-manager.nixosModules.home-manager];
-        specialArgs =
-          (attrs.specialArgs or {})
-          // {
-            nixos-raspberrypi = inputs.nixos-raspberrypi;
-            isLinux = true;
-            isDarwin = false;
-          };
-      }));
-
   mkDarwinHost = path: attrs:
     inputs.nix-darwin.lib.darwinSystem (mkHost path (attrs
       // {
@@ -91,6 +76,6 @@ in rec {
 
   hostnameFromPath = path:
     toString path
-    |> match ".*/([[:alpha:]]+)/configuration.nix"
+    |> match ".*/([[:alnum:]-]+)/configuration.nix"
     |> head;
 }
