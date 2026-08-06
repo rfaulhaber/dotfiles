@@ -1,3 +1,0 @@
-#+title: nexus
-
-"nexus" is the generic host for a node in my home Kubernetes cluster.
