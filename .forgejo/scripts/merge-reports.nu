@@ -25,6 +25,28 @@ let build_results = (glob $"($run_dir)/build-report-*.json"
     | each {|f| open $f }
     | sort-by host)
 
+# A matrix leg that dies before writing its report (OOM, runner eviction, a
+# crash outside build-one-host.nu's own error handling) would otherwise just
+# vanish from this summary instead of failing it. .forgejo/hosts.json is the
+# same file the workflow reads to build the matrix in the first place, so
+# this check can't drift out of sync with which hosts actually ran.
+#
+# The file is tracked in-repo, so a missing checkout means something is
+# wrong with the environment (bad clone, wrong cwd) — treat that as a hard
+# failure rather than silently skipping the very check it would defeat.
+if not (".forgejo/hosts.json" | path exists) {
+    print --stderr "ERROR: .forgejo/hosts.json missing — cannot verify report completeness."
+    exit 1
+}
+let expected_hosts = (open .forgejo/hosts.json | get host)
+let actual_hosts = ($build_results | get host)
+let missing_hosts = ($expected_hosts | where {|h| $h not-in $actual_hosts})
+
+if not ($missing_hosts | is-empty) {
+    print --stderr $"ERROR: no build report for ($missing_hosts | str join ', ') — matrix leg likely died before writing one."
+    exit 1
+}
+
 let report = {
     input_changes: $input_changes
     build_results: $build_results

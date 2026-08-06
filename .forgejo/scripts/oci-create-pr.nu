@@ -23,10 +23,23 @@ def main [branch_name: string, date_str: string] {
     $"### ($h)\n\n| Module path | Image | Old | New |\n| --- | --- | --- | --- |\n($rows)"
   } | str join "\n\n")
 
+  # update-oci-digests.nu validates each affected host's toplevel but doesn't
+  # abort the run on failure — a host broken for unrelated reasons shouldn't
+  # discard every other host's digest bump. Surface those failures here so a
+  # reviewer knows which hosts still need a manual eval check before merging.
+  let failures_path = ($env.CI_RUN_DIR | path join "oci-validation-failures.json")
+  let failures = if ($failures_path | path exists) { open $failures_path } else { [] }
+  let warning = if ($failures | is-empty) {
+    ""
+  } else {
+    let failed_hosts = ($failures | get host | str join ", ")
+    $"\n> [!WARNING]\n> Toplevel eval failed for ($failed_hosts) after this digest bump. This may be a pre-existing break unrelated to the change above — verify with `nix eval` before merging.\n"
+  }
+
   let pr_body = $"## OCI image digest refresh
 
 Refreshed ($changes | length) image\(s\) across ($by_host | columns | length) host\(s\).
-
+($warning)
 ($sections)
 
 Each pinned tag was re-resolved against its registry; only digests where the

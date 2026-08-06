@@ -165,10 +165,14 @@ def main [...hosts: string]: nothing -> nothing {
 
     # Validate by evaluating each affected host's toplevel. Catches any
     # eval-time damage from the JSON rewrite (malformed digest, etc.) before
-    # the change reaches a PR.
+    # the change reaches a PR. A host can fail here for reasons that have
+    # nothing to do with this digest bump (e.g. an unrelated pre-existing
+    # eval break), so a failure is collected and surfaced in the PR rather
+    # than aborting the run — one broken host must not discard every other
+    # host's already-rewritten digests.
     print ""
     print "=== Validating affected hosts ==="
-    for h in $affected_hosts {
+    let validation_failures = ($affected_hosts | each { |h|
         print $"  nix eval ($h)"
         let result = (
             ^nix eval --raw $".#nixosConfigurations.($h).config.system.build.toplevel.drvPath"
@@ -176,15 +180,18 @@ def main [...hosts: string]: nothing -> nothing {
         )
         if $result.exit_code != 0 {
             print $"    FAIL: ($result.stderr)"
-            error make {msg: $"validation failed for ($h)"}
+            {host: $h, stderr: $result.stderr}
+        } else {
+            null
         }
-    }
+    } | compact)
 
     let date_str = date now | date to-timezone UTC | format date "%Y%m%d"
 
     let report_dir = $env.CI_RUN_DIR? | default "/tmp"
     mkdir $report_dir
     $all_changes | to json | save -f $"($report_dir)/oci-changes.json"
+    $validation_failures | to json | save -f $"($report_dir)/oci-validation-failures.json"
 
     $"changed=true\ndate=($date_str)\n" | save --append $output_file
 }

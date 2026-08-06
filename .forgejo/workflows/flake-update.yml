@@ -36,6 +36,7 @@ jobs:
       stale: ${{ steps.check-stale.outputs.stale }}
       branch: ${{ steps.update.outputs.branch }}
       date: ${{ steps.update.outputs.date }}
+      matrix: ${{ steps.hosts.outputs.matrix }}
     steps:
       - name: Checkout
         run: |
@@ -51,7 +52,22 @@ jobs:
 
       - name: Check if nixpkgs is stale
         id: check-stale
+        env:
+          # Optional — lifts the GitHub API call in check-nixpkgs-stale.nu
+          # from the 60/hr anonymous rate limit (shared across every CI
+          # tenant hitting api.github.com from this IP) to 5000/hr scoped to
+          # the token. Unset is fine, the script just goes unauthenticated.
+          GH_API_TOKEN: ${{ secrets.GH_API_TOKEN }}
         run: nix run nixpkgs#nushell -- .forgejo/scripts/check-nixpkgs-stale.nu
+
+      # Reads .forgejo/hosts.json — the same file merge-reports.nu checks
+      # completed build reports against in the finalize job — so the matrix
+      # and the completeness check can't drift apart.
+      - name: Read host matrix
+        id: hosts
+        run: |
+          nix --extra-experimental-features 'nix-command flakes' \
+            run nixpkgs#nushell -- .forgejo/scripts/read-host-matrix.nu
 
       - name: Update inputs and push update branch
         id: update
@@ -71,15 +87,7 @@ jobs:
     strategy:
       fail-fast: false
       max-parallel: 4
-      matrix:
-        include:
-          - { host: hyperion, runner: nix }
-          - { host: atlas, runner: nix }
-          - { host: janus, runner: nix }
-          - { host: vulcan, runner: nix }
-          - { host: prometheus, runner: nix-aarch64 }
-          - { host: pallas, runner: nix-aarch64 }
-          - { host: hecate, runner: nix-aarch64 }
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
     steps:
       - name: Checkout update branch
         run: |
