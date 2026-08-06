@@ -8,7 +8,6 @@
     ./extract-embedded-subs
     ./hardware
     ./keepalived
-    ./mullvad
     ./netbird
     ./nfs
     ./nix-cache

@@ -12,7 +12,6 @@
     ./kitty
     ./nushell
     ./sops
-    ./tmux
     ./zellij
   ];
 }
