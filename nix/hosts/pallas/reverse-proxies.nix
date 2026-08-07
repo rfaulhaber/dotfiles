@@ -98,4 +98,11 @@ in {
     upstream = "${vulcan}:3000";
     displayName = "Open WebUI";
   };
+  calibre = {
+    hosts = ["calibre.home.lan"];
+    upstream = "${atlas}:3229";
+    displayName = "Calibre";
+    scheme = "https";
+    tls = "internal";
+  };
 }
