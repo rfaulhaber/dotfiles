@@ -63,7 +63,9 @@
 
     nil.url = "github:oxalica/nil/main";
 
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+    # determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+    # temprorarily pinning determinate nix so that aarch64-linux hosts can build
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/=3.21.8";
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
