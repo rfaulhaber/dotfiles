@@ -53,6 +53,12 @@ in {
         server = {
           enable = true;
           port = 6674;
+          # Deploy key held by the scoped agent hyperion forwards here
+          # (see deployAgent in nix/modules/ssh/client.nix); authorizes
+          # pam_ssh_agent_auth sudo for deploy-rs on janus only.
+          extraKeys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJqkUnhTJdiPckPuOSRSehi4GHCc1E0niIH28Klx0nQx janus-deploy@hyperion"
+          ];
         };
       };
       netbird = {

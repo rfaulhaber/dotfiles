@@ -151,7 +151,10 @@
       };
       ssh = {
         enable = true;
-        client.enable = true;
+        client = {
+          enable = true;
+          deployAgent.enable = true;
+        };
       };
       yubikey.enable = true;
       syncthing.enable = true;
