@@ -14,6 +14,7 @@
 }:
 with lib; let
   cfg = config.modules.services.github-runner;
+  instanceNames = map (i: "${config.networking.hostName}-${toString i}") (range 1 cfg.count);
 in {
   options.modules.services.github-runner = {
     enable = mkEnableOption "GitHub Actions self-hosted runners";
@@ -57,8 +58,8 @@ in {
   };
 
   config = mkIf cfg.enable {
-    services.github-runners = listToAttrs (map (i: {
-        name = "${config.networking.hostName}-${toString i}";
+    services.github-runners = listToAttrs (map (name: {
+        inherit name;
         value = {
           enable = true;
           inherit (cfg) url tokenFile extraLabels;
@@ -72,6 +73,14 @@ in {
           extraPackages = [pkgs.nushell];
         };
       })
-      (range 1 cfg.count));
+      instanceNames);
+
+    # conf.nix restricts the daemon to root + the primary user, which locks
+    # the runners out ("access denied by the Nix daemon"). Each runner is a
+    # DynamicUser named after its unit (github-runner-<instance>), so admit
+    # exactly those. allowed-users only — never trusted-users: the repo is
+    # public, and CI jobs must not be able to push unsigned paths or add
+    # their own substituters.
+    nix.settings.allowed-users = map (n: "github-runner-${n}") instanceNames;
   };
 }
