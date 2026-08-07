@@ -8,7 +8,7 @@
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:8de8a08f9f798fa22639ac7f9b7c78026544aea7a0852fa990da286939e77eb1"
+      "digest": "sha256:f4a17653e7851c4642583ba2cd292509f90b4b8e123596af38b6ee02154676be"
     }
   },
   "calibre-web-auto": {
@@ -20,7 +20,7 @@
   "filebrowser": {
     "image": {
       "version": "latest",
-      "digest": "sha256:fc213590ebc090cb8205125cd3ecdfa9066b9ed4a0b53fe2570972d6a3379e73"
+      "digest": "sha256:e82e3bb6d03d4c9e6d5b6ded452b202f79bad335490889591580bf350b601133"
     }
   },
   "flaresolverr": {
@@ -44,7 +44,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:5fe20348352ca20d2d06d9a74b5f55c7eaecef924496c616aae41eba9c8dc718"
+      "digest": "sha256:e3272b29a4bc177b389fbdcb54cf9716ccbfc30f04d8b7a35b0a5be9cdb58461"
     }
   },
   "grafana": {
@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:b22a2b8b366d1e68e6341435bdabd9ff859642cc2ff4a04243d0723521d69d2e"
+      "digest": "sha256:65910327938f535b32424e3586d0900db41b3a3ecb8180415a85f135d61b6d07"
     }
   },
   "paperless": {
