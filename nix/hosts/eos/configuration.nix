@@ -5,6 +5,8 @@
   pkgs,
   ...
 }: {
+  imports = [inputs.determinate.darwinModules.default];
+
   # NOTE darwin options
   # https://nix-darwin.github.io/nix-darwin/manual/index.html
   modules = {
@@ -68,11 +70,19 @@
     feishin
   ];
 
-  # we use Determinate Nix on macOS, so we need to turn off nix-darwin's daemon
+  # Determinate Nix (its installer, not nix-darwin) owns /etc/nix/nix.conf on
+  # macOS, so nix-darwin's daemon management stays off and plain nix.settings
+  # is silently ignored. Custom settings must go through
+  # determinateNix.customSettings, which renders /etc/nix/nix.custom.conf
+  # (!include'd from the managed nix.conf).
   nix.enable = false;
-
-  # Necessary for using flakes on this system.
-  nix.settings.experimental-features = "nix-command flakes pipe-operators ca-derivations";
+  determinateNix.customSettings = {
+    # Parallel evaluation; 0 = all cores (Determinate Nix caps this at 32).
+    eval-cores = 0;
+    # extra-: append to the managed nix.conf's defaults (nix-command, flakes)
+    # rather than replacing them.
+    extra-experimental-features = ["pipe-operators" "ca-derivations" "parallel-eval"];
+  };
 
   # nixpkgs.config.contentAddressedByDefault = true;
 
