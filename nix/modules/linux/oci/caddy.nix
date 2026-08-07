@@ -14,9 +14,23 @@ with lib; let
     # Generate a reverse proxy block
     mkProxyBlock = name: proxy: let
       hosts = concatStringsSep ",\n" (map (h: "${proxy.scheme}://${h}") proxy.hosts);
+      upstream =
+        if proxy.upstreamScheme == "https"
+        then "https://${proxy.upstream}"
+        else proxy.upstream;
       directives =
         optional (proxy.tls == "internal") "tls internal"
-        ++ ["reverse_proxy ${proxy.upstream}"];
+        ++ (
+          if proxy.upstreamTlsInsecure
+          then [
+            "reverse_proxy ${upstream} {"
+            "  transport http {"
+            "    tls_insecure_skip_verify"
+            "  }"
+            "}"
+          ]
+          else ["reverse_proxy ${upstream}"]
+        );
     in ''
       ${hosts} {
         ${concatStringsSep "\n  " directives}
@@ -109,6 +123,29 @@ with lib; let
         type = types.enum ["http" "https"];
         default = "http";
         description = "URL scheme for the frontend";
+      };
+
+      upstreamScheme = mkOption {
+        type = types.enum ["http" "https"];
+        default = "http";
+        description = ''
+          Scheme caddy uses to reach the upstream. Independent of
+          `scheme`, which only controls the browser-facing side —
+          caddy re-originates the proxied request as plain http
+          unless this is "https".
+        '';
+      };
+
+      upstreamTlsInsecure = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          Skip verification of the upstream's TLS certificate.
+          Needed for upstreams that mint self-signed certs that
+          can't match the address caddy dials (e.g. the linuxserver
+          Kasm/Selkies https ports). Requires upstreamScheme =
+          "https".
+        '';
       };
 
       tls = mkOption {
@@ -250,12 +287,17 @@ in {
   };
 
   config = mkIf cfg.enable {
-    assertions =
-      mapAttrsToList (name: p: {
-        assertion = p.tls == null || p.scheme == "https";
-        message = "modules.linux.oci.services.caddy.reverseProxies.${name}: tls = \"internal\" requires scheme = \"https\" (the site address decides whether caddy serves TLS at all).";
-      })
-      cfg.reverseProxies;
+    assertions = concatLists (mapAttrsToList (name: p: [
+        {
+          assertion = p.tls == null || p.scheme == "https";
+          message = "modules.linux.oci.services.caddy.reverseProxies.${name}: tls = \"internal\" requires scheme = \"https\" (the site address decides whether caddy serves TLS at all).";
+        }
+        {
+          assertion = !p.upstreamTlsInsecure || p.upstreamScheme == "https";
+          message = "modules.linux.oci.services.caddy.reverseProxies.${name}: upstreamTlsInsecure requires upstreamScheme = \"https\" (verification only applies to a TLS backhaul).";
+        }
+      ])
+      cfg.reverseProxies);
 
     modules.linux.oci._managedPaths.${cfg.baseDir} = {};
 

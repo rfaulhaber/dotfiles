@@ -104,5 +104,9 @@ in {
     displayName = "Calibre";
     scheme = "https";
     tls = "internal";
+    # The Selkies build only serves the desktop UI over https (container
+    # 8181); its self-signed cert can't match the IP caddy dials.
+    upstreamScheme = "https";
+    upstreamTlsInsecure = true;
   };
 }
