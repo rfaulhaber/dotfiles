@@ -23,6 +23,12 @@
             dnsServer = "192.168.0.254";
             dnsServerV6 = "2600:1702:6710:117F::FE";
           };
+          # Both DNS hosts are statically addressed, so neither gets a
+          # lease-derived record; must match hecate's list for failover.
+          dns.hostRecords = [
+            "pallas.lan,192.168.0.2"
+            "hecate.lan,192.168.0.77"
+          ];
         };
         caddy = {
           enable = true;

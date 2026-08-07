@@ -29,7 +29,8 @@ with lib; let
     # DNS-only appliance with dhcp.ipv6 becomes a black-hole default route.
     # ra-param fields: <interface>,<ra-interval>,<router-lifetime>
     # (an interval of 0 selects dnsmasq's default interval).
-    "ra-param=${cfg.interface},0,0";
+    "ra-param=${cfg.interface},0,0"
+    ++ map (record: "host-record=${record}") cfg.dns.hostRecords;
 
   customDnsmasqConf =
     pkgs.writeText "99-pihole-custom.conf"
@@ -156,6 +157,20 @@ in {
         type = types.bool;
         default = true;
       };
+      hostRecords = mkOption {
+        description = ''
+          dnsmasq host-record values, rendered as "host-record=<value>".
+          Statically-addressed hosts never appear in DHCP leases, so no
+          lease-derived record exists for them — chiefly the Pi-hole hosts
+          themselves. List the records for ALL DNS hosts on EVERY Pi-hole
+          so names keep resolving across keepalived failover; a Pi-hole
+          answers queries for its own hostname via FTL's self-hostname
+          logic, but has no record at all for its peer without these.
+        '';
+        type = types.listOf types.str;
+        default = [];
+        example = ["pallas.lan,192.168.0.2" "hecate.lan,192.168.0.77"];
+      };
     };
 
     ntpSync = mkOption {
@@ -231,6 +246,15 @@ in {
           "FTLCONF_dns_dnssec" = boolToString cfg.dns.dnssec;
           "FTLCONF_dns_domainNeeded" = boolToString cfg.dns.domainNeeded;
           "FTLCONF_dns_bogusPriv" = boolToString cfg.dns.bogusPriv;
+          # FTL answers queries for its own hostname itself (host-records
+          # don't apply to it), and force4/force6 with an empty address
+          # makes that answer 0.0.0.0. These keys live in pihole.toml on
+          # the persistent volume, so a stray value survives redeploys
+          # invisibly — a leftover force4=true black-holed pallas.lan for
+          # every client. Env-pin auto-detection so each container start
+          # re-asserts it.
+          "FTLCONF_dns_reply_host_force4" = "false";
+          "FTLCONF_dns_reply_host_force6" = "false";
           # Keep FTL's clock-sync intent in lockstep with the SYS_TIME
           # grant so it doesn't retry failing clock-set calls when the
           # cap is absent.

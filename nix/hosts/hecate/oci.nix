@@ -16,6 +16,12 @@
           interface = "enu1u1u1";
           webPasswordFile = config.sops.templates."pihole-env".path;
           # DHCP disabled — hecate is a backup DNS only
+          # Both DNS hosts are statically addressed, so neither gets a
+          # lease-derived record; must match pallas's list for failover.
+          dns.hostRecords = [
+            "pallas.lan,192.168.0.2"
+            "hecate.lan,192.168.0.77"
+          ];
         };
       };
   };
