@@ -16,8 +16,25 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   nix.settings = {
-    substituters = ["https://install.determinate.systems"];
-    trusted-public-keys = ["cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="];
+    # The CI runners build every x86_64 host's closure through this host's
+    # nix daemon, so the system substituter list has to cover whatever those
+    # hosts pull from: niri for hyperion's compositor, nix-community for
+    # emacs. prometheus's harmonia serves arch-independent sources and
+    # aarch64 paths for manual binfmt builds. (The Forgejo workflows
+    # composed this list per-job in configure-nix.nu; native runners
+    # inherit the daemon's config instead.)
+    substituters = [
+      "https://install.determinate.systems"
+      "https://nix-community.cachix.org"
+      "https://niri.cachix.org"
+      "http://prometheus.lan:4965"
+    ];
+    trusted-public-keys = [
+      "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964="
+      "prometheus.lan-1:GetZTCVHg6NcVVteshbEZQbyMzZfIATcsIgt7si5Lmo="
+    ];
   };
 
   modules = {
@@ -35,6 +52,7 @@
         secrets = {
           nix-cache = {};
           "netbird/setup-key" = {};
+          "github-runner/token" = {};
         };
       };
     };
@@ -81,6 +99,15 @@
         port = 4965;
         interface = "lan0";
         secretKeyFile = config.sops.secrets.nix-cache.path;
+      };
+      github-runner = {
+        enable = true;
+        url = "https://github.com/rfaulhaber/dotfiles";
+        tokenFile = config.sops.secrets."github-runner/token".path;
+        # Four instances so the x86_64 half of the build matrix runs
+        # fully parallel, matching the old Forgejo runner's capacity.
+        count = 4;
+        extraLabels = ["nix"];
       };
       nfs.mount = {
         enable = true;

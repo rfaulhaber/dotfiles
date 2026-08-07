@@ -1,0 +1,6 @@
+self-hosted-runner:
+  # Labels registered by modules.services.github-runner: vulcan carries
+  # `nix` (x86_64), prometheus carries `nix-aarch64`.
+  labels:
+    - nix
+    - nix-aarch64

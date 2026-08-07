@@ -1,0 +1,68 @@
+# Fast, LAN-independent validation on GitHub-hosted compute: evaluate every
+# host's toplevel derivation. Catches option/module/eval breakage on pull
+# requests without involving the self-hosted runners — which also makes it
+# safe to run for fork PRs, since nothing here can reach the LAN. Full
+# builds and cache seeding happen post-merge in build-and-cache.yml.
+#
+# Eval is architecture-independent, so one x86_64 hosted runner can check
+# the aarch64 hosts too. The substituters below exist for import-from-
+# derivation (doom-emacs on hyperion): IFD needs the referenced derivations
+# realized at eval time, and substituting beats building them on a fresh
+# runner.
+
+name: Evaluate Hosts
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: eval-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # jq instead of the nushell matrix reader used by build-and-cache.yml: the
+  # hosted image has no nu, and installing nix just to read one JSON file
+  # would cost more than the job itself.
+  hosts:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.read.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Read host matrix
+        id: read
+        run: |
+          echo "matrix=$(jq -c '{include: .}' .github/hosts.json)" >> "$GITHUB_OUTPUT"
+
+  eval:
+    runs-on: ubuntu-latest
+    needs: hosts
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.hosts.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          extra-conf: |
+            extra-substituters = https://nix-community.cachix.org https://nixos-raspberrypi.cachix.org https://niri.cachix.org
+            extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI= niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=
+
+      # HOST via env rather than inline interpolation: on pull_request the
+      # matrix values come from the PR's copy of hosts.json, so keep that
+      # content out of shell syntax.
+      - name: Evaluate ${{ matrix.host }}
+        env:
+          HOST: ${{ matrix.host }}
+        run: |
+          nix eval --raw \
+            ".#nixosConfigurations.${HOST}.config.system.build.toplevel.drvPath"

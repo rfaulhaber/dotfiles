@@ -33,23 +33,6 @@
             ];
             containerOptions = "-v /nix/var/nix/daemon-socket/socket:/nix/var/nix/daemon-socket/socket";
           };
-          codeberg = {
-            enable = true;
-            instanceUrl = "https://codeberg.org";
-            capacity = 2;
-            tokenFile = config.sops.templates."codeberg-runner-env".path;
-            labels = [
-              "docker:docker://node:20-bookworm"
-              "ubuntu-latest:docker://ubuntu:latest"
-              "nix-aarch64:docker://nixos/nix:latest"
-            ];
-            jobStateDir = "/apps/forgejo-runner/codeberg-state";
-            baseDir = "/apps/forgejo-runner/codeberg";
-            validVolumes = [
-              "/nix/var/nix/daemon-socket/socket"
-            ];
-            containerOptions = "-v /nix/var/nix/daemon-socket/socket:/nix/var/nix/daemon-socket/socket";
-          };
         };
       };
     };

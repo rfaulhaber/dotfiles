@@ -6,6 +6,7 @@
     ./desktop
     ./docker-socket-proxy
     ./extract-embedded-subs
+    ./github-runner
     ./hardware
     ./keepalived
     ./netbird

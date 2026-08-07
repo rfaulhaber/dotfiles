@@ -1,0 +1,64 @@
+name: Build and Cache Hosts
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# A newer push to main supersedes any in-flight build of an older commit:
+# cancel the running matrix so we don't queue several full fan-outs on the
+# runners. Keyed on the ref so manual dispatch and pushes share one group.
+concurrency:
+  group: build-and-cache-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Single source of truth for which hosts this workflow builds: reads
+  # .github/hosts.json so the build matrix here and the eval matrix in
+  # eval.yml can't drift apart.
+  hosts:
+    runs-on: nix
+    outputs:
+      matrix: ${{ steps.read.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Read host matrix
+        id: read
+        run: nu .github/scripts/read-host-matrix.nu
+
+  # Build every host's toplevel against the exact pushed commit, natively on
+  # the runner host through its nix daemon. Closures land directly in the
+  # host /nix/store, where harmonia serves them to the fleet — so the first
+  # deploy after a merge pulls from cache instead of rebuilding. The host
+  # store doubles as the warm cache between runs; unlike the old
+  # containerized Forgejo setup there is no per-job store to seed and no
+  # closure copying afterwards.
+  #
+  # x86_64 hosts build on vulcan (`nix` label); aarch64 hosts on prometheus
+  # (`nix-aarch64`). Job concurrency is bounded by the number of runner
+  # instances each host registers (modules.services.github-runner.count),
+  # so no max-parallel is needed here.
+  build:
+    runs-on: ${{ matrix.runner }}
+    needs: hosts
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.hosts.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # HOST via env rather than inline interpolation: matrix values come
+      # from hosts.json, and quoting through the environment keeps repo
+      # content out of shell syntax entirely.
+      - name: Build ${{ matrix.host }}
+        env:
+          HOST: ${{ matrix.host }}
+        run: |
+          nix build ".#nixosConfigurations.${HOST}.config.system.build.toplevel" \
+            --no-link --print-build-logs

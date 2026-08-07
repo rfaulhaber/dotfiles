@@ -142,9 +142,11 @@ Nushell scripts in `/bin/` for system tasks:
 
 ### CI / Automation
 
-- `.forgejo/workflows/` - Forgejo Actions workflows (e.g. `flake-update.yml`) executed by the self-hosted forgejo runners on `vulcan`.
-- `.forgejo/scripts/` - Nushell scripts invoked from those workflows (`build-one-host.nu`, `update-inputs.nu`, `create-pr.nu`, etc.).
-- `.github/workflows/` - GitHub-side mirror/CI; `CACHE-SETUP.md` documents the shared binary cache.
+- `.github/workflows/` - GitHub Actions CI. `build-and-cache.yml` builds every host's toplevel on the self-hosted runners (vulcan for x86_64, prometheus for aarch64) after each push to main; closures land in the runner hosts' stores, which harmonia serves as binary caches. `eval.yml` evaluates every host's toplevel on GitHub-hosted runners for PRs (fork-safe, no LAN access).
+- `.github/hosts.json` - Single source of truth for which hosts CI covers and which runner label builds them.
+- `.github/scripts/` - Nushell helpers invoked from the workflows.
+- Self-hosted runners are managed natively by `modules.services.github-runner` (`nix/modules/linux/services/github-runner/`), registered per-repo with an ephemeral lifecycle.
+- `.forgejo/workflows/` + `.forgejo/scripts/` - Legacy Forgejo Actions from the Codeberg era (`build-and-cache.yml`, `flake-update.yml`, `oci-update.yml`), executed by the containerized forgejo runners registered against `git.home.lan`/Codeberg.
 
 ### OCI Container Services
 

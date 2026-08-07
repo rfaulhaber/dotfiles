@@ -22,14 +22,19 @@
   ];
 
   nix.settings = {
+    # nix-community covers what the aarch64 CI builds pull beyond
+    # cache.nixos.org; the CI runners inherit the daemon's substituters, so
+    # this list is what the old configure-nix.nu composed per-job.
     substituters = [
       "https://install.determinate.systems"
       "https://nixos-raspberrypi.cachix.org"
+      "https://nix-community.cachix.org"
       "http://vulcan.lan:4965"
     ];
     trusted-public-keys = [
       "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
       "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "vulcan.lan-1:Zu8N+6EtaIeDTyCVpR15uvIYYByZqMmd8W09vu8GKl8="
     ];
   };
@@ -48,6 +53,7 @@
         secrets = {
           "forgejo-runner/token" = {};
           "codeberg-runner/token" = {};
+          "github-runner/token" = {};
           nix-cache = {};
           "netbird/setup-key" = {};
         };
@@ -85,6 +91,15 @@
         interface = "end0";
         secretKeyFile = config.sops.secrets.nix-cache.path;
       };
+      github-runner = {
+        enable = true;
+        url = "https://github.com/rfaulhaber/dotfiles";
+        tokenFile = config.sops.secrets."github-runner/token".path;
+        # Two concurrent jobs is what the Pi 5 sustained under the Forgejo
+        # runner; the third aarch64 matrix leg queues behind them.
+        count = 2;
+        extraLabels = ["nix-aarch64"];
+      };
     };
 
     themes.active = "moonlight";
@@ -108,14 +123,14 @@
   boot.supportedFilesystems.zfs = false;
 
   # nixpkgs >= 26.11 makes the raspberrypi bootloader module read
-  # `config.boot.kernelPackages.kernel.target`, but the Pi 5 vendor kernel is
-  # built by an older nixpkgs pin that never added that passthru, so eval fails
-  # with "attribute 'target' missing". mkForce can't help: the module-system
-  # priority filter forces the broken definition before discarding it. Instead,
-  # graft the platform-default target ("Image") onto the kernel's passthru.
-  # passthru doesn't affect the derivation, so the store path is unchanged and
-  # the cached kernel still hits. Remove once upstream's vendor kernel carries
-  # a `target` attribute.
+  # `config.boot.kernelPackages.kernel.target`, and hardware.deviceTree reads
+  # `kernel.buildDTBs`, but the Pi 5 vendor kernel is built by an older
+  # nixpkgs pin that never added those passthrus, so eval fails with
+  # "attribute missing". mkForce can't help: the module-system priority
+  # filter forces the broken definition before discarding it. Instead, graft
+  # the missing attributes onto the kernel's passthru. passthru doesn't
+  # affect the derivation, so the store path is unchanged and the cached
+  # kernel still hits. Remove once upstream's vendor kernel carries both.
   boot.kernelPackages = let
     rpi5 = nixos-raspberrypi.packages.${pkgs.stdenv.hostPlatform.system}.linuxPackages_rpi5;
   in
@@ -124,7 +139,13 @@
         passthru =
           (old.passthru or {})
           // {
-            target = old.passthru.target or pkgs.stdenv.hostPlatform.linux-kernel.target;
+            # nixpkgs b7c2ada also stopped elaborating `linux-kernel` on the
+            # host platform, so the platform lookup needs its own fallback
+            # to the aarch64 default target.
+            target = old.passthru.target or (pkgs.stdenv.hostPlatform.linux-kernel.target or "Image");
+            # The vendor kernel does build and install DTBs; only the flag
+            # announcing that is missing.
+            buildDTBs = old.passthru.buildDTBs or true;
           };
       });
     });
