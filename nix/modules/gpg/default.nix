@@ -13,19 +13,20 @@ in {
     enable = mkEnableOption false;
   };
 
-  config =
-    mkIf cfg.enable {
-      # it is unclear to me how to automatically unlock gnome keyring upon login, so
-      # I'm taking the shotgun approach
-      services = optionalAttrs isLinux {
-        dbus.packages = [
-          pkgs.gnome-keyring
-          pkgs.gcr
-          pkgs.dconf
-        ];
-        gnome.gnome-keyring.enable = true;
-      };
-
+  # Unlocking on Linux runs through pinentry, not through any gpg component of
+  # the keyring — gnome-keyring has not had one for years. pinentry-gnome3 links
+  # libsecret, so when gpg-agent hands it SETKEYINFO it looks the passphrase up
+  # in the Secret Service under schema org.gnupg.Passphrase, keyed by the
+  # cache-mode-prefixed keyinfo ("n/<keygrip>", "s/<keygrip>" for ssh). A hit is
+  # returned with no dialog, which is why unlocking the keyring is what stops
+  # the prompts. gnome-keyring serves that Secret Service, so it is required
+  # here rather than merely a desktop nicety.
+  #
+  # Nothing else is needed: the dbus registrations for gnome-keyring and gcr
+  # come from services.gnome.gnome-keyring and from the nixpkgs gnupg module
+  # (which adds gcr for any gnome3-flavored pinentry), and that same module
+  # already sets security.pam.services.login.enableGnomeKeyring.
+  config = mkIf cfg.enable ({
       programs.gnupg.agent =
         {
           enable = true;
@@ -47,7 +48,10 @@ in {
         target = "${config.user.home}/.gnupg/gpg-agent.conf";
       };
     }
+    # merged inside the mkIf call, not onto its result: `mkIf c {...} // {...}`
+    # yields {_type="if"; condition; content;} plus stray keys that
+    # dischargeProperties never reads, so the extra attrs vanish silently.
     // optionalAttrs isLinux {
-      security.pam.services.login.enableGnomeKeyring = true;
-    };
+      services.gnome.gnome-keyring.enable = true;
+    });
 }

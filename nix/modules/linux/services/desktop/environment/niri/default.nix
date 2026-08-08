@@ -97,8 +97,6 @@ in {
       };
     };
 
-    security.pam.services.greetd.enableGnomeKeyring = true;
-
     user.packages = with pkgs; [
       fuzzel
       swaylock
