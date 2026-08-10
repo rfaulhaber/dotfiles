@@ -36,10 +36,26 @@ def main [branch_name: string, date_str: string] {
     $"\n> [!WARNING]\n> Toplevel eval failed for ($failed_hosts) after this digest bump. This may be a pre-existing break unrelated to the change above — verify with `nix eval` before merging.\n"
   }
 
+  # Entries whose repo or tag would not resolve are skipped rather than
+  # aborting the refresh, so they produce no diff at all. Without this block
+  # a permanently dead tag is invisible: it just silently stops being
+  # updated, which is how recyclarr sat on a retired :latest for months.
+  let fetch_path = ($env.CI_RUN_DIR | path join "oci-fetch-failures.json")
+  let fetch_failures = if ($fetch_path | path exists) { open $fetch_path } else { [] }
+  let fetch_warning = if ($fetch_failures | is-empty) {
+    ""
+  } else {
+    let rows = ($fetch_failures | each { |f|
+      let path_str = ($f.path | str join ".")
+      $"> | `($f.host)` | `($path_str)` | `($f.repo | default "?"):($f.version)` |"
+    } | str join "\n")
+    $"\n> [!CAUTION]\n> ($fetch_failures | length) image\(s\) could not be resolved and were **not** refreshed. A tag that stopped resolving usually means upstream retired it — check the image's current tags before assuming the pin is still valid.\n>\n> | Host | Module path | Image |\n> | --- | --- | --- |\n($rows)\n"
+  }
+
   let pr_body = $"## OCI image digest refresh
 
 Refreshed ($changes | length) image\(s\) across ($by_host | columns | length) host\(s\).
-($warning)
+($warning)($fetch_warning)
 ($sections)
 
 Each pinned tag was re-resolved against its registry; only digests where the

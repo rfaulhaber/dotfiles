@@ -15,11 +15,13 @@
 #   DRY_RUN — when "true", print proposed changes without writing files
 #             or evaluating.
 #   CI_RUN_DIR — bind-mounted /ci-state subdir (in CI) or any writable dir
-#                (locally); receives oci-changes.json. Falls back to /tmp.
+#                (locally); receives oci-changes.json and
+#                oci-fetch-failures.json. Falls back to /tmp.
 #
 # Outputs (via $env.GITHUB_OUTPUT):
-#   changed — "true" if any digest moved
-#   date    — UTC date stamp for downstream branch/PR naming
+#   changed        — "true" if any digest moved
+#   date           — UTC date stamp for downstream branch/PR naming
+#   fetch_failures — count of entries whose repo or tag would not resolve
 
 let dry_run = ($env.DRY_RUN? | default "false") == "true"
 
@@ -67,25 +69,32 @@ def deep-set [tree, path: list<any>, value] {
 # Look up the module-defined repository for an image at services.<path>.
 # Each path segment is double-quoted so dashes (forgejo-runner, calibre-web-auto)
 # and reserved-looking names parse correctly in nix attribute expressions.
+# Returns {ok, repository, error} rather than raising, so one unresolvable
+# entry cannot abort the whole run — see the failure handling in main.
 def query-repo [host: string, path: list<any>] {
     let segments = $path | each {|p| $'"($p)"' } | str join "."
     let attr = $".#nixosConfigurations.($host).config.modules.linux.oci.services.($segments)"
     let result = (^nix eval --json $attr | complete)
     if $result.exit_code != 0 {
-        error make {msg: $"nix eval failed for ($attr):\n($result.stderr)"}
+        {ok: false, repository: null, error: $"nix eval failed for ($attr): ($result.stderr | str trim)"}
+    } else {
+        {ok: true, repository: ($result.stdout | from json | get repository), error: null}
     }
-    $result.stdout | from json | get repository
 }
 
 # Resolve the current manifest digest of repo:tag against the registry.
 # `--no-tags` skips the post-inspect /tags/list call we don't need.
+# Returns {ok, digest, error} rather than raising: upstreams retire tags
+# unilaterally (recyclarr dropped :latest mid-8.x), and a tag that no longer
+# exists must not be able to freeze every other host's refresh.
 def fetch-digest [repo: string, tag: string] {
     let url = $"docker://($repo):($tag)"
     let result = (^skopeo inspect --no-tags --format "{{.Digest}}" $url | complete)
     if $result.exit_code != 0 {
-        error make {msg: $"skopeo inspect failed for ($url):\n($result.stderr)"}
+        {ok: false, digest: null, error: $"skopeo inspect failed for ($url): ($result.stderr | str trim)"}
+    } else {
+        {ok: true, digest: ($result.stdout | str trim), error: null}
     }
-    $result.stdout | str trim
 }
 
 # --- Main ---
@@ -110,30 +119,61 @@ def main [...hosts: string]: nothing -> nothing {
       $canonical_hosts
     }
 
-    let all_changes = ($hosts | each { |h|
+    # Each entry yields either a "change" record, a "failure" record, or null
+    # (digest unmoved). Failures are carried rather than raised: an entry can
+    # stop resolving for reasons entirely outside this repo — an upstream
+    # retiring a tag is enough — and aborting there would discard every other
+    # host's already-computed digests, including hosts not yet inspected.
+    let all_results = ($hosts | each { |h|
     print $"=== Inspecting ($h.host) ==="
     let manifest = (open $h.file)
     let specs = (find-image-specs $manifest)
     print $"  ($specs | length) image\(s\) declared"
 
-    let host_changes = ($specs | par-each { |s|
-        let repo = (query-repo $h.host $s.path)
-        let new_digest = (fetch-digest $repo $s.version)
-        if $new_digest == $s.digest {
-        null
-        } else {
+    let host_results = ($specs | par-each { |s|
         let path_str = $s.path | str join "."
-        print $"  CHANGE  ($path_str): ($s.digest | str substring 0..19)… → ($new_digest | str substring 0..19)…"
-        {
-            host: $h.host
-            path: $s.path
-            repo: $repo
-            version: $s.version
-            old_digest: $s.digest
-            new_digest: $new_digest
-        }
+        let repo_result = (query-repo $h.host $s.path)
+        if not $repo_result.ok {
+            print $"  FAIL    ($path_str): ($repo_result.error)"
+            {
+                kind: "failure"
+                host: $h.host
+                path: $s.path
+                repo: null
+                version: $s.version
+                error: $repo_result.error
+            }
+        } else {
+            let repo = $repo_result.repository
+            let fetched = (fetch-digest $repo $s.version)
+            if not $fetched.ok {
+                print $"  FAIL    ($path_str): ($fetched.error)"
+                {
+                    kind: "failure"
+                    host: $h.host
+                    path: $s.path
+                    repo: $repo
+                    version: $s.version
+                    error: $fetched.error
+                }
+            } else if $fetched.digest == $s.digest {
+                null
+            } else {
+                print $"  CHANGE  ($path_str): ($s.digest | str substring 0..19)… → ($fetched.digest | str substring 0..19)…"
+                {
+                    kind: "change"
+                    host: $h.host
+                    path: $s.path
+                    repo: $repo
+                    version: $s.version
+                    old_digest: $s.digest
+                    new_digest: $fetched.digest
+                }
+            }
         }
     } | compact)
+
+    let host_changes = ($host_results | where kind == "change")
 
     if (not ($host_changes | is-empty)) and (not $dry_run) {
         let new_manifest = ($host_changes | reduce -f $manifest { |c, m|
@@ -142,15 +182,33 @@ def main [...hosts: string]: nothing -> nothing {
         $new_manifest | to json --indent 2 | save -f $h.file
     }
 
-    $host_changes
+    $host_results
     } | flatten)
+
+    let all_changes = ($all_results | where kind == "change")
+    let fetch_failures = ($all_results | where kind == "failure")
 
     print ""
     let output_file = $env.GITHUB_OUTPUT? | default "/dev/null"
+    let report_dir = $env.CI_RUN_DIR? | default "/tmp"
+    mkdir $report_dir
+
+    # Written before the no-changes early exit: an entry that never resolves
+    # produces no change, so this is the only record that it was even tried.
+    $fetch_failures | to json | save -f $"($report_dir)/oci-fetch-failures.json"
+
+    if (not ($fetch_failures | is-empty)) {
+        print $"!! ($fetch_failures | length) image\(s\) failed to resolve — these are NOT refreshed:"
+        for f in $fetch_failures {
+            let path_str = ($f.path | str join ".")
+            print $"     ($f.host) ($path_str): ($f.error)"
+        }
+        print ""
+    }
 
     if ($all_changes | is-empty) {
         print "No digest updates."
-        $"changed=false\ndate=\n" | save --append $output_file
+        $"changed=false\ndate=\nfetch_failures=($fetch_failures | length)\n" | save --append $output_file
         exit 0
     }
 
@@ -159,7 +217,7 @@ def main [...hosts: string]: nothing -> nothing {
 
     if $dry_run {
         print "DRY_RUN=true — not writing files or validating."
-        $"changed=false\ndate=\n" | save --append $output_file
+        $"changed=false\ndate=\nfetch_failures=($fetch_failures | length)\n" | save --append $output_file
         exit 0
     }
 
@@ -188,10 +246,8 @@ def main [...hosts: string]: nothing -> nothing {
 
     let date_str = date now | date to-timezone UTC | format date "%Y%m%d"
 
-    let report_dir = $env.CI_RUN_DIR? | default "/tmp"
-    mkdir $report_dir
     $all_changes | to json | save -f $"($report_dir)/oci-changes.json"
     $validation_failures | to json | save -f $"($report_dir)/oci-validation-failures.json"
 
-    $"changed=true\ndate=($date_str)\n" | save --append $output_file
+    $"changed=true\ndate=($date_str)\nfetch_failures=($fetch_failures | length)\n" | save --append $output_file
 }
