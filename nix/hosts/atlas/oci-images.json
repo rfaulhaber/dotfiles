@@ -175,8 +175,8 @@
   },
   "recyclarr": {
     "image": {
-      "version": "latest",
-      "digest": "sha256:55afe316d3e4e4e3b9120cef7c79436b1b5311f6a18d4ef4b7653e720499c90a"
+      "version": "8",
+      "digest": "sha256:73303ba5ee647b6492fee917d3a781c6e59b6cab08f9dfce9482a950846f564f"
     }
   },
   "requestrr": {

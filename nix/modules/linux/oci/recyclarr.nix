@@ -161,9 +161,12 @@ in {
   options.modules.linux.oci.services.recyclarr = {
     enable = mkEnableOption "Recyclarr TRaSH-Guides quality profile sync";
 
+    # Upstream publishes no `latest` tag — it is explicitly disabled in their
+    # release CI, and their docs direct users to a major-version tag so that
+    # breaking majors stay opt-in.
     image = imageLib.mkImageOptions {
       repository = "ghcr.io/recyclarr/recyclarr";
-      version = "latest";
+      version = "8";
     };
 
     baseDir = mkOption {
