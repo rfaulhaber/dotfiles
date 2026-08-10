@@ -78,12 +78,20 @@ in {
           # Enforce the CrowdSec community blocklist (CAPI). Pulls the
           # community-curated blocklist for enforcement and shares local
           # detections back. Accepts the tradeoff that CAPI can occasionally
-          # flag shared/residential/mobile ranges; tune via allowlist.cidrs if
-          # a legitimate user IP gets caught.
+          # flag shared/residential/mobile ranges; household IPs are shielded
+          # by the centralized allowlist below (parser-level allowlist.cidrs
+          # cannot filter CAPI decisions).
           communityBlocklist.enable = true;
 
+          # LAPI-level never-ban list covering every decision source — local
+          # scenarios AND CAPI. The home WAN IP lives in sops because it
+          # identifies a residence; the hook reads it inside the container.
+          # If the ISP reassigns the home IP, update the secret and restart
+          # podman-crowdsec after deploying.
+          allowlist.centralized.sopsKey = "crowdsec/allowlist-cidrs";
+
           # LePresidente/http-generic-403-bf is a community scenario that
-          # fires on ~6 HTTP 403s in a short window. Two reasons to disable:
+          # fires on ~6 HTTP 403s in a short window. Two reasons to suppress:
           #   1. Feedback loop: the bouncer's own ban response is 403, so a
           #      single already-banned IP retrying for 60s (the stream-mode
           #      cache TTL) generates >threshold events and creates a fresh
@@ -91,9 +99,14 @@ in {
           #   2. Organic false positives: badger session-expiry, multi-tab
           #      navigation to permission-gated resources, and browser asset
           #      preload misses all rack up 403s under normal use.
-          # Auth brute force is still covered by crowdsecurity/http-bf (which
-          # watches 401s) and the rest of base-http-scenarios.
-          disabledHubItems = ["scenarios/LePresidente/http-generic-403-bf"];
+          # It is a sub-document bundled inside the crowdsecurity/
+          # http-generic-bf hub file, not a standalone hub item, so
+          # disabledHubItems can never remove it (that removal failed on
+          # every boot for months); simulation matches the loaded scenario
+          # name instead, and the LAPI hides simulated decisions from
+          # bouncers. Auth brute force is still covered by the bundle's
+          # 401-oriented siblings and the rest of base-http-scenarios.
+          simulatedScenarios = ["LePresidente/http-generic-403-bf"];
 
           # The Newt tunnel agents on atlas and vulcan reach Pangolin from the
           # home network's single public WAN IP — the same address a browser
@@ -107,6 +120,20 @@ in {
           # IP changing.
           allowlist.expressions = [
             "evt.Meta.log_type in ['http_access-log', 'http_error-log'] && evt.Meta.http_path startsWith '/api/v1/auth/newt/'"
+            # Forgejo's container registry on git.3679.space: podman
+            # push/pull probes blob existence with requests that 404 on
+            # missing layers — 11 of those in one push tripped
+            # crowdsecurity/http-probing. Forgejo enforces its own auth on
+            # /v2/, so exempting the whole registry protocol from scenario
+            # scoring is safe, and it protects any client IP (laptops away
+            # from home, CI) rather than just the allowlisted home address.
+            "evt.Meta.log_type == 'http_access-log' && evt.Meta.target_fqdn == 'git.3679.space' && evt.Meta.http_path startsWith '/v2/'"
+            # Vikunja clients hammer POST /api/v1/user/token/refresh when a
+            # session expires (6x 401 in 10s), tripping
+            # LePresidente/http-generic-401-bf. Refresh requires a valid JWT
+            # cookie, so the endpoint is not a password-guessing surface;
+            # real credential brute force on /login stays detectable.
+            "evt.Meta.log_type == 'http_access-log' && evt.Meta.target_fqdn == 'tasks.3679.space' && evt.Meta.http_path == '/api/v1/user/token/refresh'"
           ];
         };
 

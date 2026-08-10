@@ -12,6 +12,9 @@ with lib; let
   enabledBouncers = filterAttrs (_: b: b.enable) cfg.bouncers;
   enabledAcquisitions = filterAttrs (_: a: a.enable) cfg.acquisitions;
 
+  centralized = cfg.allowlist.centralized;
+  centralizedConfigured = centralized.cidrs != [] || centralized.sopsKey != null;
+
   # The acquis.yaml mounted on top of the persisted /etc/crowdsec directory.
   # Multiple acquisitions are concatenated with --- document separators, which
   # CrowdSec parses as a multi-document YAML stream.
@@ -87,7 +90,13 @@ in {
         Hub items (scenarios, parsers, collections, postoverflows) to remove
         after CrowdSec installs collections at startup. Each entry has the
         form "<type>/<author>/<name>" — e.g.
-        "scenarios/LePresidente/http-generic-403-bf".
+        "scenarios/crowdsecurity/http-crawl-non_statics".
+
+        Only *standalone* hub items can be removed. Scenarios that live as
+        sub-documents inside another item's multi-document file (e.g. the
+        LePresidente/http-generic-*-bf pair inside
+        crowdsecurity/http-generic-bf) have no hub identity of their own and
+        the removal fails on every boot — use `simulatedScenarios` for those.
 
         Use this to suppress overly-aggressive community scenarios that
         transitively get pulled in by base collections. The removal runs in
@@ -97,7 +106,26 @@ in {
       '';
       type = types.listOf types.str;
       default = [];
-      example = ["scenarios/LePresidente/http-generic-403-bf"];
+      example = ["scenarios/crowdsecurity/http-crawl-non_statics"];
+    };
+
+    simulatedScenarios = mkOption {
+      description = ''
+        Scenario names forced into simulation mode: overflows still create
+        alerts (visible in cscli and the console) but their decisions are
+        marked simulated, which the LAPI strips from every bouncer query —
+        the ban is never enforced. Matching is exact string equality against
+        the scenario document's `name`, so this reaches sub-scenarios
+        bundled inside a multi-document hub file, which `disabledHubItems`
+        cannot remove. A typo silently no-ops.
+
+        Renders /etc/crowdsec/simulation.yaml wholesale on every service
+        start — manual `cscli simulation` state on the host does not
+        survive a restart.
+      '';
+      type = types.listOf types.str;
+      default = [];
+      example = ["LePresidente/http-generic-403-bf"];
     };
 
     acquisitions = mkOption {
@@ -202,13 +230,51 @@ in {
           at /etc/crowdsec/parsers/s02-enrich/local-allowlist.yaml.
 
           Note: this does NOT filter community-blocklist (CAPI) decisions
-          which arrive after the parser step. If your concern is CAPI
-          false positives on user IPs you can't enumerate in advance, set
-          communityBlocklist.enable = false instead.
+          which arrive after the parser step — use `centralized` for IPs
+          that must never be banned from any source.
         '';
         type = types.listOf types.str;
         default = [];
         example = ["10.0.0.0/8" "203.0.113.42/32"];
+      };
+
+      centralized = {
+        cidrs = mkOption {
+          description = ''
+            IPs/CIDRs registered in a LAPI-level *centralized* allowlist
+            (`cscli allowlists`, CrowdSec >= 1.6.6) named `nix-managed`.
+            Unlike the parser-level `cidrs` above, this vetoes decisions
+            from every source: local scenario overflows are dropped before
+            the profile step, community-blocklist (CAPI) pulls are filtered
+            on import, and adding an entry retroactively expires existing
+            decisions against it.
+
+            The list is reconciled (rebuilt from scratch) on every service
+            start, which also re-lifts any ban an entry may have picked up —
+            so only list addresses that should be unconditionally trusted
+            forever. Values here land in the world-readable nix store; for
+            identifying addresses (e.g. a home WAN IP) use `sopsKey`.
+          '';
+          type = types.listOf types.str;
+          default = [];
+          example = ["203.0.113.42/32"];
+        };
+        sopsKey = mkOption {
+          description = ''
+            Sops secret key holding newline-separated IPs/CIDRs (comments
+            with `#` allowed) merged into the same `nix-managed` allowlist
+            as `cidrs`. Use for addresses that identify people or places.
+            The rendered file is mounted into the container and read there,
+            so values never appear on a host command line or in the journal.
+
+            Changing the secret's *value* re-renders the file but does not
+            restart the container — run `systemctl restart podman-crowdsec`
+            after deploying a value change.
+          '';
+          type = types.nullOr types.str;
+          default = null;
+          example = "crowdsec/allowlist-cidrs";
+        };
       };
       expressions = mkOption {
         description = ''
@@ -260,8 +326,11 @@ in {
       enrollSecret = optionalAttrs cfg.enroll.enable {
         ${cfg.enroll.sopsKey} = {};
       };
+      centralizedSecret = optionalAttrs (centralized.sopsKey != null) {
+        ${centralized.sopsKey} = {};
+      };
     in
-      bouncerSecrets // enrollSecret;
+      bouncerSecrets // enrollSecret // centralizedSecret;
 
     # Env file consumed by the container. Holds bouncer keys (sensitive) and
     # the enrollment key (sensitive). Non-secret env (COLLECTIONS, TZ, instance
@@ -302,6 +371,8 @@ in {
           "${cfg.baseDir}/data:/var/lib/crowdsec/data:rw"
           "${acquisYaml}:/etc/crowdsec/acquis.yaml:ro"
         ]
+        ++ optional (centralized.sopsKey != null)
+        "${config.sops.secrets.${centralized.sopsKey}.path}:/etc/crowdsec/nix-allowlist-cidrs:ro"
         ++ acquisMounts;
       extraOptions =
         ["--network-alias=crowdsec"]
@@ -330,6 +401,14 @@ in {
                 expression = cfg.allowlist.expressions;
               };
           });
+      # Rendered even when the list is empty so dropping a scenario from
+      # simulatedScenarios re-arms it — a stale exclusions entry would
+      # otherwise keep suppressing enforcement invisibly. YAML is a JSON
+      # superset, matching the allowlist render above.
+      simulationYaml = pkgs.writeText "simulation.yaml" (builtins.toJSON {
+        simulation = false;
+        exclusions = cfg.simulatedScenarios;
+      });
     in
       mkMerge [
         (ociLib.mkServiceConfig {
@@ -343,15 +422,20 @@ in {
         })
         {
           # Hash the rendered allowlist into restartTriggers so editing the
-          # cidrs list re-deploys the container. Same for disabledHubItems —
-          # editing the list should re-trigger the post-start removal.
+          # cidrs list re-deploys the container. Same for disabledHubItems
+          # and the centralized entries — editing either list should
+          # re-trigger the post-start hooks that apply them.
           restartTriggers =
             optional (allowlistYaml != null) (toString allowlistYaml)
-            ++ [(toString cfg.disabledHubItems)];
+            ++ [(toString cfg.disabledHubItems) (toString centralized.cidrs)];
           serviceConfig.ExecStartPre = [
             "${pkgs.writeShellScript "crowdsec-dir-init" ''
               set -euo pipefail
               mkdir -p ${cfg.baseDir}/config ${cfg.baseDir}/data
+              # Pre-seeding before first container start is safe: the image
+              # entrypoint copies its staging config with --ignore-existing,
+              # so this file always wins.
+              install -m 0644 ${simulationYaml} ${cfg.baseDir}/config/simulation.yaml
               ${
                 optionalString (allowlistYaml != null) ''
                   mkdir -p ${cfg.baseDir}/config/parsers/s02-enrich
@@ -416,15 +500,62 @@ in {
                 in ''
                   # Remove ${item}. --force suppresses "in use by collection"
                   # warnings; the collection install itself is left untouched.
-                  ${pkgs.podman}/bin/podman exec crowdsec \
-                    cscli ${itemType} remove "${itemName}" --force || true
+                  if ! ${pkgs.podman}/bin/podman exec crowdsec \
+                    cscli ${itemType} remove "${itemName}" --force; then
+                    # A name cscli can't resolve is usually a sub-scenario
+                    # bundled inside another hub file — removal can never
+                    # work for those; the scenario stays ACTIVE.
+                    echo "could not remove hub item ${item}; it is still active — verify the name against 'cscli ${itemType} list'" >&2
+                  fi
                 '')
                 cfg.disabledHubItems}
 
               # Tell the daemon to re-scan its config so the removed items
               # stop being active without a container restart.
               ${pkgs.podman}/bin/podman exec crowdsec kill -HUP 1 || true
-            ''}";
+            ''}"
+            ++ [
+              "+${pkgs.writeShellScript "crowdsec-sync-centralized-allowlist" ''
+                set -uo pipefail
+                # Same readiness poll/budget as the hooks above.
+                for i in $(seq 1 60); do
+                  if ${pkgs.podman}/bin/podman exec crowdsec cscli allowlists list >/dev/null 2>&1; then
+                    break
+                  fi
+                  sleep 1
+                done
+
+                # Rebuild the list from scratch so entries dropped from the
+                # nix config disappear from the LAPI too; other allowlists
+                # (console-managed) are untouched. `add` retroactively
+                # expires any decision recorded against an entry, so the
+                # brief delete→add gap self-heals.
+                ${pkgs.podman}/bin/podman exec crowdsec \
+                  cscli allowlists delete nix-managed >/dev/null 2>&1 || true
+
+                ${optionalString centralizedConfigured ''
+                  if ! ${pkgs.podman}/bin/podman exec crowdsec \
+                    cscli allowlists create nix-managed -d "nix-managed never-ban allowlist"; then
+                    echo "failed to create allowlist nix-managed; its IPs are unprotected until the next service start" >&2
+                  fi
+                  ${optionalString (centralized.cidrs != []) ''
+                    if ! ${pkgs.podman}/bin/podman exec crowdsec \
+                      cscli allowlists add nix-managed ${escapeShellArgs centralized.cidrs}; then
+                      echo "failed to register static centralized-allowlist entries" >&2
+                    fi
+                  ''}
+                  ${optionalString (centralized.sopsKey != null) ''
+                    # The file holds identifying addresses; strip comments and
+                    # blanks and feed cscli inside the container so values
+                    # never appear on a host command line or in the journal.
+                    if ! ${pkgs.podman}/bin/podman exec crowdsec sh -c \
+                      'sed -e "s/#.*$//" -e "/^[[:space:]]*$/d" /etc/crowdsec/nix-allowlist-cidrs | xargs -r cscli allowlists add nix-managed'; then
+                      echo "failed to register centralized-allowlist entries from the sops file" >&2
+                    fi
+                  ''}
+                ''}
+              ''}"
+            ];
         }
       ];
   };
