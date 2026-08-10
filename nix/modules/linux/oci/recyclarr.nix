@@ -25,10 +25,18 @@ with lib; let
       baseUrl = "http://gluetun:7878";
       apiKeySecret = "recyclarr/radarr-main-api-key";
       # Guide-backed profiles carry only their own tier formats, so the
-      # custom_formats below are additive rather than duplicates — dropping
-      # them would silently remove all audio-format scoring. The anime block
-      # is the exception: those three are in the guide profile already, and
-      # the per-profile score overrides the guide's.
+      # custom_formats below are additive rather than duplicates.
+      #
+      # Both profiles exclude remux by construction (Remux-2160p and
+      # Remux-1080p are allowed=false in the guide), which is the property
+      # worth preserving: remux is what produces 60GB files, not 2160p.
+      #
+      # Scores are calibrated against the edition tags, which the guide sets at
+      # 25 (125 for Special Edition). Audio sits below that on purpose. The
+      # clients in use reject DTS, TrueHD, FLAC and PCM and fall back to a
+      # transcode, so codecs that survive playback get a small edge — but this
+      # library is curated by edition, and a Criterion pressing should not lose
+      # to a generic release that happens to carry DD+.
       body = ''
         quality_definition:
           type: movie
@@ -38,9 +46,6 @@ with lib; let
             reset_unmatched_scores:
               enabled: true
           - trash_id: 64fb5f9858489bdac2af690e27c8f42f # UHD Bluray + WEB
-            reset_unmatched_scores:
-              enabled: true
-          - trash_id: 722b624f9af1e492284c4bc842153a38 # [Anime] Remux-1080p
             reset_unmatched_scores:
               enabled: true
 
@@ -56,25 +61,6 @@ with lib; let
             assign_scores_to:
               - name: HD Bluray + WEB
 
-          # Audio Advanced
-          - trash_ids:
-              - 496f355514737f7d83bf7aa4d24f8169 # TrueHD ATMOS
-              - 2f22d89048b01681dde8afe203bf2e95 # DTS X
-              - 417804f7f2c4308c1f4c5d380d4c4475 # ATMOS (undefined)
-              - 1af239278386be2919e1bcee0bde047e # DD+ ATMOS
-              - 3cafb66171b47f226146a0770576870f # TrueHD
-              - dcf3ec6938fa32445f590a4da84256cd # DTS-HD MA
-              - a570d4a0e56a2874b64e5bfa55202a1b # FLAC
-              - e7c2fcae07cbada050a0af3357491d7b # PCM
-              - 8e109e50e0a0b83a5098b056e13bf6db # DTS-HD HRA
-              - 185f1dd7264c4562b9022d963ac37424 # DD+
-              - f9f847ac70a0af62ea4a08280b859636 # DTS-ES
-              - 1c1a4c5e823891c75bc50380a6866f73 # DTS
-              - 240770601cc226190c367ef59aba7463 # AAC
-              - c2998bd0d90ed5621d8df281e839436e # DD
-            assign_scores_to:
-              - name: UHD Bluray + WEB
-
           # Movie Versions + SDR
           - trash_ids:
               - 570bc9ebecd92723d2d21500f4be314c # Remaster
@@ -86,13 +72,35 @@ with lib; let
             assign_scores_to:
               - name: UHD Bluray + WEB
 
+          # Audio, scored as a tiebreaker between otherwise equal releases.
+          # Only the codecs the clients can play are listed; DTS, TrueHD, FLAC
+          # and PCM are left unmanaged rather than penalised, because for
+          # catalog titles there is often only one release in existence and
+          # transcoding it beats not having it.
           - trash_ids:
-              - 064af5f084a0a24458cc8ecd3220f93f # Uncensored
-              - a5d148168c4506b55cf53984107c396e # 10bit
-              - 4a3b087eea2ce012fcc1ce319259a3be # Anime Dual Audio
+              - 1af239278386be2919e1bcee0bde047e # DD+ ATMOS
             assign_scores_to:
-              - name: "[Anime] Remux-1080p"
-                score: 0
+              - name: HD Bluray + WEB
+                score: 20
+              - name: UHD Bluray + WEB
+                score: 20
+
+          - trash_ids:
+              - 185f1dd7264c4562b9022d963ac37424 # DD+
+            assign_scores_to:
+              - name: HD Bluray + WEB
+                score: 15
+              - name: UHD Bluray + WEB
+                score: 15
+
+          - trash_ids:
+              - c2998bd0d90ed5621d8df281e839436e # DD
+              - 240770601cc226190c367ef59aba7463 # AAC
+            assign_scores_to:
+              - name: HD Bluray + WEB
+                score: 10
+              - name: UHD Bluray + WEB
+                score: 10
       '';
     };
   };
