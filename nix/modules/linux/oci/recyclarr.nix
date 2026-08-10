@@ -15,9 +15,52 @@ with lib; let
       kind = "sonarr";
       baseUrl = "http://gluetun:8989";
       apiKeySecret = "recyclarr/sonarr-main-api-key";
+      # WEB-1080p (Alternative) rather than plain WEB-1080p: the strict profile
+      # permits only WEB 1080p and would leave three quarters of this library
+      # outside its allowed set, while the alternative adds Bluray and HDTV at
+      # 1080p plus the whole 720p tier. Neither admits remux, which is moot here
+      # anyway — 21 of 13,000 episode files are remux and none are 2160p.
+      #
+      # The SD tail (SDTV, DVD, 480p/576p — roughly a quarter of the library) is
+      # outside even this profile. Those series are better left on a permissive
+      # profile than marked permanently unmet; assigning series is a separate
+      # decision from defining the profile.
+      #
+      # until_score 0, unlike radarr's: the only custom formats here are audio
+      # tiebreakers, and re-downloading an episode because a DD+ release turned
+      # up is not worth the churn. Scores decide which release wins at grab
+      # time and nothing else.
       body = ''
         quality_definition:
           type: series
+
+        quality_profiles:
+          - trash_id: 9d142234e45d6143785ac55f5a9e8dc9 # WEB-1080p (Alternative)
+            reset_unmatched_scores:
+              enabled: true
+            upgrade:
+              allowed: true
+              until_score: 0
+
+        custom_formats:
+          - trash_ids:
+              - 4232a509ce60c4e208d13825b7c06264 # DD+ ATMOS
+            assign_scores_to:
+              - name: "WEB-1080p (Alternative)"
+                score: 20
+
+          - trash_ids:
+              - 63487786a8b01b7f20dd2bc90dd4a477 # DD+
+            assign_scores_to:
+              - name: "WEB-1080p (Alternative)"
+                score: 15
+
+          - trash_ids:
+              - dbe00161b08a25ac6154c55f95e6318d # DD
+              - a50b8a0c62274a7c38b09a9619ba9d86 # AAC
+            assign_scores_to:
+              - name: "WEB-1080p (Alternative)"
+                score: 10
       '';
     };
     radarr_main = {
@@ -37,6 +80,12 @@ with lib; let
       # transcode, so codecs that survive playback get a small edge — but this
       # library is curated by edition, and a Criterion pressing should not lose
       # to a generic release that happens to carry DD+.
+      #
+      # until_score is set because the guide ships cutoffFormatScore 10000,
+      # which nothing here can reach — 145 is the ceiling (Special Edition plus
+      # the best audio tiebreaker). Left at the guide value every movie stays
+      # format-cutoff-unmet forever. Note the key is upgrade.until_score;
+      # there is no cutoff_format_score key in recyclarr's schema.
       body = ''
         quality_definition:
           type: movie
@@ -45,9 +94,15 @@ with lib; let
           - trash_id: d1d67249d3890e49bc12e275d989a7e9 # HD Bluray + WEB
             reset_unmatched_scores:
               enabled: true
+            upgrade:
+              allowed: true
+              until_score: 145
           - trash_id: 64fb5f9858489bdac2af690e27c8f42f # UHD Bluray + WEB
             reset_unmatched_scores:
               enabled: true
+            upgrade:
+              allowed: true
+              until_score: 145
 
         custom_formats:
           # Movie Versions
