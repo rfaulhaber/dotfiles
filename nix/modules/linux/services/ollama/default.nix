@@ -14,6 +14,31 @@ with lib; let
     amd = pkgs.ollama-rocm;
     intel = pkgs.ollama-vulkan;
   };
+
+  # Repairing ownership is conditional because it has to be a no-op on an
+  # NFS-mounted modelsDir: exports are served root_squash, so a root-run
+  # chown is denied there even when the directory is already owned by the
+  # ollama uid and the service writes to it fine. Ownership across the mount
+  # is the server's to set; the client can only check it.
+  ensureOwnership = pkgs.writeShellScript "ollama-ensure-ownership" ''
+    set -uo pipefail
+    for dir in "$@"; do
+      if ! ${pkgs.coreutils}/bin/mkdir -p "$dir"; then
+        exit 1
+      fi
+
+      owner=$(${pkgs.coreutils}/bin/stat -c '%U:%G' "$dir")
+      if [ "$owner" = "ollama:ollama" ]; then
+        continue
+      fi
+
+      if ! ${pkgs.coreutils}/bin/chown ollama:ollama "$dir"; then
+        echo "cannot take ownership of $dir (owned by $owner)" >&2
+        echo "if it is an NFS mount, the export is root_squash — chown it on the server" >&2
+        exit 1
+      fi
+    done
+  '';
 in {
   options.modules.services.ollama = {
     enable = mkEnableOption "Ollama LLM server";
@@ -53,8 +78,8 @@ in {
     home = mkOption {
       description = ''
         Home directory for ollama state (manifests, history, cache).
-        Created and chowned to the ollama user at unit start so a fresh
-        ZFS- or NFS-mounted directory ends up with the correct ownership.
+        Created and chowned to the ollama user at unit start so a freshly
+        created ZFS dataset ends up with the correct ownership.
       '';
       type = types.str;
       default = "/var/lib/ollama";
@@ -64,7 +89,8 @@ in {
       description = ''
         Directory holding model blobs and manifests. Often points at
         NFS-mounted storage; the systemd unit waits for this path to be
-        mounted via `RequiresMountsFor` before starting.
+        mounted via `RequiresMountsFor` before starting, and expects the
+        server to have set ownership to the ollama uid already.
       '';
       type = types.str;
       default = "${cfg.home}/models";
@@ -145,14 +171,12 @@ in {
     systemd.services.ollama = mkMerge [
       {
         unitConfig.RequiresMountsFor = [cfg.modelsDir];
-        # Freshly created ZFS datasets and NFS exports come up root-owned,
-        # and both appear after activation-time tmpfiles has already run —
-        # a tmpfiles chown lands on the directory the dataset is then
-        # mounted over. Fix ownership at unit start instead; the `+`
-        # prefix runs as root (the NFS chown sticks via no_root_squash).
+        # A freshly created ZFS dataset comes up root-owned and appears after
+        # activation-time tmpfiles has already run, so a tmpfiles chown lands
+        # on the directory the dataset is then mounted over. Fix ownership at
+        # unit start instead; the `+` prefix runs as root.
         serviceConfig.ExecStartPre = [
-          "+${pkgs.coreutils}/bin/mkdir -p ${cfg.home} ${cfg.modelsDir}"
-          "+${pkgs.coreutils}/bin/chown ollama:ollama ${cfg.home} ${cfg.modelsDir}"
+          "+${ensureOwnership} ${cfg.home} ${cfg.modelsDir}"
         ];
       }
       (mkIf cfg.zfs.enable {
