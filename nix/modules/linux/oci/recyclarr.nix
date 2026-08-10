@@ -24,98 +24,75 @@ with lib; let
       kind = "radarr";
       baseUrl = "http://gluetun:7878";
       apiKeySecret = "recyclarr/radarr-main-api-key";
+      # Guide-backed profiles carry only their own tier formats, so the
+      # custom_formats below are additive rather than duplicates — dropping
+      # them would silently remove all audio-format scoring. The anime block
+      # is the exception: those three are in the guide profile already, and
+      # the per-profile score overrides the guide's.
       body = ''
-        include:
-          # Comment out any of the following includes to disable them
-          - template: radarr-quality-definition-movie
-          - template: radarr-quality-profile-hd-bluray-web
-          - template: radarr-custom-formats-hd-bluray-web
-          - template: radarr-quality-definition-anime
-          - template: radarr-quality-profile-anime
-          - template: radarr-custom-formats-anime
-          - template: radarr-quality-definition-movie
-          - template: radarr-quality-profile-uhd-bluray-web
-          - template: radarr-custom-formats-uhd-bluray-web
+        quality_definition:
+          type: movie
+
+        quality_profiles:
+          - trash_id: d1d67249d3890e49bc12e275d989a7e9 # HD Bluray + WEB
+            reset_unmatched_scores:
+              enabled: true
+          - trash_id: 64fb5f9858489bdac2af690e27c8f42f # UHD Bluray + WEB
+            reset_unmatched_scores:
+              enabled: true
+          - trash_id: 722b624f9af1e492284c4bc842153a38 # [Anime] Remux-1080p
+            reset_unmatched_scores:
+              enabled: true
 
         custom_formats:
+          # Movie Versions
           - trash_ids:
-              - 570bc9ebecd92723d2d21500f4be314c
-              - eca37840c13c6ef2dd0262b141a5482f
-              - e0c07d59beb37348e975a930d5e50319
-              - 9d27d9d2181838f76dee150882bdc58c
-              - db9b4c4b53d312a3ca5f1378f6440fc9
-              - 957d0f44b592285f26449575e8b1167e
+              - 570bc9ebecd92723d2d21500f4be314c # Remaster
+              - eca37840c13c6ef2dd0262b141a5482f # 4K Remaster
+              - e0c07d59beb37348e975a930d5e50319 # Criterion Collection
+              - 9d27d9d2181838f76dee150882bdc58c # Masters of Cinema
+              - db9b4c4b53d312a3ca5f1378f6440fc9 # Vinegar Syndrome
+              - 957d0f44b592285f26449575e8b1167e # Special Edition
             assign_scores_to:
               - name: HD Bluray + WEB
 
+          # Audio Advanced
           - trash_ids:
+              - 496f355514737f7d83bf7aa4d24f8169 # TrueHD ATMOS
+              - 2f22d89048b01681dde8afe203bf2e95 # DTS X
+              - 417804f7f2c4308c1f4c5d380d4c4475 # ATMOS (undefined)
+              - 1af239278386be2919e1bcee0bde047e # DD+ ATMOS
+              - 3cafb66171b47f226146a0770576870f # TrueHD
+              - dcf3ec6938fa32445f590a4da84256cd # DTS-HD MA
+              - a570d4a0e56a2874b64e5bfa55202a1b # FLAC
+              - e7c2fcae07cbada050a0af3357491d7b # PCM
+              - 8e109e50e0a0b83a5098b056e13bf6db # DTS-HD HRA
+              - 185f1dd7264c4562b9022d963ac37424 # DD+
+              - f9f847ac70a0af62ea4a08280b859636 # DTS-ES
+              - 1c1a4c5e823891c75bc50380a6866f73 # DTS
+              - 240770601cc226190c367ef59aba7463 # AAC
+              - c2998bd0d90ed5621d8df281e839436e # DD
             assign_scores_to:
-              - name: HD Bluray + WEB
+              - name: UHD Bluray + WEB
 
+          # Movie Versions + SDR
           - trash_ids:
-            assign_scores_to:
-              - name: HD Bluray + WEB
-          - trash_ids:
-              - 064af5f084a0a24458cc8ecd3220f93f
-            assign_scores_to:
-              - name: Remux-1080p - Anime
-                score: 0 # Adjust scoring as desired
-
-          - trash_ids:
-              - a5d148168c4506b55cf53984107c396e
-            assign_scores_to:
-              - name: Remux-1080p - Anime
-                score: 0 # Adjust scoring as desired
-
-          - trash_ids:
-              - 4a3b087eea2ce012fcc1ce319259a3be
-            assign_scores_to:
-              - name: Remux-1080p - Anime
-                score: 0 # Adjust scoring as desired
-
-          - trash_ids:
-              - 496f355514737f7d83bf7aa4d24f8169
-              - 2f22d89048b01681dde8afe203bf2e95
-              - 417804f7f2c4308c1f4c5d380d4c4475
-              - 1af239278386be2919e1bcee0bde047e
-              - 3cafb66171b47f226146a0770576870f
-              - dcf3ec6938fa32445f590a4da84256cd
-              - a570d4a0e56a2874b64e5bfa55202a1b
-              - e7c2fcae07cbada050a0af3357491d7b
-              - 8e109e50e0a0b83a5098b056e13bf6db
-              - 185f1dd7264c4562b9022d963ac37424
-              - f9f847ac70a0af62ea4a08280b859636
-              - 1c1a4c5e823891c75bc50380a6866f73
-              - 240770601cc226190c367ef59aba7463
-              - c2998bd0d90ed5621d8df281e839436e
+              - 570bc9ebecd92723d2d21500f4be314c # Remaster
+              - eca37840c13c6ef2dd0262b141a5482f # 4K Remaster
+              - e0c07d59beb37348e975a930d5e50319 # Criterion Collection
+              - 9d27d9d2181838f76dee150882bdc58c # Masters of Cinema
+              - db9b4c4b53d312a3ca5f1378f6440fc9 # Vinegar Syndrome
+              - 9c38ebb7384dada637be8899efa68e6f # SDR
             assign_scores_to:
               - name: UHD Bluray + WEB
 
           - trash_ids:
-              - 570bc9ebecd92723d2d21500f4be314c
-              - eca37840c13c6ef2dd0262b141a5482f
-              - e0c07d59beb37348e975a930d5e50319
-              - 9d27d9d2181838f76dee150882bdc58c
-              - db9b4c4b53d312a3ca5f1378f6440fc9
+              - 064af5f084a0a24458cc8ecd3220f93f # Uncensored
+              - a5d148168c4506b55cf53984107c396e # 10bit
+              - 4a3b087eea2ce012fcc1ce319259a3be # Anime Dual Audio
             assign_scores_to:
-              - name: UHD Bluray + WEB
-
-          - trash_ids:
-            assign_scores_to:
-              - name: UHD Bluray + WEB
-
-          - trash_ids:
-            assign_scores_to:
-              - name: UHD Bluray + WEB
-
-          - trash_ids:
-            assign_scores_to:
-              - name: UHD Bluray + WEB
-
-          - trash_ids:
-              - 9c38ebb7384dada637be8899efa68e6f
-            assign_scores_to:
-              - name: UHD Bluray + WEB
+              - name: "[Anime] Remux-1080p"
+                score: 0
       '';
     };
   };
