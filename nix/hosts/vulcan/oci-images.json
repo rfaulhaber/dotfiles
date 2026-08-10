@@ -2,7 +2,7 @@
   "plex": {
     "image": {
       "version": "latest",
-      "digest": "sha256:d8b3417b9173bab8bb79b167119b6b69a85558f2127e7fa810a045654e3dbe7f"
+      "digest": "sha256:d5ee6068a20ae57f95060038eaef292cdfd4285efb213ea4daaccdc184e45d1b"
     }
   },
   "jellyfin": {
@@ -54,7 +54,7 @@
   "wolf": {
     "image": {
       "version": "stable",
-      "digest": "sha256:ff82c125c9b79b2e9443de2b0eaec40c904edb03291680d408cccd57c1d59c76"
+      "digest": "sha256:0d901e766e6ed288712ff994dd3b877aea7c9f22ff6e5b0efbb16bc7bb4ae9a4"
     }
   },
   "wolf-den": {

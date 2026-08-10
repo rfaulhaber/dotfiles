@@ -92,7 +92,7 @@
   "linkding": {
     "image": {
       "version": "latest",
-      "digest": "sha256:61b2eb9eed8e5772a473fb7f1f8923e046cb8cbbeb50e88150afd5ff287d4060"
+      "digest": "sha256:49eff0b0b90c63760fda75e615357a0e55fcb7dc51876f2a0a5dddb958bd3df4"
     }
   },
   "loki": {
@@ -194,7 +194,7 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:24acea2956a0ccb11f103877d9f4f8576600fb34bff34820ed749c2256dab89f"
+      "digest": "sha256:373159ba768e23a3a1c497d9f2b936addf8fd5b1fdce7dd6a14080ac928bfda0"
     }
   },
   "soularr": {
