@@ -129,6 +129,12 @@
             path = "/data/llm/models";
             clients = "192.168.0.105(rw,sync,no_subtree_check,root_squash)";
           };
+          # ro: the ROM library is canonical here; wolf sessions on vulcan
+          # only ever read it (saves/states live in vulcan's app state).
+          roms = {
+            path = "/data/games/roms";
+            clients = "192.168.0.105(ro,sync,no_subtree_check,root_squash)";
+          };
         };
       };
       bandcamp-import = {
