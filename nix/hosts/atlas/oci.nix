@@ -206,6 +206,11 @@
           rootUrl = "https://git.3679.space";
           sshDomain = "git.3679.space";
           postgres.port = 8256;
+          # Logins go through PocketID, so the reverse-proxy auth header
+          # stays off (module default) and this only governs which peers
+          # may set X-Forwarded-For: newt, from the podman nets, and
+          # pallas' caddy. Narrow it to newt's address once observed.
+          trustedProxies = ["10.89.0.0/16" "192.168.0.2/32"];
         };
 
         calibre = {

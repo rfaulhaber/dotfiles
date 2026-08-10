@@ -69,9 +69,30 @@ in {
     };
 
     enableReverseProxyAuth = mkOption {
-      description = "FORGEJO__service__ENABLE_REVERSE_PROXY_AUTHENTICATION.";
+      description = ''
+        FORGEJO__service__ENABLE_REVERSE_PROXY_AUTHENTICATION. Authenticates
+        a user from a request header, so it is only as strong as
+        trustedProxies — any peer trusted there can assume any account,
+        including an admin one.
+      '';
       type = types.bool;
-      default = true;
+      default = false;
+    };
+
+    trustedProxies = mkOption {
+      description = ''
+        FORGEJO__security__REVERSE_PROXY_TRUSTED_PROXIES — peers whose
+        X-Forwarded-For (and, when enableReverseProxyAuth is set, whose
+        auth header) forgejo honors.
+
+        Emitted unconditionally. The container image seeds app.ini with a
+        permissive `*` at install time and never revisits that file on
+        upgrade, so on an existing deployment an explicit env override is
+        the only thing that clears it.
+      '';
+      type = types.listOf types.str;
+      default = ["127.0.0.1/8" "::1/128"];
+      example = ["10.89.0.0/16" "192.168.0.2/32"];
     };
 
     user = {
@@ -147,6 +168,18 @@ in {
   };
 
   config = mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = cfg.enableReverseProxyAuth -> cfg.trustedProxies != [];
+        message = ''
+          modules.linux.oci.services.forgejo.enableReverseProxyAuth is enabled
+          with an empty trustedProxies list. Forgejo would honor the
+          reverse-proxy auth header from every peer, letting anyone that can
+          reach it log in as any account.
+        '';
+      }
+    ];
+
     modules.linux.oci._managedPaths = {
       # Parent dataset has no mountpoint — only its children are mounted.
       "${cfg.baseDir}".properties.mountpoint = "none";
@@ -205,6 +238,8 @@ in {
               if cfg.enableReverseProxyAuth
               then "true"
               else "false";
+            "FORGEJO__security__REVERSE_PROXY_TRUSTED_PROXIES" =
+              concatStringsSep "," cfg.trustedProxies;
             "FORGEJO__server__DOMAIN" = cfg.domain;
             "FORGEJO__server__ROOT_URL" = cfg.rootUrl;
             "FORGEJO__server__SSH_DOMAIN" = cfg.sshDomain;
