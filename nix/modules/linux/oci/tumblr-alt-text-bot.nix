@@ -8,12 +8,13 @@ with lib; let
   cfg = config.modules.linux.oci.services.tumblr-alt-text-bot;
   ociLib = config.modules.linux.oci.lib;
   imageLib = import ./lib.nix {inherit lib;};
+  registryHost = head (splitString "/" cfg.image.repository);
 in {
   options.modules.linux.oci.services.tumblr-alt-text-bot = {
     enable = mkEnableOption "Tumblr alt-text bot";
 
     image = imageLib.mkImageOptions {
-      repository = "codeberg.org/ryf/tumblr-alt-text-bot";
+      repository = "git.3679.space/private/tumblr-alt-text-bot";
       version = "latest";
     };
 
@@ -77,6 +78,15 @@ in {
   };
 
   config = mkIf cfg.enable {
+    assertions = [
+      {
+        assertion =
+          config.modules.linux.oci.registryAuth.enable
+          && hasAttr registryHost config.modules.linux.oci.registryAuth.registries;
+        message = "tumblr-alt-text-bot pulls from the private registry ${registryHost}; give it a modules.linux.oci.registryAuth.registries entry.";
+      }
+    ];
+
     modules.linux.oci._managedPaths.${cfg.baseDir}.properties = cfg.configProperties;
 
     modules.linux.oci.networks = listToAttrs (

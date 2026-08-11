@@ -9,6 +9,14 @@
       enable = true;
       pool = "zroot";
     };
+    registryAuth = {
+      enable = true;
+      # The same forgejo registry atlas reaches as localhost:2835, here via
+      # its public name — credentials are keyed by the literal host string in
+      # the image ref, so each name needs its own entry even for one server.
+      # The secret is base64("<user>:<PAT with read:packages>").
+      registries."git.3679.space".secret = "registry-auth/forgejo";
+    };
     # Image versions/digests come from oci-images.json so an
     # auto-update workflow can rewrite plain JSON instead of nix.
     services = lib.recursiveUpdate (lib.importJSON ./oci-images.json) {

@@ -153,6 +153,7 @@ with lib; let
     cmd = [
       "-c"
       ''
+        set -e
         if [ ! -f /data/.runner ]; then
           forgejo-runner register \
             --config /config.yaml \
