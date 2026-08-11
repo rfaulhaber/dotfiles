@@ -11,6 +11,13 @@
       pool = "data";
     };
 
+    registryAuth = {
+      enable = true;
+      # The forgejo container registry on this host, via its published
+      # web port; the secret is base64("<user>:<PAT with read:packages>").
+      registries."localhost:2835".secret = "registry-auth/forgejo";
+    };
+
     # Image versions/digests come from oci-images.json so an
     # auto-update workflow can rewrite plain JSON instead of nix.
     services =

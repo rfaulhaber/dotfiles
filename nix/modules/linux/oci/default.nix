@@ -196,6 +196,7 @@ in {
     ./prowlarr.nix
     ./radarr.nix
     ./recyclarr.nix
+    ./registry-auth.nix
     ./requestrr.nix
     ./slskd.nix
     ./sonarr.nix
@@ -203,6 +204,7 @@ in {
     ./sure.nix
     ./syncthing.nix
     ./tautulli.nix
+    ./trading-bot.nix
     ./transmission.nix
     ./tumblr-alt-text-bot.nix
     ./vikunja.nix
