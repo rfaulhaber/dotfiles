@@ -52,7 +52,6 @@
         keyFile = null;
         secrets = {
           "forgejo-runner/token" = {};
-          "codeberg-runner/token" = {};
           "github-runner/token" = {};
           nix-cache = {};
           "netbird/setup-key" = {};
@@ -108,9 +107,6 @@
   sops.templates = {
     "forgejo-runner-env".content = ''
       FORGEJO_TOKEN=${config.sops.placeholder."forgejo-runner/token"}
-    '';
-    "codeberg-runner-env".content = ''
-      FORGEJO_TOKEN=${config.sops.placeholder."codeberg-runner/token"}
     '';
   };
 

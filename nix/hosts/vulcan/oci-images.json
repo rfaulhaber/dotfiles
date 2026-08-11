@@ -8,7 +8,7 @@
   "jellyfin": {
     "image": {
       "version": "latest",
-      "digest": "sha256:b8dcc7b71d0ea872b74314da4b995c0cf282b1778438c295996e7be88c70fdda"
+      "digest": "sha256:0dd18f8de37c7cfbe76877a8b928943b3588beb9678fb223121914ec9a3cdf7c"
     }
   },
   "open-webui": {
@@ -43,12 +43,6 @@
     "image": {
       "version": "v1.21.0",
       "digest": "sha256:2ebb9e09101d8cc1e28e3f306b56a722450918e628208435201ed39bd62403cb"
-    }
-  },
-  "tumblr-alt-text-bot": {
-    "image": {
-      "version": "latest",
-      "digest": "sha256:4c318d93543a3a4a6bb045f6fc0c58aa81a54455179e7b2cf76ab2b7ed168c86"
     }
   },
   "wolf": {
