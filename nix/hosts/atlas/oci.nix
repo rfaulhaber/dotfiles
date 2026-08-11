@@ -290,6 +290,11 @@
           publicBaseUrl = "https://jobs.3679.space";
         };
 
+        trading-bot = {
+          enable = true;
+          baseDir = "/data/apps/trading-bot";
+        };
+
         syncthing = {
           enable = true;
           baseDir = "/data/apps/syncthing";
