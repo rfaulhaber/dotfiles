@@ -74,13 +74,13 @@
 (package! justl)
 
 (package! mcp
-  :pin "2e947d2ddc8cbe655f846e23711e412d41f1bf6a"
+  :pin "2d172809cbdb2a40d86b28ad73bd65547cefe0e1"
   :recipe (:host github
            :repo "lizqwerscott/mcp.el"))
 
 ;; rustic isn't maintained anymore and doom still uses the main branch
 (package! rustic
-  :pin "e77f62facc1f6287bc62c1dd41a996b8fb25fea2"
+  :pin "4afbca49f41045fa6ee32e3920f45c6964c349c6"
   :recipe (:host github
            :repo "emacs-rustic/rustic"))
 
@@ -102,7 +102,7 @@
            :repo "rfaulhaber/caseconv.el"))
 
 (package! nix-local-buffer
-  :pin "11e82fc401d60e1db95a767a2002fa266a92776f"
+  :pin "ae4f31028931a42e5e03ceabc2fd94f813b7f51f"
   :recipe (:host github
            :repo "rfaulhaber/nix-local-buffer"))
 
@@ -136,6 +136,6 @@
 ;; this is to get around the fact that the package version of this file is
 ;; hosted on a server that sometimes goes down
 (package! json-process-client
-  :pin "c4385859ada9b7803698a1f0199fea7fc8880214"
+  :pin "6485953fe6eff62938fd08720811c6fdd09d7d22"
   :recipe (:host github
            :repo "emacsmirror/json-process-client"))
