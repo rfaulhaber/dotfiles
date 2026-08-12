@@ -7,9 +7,29 @@
 with lib; let
   cfg = config.modules.programs.zellij;
   colors = config.modules.themes.colors.withHashtag;
+
+  # Must not collide with one of zellij's ~54 compiled-in theme names: on a
+  # name clash the built-in silently wins over a theme defined in config.kdl,
+  # so calling this "nord" or "tokyo-night" would leave the generated palette
+  # inert with no error. Check `zellij setup --dump-config` before renaming.
+  themeName = "base16";
+  themeColors = import ./theme.nix {
+    inherit colors;
+    inherit (cfg) colorOverrides;
+  };
 in {
   options.modules.programs.zellij = {
     enable = mkEnableOption false;
+    colorOverrides = mkOption {
+      description = ''
+        Overrides for the semantic roles in `theme.nix` (e.g. `error`,
+        `highlight`, `accent`), keyed by role with `#`-prefixed values. Use
+        this when a base16 scheme's named slot doesn't match its label and the
+        correction should stay local to zellij.
+      '';
+      default = {};
+      type = types.attrsOf types.str;
+    };
     defaultMode = mkOption {
       description = ''
         Input mode panes start in. `locked` keeps zellij's Ctrl-key bindings
@@ -55,14 +75,8 @@ in {
         {
           default_mode = cfg.defaultMode;
           mouse_mode = cfg.mouse;
-          theme = "base16";
-          # Semantic aliases rather than raw baseXX slots, so per-theme custom
-          # files and host-level `themes.overrides` corrections apply here too.
-          themes.base16 = {
-            inherit (colors) fg bg red green yellow blue magenta cyan orange;
-            black = colors."bg-alt";
-            white = colors."bright-white";
-          };
+          theme = themeName;
+          themes.${themeName} = themeColors;
         }
         # Dev shells (direnv, `nix develop`) export SHELL as the store bash;
         # zellij falls back to $SHELL when default_shell is unset. Pin the

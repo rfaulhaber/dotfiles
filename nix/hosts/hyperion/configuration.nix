@@ -232,21 +232,7 @@
         ];
       };
     };
-    desktop.fuzzel.colorOverrides = {
-      # base16's base08 ("red") is a pale lavender here, leaving matched chars
-      # nearly identical to the grey selection highlight. base0F is the scheme's
-      # salmon-red — saturated enough to read on both the dark background and the
-      # light selection row.
-      match = config.modules.themes.colors.base0F;
-      selection-match = config.modules.themes.colors.base0F;
-    };
-
-    themes = {
-      active = "tokyo-night-dark";
-      # tokyo-night-dark's base0A ("yellow") slot is actually a cyan-blue, which
-      # turned resolved external commands blue. Restore a true amber globally.
-      overrides.yellow = "#e0af68";
-    };
+    themes.active = "tokyo-night-dark";
   };
 
   boot = {

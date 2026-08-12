@@ -40,7 +40,7 @@ in {
     palette = 8=${colors.base03}
     palette = 9=${colors.bright-red}
     palette = 10=${colors.bright-green}
-    palette = 11=${colors.base09}
+    palette = 11=${colors.orange}
     palette = 12=${colors.bright-blue}
     palette = 13=${colors.bright-magenta}
     palette = 14=${colors.bright-cyan}
