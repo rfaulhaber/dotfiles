@@ -13,7 +13,7 @@ in {
     enable = mkEnableOption "Prowlarr indexer manager";
 
     image = imageLib.mkImageOptions {
-      repository = "ghcr.io/linuxserver/prowlarr";
+      repository = "lscr.io/linuxserver/prowlarr";
       version = "develop";
     };
 
