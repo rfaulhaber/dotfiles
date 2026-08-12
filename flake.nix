@@ -30,10 +30,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # can't follow nixpkgs: 0.11.2's vendored waybackend-scanner chokes on the
-    # `frozen` attribute wayland-protocols 1.49 added. development moved to
-    # codeberg.org/LGFae/awww, so the GitHub repo stays at 0.11.2 forever.
-    swww.url = "github:LGFae/swww";
     # TODO consider using stylix
     # currently, a wallpaper is required with stylix. this is problematic
     # because I do not need to set a wallpaper in my config

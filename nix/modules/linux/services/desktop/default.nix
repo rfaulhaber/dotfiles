@@ -9,13 +9,13 @@ with lib; let
 in {
   imports = [
     ./autostart
+    ./awww
     ./environment
     ./firefox
     ./fuzzel
     ./mako
     ./random-wallpaper.nix
     ./sound
-    ./swww
     ./waybar
   ];
   options.modules.desktop = {

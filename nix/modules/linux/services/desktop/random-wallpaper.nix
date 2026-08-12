@@ -6,7 +6,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }: let
   inherit (lib) mkIf mkOption optional optionalAttrs types escapeShellArgs;
@@ -44,13 +43,13 @@ in {
       inherit description;
       path = with pkgs;
         [nushell]
-        ++ optional isWayland inputs.swww.packages.${pkgs.stdenv.hostPlatform.system}.swww
+        ++ optional isWayland awww
         ++ optional isX11 feh
         ++ optional (isX11 && cfg.perDisplay) xorg.xrandr;
-      after = ["graphical-session.target"] ++ optional isWayland "swww.service" ++ optional config.modules.desktop.environment.niri.enable "niri.service";
+      after = ["graphical-session.target"] ++ optional isWayland "awww.service" ++ optional config.modules.desktop.environment.niri.enable "niri.service";
       partOf = ["graphical-session.target"];
       wantedBy = ["graphical-session.target"];
-      requires = optional isWayland "swww.service";
+      requires = optional isWayland "awww.service";
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${scriptPath}/bin/random-wallpaper ${escapeShellArgs args}";

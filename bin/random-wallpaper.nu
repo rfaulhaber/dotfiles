@@ -3,26 +3,26 @@
 const log_file_path = "~/.local/share/random-wallpaper/log.json"
 
 # Enumerate connected outputs for the given desktop. Returns a list of strings:
-# - wayland: output names (e.g. "DP-1", "DP-3") via `swww query`
+# - wayland: output names (e.g. "DP-1", "DP-3") via `awww query --json`
 # - xserver: monitor names via `xrandr --listactivemonitors`
 # - darwin:  desktop indices ("1", "2", ...) — macOS addresses displays by index
 def get_outputs [desktop: string]: nothing -> list<string> {
     match $desktop {
         "wayland" => {
-            # swww query lines look like "<namespace>: <output>: <details>",
-            # where the default namespace is empty (so lines start with ": ").
-            # Older swww versions omitted the namespace prefix entirely. Pick
-            # the first non-empty colon-split token to handle both.
-            ^swww query
-                | lines
-                | each {|l|
-                    $l
-                    | split row ":"
-                    | each {|p| $p | str trim }
-                    | where {|p| ($p | str length) > 0 }
-                    | get 0?
-                  }
-                | compact
+            # `awww query --json` emits an object keyed by daemon namespace,
+            # each holding one record per output:
+            #   {"": [{"name": "DP-1", "width": 3840, ...}]}
+            # The default namespace is the empty string; collect across every
+            # key so a custom `awww-daemon --namespace` still resolves. awww
+            # prints nothing at all when it knows of no outputs, which
+            # `from json` would reject — hence the guard.
+            let raw = (^awww query --json | str trim)
+
+            if ($raw | is-empty) {
+                []
+            } else {
+                $raw | from json | values | flatten | get name
+            }
         },
         "xserver" => {
             ^xrandr --listactivemonitors
@@ -48,7 +48,7 @@ def get_outputs [desktop: string]: nothing -> list<string> {
 # fails under --per-display.
 def set_single [desktop: string, filename: string] {
     match $desktop {
-        "wayland" => { ^swww img $filename },
+        "wayland" => { ^awww img $filename },
         "xserver" => { ^feh --bg-fill $filename },
         "darwin" => {
             let script = $'tell application "System Events" to tell every desktop to set picture to POSIX file "($filename)"'
@@ -138,7 +138,7 @@ def main [
             "wayland" => {
                 for $output in $outputs {
                     let filename = (fetch_wallpaper $key $q $tmpdir $log_file)
-                    ^swww img --outputs $output $filename
+                    ^awww img --outputs $output $filename
                 }
             },
             "xserver" => {

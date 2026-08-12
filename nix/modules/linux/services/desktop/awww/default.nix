@@ -1,27 +1,23 @@
 {
   config,
   lib,
-  inputs,
   pkgs,
   ...
 }:
 with lib; let
-  cfg = config.modules.desktop.swww;
-  system = pkgs.stdenv.hostPlatform.system;
+  cfg = config.modules.desktop.awww;
 in {
-  options.modules.desktop.swww = {enable = mkEnableOption false;};
+  options.modules.desktop.awww = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
     assertions = [
       {
         assertion = config.modules.desktop.environment.isWayland;
-        message = "Must use swww with a wayland desktop";
+        message = "Must use awww with a wayland desktop";
       }
     ];
-    systemd.user.services.swww = let
-      swwwPkg = inputs.swww.packages.${system}.swww;
-    in {
-      path = [swwwPkg];
+    systemd.user.services.awww = {
+      path = [pkgs.awww];
       wantedBy = ["graphical-session.target"];
       after = ["graphical-session.target"];
       wants = ["graphical-session.target"];
@@ -29,8 +25,8 @@ in {
         WAYLAND_DISPLAY = "wayland-1";
       };
       serviceConfig = {
-        ExecStart = "${swwwPkg}/bin/swww-daemon";
-        ExecStop = "${swwwPkg}/bin/swww kill";
+        ExecStart = "${pkgs.awww}/bin/awww-daemon";
+        ExecStop = "${pkgs.awww}/bin/awww kill";
       };
     };
   };

@@ -1,5 +1,4 @@
 {
-  inputs,
   config,
   lib,
   pkgs,
@@ -7,7 +6,6 @@
 }:
 with lib; let
   cfg = config.modules.desktop.wayland;
-  system = pkgs.stdenv.hostPlatform.system;
 in {
   options.modules.desktop.wayland = {enable = mkEnableOption false;};
 
@@ -27,7 +25,7 @@ in {
       };
 
       systemPackages = with pkgs; [
-        inputs.swww.packages.${system}.swww
+        awww
         wl-clipboard-rs
       ];
     };

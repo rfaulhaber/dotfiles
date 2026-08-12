@@ -16,7 +16,7 @@ with lib; let
   niriPkg = pkgs.niri;
 in {
   imports = [
-    ../../swww
+    ../../awww
     ../../wayland
     inputs.niri-flake.nixosModules.niri
   ];
@@ -54,7 +54,7 @@ in {
     };
 
     modules.desktop = {
-      swww.enable = true;
+      awww.enable = true;
       wayland.enable = true;
       waybar.enable = true;
       environment.type = "wayland";
