@@ -1,0 +1,71 @@
+# Weekly refresh of the container digests pinned in nix/hosts/*/oci-images.json,
+# opening a PR when any upstream manifest has moved. Floating tags (latest,
+# nightly, develop, release) move on roughly daily upstream cadences, but a
+# weekly PR keeps the pins current without a daily review burden.
+#
+# Runs on the self-hosted runner rather than hosted compute: the refresh
+# resolves each image's repository and re-evaluates each affected host's
+# toplevel, both of which want the host nix store and its substituters, and
+# registry inspections from a residential IP avoid the anonymous pull limits
+# that GitHub's shared ranges hit first.
+
+name: OCI Image Digest Refresh
+
+on:
+  schedule:
+    - cron: "0 4 * * 0"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print proposed digest changes without committing or opening a PR"
+        type: boolean
+        required: false
+        default: false
+
+# Deliberately not cancel-in-progress: between the branch push and the pulls
+# API call there is a window where cancelling strands a pushed branch with no
+# PR to explain it.
+concurrency:
+  group: oci-update
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: nix
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      # skopeo isn't in the runner's PATH, and it handles the OCI
+      # distribution-spec auth dance across docker.io / ghcr.io / lscr.io /
+      # codeberg.org. Pulling it into the shell once means the script's
+      # repeated `^skopeo` calls don't pay nix-shell startup cost per image.
+      - name: Refresh OCI digests
+        id: refresh
+        env:
+          # `inputs` is only populated on workflow_dispatch; scheduled runs
+          # must fall through to a real refresh rather than a dry run.
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          OCI_REPORT_DIR: ${{ runner.temp }}/oci-update
+        run: nix shell nixpkgs#skopeo --command nu bin/update-oci-digests.nu
+
+      # A dry run reports changed=false, so it lands here as a no-op through
+      # the same condition that skips a genuinely unchanged week.
+      - name: Commit and push update branch
+        id: commit
+        if: steps.refresh.outputs.changed == 'true'
+        run: nu .github/scripts/commit-oci-digests.nu "${{ steps.refresh.outputs.date }}"
+
+      - name: Open pull request
+        if: steps.refresh.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OCI_REPORT_DIR: ${{ runner.temp }}/oci-update
+        run: |
+          nu .github/scripts/oci-create-pr.nu \
+            "${{ steps.commit.outputs.branch }}" \
+            "${{ steps.refresh.outputs.date }}"

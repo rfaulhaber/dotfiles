@@ -7,7 +7,7 @@ description: Use this skill when updating the pinned container image digests in 
 
 ## The routine case is already automated
 
-`.forgejo/workflows/oci-update.yml` runs weekly (Sundays 04:00 UTC), refreshes every digest,
+`.github/workflows/oci-update.yml` runs weekly (Sundays 04:00 UTC), refreshes every digest,
 commits to a branch, and opens a PR. It also accepts a `dry_run` input for manual dispatch.
 
 So before doing anything: **is the user asking for something CI doesn't already do?** Legitimate
@@ -17,21 +17,28 @@ just "keep images current", the answer is that it already happens — say so.
 
 ## The script does the whole job
 
-`.forgejo/scripts/update-oci-digests.nu` walks each host's `oci-images.json`, finds every leaf
+`bin/update-oci-digests.nu` walks each host's `oci-images.json`, finds every leaf
 record with both `version` and `digest`, resolves that entry's repository via `nix eval` against
 the host config, fetches the live digest with `skopeo inspect`, rewrites the JSON in place, and
 then validates by evaluating each affected host's toplevel.
 
+It needs `skopeo`, which is in the dev shell but not necessarily on your PATH — run it under
+`nix shell nixpkgs#skopeo` if it isn't.
+
 ```nu
 # every host
-nu .forgejo/scripts/update-oci-digests.nu
+nu bin/update-oci-digests.nu
 
 # one or more hosts (janus hecate atlas pallas vulcan)
-nu .forgejo/scripts/update-oci-digests.nu atlas
+nu bin/update-oci-digests.nu atlas
 
 # see what would change without writing anything
-DRY_RUN=true nu .forgejo/scripts/update-oci-digests.nu atlas
+with-env {DRY_RUN: "true"} { nu bin/update-oci-digests.nu atlas }
 ```
+
+Reports (`oci-changes.json`, `oci-fetch-failures.json`, `oci-validation-failures.json`) go to
+`/tmp` unless `OCI_REPORT_DIR` says otherwise, deliberately keeping them out of the working tree
+you are about to review.
 
 It deliberately does not touch git — it leaves modified files in the working tree for review.
 Do not reimplement any part of this inline. If it fails, fix the script.
