@@ -1,0 +1,204 @@
+# Daily nixpkgs bump, gated on a full fan-out build. The build matrix is the
+# actual quality gate: a bump that breaks a host shows up as a red row in the
+# PR body instead of on the next deploy. Closures land in the runner hosts'
+# stores on the way through, so merging the PR leaves the fleet warm.
+
+name: Flake Update and Build
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+# Serialize whole runs instead of cancelling: the branch push and the pulls
+# API call live in different jobs, so a cancellation between them strands a
+# date-stamped branch that nothing ever reclaims — the next run picks a
+# different name and never looks at it again.
+concurrency:
+  group: flake-update
+  cancel-in-progress: false
+
+# Pushing the update branch needs contents: write; opening the PR needs
+# pull-requests: write.
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  # Stage 1: check staleness, bump nixpkgs, push an update branch. The matrix
+  # builds check that branch out so every leg sees the same flake.lock, and
+  # the input diff reaches the finalize job as an artifact.
+  prepare:
+    runs-on: nix
+    outputs:
+      stale: ${{ steps.check-stale.outputs.stale }}
+      branch: ${{ steps.update.outputs.branch }}
+      date: ${{ steps.update.outputs.date }}
+      matrix: ${{ steps.hosts.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check if nixpkgs is stale
+        id: check-stale
+        env:
+          # The built-in token lifts the api.github.com call off the 60/hr
+          # anonymous limit — which is shared with every other tenant calling
+          # from the runner host's IP — without configuring a secret.
+          GH_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: nu .github/scripts/check-nixpkgs-stale.nu
+
+      # Reads .github/hosts.json — the same file merge-reports.nu checks
+      # completed build reports against in the finalize job — so the matrix
+      # and the completeness check can't drift apart.
+      - name: Read host matrix
+        id: hosts
+        run: nu .github/scripts/read-host-matrix.nu
+
+      - name: Update nixpkgs and push update branch
+        id: update
+        if: steps.check-stale.outputs.stale == 'true'
+        run: nu .github/scripts/update-inputs.nu
+
+      - name: Upload input changes
+        if: steps.check-stale.outputs.stale == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: input-changes
+          path: input-changes.json
+          if-no-files-found: error
+
+  # Stage 2: build every host against the update branch, natively on the
+  # runner host through its nix daemon — same shape as build-and-cache.yml, so
+  # the closures are cached for the fleet as a side effect. x86_64 hosts build
+  # on vulcan (`nix`), aarch64 hosts on prometheus (`nix-aarch64`).
+  #
+  # fail-fast stays off: learning which hosts a bump breaks is the entire
+  # point, and one broken host must not hide the rest.
+  build:
+    runs-on: ${{ matrix.runner }}
+    needs: prepare
+    if: needs.prepare.outputs.stale == 'true'
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    steps:
+      # actions/checkout reads an empty ref as "use github.ref", which on the
+      # schedule trigger is the default branch. The nightly would then rebuild
+      # main and report perfect health, having tested nothing at all. The
+      # existing gates make that unreachable; this keeps it unreachable.
+      - name: Assert update branch is set
+        shell: bash
+        env:
+          BRANCH: ${{ needs.prepare.outputs.branch }}
+        run: test -n "$BRANCH"
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.prepare.outputs.branch }}
+
+      # HOST via env rather than inline interpolation: matrix values come
+      # from hosts.json, and quoting through the environment keeps repo
+      # content out of shell syntax entirely.
+      #
+      # `shell: bash` is load-bearing, not decoration. A run step with no
+      # shell key executes under `sh -e`, which has no pipefail, so the
+      # pipeline below would take tee's exit status and report every host
+      # green no matter what nix did. Only the explicit bash form gets
+      # `-e -o pipefail`.
+      #
+      # tee only exists to leave a copy for the error tail — the live stream
+      # the Actions UI shows is the step's own stdout, which the runner
+      # captures either way. The copy lands in the runner's RuntimeDirectory
+      # under /run (tmpfs), so a pathological log costs memory on a host
+      # whose /run also holds the runner's live state. Capping it via
+      # process substitution was tried and rejected: tee does not wait for
+      # the substituted process, so the tail could still be short when the
+      # next step reads it. A job failure is a better outcome than a
+      # truncated report written by a race.
+      - name: Build ${{ matrix.host }}
+        id: build
+        shell: bash
+        env:
+          HOST: ${{ matrix.host }}
+        run: |
+          start=$(date +%s)
+          status=success
+          nix build ".#nixosConfigurations.${HOST}.config.system.build.toplevel" \
+            --no-link --print-build-logs 2>&1 | tee build.log || status=failed
+          {
+            echo "status=${status}"
+            echo "elapsed=$(( $(date +%s) - start ))"
+          } >> "$GITHUB_OUTPUT"
+          [ "${status}" = success ]
+
+      # always() on the report and its upload: a host that fails to build is
+      # exactly the host the PR table needs a row for.
+      - name: Write build report
+        if: always()
+        shell: nu {0}
+        env:
+          HOST: ${{ matrix.host }}
+          STATUS: ${{ steps.build.outputs.status }}
+          ELAPSED: ${{ steps.build.outputs.elapsed }}
+        run: |
+          # A cancelled or timed-out build step leaves its outputs empty. A
+          # host with no verdict is a failed host, not a blank row.
+          let status = if ($env.STATUS | is-empty) { "failed" } else { $env.STATUS }
+          let elapsed = if ($env.ELAPSED | is-empty) { 0 } else { $env.ELAPSED | into int }
+          # --print-build-logs output reaches hundreds of megabytes, so tail
+          # the file rather than reading it into memory.
+          let error = if $status == "failed" and ("build.log" | path exists) {
+              ^tail -n 20 build.log | str trim
+          } else { "" }
+
+          { host: $env.HOST, status: $status, elapsed: $elapsed, error: $error }
+            | to json
+            | save -f $"build-report-($env.HOST).json"
+
+      - name: Upload build report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-report-${{ matrix.host }}
+          path: build-report-${{ matrix.host }}.json
+          if-no-files-found: error
+
+  # Stage 3: collect the per-host reports and open the PR. Runs on a partially
+  # failed matrix so the failures reach the PR body; the skipped-build guard
+  # keeps a run that never got as far as pushing the branch from opening a PR
+  # for a branch that doesn't exist.
+  finalize:
+    runs-on: nix
+    needs: [prepare, build]
+    if: always() && needs.prepare.outputs.stale == 'true' && needs.build.result != 'skipped'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.prepare.outputs.branch }}
+
+      # Into the workspace root, because merge-reports.nu globs
+      # build-report-*.json from the working directory and writes the merged
+      # build-report.json beside them, where create-pr.nu then reads it.
+      - name: Download input changes
+        uses: actions/download-artifact@v8
+        with:
+          name: input-changes
+          path: .
+
+      - name: Download build reports
+        uses: actions/download-artifact@v8
+        with:
+          pattern: build-report-*
+          merge-multiple: true
+          path: .
+
+      - name: Merge reports
+        run: nu .github/scripts/merge-reports.nu
+
+      - name: Create PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ needs.prepare.outputs.branch }}
+          DATE: ${{ needs.prepare.outputs.date }}
+        run: nu .github/scripts/create-pr.nu "$BRANCH" "$DATE"
