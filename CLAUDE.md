@@ -81,6 +81,7 @@ Module locations:
 - `nix/modules/linux/oci/` - Podman-backed OCI container services
 - `nix/modules/darwin/` - macOS-only modules
 - `nix/modules/themes/` - Base16 theming
+- `nix/modules/hardware/` - Board-specific modules shared between a host and an image. Unlike every other dir here these are **not** in `nix/modules/default.nix`'s import list — they set unconditional config and need vendor `specialArgs`, so consumers import them by relative path (as images already do for `../modules/ssh/keys.nix`).
 
 ### Library Functions
 

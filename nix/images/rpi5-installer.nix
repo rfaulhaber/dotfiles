@@ -7,6 +7,9 @@
   ...
 }: {
   imports = [
+    # Shared with nix/hosts/prometheus: grafts target/buildDTBs onto the vendor
+    # kernel's passthru, which nixpkgs >= 26.11 requires.
+    ../modules/hardware/rpi5-vendor-kernel.nix
     # Vendor kernel/firmware/bootloader overlays applied to the local pkgs set.
     nixos-raspberrypi.lib.inject-overlays
     nixos-raspberrypi.nixosModules.raspberry-pi-5.base
