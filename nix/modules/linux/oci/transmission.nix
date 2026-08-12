@@ -124,6 +124,12 @@ in {
       default = ["default"];
     };
 
+    dependsOn = mkOption {
+      description = "Other oci-containers this service depends on.";
+      type = types.listOf types.str;
+      default = [];
+    };
+
     configProperties = mkOption {
       description = "ZFS properties applied to the baseDir dataset.";
       type = types.attrsOf types.str;
@@ -291,7 +297,7 @@ in {
       baseDir = cfg.baseDir;
       configProperties = cfg.configProperties;
       mediaMounts = ["${cfg.downloadsDir}:/downloads"];
-      inherit (cfg) useGluetun gluetunContainer networks user timezone;
+      inherit (cfg) useGluetun gluetunContainer networks user timezone dependsOn;
       environmentFiles = [config.sops.templates."transmission-env".path];
       ports = portMappings;
       gluetunPorts = portMappings;
