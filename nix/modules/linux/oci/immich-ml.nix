@@ -9,18 +9,10 @@ with lib; let
   ociLib = config.modules.linux.oci.lib;
   imageLib = import ./lib.nix {inherit lib;};
 
-  mlImageSuffix = {
-    nvidia = "-cuda";
-    intel = "-openvino";
+  mlImage = imageLib.mkGpuImage {
+    image = cfg.image;
+    gpu = cfg.gpu;
   };
-  # GPU suffix is part of the upstream tag (release-cuda, release-openvino)
-  # so it goes between version and any optional digest.
-  mlImage = let
-    img = cfg.image;
-    suffix = mlImageSuffix.${cfg.gpu} or "";
-  in
-    "${img.repository}:${img.version}${suffix}"
-    + optionalString (img.digest != null) "@${img.digest}";
 in {
   options.modules.linux.oci.services.immich-ml = {
     enable = mkEnableOption "Immich machine learning sidecar (standalone)";

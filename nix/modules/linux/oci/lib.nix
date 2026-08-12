@@ -46,6 +46,25 @@ with lib; {
     "${img.repository}:${img.version}"
     + optionalString (img.digest != null) "@${img.digest}";
 
+  # Render an image whose GPU variant is expressed as a tag suffix rather than
+  # a separate repository (immich's release-cuda / release-openvino scheme).
+  # The suffix belongs between version and digest — the digest pins the
+  # already-suffixed manifest, so appending it after the digest would be wrong.
+  # `gpu` is nullable for CPU-only, and the null has to be short-circuited: an
+  # `or` fallback catches a missing attribute, not a null attribute selector.
+  mkGpuImage = {
+    image,
+    gpu,
+    suffixes ? {
+      nvidia = "-cuda";
+      intel = "-openvino";
+    },
+  }: let
+    suffix = optionalString (gpu != null) (suffixes.${gpu} or "");
+  in
+    "${image.repository}:${image.version}${suffix}"
+    + optionalString (image.digest != null) "@${image.digest}";
+
   # Build a list of `--label=key=value` flags for `virtualisation.oci-containers.
   # containers.<name>.extraOptions`. Surfaces the version we *declared* alongside
   # the module path that produced the container, so `podman ps --filter

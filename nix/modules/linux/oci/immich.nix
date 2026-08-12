@@ -20,21 +20,11 @@ with lib; let
   redisEnv = {
     "REDIS_HOSTNAME" = "immich_redis";
   };
-  # ML image tag suffix based on GPU type
-  mlImageSuffix = {
-    nvidia = "-cuda";
-    intel = "-openvino";
+
+  mlImage = imageLib.mkGpuImage {
+    image = cfg.machineLearning.image;
+    gpu = cfg.gpu;
   };
-  # ML image: the GPU suffix is part of the upstream tag scheme
-  # (release-cuda, release-openvino), so it goes between version and any
-  # optional digest — not after the digest, since the digest pins the
-  # already-suffixed manifest.
-  mlImage = let
-    img = cfg.machineLearning.image;
-    suffix = mlImageSuffix.${cfg.gpu} or "";
-  in
-    "${img.repository}:${img.version}${suffix}"
-    + optionalString (img.digest != null) "@${img.digest}";
 in {
   options.modules.linux.oci.services.immich = {
     enable = mkEnableOption "Immich photo management";
