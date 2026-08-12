@@ -140,14 +140,18 @@ Nushell scripts in `/bin/` for system tasks:
 - `bandcamp-import.nu` - Import Bandcamp purchases into the atlas music library, with Lidarr catalog registration
 - `build-fan-out.nu` - Build every host's toplevel in parallel
 - `nix-lines-history.nu` - Emit CSV of file line counts sampled across git history
+- `update-oci-digests.nu` - Refresh pinned container digests in `nix/hosts/*/oci-images.json`. Dual-purpose: run by hand for an urgent bump, and invoked by `oci-update.yml` weekly. Needs `skopeo`.
 
 ### CI / Automation
 
-- `.github/workflows/` - GitHub Actions CI. `build-and-cache.yml` builds every host's toplevel on the self-hosted runners (vulcan for x86_64, prometheus for aarch64) after each push to main; closures land in the runner hosts' stores, which harmonia serves as binary caches. `eval.yml` evaluates every host's toplevel on GitHub-hosted runners for PRs (fork-safe, no LAN access).
+- `.github/workflows/` - GitHub Actions CI. `build-and-cache.yml` builds every host's toplevel on the self-hosted runners (vulcan for x86_64, prometheus for aarch64) after each push to main; closures land in the runner hosts' stores, which harmonia serves as binary caches. `eval.yml` evaluates every host's toplevel on GitHub-hosted runners for PRs (fork-safe, no LAN access). `flake-update.yml` bumps nixpkgs nightly, fans the bump out across the 7-host build matrix, and opens a PR with a per-host result table. `oci-update.yml` refreshes every pinned container digest weekly and opens a PR.
 - `.github/hosts.json` - Single source of truth for which hosts CI covers and which runner label builds them.
 - `.github/scripts/` - Nushell helpers invoked from the workflows.
 - Self-hosted runners are managed natively by `modules.services.github-runner` (`nix/modules/linux/services/github-runner/`), registered per-repo with an ephemeral lifecycle.
-- `.forgejo/workflows/` + `.forgejo/scripts/` - Legacy Forgejo Actions from the Codeberg era (`build-and-cache.yml`, `flake-update.yml`, `oci-update.yml`), executed by the containerized forgejo runners registered against `git.home.lan`/Codeberg.
+- The runners are `allowed-users` but deliberately **not** `trusted-users` on the host nix daemon. Two consequences bind every workflow: a job-supplied `NIX_CONFIG` with `extra-substituters`/`extra-trusted-public-keys` is silently ignored (substituters come from the host's own `nix.settings`), and `nix copy --no-check-sigs` cannot work. Build straight into the host store instead.
+- Their PATH carries only `nix`, `nu`, `git`, `bash` and core utilities — reach anything else (`skopeo`, `jq`, `gh`, `curl`) via `nix shell nixpkgs#<pkg> --command ...`.
+- Any `run:` step containing a pipe needs an explicit `shell: bash`. Without it steps execute under `sh -e`, which has no `pipefail`, so a failing command upstream of a pipe reports success.
+- `.forgejo/workflows/` + `.forgejo/scripts/` - Superseded Forgejo Actions from the Codeberg era, kept until the ported GitHub workflows have each run green once. Nothing executes them today: the runners that claimed them were removed, and the `git.home.lan` mirror has Actions disabled.
 
 ### OCI Container Services
 
