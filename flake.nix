@@ -30,6 +30,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # can't follow nixpkgs: 0.11.2's vendored waybackend-scanner chokes on the
+    # `frozen` attribute wayland-protocols 1.49 added. development moved to
+    # codeberg.org/LGFae/awww, so the GitHub repo stays at 0.11.2 forever.
     swww.url = "github:LGFae/swww";
     # TODO consider using stylix
     # currently, a wallpaper is required with stylix. this is problematic
@@ -51,7 +54,10 @@
       url = "github:epireyn/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    waybar.url = "github:Alexays/waybar";
+    waybar = {
+      url = "github:Alexays/waybar";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # I use flake-parts to ensure I can use my flake across platforms, although I probably shouldn't
     flake-parts.url = "github:hercules-ci/flake-parts";
     disko = {
@@ -211,7 +217,10 @@
           };
         };
 
-        checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+        checks =
+          lib.genAttrs
+          (lib.filter (system: deploy-rs.lib ? ${system}) top.config.systems)
+          (system: deploy-rs.lib.${system}.deployChecks self.deploy);
 
         packages.x86_64-linux = let
           system = "x86_64-linux";
