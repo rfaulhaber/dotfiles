@@ -213,10 +213,24 @@
           };
         };
 
-        checks =
-          lib.genAttrs
-          (lib.filter (system: deploy-rs.lib ? ${system}) top.config.systems)
-          (system: deploy-rs.lib.${system}.deployChecks self.deploy);
+        # deploy-rs's deployChecks embeds EVERY node's toplevel as a build
+        # input regardless of the check's own system — the ${system} only
+        # picks which platform builds the check derivation. Handing it the
+        # unfiltered deploy spec would make `nix flake check` cross-build the
+        # other architecture's hosts (and on eos, every Linux host), so each
+        # system gets a copy of the spec scoped to its own nodes. The systems
+        # are listed literally rather than taken from top.config.systems:
+        # aarch64-darwin has no deploy nodes and must not get a checks entry.
+        checks = lib.genAttrs ["x86_64-linux" "aarch64-linux"] (
+          system:
+            deploy-rs.lib.${system}.deployChecks (self.deploy
+              // {
+                nodes =
+                  lib.filterAttrs
+                  (_: node: node.profiles.system.path.system == system)
+                  self.deploy.nodes;
+              })
+        );
 
         packages.x86_64-linux = let
           system = "x86_64-linux";
