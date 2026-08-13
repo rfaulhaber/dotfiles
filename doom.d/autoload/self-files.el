@@ -1,10 +1,6 @@
-;;; ~/.doom.d/scripts/self.el -*- lexical-binding: t; -*-
+;;; $DOOMDIR/autoload/self-files.el -*- lexical-binding: t; -*-
 
-;; this file is used for miscellaneous useful functions that I've written to
-;; make Emacs easier to use for myself. They are not quite large enough or
-;; coherent to make a module or package.
-
-;; --------------------------------- variables ---------------------------------
+;; commands for finding and opening files, directories, projects, and buffers
 
 (defvar self/common-directories '() "Alist (Name . Path) of common directories, used by self/visit-common-directories")
 
@@ -18,27 +14,11 @@
     (list (format "--working-directory=%s" dir)))
   "Function that takes a directory and returns a list of arguments for `self/external-terminal-command'.")
 
-(defconst self/date-format-options '(("MM/YYYY"    . "%m/%Y")
-                                     ("MM/DD"      . "%m/%d")
-                                     ("MM/DD/YYYY" . "%m/%d/%Y")
-                                     ("YYYYMMDD" . "%Y%m%d")
-                                     ("YYYY-MM-DD" . "%Y-%m-%d"))
-  "Various date formats used in interactive functions.")
-
 (defvar self/dotfiles-location "~/Projects/dotfiles"
   "Location of dotfiles.")
 
-;; ------------------------------ function aliases -----------------------------
-
-;; I can never remember the envrc functions
-(defalias 'direnv-allow 'envrc-allow)
-(defalias 'direnv-reload 'envrc-reload)
-
-;; TODO break this up into separate files!
-
-;; ---------------------------- interactive functions ----------------------------
-
 ;; thank you github.com/hrs for the inspiration
+;;;###autoload
 (defun self/new-scratch-buffer ()
   "Creates and opens a new scratch buffer with a random name"
   (interactive)
@@ -46,32 +26,7 @@
     (with-selected-window new-window
       (switch-to-buffer (format "*%s*" (make-temp-name "scratch-"))))))
 
-;; thank you xah
-(defun self/unfill-region (start end)
-  "Replace newline chars in region by single spaces.
-This command does the inverse of `fill-region'.
-
-URL `http://ergoemacs.org/emacs/emacs_unfill-paragraph.html'
-Version 2016-07-13"
-  (interactive "r")
-  (let ((fill-column most-positive-fixnum))
-    (fill-region start end)))
-
-(defun self/calendar-insert-date ()
-  "Using `org-read-date', insert the returned date."
-  (interactive)
-  (let* ((date (org-read-date nil t))
-         (option (completing-read "Select a format: " (mapcar 'car self/date-format-options)))
-         (output (format-time-string (cdr (assoc option self/date-format-options)) date)))
-    (insert output)))
-
-(defun self/insert-current-date-at-point ()
-  "Inserts date at point in the chosen format."
-  (interactive)
-  (let* ((output (self/format-date-from-option (self/choose-date-format))))
-    (with-current-buffer (current-buffer)
-      (insert output))))
-
+;;;###autoload
 (defun self/find-org-file ()
   "Search for a file in `org-directory'."
   (interactive)
@@ -81,12 +36,14 @@ Version 2016-07-13"
                                              (not
                                               (string-match-p (rx (seq any "_archive")) file)))))
 
+;;;###autoload
 (defun self/find-org-file-dir ()
   "Find file or folder in `org-directory'"
   (interactive)
   (find-file org-directory))
 
 ;; TODO refactor next two functions
+;;;###autoload
 (defun self/org-roam-find-files-created-today ()
   "Returns a list of files under the org roam directory that were created today."
   (interactive)
@@ -95,6 +52,7 @@ Version 2016-07-13"
          (input-choice (completing-read "Select file: " org-files)))
     (find-file input-choice)))
 
+;;;###autoload
 (defun self/org-roam-find-files-for-date ()
   "Returns a list of files under the org roam directory for selected date."
   (interactive)
@@ -103,30 +61,13 @@ Version 2016-07-13"
          (input-choice (completing-read "Select file: " org-files)))
     (find-file input-choice)))
 
+;;;###autoload
 (defun self/dired-here ()
   "Opens a dired buffer in the current directory."
   (interactive)
   (dired "."))
 
-(defun self/copy-line-number-reference (arg)
-  (interactive "p")
-  (when-let* ((file-name (buffer-file-name)))
-    (pcase arg
-      (1 (kill-new (format "%s:%s" file-name (line-number-at-pos))))
-      (4 (kill-new (format "%s:%s:%s" file-name (line-number-at-pos) (current-column)))))))
-
-;; thank you EmacsWiki
-(defun self/sort-words-in-region (reverse beg end)
-  "Sort words in region alphabetically, in REVERSE if negative.
-    Prefixed with negative \\[universal-argument], sorts in reverse.
-
-    The variable `sort-fold-case' determines whether alphabetic case
-    affects the sort order.
-
-    See `sort-regexp-fields'."
-  (interactive "*P\nr")
-  (sort-regexp-fields reverse "\\w+" "\\&" beg end))
-
+;;;###autoload
 (defun self/visit-common-directories ()
   "Open a common directory in Dired. `self/common-directories' must be set first."
   (interactive)
@@ -136,19 +77,13 @@ Version 2016-07-13"
       (let ((selection (completing-read "Select a directory: " names)))
         (dired (cdr (assoc selection self/common-directories)))))))
 
-(defun self/suspend-save ()
-  "A stupid hack to allow for things like saving without formatting."
-  (interactive)
-  (major-mode-suspend)
-  (text-mode)
-  (save-buffer)
-  (major-mode-restore))
-
+;;;###autoload
 (defun self/org-journal-open-last-entry ()
   "Opens last org-journal entry"
   (interactive)
   (find-file (car (reverse (org-journal--list-files)))))
 
+;;;###autoload
 (defun self/rename-this-file (new-name)
   "Renames the current file to NEW-NAME."
   (interactive "sNew name: ")
@@ -156,50 +91,8 @@ Version 2016-07-13"
   (kill-buffer)
   (switch-to-buffer (find-file-noselect new-name)))
 
-(defun self/fill-line-length-with-character (char &optional direction)
-  "Inserts a line of CHAR of current line length above and below the current
-line. One prefix argument only adds the bottom line, and two prefix arguments
-only adds the top line."
-  (interactive "sChar: \np")
-  (when (> (length char) 1)
-    (user-error "This function only supports filling lines with one character at the moment!"))
-  (when (stringp char)
-    (setq char (string-to-char char)))
-  (let* ((line-length (- (line-end-position) (line-beginning-position)))
-         (new-text (make-string line-length char)))
-    (save-excursion
-      (pcase direction
-        ;; TODO should probably check to see if those lines are empty!
-        (4 (progn
-             (forward-line 1)
-             (insert new-text)))
-        (16 (progn
-              (forward-line -1)
-              (insert new-text)))
-        (_ (progn
-             (forward-line 1)
-             (insert new-text)
-             (forward-line -2)
-             (insert new-text)))))))
-
 ;; thank you ChatGPT
-(defun self/create-centered-comment (text)
-  "Create a vertically centered comment with the given TEXT."
-  (interactive "sEnter comment: ")
-  (let* ((comment-start (concat comment-start " "))
-         (comment-end (concat " " comment-end))
-         (available-width (- fill-column (length comment-start) (length comment-end) 2))
-         (padding-width (/ (- available-width (length text)) 2))
-         (padding (make-string padding-width ?-))
-         (centered-text (concat padding " " text " " padding)))
-    (save-excursion
-      (insert (concat comment-start centered-text comment-end)))))
-
-(defun self/roam-ref-add-from-clipboard ()
-  (interactive)
-  (org-roam-ref-add (car kill-ring)))
-
-;; thank you ChatGPT
+;;;###autoload
 (defun self/new-buffer-with-mode ()
   "Create a new buffer with a selected major mode."
   (interactive)
@@ -208,49 +101,7 @@ only adds the top line."
     (switch-to-buffer (generate-new-buffer "*new*"))
     (funcall (intern mode))))
 
-(defun self/surround-line-with-character (char)
-  "Surrounds the current line with a character CHAR.
-For example, give this line of text:
-
-hello world
-
-returns:
-
-===========
-hello world
-==========="
-  (interactive "sChar: ")
-  (let ((fill (make-string (- (line-end-position) (line-beginning-position))
-                           (string-to-char char))))
-    (save-excursion
-      (beginning-of-line)
-      (insert fill "\n"))
-    (save-excursion
-      (end-of-line)
-      (insert "\n" fill))))
-
-;; thank you ChatGPT
-(defun self/evil-ex-shuffle-lines (beg end)
-  "Shuffle the lines in the region from BEG to END."
-  (interactive "r")
-  (save-excursion
-    (narrow-to-region beg end)
-    (goto-char (point-min))
-    (let ((lines (split-string (buffer-substring (point-min) (point-max)) "\n" t)))
-      (self/shuffle lines)
-      (delete-region beg end)
-      (insert (mapconcat #'identity lines "\n"))))
-  (widen))
-
-;; thank you ChatGPT
-(defun self/evil-ex-remove-duplicates (beg end)
-  "Remove duplicate lines in the region from BEG to END."
-  (interactive "r")
-  (save-excursion
-    (narrow-to-region beg end)
-    (delete-duplicate-lines (point-min) (point-max))
-    (widen)))
-
+;;;###autoload
 (defun self/projectile-open-project-in-new-workspace (&optional arg)
   (interactive "P")
   (if-let* ((projects (projectile-relevant-known-projects))
@@ -262,6 +113,7 @@ hello world
         (+workspace/display))
     (user-error "Something is wrong with projectile config!")))
 
+;;;###autoload
 (defun self/open-org-workspace ()
   (interactive)
   (if (+workspace-exists-p "org")
@@ -271,12 +123,14 @@ hello world
     (+workspace-switch "org"))
   (+workspace/display))
 
+;;;###autoload
 (defun self/open-current-buffer-in-browser ()
   (interactive)
   (if-let* ((filename (buffer-file-name)))
       (browse-url filename)
     (user-error "Buffer is not associated with a file")))
 
+;;;###autoload
 (defun self/reload-projectile-projects ()
   "Reloads projectile projects from the ~/Projects directory"
   (interactive)
@@ -284,6 +138,7 @@ hello world
     (when (file-directory-p dir)
       (projectile-add-known-project dir))))
 
+;;;###autoload
 (defun self/paste-to-file (name)
   (interactive "FName? ")
   (get-buffer-create name)
@@ -292,6 +147,7 @@ hello world
     (write-region (point-min) (point-max) name)
     (switch-to-buffer (current-buffer))))
 
+;;;###autoload
 (defun self/dired-diff-marked-files ()
   (interactive)
   (when (not (eq major-mode #'dired-mode))
@@ -308,6 +164,7 @@ hello world
         (goto-char (point-min)))
       (pop-to-buffer buffer))))
 
+;;;###autoload
 (defun self/display-theme-colors ()
   "Loads and displays the theme values from `self/global-config-file-path'"
   (interactive)
@@ -323,6 +180,7 @@ hello world
         (read-only-mode 1)
         (switch-to-buffer (current-buffer))))))
 
+;;;###autoload
 (defun self/open-external-terminal-for-current-project ()
   (interactive)
   (if-let* ((location (or (projectile-project-root)
@@ -338,6 +196,7 @@ hello world
                                (directory-file-name (expand-file-name location)))))
     (user-error "cannot find a directory to open")))
 
+;;;###autoload
 (defun self/open-projectile-project-in-new-frame (&optional arg)
   "Like `self/projectile-open-project-in-new-workspace', but opens a new frame too."
   (interactive "P")
@@ -352,6 +211,7 @@ hello world
             (+workspace/display))))
     (user-error "Something is wrong with projectile config!")))
 
+;;;###autoload
 (defun self/find-file-in-private-config ()
   "Like `doom/find-file-in-private-config', but relative to my own dotfiles."
   (interactive)
@@ -371,59 +231,6 @@ hello world
          (file (projectile-completing-read "Find Elisp file: " files)))
     (find-file (expand-file-name file dir))
     (run-hooks 'projectile-find-file-hook)))
-
-;; ----------------------------- utility functions -----------------------------
-
-;; this comes from reddit. thank you r/emacs!
-(defun self/org-md-paragraph-unfill (&rest args)
-  "Unfill CONTENTS, the `cadr' in ARGS."
-  (let* ((actual-args (car args))
-         (org-el (nth 0 actual-args))
-         (contents (nth 1 actual-args))
-         (info (nth 2 actual-args)))
-    ;; Unfill contents
-    (unless (eq (car org-el) 'src-block)
-      (setq contents (concat (mapconcat 'identity (split-string contents) " ") "\n")))
-    (list org-el contents info)))
-
-(defun self/capture-insert-file-link ()
-  "Imitation of org-insert-link but for use in org-capture template"
-  (let* ((file-path (read-file-name "File: "))
-         (file-name (read-from-minibuffer "Description: ")))
-    (format "[[%s][%s]]" file-path file-name)))
-
-;; thank you doom emacs discord user zzamboni
-;; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
-(defun self/org-md-src-block (src-block _contents info)
-  "Transcode SRC-BLOCK element into Markdown format.
-CONTENTS is nil.  INFO is a plist used as a communication
-channel."
-  (let ((lang (or (org-element-property :language src-block) "")))
-    (format "```%s\n%s```\n"
-            lang
-            (org-remove-indentation
-             (org-export-format-code-default src-block info)))))
-
-;; TODO write more generic roam exporter that extends org publishing
-(defun self/org-roam-export-refs (_backend)
-  "For org-roam files, exports the ROAM_REF property as a section at the bottom
-of the file as an unordered list."
-  (save-excursion
-    (goto-char (point-min))
-    (when (and
-           (org-roam-file-p)
-           (not (eq (assoc "ROAM_REFS" (org-entry-properties)) nil)))
-      (goto-char (point-min))
-      (let* ((file-refs (split-string (cdr (assoc "ROAM_REFS" (org-entry-properties))) " "))
-             (refs-as-bullet-links (mapcar
-                                    (lambda (link)
-                                      (format "- [[%s]]\n" link))
-                                    file-refs)))
-        (unless (or
-                 (eq refs-as-bullet-links nil)
-                 (eq (length refs-as-bullet-links) 0))
-          (goto-char (point-max))
-          (insert (concat "\n* Refs\n") (apply 'concat refs-as-bullet-links)))))))
 
 (cl-defun self/find-file-non-recursive (dir &key prompt filter-fn exclude-directories show-hidden)
   "Like `counsel-find-file' for DIR, but excludes directories and their
@@ -446,26 +253,7 @@ will include any files that begin with ."
          (file-name (concat dir selection)))
     (find-file file-name)))
 
-(defun self/choose-date-format ()
-  "Provides user with options from `self/date-format-options'."
-  (completing-read "Select a format: " (mapcar 'car self/date-format-options)))
-
-(defun self/format-date-from-option (option)
-  "Formats current date according to selected date option."
-  (format-time-string (cdr (assoc option self/date-format-options))))
-
-(defun self/goto-line-non-interactive (line-number)
-  "Helper for going to a line at LINE-NUMBER without invoking `goto-line'."
-  (forward-line (- line-number (line-number-at-pos))))
-
-(defun self/goto-col-non-interactive (col-number)
-  "Helper for going to a col at COL-NUMBER without invoking `goto-char' or
-`move-to-column'."
-  (forward-char (- col-number (current-column))))
-
-(defun self/org-publish-before-advice (&rest args)
-  (org-roam-update-org-id-locations))
-
+;;;###autoload
 (defun self/lookup-open-link-like-object (lookup-fn &rest args)
   "Advice for LOOKUP-FN. Opens a link-like object: a file, URL, etc."
   (let ((identifier (nth 0 args))
@@ -501,54 +289,11 @@ of line, moves cursor to the end of LINE."
         (end-of-line)
       (self/goto-col-non-interactive col))))
 
-(defun self/shuffle (lst)
-  "Shuffles a list LST."
-  (let ((n (length lst)))
-    (dotimes (i (length lst))
-      (let ((j (+ i (random (- n i)))))
-        (when (/= i j)
-          (cl-rotatef (elt lst i) (elt lst j))))))
-  lst)
+(defun self/goto-line-non-interactive (line-number)
+  "Helper for going to a line at LINE-NUMBER without invoking `goto-line'."
+  (forward-line (- line-number (line-number-at-pos))))
 
-;; NOTE doesn't quite work?
-(defun self/org-babel-execute-src-block-lazy-load (original-fn &rest args)
-  (let ((lang (org-element-property :language (org-element-at-point))))
-    (when (or (string= lang "bash") (string= lang "sh"))
-      (setq lang "shell"))
-    (unless (or (not (boundp 'org-babel-load-languages)) (cdr (assoc (intern lang) org-babel-load-languages)))
-      (add-to-list 'org-babel-load-languages (cons (intern lang) t))
-      (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
-    (apply original-fn args)))
-
-(defun self/+org-inline-image-data-fn (_original-fn &rest args)
-  (cl-destructuring-bind (_ link) args
-    (with-demoted-errors "%S" (base64-decode-string link))))
-
-;; --------------------------- custom evil operators ---------------------------
-
-(evil-define-operator self/evil-write-temp (beg end &optional prefix)
-  "Like evil-write, but creates a new temporary file and writes to that."
-  :motion nil
-  :move-point nil
-  :type line
-  :repeat nil
-  (interactive "<r><a>")
-  (let ((s (or beg (point-min)))
-        (f (or end (point-max)))
-        (tmpfile (make-temp-file (or prefix "wtemp"))))
-    (if (buffer-file-name (buffer-base-buffer))
-        (write-region s f tmpfile)
-      (write-file tmpfile))))
-
-(evil-define-operator self/evil-write-suspend (beg end type file-or-append &optional bang)
-  "Like evil-write, but quickly changes the buffer to `text-mode' first.
-This is meant to skip any kind of automatic formatting."
-  :motion nil
-  :move-point nil
-  :type line
-  :repeat nil
-  (interactive "<r><fsh><!>")
-  (major-mode-suspend)
-  (text-mode)
-  (evil-write beg end type file-or-append bang)
-  (major-mode-restore))
+(defun self/goto-col-non-interactive (col-number)
+  "Helper for going to a col at COL-NUMBER without invoking `goto-char' or
+`move-to-column'."
+  (forward-char (- col-number (current-column))))

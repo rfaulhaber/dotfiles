@@ -1,29 +1,28 @@
 #+TITLE: Emacs config
 
-This is my Emacs configuration. This directory is symlinked to =~/.doom.d= on
-every computer I use.
-
-Emacs, for me, is my:
-
-- IDE
-- Text editor
-- Mail client
-- Notebook
-- Terminal emulator
-- REPL environment
-- Spreadsheet application
-- File explorer
+This is my Emacs configuration, built on the wonderful [[https://github.com/doomemacs/doomemacs][Doom Emacs]] framework.
+It is installed by Nix: =nix-doom-emacs-unstraightened= bakes this directory
+into the emacs package (see =nix/modules/programs/emacs=), so changes here take
+effect on the next rebuild, and =doom sync= runs as part of that build.
 
 In short, for any task that requires editing text, I use Emacs for that.
 
-Further, this configuration uses the wonderful [[https://github.com/hlissner/doom-emacs][Doom Emacs]] framework.
-
 * Files
-- =init.el=: boilerplate configuration for Doom Emacs. Enables a series of
-  packages by default with default config
-- =config.el=: my own personal config on top of Doom Emacs
-- =packages.el=: additional packages beyond what Doom provides
-- =scripts/self.el=: my own personal Emacs code, stuff that's too short to be
-  its own module proper
-  + TODO make =self= module
-- =scripts/org-templates.el=: my Org / org-roam capture templates
+- =init.el= :: the ~doom!~ block — which Doom modules and flags are enabled
+- =config.el= :: identity, font, theme, and host dispatch; loads everything
+  under =lisp/=
+- =packages.el= :: additional packages beyond what Doom provides, pinned to
+  satisfy unstraightened
+- =hosts/= :: per-OS (=linux.el=, =darwin.el=) and per-machine
+  (=<hostname>.el=) overrides; machine configs load after, and can override,
+  OS configs
+- =lisp/= :: topic-specific config loaded at startup
+  - =+bindings.el= :: every keybinding and evil ex command
+  - =+org.el= :: org, roam, journal, agenda, and publishing config
+  - =+org-capture.el= :: org and org-roam capture templates
+  - =+nix.el= :: nix-ts-mode, the nil language server, alejandra formatting
+  - =+langs.el= :: the other languages (rust, elixir, lua, nushell, kdl)
+  - =+tools.el= :: dired, nov, projectile, tramp, sops, and other odds and ends
+- =autoload/= :: interactive commands and helpers in the =self/= namespace,
+  lazy-loaded via the ~;;;###autoload~ cookies that =doom sync= scans
+- =snippets/= :: yasnippet snippets
