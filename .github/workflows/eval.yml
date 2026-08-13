@@ -4,6 +4,12 @@
 # safe to run for fork PRs, since nothing here can reach the LAN. Full
 # builds and cache seeding happen post-merge in build-and-cache.yml.
 #
+# Each leg also captures eval-time warnings — config.warnings read as a
+# value, plus lib.warn trace output scraped from stderr — and the warnings
+# job dedupes them across hosts into PR annotations, so a renamed or
+# deprecated option surfaces on the PR that introduces it instead of in
+# deploy scrollback.
+#
 # Eval is architecture-independent, so one x86_64 hosted runner can check
 # the aarch64 hosts too. The substituters below exist for import-from-
 # derivation (doom-emacs on hyperion): IFD needs the referenced derivations
@@ -61,9 +67,87 @@ jobs:
       # HOST via env rather than inline interpolation: on pull_request the
       # matrix values come from the PR's copy of hosts.json, so keep that
       # content out of shell syntax.
+      #
+      # One --apply pulls the toplevel drvPath and config.warnings out of a
+      # single evaluation — two `nix eval` calls would run the whole module
+      # fixpoint twice. config.warnings alone is not enough: lib.warn
+      # deprecations inside nixpkgs never reach it, only stderr, so the
+      # trace output is scraped as well. That is only trustworthy because
+      # hosted runners start with a cold eval cache — a warm cache silences
+      # trace output, which is why the value channel exists at all. stderr
+      # goes through a file and is replayed so eval errors still land in the
+      # step log; config.warnings entries also print as trace lines when the
+      # toplevel is forced, so scraped lines that merely echo one (module
+      # warnings can be multi-line; the echo is its first line) are dropped.
       - name: Evaluate ${{ matrix.host }}
         env:
           HOST: ${{ matrix.host }}
         run: |
-          nix eval --raw \
-            ".#nixosConfigurations.${HOST}.config.system.build.toplevel.drvPath"
+          status=0
+          nix eval --json ".#nixosConfigurations.${HOST}" \
+            --apply 'c: {
+              drvPath = c.config.system.build.toplevel.drvPath;
+              warnings = c.config.warnings;
+            }' > eval-result.json 2> eval-stderr.log || status=$?
+          cat eval-stderr.log >&2
+          [ "$status" -eq 0 ]
+          jq -r '.drvPath' eval-result.json
+          grep -E 'trace: warning:|evaluation warning:' eval-stderr.log > scraped.txt || true
+          jq --arg host "$HOST" --rawfile scraped scraped.txt '
+            .warnings as $cw
+            | {host: $host,
+               warnings: ($cw + ($scraped
+                 | split("\n")
+                 | map(select(. != "") | sub("^(trace: warning: |evaluation warning: )"; ""))
+                 | unique
+                 | map(select(. as $s | any($cw[]; startswith($s)) | not))))}' \
+            eval-result.json > "eval-warnings-${HOST}.json"
+
+      - name: Upload warnings
+        uses: actions/upload-artifact@v7
+        with:
+          name: eval-warnings-${{ matrix.host }}
+          path: eval-warnings-${{ matrix.host }}.json
+          if-no-files-found: error
+
+  # The same warning fires once per host, and seven annotations for one
+  # nixpkgs deprecation would be noise — so surfacing waits for the whole
+  # matrix and dedupes. Plain `needs` (no always()) is deliberate: on a green
+  # run the warnings are the signal; on a red one the eval error is, and a
+  # leg that died before uploading would make the host attribution lie.
+  warnings:
+    runs-on: ubuntu-latest
+    needs: eval
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: eval-warnings-*
+          merge-multiple: true
+          path: .
+
+      # The %-escapes keep a multi-line warning inside a single ::warning::
+      # command: workflow commands are line-oriented, so a raw newline would
+      # truncate the message there — and offer the rest of the warning text
+      # up for parsing as a command of its own.
+      - name: Annotate and summarize
+        shell: bash
+        run: |
+          jq -s '[ .[] | .host as $h | .warnings[] | {host: $h, warning: .} ]
+                 | group_by(.warning)
+                 | map({warning: .[0].warning, hosts: ([.[].host] | sort)})' \
+            eval-warnings-*.json > warnings.json
+
+          count=$(jq length warnings.json)
+          if [ "$count" -eq 0 ]; then
+            echo "No evaluation warnings." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          jq -r '.[] | "::warning::[\(.hosts | join(", "))] "
+                 + (.warning | gsub("%"; "%25") | gsub("\r"; "%0D") | gsub("\n"; "%0A"))' \
+            warnings.json
+
+          {
+            echo "## Evaluation warnings ($count unique)"
+            jq -r '.[] | "\n**\(.hosts | join(", "))**\n\n````\n\(.warning)\n````"' warnings.json
+          } >> "$GITHUB_STEP_SUMMARY"

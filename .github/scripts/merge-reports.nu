@@ -49,4 +49,5 @@ $report | to json | save -f build-report.json
 
 let successes = ($build_results | where status == "success" | length)
 let failures = ($build_results | where status == "failed" | length)
-print $"=== Merged report: ($successes) succeeded, ($failures) failed ==="
+let warnings = ($build_results | each {|r| $r.warnings? | default [] } | flatten | uniq | length)
+print $"=== Merged report: ($successes) succeeded, ($failures) failed, ($warnings) unique eval warnings ==="

@@ -151,8 +151,21 @@ jobs:
           let error = if $status == "failed" and ("build.log" | path exists) {
               ^tail -n 20 build.log | str trim
           } else { "" }
+          # Eval-time warnings for the PR body — grep instead of loading the
+          # log for the same reason tail is. The trace:/evaluation warning:
+          # prefixes are what lib.warn and the module system emit during
+          # evaluation; bare `warning:` lines are nix CLI chatter about
+          # substituters and the like, which a bump PR cannot act on.
+          # `complete` swallows grep's exit 1 on a warning-free log.
+          let warnings = if ("build.log" | path exists) {
+              ^grep -E 'trace: warning:|evaluation warning:' build.log
+                | complete
+                | get stdout
+                | lines
+                | uniq
+          } else { [] }
 
-          { host: $env.HOST, status: $status, elapsed: $elapsed, error: $error }
+          { host: $env.HOST, status: $status, elapsed: $elapsed, error: $error, warnings: $warnings }
             | to json
             | save -f $"build-report-($env.HOST).json"
 

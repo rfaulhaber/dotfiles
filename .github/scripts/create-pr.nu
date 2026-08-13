@@ -33,6 +33,28 @@ def main [branch_name: string, date_str: string] {
 
     let builds_section = $"| Host | Status | Time |\n| --- | --- | --- |\n($build_rows)"
 
+    # The same warning fires once per host, so dedupe and attribute instead
+    # of listing seven copies of one nixpkgs deprecation.
+    let warning_pairs = ($report.build_results
+        | each {|b| $b.warnings? | default [] | each {|w| { host: $b.host, warning: $w } } }
+        | flatten)
+
+    let warnings_section = if ($warning_pairs | is-empty) {
+        "No evaluation warnings."
+    } else {
+        let host_count = ($report.build_results | length)
+        ($warning_pairs | get warning | uniq | each {|w|
+            let hosts = ($warning_pairs | where warning == $w | get host)
+            let attribution = if ($hosts | length) == $host_count {
+                "all hosts"
+            } else {
+                $hosts | str join ", "
+            }
+            # Four-backtick fence for the same reason as the error details.
+            $"**($attribution)**\n\n````\n($w)\n````"
+        } | str join "\n\n")
+    }
+
     let pr_body = $"## Updated Flake Inputs
 
 ($inputs_section)
@@ -40,6 +62,10 @@ def main [branch_name: string, date_str: string] {
 ## Build Results
 
 ($builds_section)
+
+## Evaluation Warnings
+
+($warnings_section)
 "
 
     let api_base = $env.GITHUB_API_URL
