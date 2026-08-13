@@ -165,9 +165,6 @@
     # renamed enp4s0 to enp5s0 and silently orphaned every reference. lan0 is
     # pinned to the NIC's MAC via systemd.network.links below.
     interfaces.lan0.useDHCP = true;
-    # Transitional: keeps the live NIC managed between the switch that ships
-    # the rename and the reboot that applies it. Remove after that reboot.
-    interfaces.enp5s0.useDHCP = true;
     # Leave addresses configured when dhcpcd stops, so a daemon restart never
     # severs the SSH session a deploy is riding on.
     dhcpcd.persistent = true;
