@@ -82,7 +82,6 @@ Used in loading config specific to those systems.")
 ;; -------------------------------- emacs basics --------------------------------
 
 ;; custom bindings
-(map! :leader :desc "Opens EWW url to the right" "o w" #'self/eww-open-url-window-right )
 (map! :mode org-mode
       :leader "c l" nil
       :leader "c l l" #'link-hint-copy-link
@@ -93,7 +92,6 @@ Used in loading config specific to those systems.")
 (map! :nv "g s l"     #'avy-goto-line)
 (map! :leader "w w"   #'ace-window)
 (map! :leader "s w"   #'ace-swap-window)
-(map! :leader "f b"   #'calibredb-find-counsel)
 (map! :mode Man-mode
       :n "TAB"        #'man-follow)
 (map! :leader "TAB c" #'+workspace/cycle)
@@ -117,6 +115,7 @@ Used in loading config specific to those systems.")
         "<apps>" #'execute-extended-command))
 
 ;; markdown-mode changes to make consistent with org-mode
+;; TODO doesn't quite work?
 (map! :map markdown-mode-map
       :ni [C-return] #'markdown-insert-list-item)
 
@@ -154,9 +153,10 @@ Used in loading config specific to those systems.")
 ;; use treesit instead of emacs-tree-sitter for rust
 (setq rust-mode-treesitter-derive t)
 
+;; sops-mode
+
 ;; enable global-sops-mode
 (global-sops-mode 1)
-
 
 ;; --------------------------------- org mode ---------------------------------
 (after! org
@@ -234,10 +234,6 @@ Used in loading config specific to those systems.")
 (setq bibtex-completion-notes-path "~/org/bibliography/notes.org"
       bibtex-completion-bibliography '("~/org/bibliography/references.bib"))
 
-;; ox-agora
-;; thank you again Neil
-(advice-add 'org-export-output-file-name :filter-return #'self/slugify-export-output-file-name)
-
 ;; sometimes org publish complains about not being able to resolve ids. This is
 ;; a workaround for that
 (advice-add 'org-publish :before #'self/org-publish-before-advice)
@@ -250,15 +246,7 @@ Used in loading config specific to those systems.")
                                    :publishing-directory "~/Projects/roam-web"
                                    :publishing-function org-html-publish-to-html
                                    :with-author nil
-                                   :recursive t)
-                                  ("agora"
-                                   :base-directory "~/org/roam"
-                                   :base-extension "org"
-                                   :publishing-directory "~/Projects/roam"
-                                   :publishing-function org-agora-publish-to-agora
-                                   :recursive t
-                                   :headline-levels 4
-                                   :with-toc nil)))
+                                   :recursive t)))
 
 ;; ------------------------------- end org mode -------------------------------
 
@@ -272,50 +260,6 @@ Used in loading config specific to those systems.")
 (add-hook 'nov-mode-hook 'nov-setup)
 (add-hook 'nov-mode-hook 'visual-line-mode)
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-
-;; calibredb
-(setq calibredb-root-dir "~/calibre")
-(setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
-
-;; mu4e
-(setq
- mail-user-agent 'mu4e-user-agent
- mu4e-sent-messages-behavior 'sent
- mu4e-main-mode-hook (function
-                      (lambda ()
-                        (setq mu4e-sent-messages-behavior 'sent)))
- mu4e-sent-folder   "/Sent"
- mu4e-drafts-folder "/Drafts"
- mu4e-trash-folder  "/Trash"
- mu4e-refile-folder "/Archive"
- smtpmail-default-smtp-server "smtp.fastmail.com"
- smtpmail-smtp-server "smtp.fastmail.com"
- smtpmail-smtp-user "ryf@sent.as"
- smtpmail-local-domain "sent.as"
- smtpmail-smtp-service 587)
-
-(after! mu4e
-  (add-to-list 'mu4e-bookmarks
-               '(:name "Inbox"
-                 :query "maildir:/Inbox"
-                 :key ?i)))
-
-
-;; wttrin
-(setq wttrin-default-cities '("Cleveland"))
-
-;; replace wttrin-fetch-raw-string with my own function
-(advice-add 'wttrin-fetch-raw-string :override #'self/wttrin-fetch-raw-string)
-
-;; gnus
-(setq gnus-select-method '(nntp "us.newsdemon.com"))
-
-;; eshell
-(add-hook 'eshell-preoutput-filter-functions 'xterm-color-filter)
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (setenv "TERM" "xterm-256color")))
-(add-hook 'eshell-before-prompt-hook (setq xterm-color-preserve-properties t))
 
 ;; projectile
 (after! projectile
@@ -405,8 +349,6 @@ Used in loading config specific to those systems.")
 ;; ----------------------------------- misc ------------------------------------
 
 ;; general
-;; commented out for now, `'+format/buffer''s behavior has changed
-;; (add-hook 'before-save-hook #'+format/buffer)
 
 ;; dynamically load languages for org-babel
 ;; thank you r/emacs: https://www.reddit.com/r/emacs/comments/us7zae/comment/i9ceaco
@@ -422,14 +364,3 @@ Used in loading config specific to those systems.")
   '((:command . "nu"))
   :default "nushell"
   :mode 'nushell-ts-mode)
-
-;; TODO implement error handling
-;; (quickrun-add-command "fennel"
-;;   '((:command . "fennel")
-;;     (:exec    (lambda ()
-;;                 (let* ((tmpfile (shell-command-to-string "mktemp -t quickrun-fennel.XXXX"))
-;;                        (save-cmd (concat "save -f " tmpfile)))
-;;                   `(,(concat "%c --compile %s | " save-cmd)
-;;                     ,(format "luajit %s" tmpfile))))))
-;;   :default "fennel"
-;;   :mode 'fennel-mode)

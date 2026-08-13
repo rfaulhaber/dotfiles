@@ -22,7 +22,8 @@
 (defconst self/date-format-options '(("MM/YYYY"    . "%m/%Y")
                                      ("MM/DD"      . "%m/%d")
                                      ("MM/DD/YYYY" . "%m/%d/%Y")
-                                     ("YYYYMMDD" . "%Y%m%d"))
+                                     ("YYYYMMDD" . "%Y%m%d")
+                                     ("YYYY-MM-DD" . "%Y-%m-%d"))
   "Various date formats used in interactive functions.")
 
 (defvar self/dotfiles-location "~/Projects/dotfiles"
@@ -107,13 +108,6 @@ Version 2016-07-13"
   "Opens a dired buffer in the current directory."
   (interactive)
   (dired "."))
-
-(defun self/mu4e-load-path-fix ()
-  "This is a workaround for when Doom / Emacs does not add mu4e to the load path."
-  (interactive)
-  (let ((path (string-trim (nth 0 (split-string (shell-command-to-string "fd --type d 'mu4e' /nix/store") "\n")))))
-    (unless (member path load-path)
-      (add-to-list 'load-path path))))
 
 (defun self/copy-line-number-reference (arg)
   (interactive "p")
@@ -202,15 +196,6 @@ only adds the top line."
     (save-excursion
       (insert (concat comment-start centered-text comment-end))
       (comment-region (line-beginning-position) (line-end-position)))))
-
-(defun self/eww-open-here (url)
-  "Opens a new EWW buffer with URL here in the current window."
-  (interactive "sURL: ")
-  (let ((new-buf (get-buffer-create "*webpage*")))
-    (with-current-buffer new-buf
-      (eww-mode)
-      (eww url current-prefix-arg))
-    (switch-to-buffer new-buf)))
 
 (defun self/roam-ref-add-from-clipboard ()
   (interactive)
@@ -312,18 +297,6 @@ hello world
     (write-region (point-min) (point-max) name)
     (switch-to-buffer (current-buffer))))
 
-(defun self/nix-fmt-current-buffer ()
-  (interactive)
-  (when (not (file-exists-p (format "%s/flake.nix" (projectile-project-root))))
-    (user-error "not in a project with a flake!"))
-
-  (when (not buffer-file-name)
-    (user-error "this buffer is not visiting a file!"))
-
-  (start-process "nix fmt" "*nix fmt*" (format "nix fmt %s" buffer-file-name))
-
-  (revert-buffer nil t t))
-
 (defun self/dired-diff-marked-files ()
   (interactive)
   (when (not (eq major-mode #'dired-mode))
@@ -414,50 +387,6 @@ hello world
 
 ;; ----------------------------- utility functions -----------------------------
 
-;; stolen from https://gitlab.com/ngm/commonplace-lib/-/blob/master/commonplace-lib.el
-;; thank you Neil
-(defun self/slugify-title (title)
-  "Convert TITLE to a filename-suitable slug. Use hyphens rather than underscores."
-  (cl-flet* ((nonspacing-mark-p (char)
-               (eq 'Mn (get-char-code-property char 'general-category)))
-             (strip-nonspacing-marks (s)
-               (apply #'string (seq-remove #'nonspacing-mark-p
-                                           (ucs-normalize-NFD-string s))))
-             (cl-replace (title pair)
-               (replace-regexp-in-string (car pair) (cdr pair) title)))
-    (let* ((pairs `(("['\?,%]" . "")
-                    ("[^[:alnum:][:digit:]]" . "-") ;; convert anything not alphanumeric
-                    ("--*" . "-")                   ;; remove sequential underscores
-                    ("^-" . "")                     ;; remove starting underscore
-                    ("-$" . "")))                   ;; remove ending underscore (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
-           (downcase slug)))))
-
-
-;; stolen from https://gitlab.com/ngm/commonplace/-/blob/master/publish-agora.el
-;; thank you Neil
-(defun self/get-title (file)
-  "For a given file, get its TITLE keyword."
-  (with-current-buffer
-      (get-file-buffer file)
-    (cadar (org-collect-keywords '("TITLE")))))
-
-;; stolen from https://gitlab.com/ngm/commonplace/-/blob/master/publish-agora.el
-;; with one minor change
-;; thank you Neil
-;; TODO refactor into ox-agora fork
-(defun self/slugify-export-output-file-name (output-file)
-  "Gets the title of the org file and uses this (slugified) for the output
-filename. This is mainly to override org-roam's default filename convention of
-`timestamp-title_of_your_note` which doesn't work well with Agora."
-  (if (org-roam-file-p)
-      (let* ((title (self/get-title (buffer-file-name (buffer-base-buffer))))
-             (directory (file-name-directory output-file))
-             (slug (self/slugify-title title))
-             (ext (url-file-extension output-file)))
-        (concat directory slug ext))
-    output-file))
-
-
 ;; this comes from reddit. thank you r/emacs!
 (defun self/org-md-paragraph-unfill (&rest args)
   "Unfill CONTENTS, the `cadr' in ARGS."
@@ -490,17 +419,6 @@ filename. This is mainly to override org-roam's default filename convention of
             (push (nth num lines) words)))
         words)
     (user-error "self/dict is not defined")))
-
-;; thank you github: https://github.com/bcbcarl/emacs-wttrin/issues/16#issuecomment-658987903
-(defun self/wttrin-fetch-raw-string (query)
-  "Get the weather information based on your QUERY."
-  (let ((url-user-agent "curl"))
-    (add-to-list 'url-request-extra-headers wttrin-default-accept-language)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         (concat "http://wttr.in/" query "?A")
-         (lambda (status) (switch-to-buffer (current-buffer))))
-      (decode-coding-string (buffer-string) 'utf-8))))
 
 ;; thank you doom emacs discord user zzamboni
 ;; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
