@@ -13,7 +13,7 @@ in {
     enable = mkEnableOption "Plex media server";
 
     image = imageLib.mkImageOptions {
-      repository = "linuxserver/plex";
+      repository = "lscr.io/linuxserver/plex";
       version = "latest";
     };
 

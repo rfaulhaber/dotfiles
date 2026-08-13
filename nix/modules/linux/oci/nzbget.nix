@@ -13,7 +13,7 @@ in {
     enable = mkEnableOption "NZBGet Usenet downloader";
 
     image = imageLib.mkImageOptions {
-      repository = "ghcr.io/linuxserver/nzbget";
+      repository = "lscr.io/linuxserver/nzbget";
       version = "latest";
     };
 

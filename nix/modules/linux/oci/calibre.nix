@@ -13,7 +13,7 @@ in {
     enable = mkEnableOption "Calibre e-book manager (linuxserver/calibre Kasm build)";
 
     image = imageLib.mkImageOptions {
-      repository = "linuxserver/calibre";
+      repository = "lscr.io/linuxserver/calibre";
       version = "latest";
     };
 
