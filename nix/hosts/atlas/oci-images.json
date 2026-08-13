@@ -231,6 +231,18 @@
     "image": {
       "version": "latest",
       "digest": "sha256:b9f12857933dda730165e737495b357e53bab78e59bdcc853e0d65d8954b7ea5"
+    },
+    "postgres": {
+      "image": {
+        "version": "16-alpine",
+        "digest": "sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777"
+      }
+    },
+    "redis": {
+      "image": {
+        "version": "8-alpine",
+        "digest": "sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005"
+      }
     }
   }
 }
