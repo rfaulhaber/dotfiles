@@ -147,7 +147,9 @@
               {
                 Id = 0;
                 Name = "movie";
-                ProfileId = 1;
+                # Radarr-instance-local quality profile id; 8 is the
+                # recyclarr-managed "HD Bluray + WEB".
+                ProfileId = 8;
                 RootFolder = "/movies";
                 MinimumAvailability = "released";
                 Tags = [];
@@ -162,7 +164,9 @@
               {
                 Id = 0;
                 Name = "tv";
-                ProfileId = 1;
+                # Sonarr-instance-local quality profile id; 8 is the
+                # recyclarr-managed "WEB-1080p (Alternative)".
+                ProfileId = 8;
                 RootFolder = "/tv";
                 Tags = [];
                 LanguageId = 1;

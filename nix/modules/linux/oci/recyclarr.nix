@@ -70,9 +70,23 @@ with lib; let
       # Guide-backed profiles carry only their own tier formats, so the
       # custom_formats below are additive rather than duplicates.
       #
-      # Both profiles exclude remux by construction (Remux-2160p and
-      # Remux-1080p are allowed=false in the guide), which is the property
-      # worth preserving: remux is what produces 60GB files, not 2160p.
+      # Every profile here excludes remux (the guide pair by construction —
+      # Remux-2160p and Remux-1080p are allowed=false — and UHD Preferred by
+      # not listing remux qualities), which is the property worth preserving:
+      # remux is what produces 60GB files, not 2160p.
+      #
+      # UHD Preferred is not from the guide: the guide ships no 4K profile
+      # with an HD fallback (UHD Bluray + WEB is 4K-only, so a movie with no
+      # 4K release stays wanted forever). It exists for manual per-movie
+      # assignment and is deliberately not the requestrr default. WEB 2160p
+      # outranks Bluray-2160p — inverting the guide's UHD cutoff — because
+      # the encodes are roughly half the size and carry DD+/Atmos the
+      # clients play natively, where Bluray audio forces a transcode. Below
+      # 2160p it falls back to exactly the HD Bluray + WEB ladder. SDR (no
+      # WEBDL) and DV (w/o HDR fallback) ride at the guide's -10000: with
+      # min_format_score 0 the release is rejected at grab time and the grab
+      # falls down the ladder — SDR 4K WEB stays eligible (often better than
+      # the 1080p), SDR Bluray encodes and fallback-less DV do not.
       #
       # Scores are calibrated against the edition tags, which the guide sets at
       # 25 (125 for Special Edition). Audio sits below that on purpose. The
@@ -103,6 +117,26 @@ with lib; let
             upgrade:
               allowed: true
               until_score: 145
+          # Custom profile; qualities are listed most-preferred first.
+          - name: UHD Preferred
+            reset_unmatched_scores:
+              enabled: true
+            upgrade:
+              allowed: true
+              until_quality: WEB 2160p
+              until_score: 145
+            qualities:
+              - name: WEB 2160p
+                qualities:
+                  - WEBDL-2160p
+                  - WEBRip-2160p
+              - name: Bluray-2160p
+              - name: Bluray-1080p
+              - name: WEB 1080p
+                qualities:
+                  - WEBDL-1080p
+                  - WEBRip-1080p
+              - name: Bluray-720p
 
         custom_formats:
           # Movie Versions
@@ -115,6 +149,7 @@ with lib; let
               - 957d0f44b592285f26449575e8b1167e # Special Edition
             assign_scores_to:
               - name: HD Bluray + WEB
+              - name: UHD Preferred
 
           # Movie Versions + SDR
           - trash_ids:
@@ -126,6 +161,13 @@ with lib; let
               - 9c38ebb7384dada637be8899efa68e6f # SDR
             assign_scores_to:
               - name: UHD Bluray + WEB
+
+          # HDR guards for the 4K cascade, both at the guide's -10000.
+          - trash_ids:
+              - 25c12f78430a3a23413652cbd1d48d77 # SDR (no WEBDL)
+              - 923b6abef9b17f937fab56cfcf89e1f1 # DV (w/o HDR fallback)
+            assign_scores_to:
+              - name: UHD Preferred
 
           # Audio, scored as a tiebreaker between otherwise equal releases.
           # Only the codecs the clients can play are listed; DTS, TrueHD, FLAC
@@ -139,6 +181,8 @@ with lib; let
                 score: 20
               - name: UHD Bluray + WEB
                 score: 20
+              - name: UHD Preferred
+                score: 20
 
           - trash_ids:
               - 185f1dd7264c4562b9022d963ac37424 # DD+
@@ -146,6 +190,8 @@ with lib; let
               - name: HD Bluray + WEB
                 score: 15
               - name: UHD Bluray + WEB
+                score: 15
+              - name: UHD Preferred
                 score: 15
 
           - trash_ids:
@@ -155,6 +201,8 @@ with lib; let
               - name: HD Bluray + WEB
                 score: 10
               - name: UHD Bluray + WEB
+                score: 10
+              - name: UHD Preferred
                 score: 10
       '';
     };
