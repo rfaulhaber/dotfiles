@@ -41,14 +41,19 @@ in {
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = builtins.pathExists "${hostDir}/secrets.yaml";
+        assertion = builtins.pathExists (hostDir + "/secrets.yaml");
         message = "$host/secrets.yaml must exist";
       }
     ];
 
     sops = {
       inherit (cfg) secrets;
-      defaultSopsFile = "${hostDir}/secrets.yaml";
+      # Path arithmetic, NOT "${hostDir}/secrets.yaml": interpolating the
+      # directory path copies the entire host dir into the store, so any edit
+      # to any file under nix/hosts/<host>/ would rehash the sops manifest and
+      # with it the host's toplevel. The concatenated path copies only the one
+      # file.
+      defaultSopsFile = hostDir + "/secrets.yaml";
       age =
         {
           inherit (cfg) sshKeyPaths;
