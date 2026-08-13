@@ -1,0 +1,46 @@
+# Static checks for the doom.d elisp: a reader pass over every file and a
+# byte-compile pass over the autoload files with high-signal warning classes
+# promoted to errors. The full doom config only truly builds inside
+# nix-doom-emacs-unstraightened — build-and-cache.yml covers that post-merge
+# via the host toplevels — so this job is the cheap pre-merge tripwire for
+# the bug classes a bare emacs can still see: unbalanced parens, malformed
+# bindings, empty bodies, wrong arg counts, obsolete forms.
+
+name: Doom Elisp Checks
+
+on:
+  pull_request:
+    paths:
+      - 'doom.d/**'
+      - '.github/scripts/check-doom-elisp.nu'
+      - '.github/workflows/doom-lint.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'doom.d/**'
+      - '.github/scripts/check-doom-elisp.nu'
+      - '.github/workflows/doom-lint.yml'
+
+concurrency:
+  group: doom-lint-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: DeterminateSystems/nix-installer-action@v22
+
+      # The hosted image has neither emacs nor nu. emacs-nox suffices: the
+      # checks never load doom, so the real config's emacs isn't needed.
+      - name: Check doom.d elisp
+        run: |
+          nix shell nixpkgs#emacs-nox nixpkgs#nushell \
+            --command nu .github/scripts/check-doom-elisp.nu
