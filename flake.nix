@@ -296,7 +296,6 @@
               inputs'.nil.packages.default
               inputs'.sops-nix.packages.default
               dix
-              gh
               rage
               skopeo
               sops
