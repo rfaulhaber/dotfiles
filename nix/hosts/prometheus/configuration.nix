@@ -22,25 +22,11 @@
     inputs.determinate.nixosModules.default
   ];
 
-  nix.settings = {
-    # nix-community covers what the aarch64 CI builds pull beyond
-    # cache.nixos.org; the CI runners inherit the daemon's substituters, so
-    # this list is what the old configure-nix.nu composed per-job.
-    substituters = [
-      "https://install.determinate.systems"
-      "https://nixos-raspberrypi.cachix.org"
-      "https://nix-community.cachix.org"
-      "http://vulcan.lan:4965"
-    ];
-    trusted-public-keys = [
-      "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
-      "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      "vulcan.lan-1:Zu8N+6EtaIeDTyCVpR15uvIYYByZqMmd8W09vu8GKl8="
-    ];
-  };
-
   modules = {
+    # The aarch64 CI runners build through this host's nix daemon and
+    # inherit its substituters (the old configure-nix.nu composed this
+    # list per-job).
+    nix.substituters.enable = true;
     programs = {
       btop.enable = true;
       nushell = {

@@ -15,29 +15,15 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
-  nix.settings = {
-    # The CI runners build every x86_64 host's closure through this host's
-    # nix daemon, so the system substituter list has to cover whatever those
-    # hosts pull from: niri for hyperion's compositor, nix-community for
-    # emacs. prometheus's harmonia serves arch-independent sources and
-    # aarch64 paths for manual binfmt builds. (The Forgejo workflows
-    # composed this list per-job in configure-nix.nu; native runners
-    # inherit the daemon's config instead.)
-    substituters = [
-      "https://install.determinate.systems"
-      "https://nix-community.cachix.org"
-      "https://niri.cachix.org"
-      "http://prometheus.lan:4965"
-    ];
-    trusted-public-keys = [
-      "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964="
-      "prometheus.lan-1:GetZTCVHg6NcVVteshbEZQbyMzZfIATcsIgt7si5Lmo="
-    ];
-  };
-
   modules = {
+    nix = {
+      bigHost = true;
+      # The CI runners build every x86_64 host's closure through this host's
+      # nix daemon, so the daemon needs the shared list. (The Forgejo
+      # workflows composed this per-job in configure-nix.nu; native runners
+      # inherit the daemon's config instead.)
+      substituters.enable = true;
+    };
     programs = {
       btop.enable = true;
       nushell = {

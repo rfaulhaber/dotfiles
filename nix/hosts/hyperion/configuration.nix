@@ -10,22 +10,6 @@
     inputs.determinate.nixosModules.default
   ];
 
-  # TODO move, make reusable
-  nix.settings = {
-    substituters = [
-      "https://install.determinate.systems"
-      "http://vulcan.lan:4965"
-      "https://nixos-raspberrypi.cachix.org"
-      "http://prometheus.lan:4965"
-    ];
-    trusted-public-keys = [
-      "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
-      "vulcan.lan-1:Zu8N+6EtaIeDTyCVpR15uvIYYByZqMmd8W09vu8GKl8="
-      "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="
-      "prometheus.lan-1:GetZTCVHg6NcVVteshbEZQbyMzZfIATcsIgt7si5Lmo="
-    ];
-  };
-
   nix.extraOptions = ''
     !include ${config.sops.templates."nix-access-tokens.conf".path}
   '';
@@ -40,6 +24,11 @@
   };
 
   modules = {
+    nix = {
+      bigHost = true;
+      # Deploys to the whole fleet build here.
+      substituters.enable = true;
+    };
     programs = {
       btop.enable = true;
       emacs = {
