@@ -72,6 +72,7 @@
 (package! sops)
 (package! just-mode)
 (package! justl)
+(package! ox-hugo)
 
 (package! mcp
   :pin "2d172809cbdb2a40d86b28ad73bd65547cefe0e1"
