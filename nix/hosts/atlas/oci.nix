@@ -297,6 +297,7 @@
         trading-bot = {
           enable = true;
           baseDir = "/data/apps/trading-bot";
+          paper.enable = true;
         };
 
         syncthing = {

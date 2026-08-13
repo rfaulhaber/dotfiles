@@ -19,19 +19,19 @@
     "images": {
       "dashboard": {
         "version": "latest",
-        "digest": "sha256:1b59e1c905c9b2cfe79434e0c75e34f5c03a83bb776c4fb6fa2e41bee3e49df5"
+        "digest": "sha256:aae926912ca43704e66b8146164eb2d285e36adb816a3beb95224ee80253ecfb"
       },
       "signal": {
         "version": "latest",
-        "digest": "sha256:c1519c0818f902c37e2195497e7fc728d1627b3df91c07321127f1df31b88c59"
+        "digest": "sha256:13d1d4b32374210f5f8eb19848c563fc9ffc7fea87fcfb76da0c5b21c2c45d47"
       },
       "relay": {
         "version": "latest",
-        "digest": "sha256:cabf08fbcae26d6800d01ad6a148af3eb0b6a8204d3a73deba0a8ca00d03d8f7"
+        "digest": "sha256:cbd7177363af2cdd27187504c41fced76e2529d1fb7d0343820b6253d89a28b4"
       },
       "management": {
         "version": "latest",
-        "digest": "sha256:297db3cef7f1f7331fee026f8e8c23d09a857547079f62511f138d1be0b93901"
+        "digest": "sha256:bf82dc78e9ede3e5b963da1a905a84ca1e07d0b8647b8238540572c81badfe03"
       },
       "coturn": {
         "version": "latest",

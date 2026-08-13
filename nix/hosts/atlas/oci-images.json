@@ -2,7 +2,7 @@
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:e464484e7e6cff8ee189036c9ba96977ab054104ea18067ecf6171d0f3f3f8f2"
+      "digest": "sha256:b3d44d324399152be4d50775ff639a364c0fa1cfda67f71b1f38264c4d0ca09f"
     }
   },
   "calibre": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:9338936eed6bbf166010441b774e83b303c24abb20a803a2e9712a74c6c4208d"
+      "digest": "sha256:174890eae2d51eb15280c237fe1d791b5861c877f75bcbab6a0420c41beb9054"
     }
   },
   "linkding": {
@@ -230,7 +230,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:b9f12857933dda730165e737495b357e53bab78e59bdcc853e0d65d8954b7ea5"
+      "digest": "sha256:4e43261e72ff962c44661944e7a608cb2b95218fd27b56b0e7d7527afc036a78"
     },
     "postgres": {
       "image": {
@@ -241,7 +241,7 @@
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005"
+        "digest": "sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241"
       }
     }
   }

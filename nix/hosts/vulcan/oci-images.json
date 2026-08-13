@@ -2,7 +2,7 @@
   "immich-ml": {
     "image": {
       "version": "release",
-      "digest": "sha256:d5561b55333f88ac4fe240f846c89f498693b0a9cedef6b1c45fcca0c7969cc4"
+      "digest": "sha256:5a0839dc5303cd7215bcd2180a26aed3af41675aefb3e75e5157e9f10ad16e6e"
     }
   },
   "plex": {
