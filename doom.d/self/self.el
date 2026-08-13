@@ -6,7 +6,6 @@
 
 ;; --------------------------------- variables ---------------------------------
 
-(defvar self/dict "~/.dict" "A path to a personal word list, such as /usr/share/dict/words")
 (defvar self/common-directories '() "Alist (Name . Path) of common directories, used by self/visit-common-directories")
 
 (defvar self/global-config-file-path "~/.config/globals.json" "Path to personal global config.")
@@ -343,14 +342,6 @@ hello world
                                (directory-file-name (expand-file-name location)))))
     (user-error "cannot find a directory to open")))
 
-(defun self/update-org-agenda-files ()
-  "Adds today's journal entry, if it exists, to  `org-agenda-files'."
-  (interactive)
-  (let ((journal-file-name (format-time-string "journal/%Y%m%d.org"))))
-  (setq org-agenda-files
-        (append org-agenda-files
-                (list journal-file-name))))
-
 (defun self/open-projectile-project-in-new-frame (&optional arg)
   "Like `self/projectile-open-project-in-new-workspace', but opens a new frame too."
   (interactive "P")
@@ -405,21 +396,6 @@ hello world
          (file-name (read-from-minibuffer "Description: ")))
     (format "[[%s][%s]]" file-path file-name)))
 
-(defun self/pick-random-word (word-count)
-  "Picks WORD-COUNT number of random words from the system dictionary."
-  (if (and
-       (boundp 'self/dict)
-       (file-exists-p self/dict)
-       (not (eq self/dict nil)))
-      (let* ((lines (s-split "\n" (self/slurp self/dict) t))
-             (line-len (length lines))
-             (words '()))
-        (dotimes (i word-count)
-          (let ((num (random (- line-len 1))))
-            (push (nth num lines) words)))
-        words)
-    (user-error "self/dict is not defined")))
-
 ;; thank you doom emacs discord user zzamboni
 ;; https://discordapp.com/channels/406534637242810369/695219268358504458/788524346309214249
 (defun self/org-md-src-block (src-block _contents info)
@@ -433,22 +409,6 @@ channel."
              (org-export-format-code-default src-block info)))))
 
 ;; TODO write more generic roam exporter that extends org publishing
-(defun self/org-export-preprocessor (_backend)
-  "For org-roam files, this will append all backlinks to a file to the end."
-  (when (org-roam-file-p)
-    (let ((links (mapcar
-                  (lambda (backlink)
-                    (let* ((source-node (org-roam-backlink-source-node backlink))
-                           (source-title (org-roam-node-title source-node))
-                           (source-id (org-roam-node-id source-node)))
-                      (format " - [[id:%s][%s]]\n" source-id source-title)))
-                  (org-roam-backlinks-get (org-roam-node-at-point)))))
-      (unless (eq (length links) 0)
-        (save-excursion
-          (goto-char (point-max))
-          (insert (concat "\n* Backlinks\n") (apply 'concat links)))))))
-
-;; TODO see above todo
 (defun self/org-roam-export-refs (_backend)
   "For org-roam files, exports the ROAM_REF property as a section at the bottom
 of the file as an unordered list."
@@ -469,15 +429,6 @@ of the file as an unordered list."
           (goto-char (point-max))
           (insert (concat "\n* Refs\n") (apply 'concat refs-as-bullet-links)))))))
 
-;; thank you stackoverflow
-(defun self/slurp (f)
-  "Like Clojure's slurp; reads a file to a value."
-  (with-temp-buffer
-    (insert-file-contents f)
-    (buffer-substring-no-properties
-     (point-min)
-     (point-max))))
-
 (cl-defun self/find-file-non-recursive (dir &key prompt filter-fn exclude-directories show-hidden)
   "Like `counsel-find-file' for DIR, but excludes directories and their
 children. PROMPT sets the `completing-read' prompt. FILTER-FN is a function to
@@ -497,14 +448,6 @@ will include any files that begin with ."
          (file-name (concat dir selection)))
     (find-file file-name)))
 
-(defun self/org-insert-modified-timestamp ()
-  "Inserts inactive timestamp to bottom of file."
-  (when (org-roam--org-roam-file-p)
-    (save-excursion
-      (goto-char (point-max))
-      (insert "Updated: ")
-      (org-time-stamp '(16) 'inactive))))
-
 (defun self/choose-date-format ()
   "Provides user with options from `self/date-format-options'."
   (completing-read "Select a format: " (mapcar 'car self/date-format-options)))
@@ -512,51 +455,6 @@ will include any files that begin with ."
 (defun self/format-date-from-option (option)
   "Formats current date according to selected date option."
   (format-time-string (cdr (assoc option self/date-format-options))))
-
-(defun self/org-filter-headings (filter-func)
-  (let ((headings nil))
-    (org-map-entries
-     (lambda ()
-       (when (funcall filter-func (org-heading-components))
-         (push (org-heading-components) headings))))
-    headings))
-
-(defun self/org-property-filter (data types pred)
-  "Like `org-element-map', but a filter function. Applies DATA, TYPES, and PRED
-to `org-element-map'"
-  (let ((col nil))
-    (org-element-map seq types (lambda (el)
-                                 (when (funcall pred el)
-                                   (push el col))))
-    col))
-
-(defun self/get-file-hierarchy-names (path level)
-  "Given a PATH, gets the nth name up in the file hierarchy."
-  (if (or (eq path nil)
-          (not (file-name-absolute-p path)))
-      (user-error "%s is nil or not an absolute path!" path)
-    (let* ((file-name-components (seq-filter
-                                  (lambda (str)
-                                    (not (string= "" str)))
-                                  (split-string (file-name-directory path) "/")))
-           (up (- (length file-name-components) level)))
-      (nth up file-name-components))))
-
-(defun self/swap-lines (left right)
-  "Swaps line at line number LEFT with RIGHT."
-  (let ((left-line-contents (self/get-line-contents left))
-        (right-line-contents (self/get-line-contents right)))
-    (self/goto-line-non-interactive left)
-    (kill-line)
-    (insert right-line-contents)
-    (self/goto-line-non-interactive right)
-    (kill-line)
-    (insert left-line-contents)))
-
-(defun self/get-line-contents (line-number)
-  "Returns the contents of a line on LINE-NUMBER."
-  (self/goto-line-non-interactive line-number)
-  (buffer-substring (line-beginning-position) (line-end-position)))
 
 (defun self/goto-line-non-interactive (line-number)
   "Helper for going to a line at LINE-NUMBER without invoking `goto-line'."
@@ -566,11 +464,6 @@ to `org-element-map'"
   "Helper for going to a col at COL-NUMBER without invoking `goto-char' or
 `move-to-column'."
   (forward-char (- col-number (current-column))))
-
-;; thank you http://stackoverflow.com/questions/6158990/generating-randoms-numbers-in-a-certain-range-for-common-lisp
-(defun self/random-in-range (start end)
-  "Returns a random number n where START <= n <= END."
-  (+ start (random (+ 1 (- end start)))))
 
 (defun self/org-publish-before-advice (&rest args)
   (org-roam-update-org-id-locations))
@@ -618,23 +511,6 @@ of line, moves cursor to the end of LINE."
         (when (/= i j)
           (cl-rotatef (elt lst i) (elt lst j))))))
   lst)
-
-(defun self/pick (lst)
-  "Randomly chooses an item from a list."
-  (let ((choice (abs (random (length lst)))))
-    (nth choice lst)))
-
-(defun self/rotn (str n)
-  "Like rot13, except variable. Rotate STR by N % 26."
-  (apply #'string (mapcar (lambda (char)
-                            (self/translate-char char n))
-                          (mapcar #'string-to-char (string-split str "" t)))))
-
-(defun self/translate-char (char n)
-  "Rotates CHAR by N"
-  (let* ((base (if (>= char ?a) ?a ?A))
-         (offset (mod (+ (- char base) n) 26)))
-    (+ base offset)))
 
 ;; NOTE doesn't quite work?
 (defun self/org-babel-execute-src-block-lazy-load (original-fn &rest args)

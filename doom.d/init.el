@@ -70,7 +70,7 @@
        (lookup +dictionary +offline +docsets) ; navigate your code and its documentation
        (lsp +eglot +peek)
        magit                                  ; a git porcelain for Emacs
-       (:if (not (featurep :system 'macos)) pdf) 
+       (:if (not (featurep :system 'macos)) pdf)
 
        :lang
        data                                                                             ; config/data formats
@@ -81,7 +81,7 @@
        latex                                                                            ; writing papers in Emacs has never been so fun
        markdown                                                                         ; writing docs for people to ignore
        (nix +lsp)                                                                       ; I hereby declare "nix geht mehr!"
-       (org +hugo +journal +pandoc +present +roam2 +dragndrop +pretty +pomodoro) ; organize your plain life in plain text
+       (org +crypt +journal +pandoc +present +roam +dragndrop +pretty) ; organize your plain life in plain text
        (python +lsp +pyright)                                                           ; beautiful is better than ugly
        (rust +lsp)                                                                      ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        (sh +lsp)                                                                        ; she sells {ba,z,fi}sh shells on the C xor
@@ -92,7 +92,7 @@
        everywhere
 
        :os
-       (:if IS-MAC macos)             ; MacOS-specific commands
+       (:if (featurep :system 'macos) macos) ; MacOS-specific commands
 
        :config
        (default +bindings +smartparens))

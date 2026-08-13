@@ -1,6 +1,5 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-(defvar config/work-computer-p nil "If t, is a work computer.")
 (defvar config/font-size 16 "Font size. Should be specified by a host.")
 (defvar self/system-name (string-trim-right (system-name) (rx (or "\.lan" "\.attlocal.net" "\.local")))
   "System name. Used in loading init scripts.")
@@ -21,10 +20,6 @@ Used in loading config specific to those systems.")
 
 ;; load custom code
 (load! "./self/self.el")
-
-;; if a work computer, load additional config
-(when config/work-computer-p
-  (load! "./self/work.el"))
 
 ;; --------------------------------- doom basics ----------------------------------
 
@@ -104,9 +99,6 @@ Used in loading config specific to those systems.")
 (map! :leader "d"     #'dired)
 (map! :leader "TAB i" #'+ibuffer/open-for-current-workspace)
 (map! :leader "i k" #'consult-yank-from-kill-ring)
-;; racket-mode doesn't define evil-jump-item and it's annoying
-(map! :mode racket-mode
-      "TAB" #'evil-jump-item)
 
 (map! :leader "b o" #'self/new-buffer-with-mode)
 (map! :leader "TAB p" #'self/projectile-open-project-in-new-workspace)
@@ -160,8 +152,7 @@ Used in loading config specific to those systems.")
 
 ;; --------------------------------- org mode ---------------------------------
 (after! org
-  (load! "./self/org-templates.el")
-  (org-crypt-use-before-save-magic))
+  (load! "./self/org-templates.el"))
 
 ;; for org mode, set the fill column to 130
 (add-hook 'org-mode-hook (lambda ()
@@ -179,20 +170,13 @@ Used in loading config specific to those systems.")
       (mapcar
        (lambda (str)
          (concat org-directory "/" str))
-       (append
-        (list
-         "todo.org"
+       '("todo.org"
          "habits.org"
-         "projects.org"
          "blog.org"
-         "todo")
-        (when config/work-computer-p
-          (list (format-time-string "journal/%Y%m%d.org"))))))
+         "todo")))
 
 ;; org-roam
-(setq
- org-roam-directory "~/org/roam"
- org-roam-graph-exclude-matcher '("daily"))
+(setq org-roam-directory "~/org/roam")
 
 ;; for adding backlinks to exported org-roam files
 (add-hook 'org-export-before-processing-functions #'self/org-roam-export-refs)
@@ -225,10 +209,6 @@ Used in loading config specific to those systems.")
 
 (add-hook 'org-journal-mode-hook (lambda ()
                                    (setq org-element-use-cache nil)))
-
-(when config/work-computer-p
-  (setq org-journal-file-header #'work/org-journal-file-header)
-  (add-hook 'org-journal-after-header-create-hook #'work/org-journal-after-header-create-hook))
 
 ;; org-ref
 (setq bibtex-completion-notes-path "~/org/bibliography/notes.org"
