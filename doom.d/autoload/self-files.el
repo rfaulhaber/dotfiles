@@ -34,7 +34,7 @@
                                 :exclude-directories t
                                 :filter-fn (lambda (file)
                                              (not
-                                              (string-match-p (rx (seq any "_archive")) file)))))
+                                              (string-match-p (rx "_archive") file)))))
 
 ;;;###autoload
 (defun self/find-org-file-dir ()
@@ -102,7 +102,7 @@
     (funcall (intern mode))))
 
 ;;;###autoload
-(defun self/projectile-open-project-in-new-workspace (&optional arg)
+(defun self/projectile-open-project-in-new-workspace (&optional _arg)
   (interactive "P")
   (if-let* ((projects (projectile-relevant-known-projects))
             (selected-project (completing-read "Select a project: " projects nil t))
@@ -197,7 +197,7 @@
     (user-error "cannot find a directory to open")))
 
 ;;;###autoload
-(defun self/open-projectile-project-in-new-frame (&optional arg)
+(defun self/open-projectile-project-in-new-frame (&optional _arg)
   "Like `self/projectile-open-project-in-new-workspace', but opens a new frame too."
   (interactive "P")
   (if-let* ((projects (projectile-relevant-known-projects))
@@ -239,7 +239,7 @@ filter the list of retrieved files from the directory. EXCLUDE-DIRECTORIES, if
 non-nil, will remove any directories from the list. If SHOW-HIDDEN is non-nil,
 will include any files that begin with ."
   (let* ((dir (concat (string-trim-right dir (rx (one-or-more "/"))) "/"))
-         (filter (rx line-start (not ".") (zero-or-more any) eol)) ; ^[^.].*$
+         (filter (rx line-start (not ".") (zero-or-more not-newline) eol)) ; ^[^.].*$
          (files (directory-files dir nil (if show-hidden nil filter)))
          (filtered-files (if filter-fn (seq-filter filter-fn files) files))
          (non-dir-files (if exclude-directories
@@ -258,7 +258,7 @@ will include any files that begin with ."
   "Advice for LOOKUP-FN. Opens a link-like object: a file, URL, etc."
   (let ((identifier (nth 0 args))
         (url-pattern (rx line-start (seq "http" (? "s") "://")))
-        (file-path-pattern (rx line-start (group (one-or-more any)) "/" (group (one-or-more (not "/"))) line-end)))
+        (file-path-pattern (rx line-start (group (one-or-more not-newline)) "/" (group (one-or-more (not "/"))) line-end)))
     (cond
      ((string-match-p url-pattern identifier) (browse-url identifier))
      ((and

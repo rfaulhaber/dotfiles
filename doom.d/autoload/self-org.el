@@ -64,7 +64,7 @@ of the file as an unordered list."
   (org-roam-ref-add (car kill-ring)))
 
 ;;;###autoload
-(defun self/org-publish-before-advice (&rest args)
+(defun self/org-publish-before-advice (&rest _args)
   (org-roam-update-org-id-locations))
 
 ;; NOTE doesn't quite work?
