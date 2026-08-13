@@ -4,7 +4,7 @@
 ;; (setq ispell-program-name "/usr/local/bin/aspell")
 
 ;; do some key remapping
-(setq mac-option-buffer          'meta
+(setq mac-option-modifier        'meta
       mac-right-option-modifier  'meta
       mac-command-modifier       'super
       mac-right-command-modifier 'super)

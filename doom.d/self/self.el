@@ -193,8 +193,7 @@ only adds the top line."
          (padding (make-string padding-width ?-))
          (centered-text (concat padding " " text " " padding)))
     (save-excursion
-      (insert (concat comment-start centered-text comment-end))
-      (comment-region (line-beginning-position) (line-end-position)))))
+      (insert (concat comment-start centered-text comment-end)))))
 
 (defun self/roam-ref-add-from-clipboard ()
   (interactive)
@@ -221,14 +220,14 @@ returns:
 hello world
 ==========="
   (interactive "sChar: ")
-  (let ((current-line-length (- (eol) (bol))))
+  (let ((fill (make-string (- (line-end-position) (line-beginning-position))
+                           (string-to-char char))))
     (save-excursion
-      (forward-line -1)
-      (delete-region (bol) (eol))
-      (insert (make-string current-line-length (string-to-char char)))
-      (forward-line 2)
-      (delete-region (bol) (eol))
-      (insert (make-string current-line-length (string-to-char char))))))
+      (beginning-of-line)
+      (insert fill "\n"))
+    (save-excursion
+      (end-of-line)
+      (insert "\n" fill))))
 
 ;; thank you ChatGPT
 (defun self/evil-ex-shuffle-lines (beg end)
@@ -281,18 +280,15 @@ hello world
 (defun self/reload-projectile-projects ()
   "Reloads projectile projects from the ~/Projects directory"
   (interactive)
-  (let ((projectile-projects (projectile-relevant-known-projects))
-        (projects-dir (read-dir-locals-file "~/Projects")))
-    (mapc (lambda (project-dir)
-            (unless (member project-dir projectile-projects)
-              (projectile-add-known-project project-dir)))
-          projects-dir)))
+  (dolist (dir (directory-files "~/Projects" t directory-files-no-dot-files-regexp))
+    (when (file-directory-p dir)
+      (projectile-add-known-project dir))))
 
 (defun self/paste-to-file (name)
   (interactive "FName? ")
   (get-buffer-create name)
   (with-current-buffer name
-    (insert (pop kill-ring))
+    (insert (current-kill 0))
     (write-region (point-min) (point-max) name)
     (switch-to-buffer (current-buffer))))
 
@@ -301,16 +297,16 @@ hello world
   (when (not (eq major-mode #'dired-mode))
     (user-error "Can only be run in Dired mode"))
 
-  (let ((buffer (get-buffer-create "*dired diff*"))
-        (files (dired-get-marked-files)))
-
+  (let ((files (dired-get-marked-files)))
     (when (> 2 (length files))
-      (kill-buffer buffer)
       (user-error "Need at least two files to diff!"))
 
-    (with-current-buffer buffer
-      (erase-buffer)
-      (insert (shell-command-to-string (format "delta %s %s" (car files) (nth 1 files)))))))
+    (let ((buffer (get-buffer-create "*dired diff*")))
+      (with-current-buffer buffer
+        (erase-buffer)
+        (call-process "delta" nil t nil (car files) (nth 1 files))
+        (goto-char (point-min)))
+      (pop-to-buffer buffer))))
 
 (defun self/display-theme-colors ()
   "Loads and displays the theme values from `self/global-config-file-path'"
@@ -439,11 +435,13 @@ will include any files that begin with ."
          (filter (rx line-start (not ".") (zero-or-more any) eol)) ; ^[^.].*$
          (files (directory-files dir nil (if show-hidden nil filter)))
          (filtered-files (if filter-fn (seq-filter filter-fn files) files))
-         (non-dir-files (if exclude-directories (seq-filter (lambda (file)
-                                                              (not
-                                                               (file-directory-p
-                                                                (concat dir "/" file))))
-                                                            filtered-files)))
+         (non-dir-files (if exclude-directories
+                            (seq-filter (lambda (file)
+                                          (not
+                                           (file-directory-p
+                                            (concat dir "/" file))))
+                                        filtered-files)
+                          filtered-files))
          (selection (completing-read (or prompt "Find file: ") non-dir-files))
          (file-name (concat dir selection)))
     (find-file file-name)))
@@ -537,12 +535,10 @@ of line, moves cursor to the end of LINE."
   (interactive "<r><a>")
   (let ((s (or beg (point-min)))
         (f (or end (point-max)))
-        (bufname (buffer-file-name (buffer-base-buffer))))
-    (cond
-     ((null bufname) (let ((filename (make-temp-file prefix)))
-                       (write-file filename)))
-     (t (let ((tmpfile (make-temp-file prefix))
-              (write-region s f tmpfile)))))))
+        (tmpfile (make-temp-file (or prefix "wtemp"))))
+    (if (buffer-file-name (buffer-base-buffer))
+        (write-region s f tmpfile)
+      (write-file tmpfile))))
 
 (evil-define-operator self/evil-write-suspend (beg end type file-or-append &optional bang)
   "Like evil-write, but quickly changes the buffer to `text-mode' first.

@@ -268,20 +268,10 @@ Used in loading config specific to those systems.")
 (setq magit-clone-default-directory "~/Projects/")
 
 ;; nix mode
-;; set formatter to alejandra
-(set-formatter! 'alejandra '("alejandra" "--quiet") :modes '(nix-mode))
-
-;; apheleia
-(after! apheleia
-  ;; add formatter for alejandra
-  (push '(alejandra . ("alejandra" "-")) apheleia-formatters)
-
-  ;; set nix to use alejandra rather than nixfmt
-  (setf (alist-get 'nix apheleia-mode-alist) 'alejandra))
-
-;; configure nix-ts-mode
+;; .nix files use the treesit mode; formatting comes from nil/alejandra via
+;; eglot (the :editor format module's +lsp flag prefers the LSP formatter in
+;; eglot-managed buffers)
 (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-ts-mode))
-(add-hook 'nix-ts-mode-hook 'eglot-ensure)
 
 ;; lua mode
 (after! lua-mode
@@ -294,25 +284,23 @@ Used in loading config specific to those systems.")
   (message "treesit language unavailable for nu!"))
 
 ;; eglot
+;; `eglot-ensure' is autoloaded, so the mode hooks must live at top level: a
+;; hook registered inside `after! eglot' would only take effect once something
+;; else had already loaded eglot.
+(add-hook 'nix-ts-mode-hook #'eglot-ensure)
+(add-hook 'nix-mode-hook #'eglot-ensure)
+(add-hook 'nushell-ts-mode-hook #'eglot-ensure)
+(add-hook 'elixir-mode-hook #'eglot-ensure)
+(add-hook 'elixir-ts-mode-hook #'eglot-ensure)
+
 (after! eglot
   (add-to-list 'eglot-server-programs
                '((nix-ts-mode nix-mode) . ("nil" :initializationOptions
                                            (:formatting (:command ["alejandra" "--quiet" "-"])))))
-
-  (add-hook 'nix-ts-mode-hook #'eglot-ensure)
-  (add-hook 'nix-mode-hook #'eglot-ensure)
-
   (add-to-list 'eglot-server-programs
                '(nushell-ts-mode . ("nu" "--lsp")))
-
-  (add-hook 'nushell-ts-mode-hook #'eglot-ensure)
-
   (add-to-list 'eglot-server-programs
                '((elixir-ts-mode elixir-mode) . ("elixir-ls")))
-
-  (add-hook 'elixir-mode-hook #'eglot-ensure)
-  (add-hook 'elixir-ts-mode-hook #'eglot-ensure)
-
   (add-to-list 'eglot-server-programs
                '(terraform-mode . ("tflint" "--langserver"))))
 
