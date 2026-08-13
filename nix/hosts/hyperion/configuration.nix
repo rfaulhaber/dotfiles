@@ -206,9 +206,11 @@
         enable = true;
         setDefaultPDFViewer = true;
       };
+      # misc packages that don't cleanly belong inside of a module
       extraPackages = with pkgs; [
-        feishin
         inputs.rz.packages.${pkgs.stdenv.hostPlatform.system}.with-xz2-bzip2
+        feishin
+        gh
         moonlight-qt
         signal-desktop
         ungoogled-chromium
