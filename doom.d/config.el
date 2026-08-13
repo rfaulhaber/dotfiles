@@ -155,8 +155,7 @@ Used in loading config specific to those systems.")
 (setq rust-mode-treesitter-derive t)
 
 ;; enable global-sops-mode
-(after! sops
-  (global-sops-mode 1))
+(global-sops-mode 1)
 
 
 ;; --------------------------------- org mode ---------------------------------
