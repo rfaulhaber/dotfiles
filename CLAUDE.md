@@ -125,6 +125,7 @@ modules.themes.active = "tokyo-night-dark";
 ### Configuration Files
 
 Application configs live in `/config/` and are symlinked to `~/.config/`. Notable:
+- `/generated/` - Rendered ghostty/nushell configs for hosts NOT managed by Nix (external consumers copy them; nothing in-repo reads them — see its README). Refresh with `nix build .#generated-configs`.
 - `/doom.d/` - Doom Emacs configuration
 - `/config/nushell/` - Nushell with host-specific configs in `hosts/`
 - Niri (the active Wayland compositor) is configured inline in `nix/modules/linux/services/desktop/environment/niri/`, not under `/config/`

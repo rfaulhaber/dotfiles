@@ -1,0 +1,27 @@
+#+title: generated configs
+
+Rendered application configs for hosts that are /not/ managed by Nix. The Nix
+modules stay the source of truth for themes, fonts, and shell configuration;
+this tree exports the same rendered results as plain files so a non-Nix host
+(e.g. a work machine) can use the identical setup by copying them into place.
+
+Nothing inside this repo consumes these files — that is by design, not an
+oversight. The consumers are external machines that read this tree directly.
+
+* Regenerating
+
+The files are built by =nix/generated/default.nix= (exposed as the
+=generated-configs= package), which renders ghostty and nushell configs for
+both platforms from the theme pipeline in =nix/lib/configs/=. Theme and font
+defaults live in =nix/generated/defaults.nix=.
+
+After changing a theme, font, or the underlying config templates:
+
+#+begin_src nushell
+nix build .#generated-configs
+^cp -rf --no-preserve=mode result/* generated/
+#+end_src
+
+then commit the diff. =--no-preserve=mode= matters: without it the copies
+keep the store's read-only permissions and the next regeneration fails on
+overwrite.
