@@ -46,7 +46,6 @@
         enable = true;
         package = pkgs.emacs-git;
       };
-      kitty.enable = true;
       ghostty = {
         enable = true;
         fontSize = 20;

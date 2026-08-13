@@ -9,7 +9,6 @@
     ./emacs
     ./ghostty
     ./git
-    ./kitty
     ./nushell
     ./sops
     ./zellij
