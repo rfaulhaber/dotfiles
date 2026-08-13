@@ -258,15 +258,6 @@ in {
       default = "America/New_York";
     };
 
-    networks = mkOption {
-      description = ''
-        Networks the Sure containers join. The dedicated "sure" network
-        keeps the database and redis isolated from the default network.
-      '';
-      type = types.listOf types.str;
-      default = [networkName];
-    };
-
     dependsOn = mkOption {
       description = "Other oci-containers the web/worker containers depend on.";
       type = types.listOf types.str;
@@ -352,9 +343,9 @@ in {
         };
       };
 
-    modules.linux.oci.networks = listToAttrs (
-      map (n: nameValuePair n {enable = true;}) cfg.networks
-    );
+    # Dedicated network keeps the database and redis isolated from the
+    # default network.
+    modules.linux.oci.networks.${networkName}.enable = true;
 
     sops.secrets =
       {

@@ -100,15 +100,6 @@ in {
       };
     };
 
-    networks = mkOption {
-      description = ''
-        Networks the paperless containers join. Defaults to a dedicated
-        "paperless" network so postgres + redis stay isolated from other apps.
-      '';
-      type = types.listOf types.str;
-      default = [networkName];
-    };
-
     dependsOn = mkOption {
       description = "Other oci-containers the paperless container depends on.";
       type = types.listOf types.str;
@@ -385,9 +376,8 @@ in {
         };
       };
 
-    modules.linux.oci.networks = listToAttrs (
-      map (n: nameValuePair n {enable = true;}) cfg.networks
-    );
+    # Dedicated network so postgres + redis stay isolated from other apps.
+    modules.linux.oci.networks.${networkName}.enable = true;
 
     sops.secrets =
       {
