@@ -52,7 +52,7 @@ nix flake init -t .#emacs-lisp  # Emacs Lisp template
 ```bash
 nix build .#rpi3-installer              # Raspberry Pi 3 SD card image
 nix build .#x86_64-installer            # x86_64 install ISO
-nix build .#roc-rk3328-cc-bootloader    # Firefly ROC-RK3328-CC bootloader
+nix build .#rpi5-installer              # Raspberry Pi 5 SD card image
 ```
 
 Installer image modules live in `nix/images/`.

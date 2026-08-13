@@ -223,24 +223,12 @@ For binary secrets (raw ZFS keys), use a separate file at `nix/hosts/atlas/secre
 Only relevant if cutting over from existing data on disk. Add a per-service section under `* Per-service steps` with subsections:
 
 - `*** Pre-cutover` — anything that has to happen before `nixos-rebuild switch` (e.g., encrypting an existing key into sops, stopping legacy containers cleanly with `docker-compose down` for postgres).
-- `*** Stop & relocate` — the on-disk shuffle. If using the migration script, reference `migrate-datasets.nu`; otherwise inline the commands.
+- `*** Stop & relocate` — the on-disk shuffle. Inline the commands (`zfs rename`/`zfs set mountpoint`/`mv`, with a dry-run pass first).
 - `*** Secrets` — what each sops key does, where the legacy value lives.
 - `*** Verify after switch` — `systemctl status`, `curl` checks, mountpoint/recordsize verification.
 - `*** Post-cutover` (optional) — cleanup of legacy paths/keys.
 
 For services starting fresh (no legacy data), MIGRATION.org may not need an entry at all.
-
-### Migration script (`nix/hosts/atlas/migrate-datasets.nu`)
-
-Only if cutting over from existing data:
-
-- **Single-volume from `/docker/config/<svc>`**: `migrate` op, source = legacy path, dataset = new dataset name, dst = new mountpoint, chown if linuxserver-style.
-- **Single-volume from a dataset with wrong mountpoint**: `set-mountpoint` op (no data movement, just retargets the mount).
-- **Collapsing parent + only child**: `promote-to-parent` op (atomic 3-step rename via `<parent>_collapse_tmp`).
-- **Collapsing parent + multi-child** (one survives): `promote-to-parent` op (mount-parent-first + cross-fs mv into parent).
-- **Empty residual to remove**: `destroy-if-empty` op (allows empty snapshots, uses `zfs destroy -r`).
-
-Always do a `--dry-run` pass first.
 
 ### newt (Pangolin tunnel)
 

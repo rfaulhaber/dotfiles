@@ -225,9 +225,6 @@
           };
           lib = pkgs.lib;
         in {
-          roc-rk3328-cc-bootloader = import ./nix/pkgs/roc-rk3328-cc-bootloader {
-            inherit pkgs lib;
-          };
           rpi3-installer =
             (inputs.nixpkgs.lib.nixosSystem {
               system = "aarch64-linux";
