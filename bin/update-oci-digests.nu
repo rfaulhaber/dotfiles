@@ -83,6 +83,38 @@ def query-repo [host: string, path: list<any>] {
     }
 }
 
+# The tag a leaf's digest must be fetched for is not always its bare
+# `version`: GPU-variant images get a suffix appended at render time
+# (mkGpuImage turns immich-ml's version "release" into tag
+# "release-openvino" on an intel host). Rather than re-deriving per-module
+# suffix rules, read the host's rendered container definitions — the exact
+# references podman will pull — and take the tag from the reference whose
+# repository and digest match the leaf.
+def rendered-images [host: string] {
+    let attr = $".#nixosConfigurations.($host).config.virtualisation.oci-containers.containers"
+    let result = (^nix eval --json $attr --apply "builtins.mapAttrs (_: c: c.image)" | complete)
+    if $result.exit_code != 0 {
+        print -e $"WARN: could not read rendered containers for ($host); falling back to bare version tags: ($result.stderr | str trim)"
+        []
+    } else {
+        $result.stdout | from json | values
+    }
+}
+
+# Entries with no rendered match fall back to the bare version — that covers
+# pinned services the host currently disables, at the cost of fetching the
+# unsuffixed tag for a *disabled* GPU service. An enabled one always matches.
+def resolve-tag [rendered: list<string>, repo: string, spec] {
+    let hits = ($rendered | where {|r|
+        ($r | str starts-with $"($repo):") and ($r | str ends-with $"@($spec.digest)")
+    })
+    if ($hits | is-empty) {
+        $spec.version
+    } else {
+        $hits | first | str substring (($repo | str length) + 1).. | split row "@" | first
+    }
+}
+
 # Resolve the current manifest digest of repo:tag against the registry.
 # `--no-tags` skips the post-inspect /tags/list call we don't need.
 # Returns {ok, digest, error} rather than raising: upstreams retire tags
@@ -129,6 +161,7 @@ def main [...hosts: string]: nothing -> nothing {
     print $"=== Inspecting ($h.host) ==="
     let manifest = (open $h.file)
     let specs = (find-image-specs $manifest)
+    let rendered = (rendered-images $h.host)
     print $"  ($specs | length) image\(s\) declared"
 
     let host_results = ($specs | par-each { |s|
@@ -146,7 +179,8 @@ def main [...hosts: string]: nothing -> nothing {
             }
         } else {
             let repo = $repo_result.repository
-            let fetched = (fetch-digest $repo $s.version)
+            let tag = (resolve-tag $rendered $repo $s)
+            let fetched = (fetch-digest $repo $tag)
             if not $fetched.ok {
                 print $"  FAIL    ($path_str): ($fetched.error)"
                 {

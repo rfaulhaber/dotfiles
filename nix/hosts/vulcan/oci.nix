@@ -42,16 +42,6 @@
         enable = true;
         gpu = "intel";
         openFirewall = true;
-        # Pinned here, not in oci-images.json: gpu="intel" makes the effective
-        # tag `release-openvino`, but update-oci-digests.nu inspects
-        # `repository:version` without the GPU suffix. A JSON pin would be
-        # rewritten with the plain `release` digest on the next update run,
-        # silently swapping the Intel-optimized image for the generic one.
-        # Keeping it out of the JSON walk avoids that clobber; refresh by hand:
-        #   skopeo inspect --no-tags --format "{{.Digest}}" \
-        #     docker://ghcr.io/immich-app/immich-machine-learning:release-openvino
-        image.version = "release";
-        image.digest = "sha256:d5561b55333f88ac4fe240f846c89f498693b0a9cedef6b1c45fcca0c7969cc4";
       };
       open-webui = {
         enable = true;
