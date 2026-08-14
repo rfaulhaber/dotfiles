@@ -56,6 +56,10 @@
     };
     # I use flake-parts to ensure I can use my flake across platforms, although I probably shouldn't
     flake-parts.url = "github:hercules-ci/flake-parts";
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     disko = {
       url = "github:nix-community/disko/latest";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -87,7 +91,7 @@
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} ({...}: {
-      imports = [];
+      imports = [inputs.git-hooks.flakeModule];
       flake = let
         lib = inputs.nixpkgs.lib.extend (self: _super: {
           my = import ./nix/lib {
@@ -250,6 +254,7 @@
       };
       systems = ["x86_64-linux" "aarch64-darwin"];
       perSystem = {
+        config,
         pkgs,
         inputs',
         system,
@@ -270,6 +275,16 @@
           inherit (pkgs) lib;
         };
 
+        pre-commit.settings.hooks = {
+          alejandra.enable = true;
+          deadnix = {
+            enable = true;
+            # templates are scaffolding; their unused bindings are placeholders
+            excludes = ["^nix/templates/"];
+          };
+          statix.enable = true;
+        };
+
         devShells.default = pkgs.mkShell {
           packages = with pkgs;
             [
@@ -281,9 +296,15 @@
               skopeo
               sops
             ]
+            ++ [
+              # for running hooks by hand (`pre-commit run --all-files`);
+              # the installed git hook pins its own store path and doesn't need this
+              config.pre-commit.settings.package
+            ]
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
               inputs'.nix-darwin.packages.default
             ];
+          shellHook = config.pre-commit.installationScript;
         };
       };
     });
