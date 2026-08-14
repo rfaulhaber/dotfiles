@@ -109,7 +109,7 @@
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+        "digest": "sha256:a1d02e4bd40c94d3bf2bdd3678c137388e76d9efcd23c285e9429d336a834b44"
       }
     }
   },
@@ -139,7 +139,7 @@
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+        "digest": "sha256:a1d02e4bd40c94d3bf2bdd3678c137388e76d9efcd23c285e9429d336a834b44"
       }
     },
     "redis": {
@@ -235,7 +235,7 @@
     "postgres": {
       "image": {
         "version": "16-alpine",
-        "digest": "sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777"
+        "digest": "sha256:44c4ee9810eff91f7eab4d822642e01115b1a9eccce4bcbdde7604752d68eac6"
       }
     },
     "redis": {
