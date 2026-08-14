@@ -1,0 +1,358 @@
+#+TITLE: prometheus: nixos-raspberrypi → nixos-hardware migration
+#+AUTHOR: Ryan Faulhaber
+#+STARTUP: overview logdone
+
+Plan researched [2026-08-07 Fri]. Facts verified against the flake.lock pins of
+that date: nixos-hardware =2e790b0a= (2026-07-28), nixpkgs =b7c2ada9=
+(2026-08-05), and the live host.
+
+* Why move off nixos-raspberrypi
+
+nixos-raspberrypi builds the vendor kernel against /its own/ nixpkgs pin
+(25.11) so it can serve prebuilt binaries from cachix. Running it under this
+flake's nixos-unstable is exactly what has hurt:
+
+- the =passthru.target= graft hack in =configuration.nix= (their kernel predates
+  a nixpkgs bootloader-module change),
+- ZFS opted out because the cachix cache lacks the kernel's =-dev= output,
+- eval-breakage risk on every nixpkgs bump, since their modules and ours
+  disagree about nixpkgs versions,
+- their cachix substituter wired into both prometheus /and/ hyperion.
+
+Meanwhile [2026-08-07 Fri]:
+
+- nixpkgs never had a Pi 5 vendor kernel and deprecated the whole
+  =linux_rpi*= family (2026-04, PR 477665) with an eval warning that says to
+  use nixos-hardware instead.
+- nixos-hardware grew a =raspberry-pi/5= profile (2026-01, commit =c8f766f=),
+  actively maintained. It builds the vendor kernel /against this flake's
+  nixpkgs/, and everything else in its boot path is a stock nixpkgs package
+  (=raspberrypifw=, =ubootRaspberryPiAarch64=, =generic-extlinux-compatible=).
+- The one cost, verified by dry-run: nobody caches that kernel. The
+  =linux-rpi-6.18.34-stable_20260609= derivation lands in "will be built" —
+  we compile it on our own infra, and harmonia serves it afterwards.
+
+** Why not mainline (yet)
+
+Mainline 6.18 covers the headless feature set (SD since v6.12, PCIe/NVMe
+v6.16, RP1 south bridge v6.17, RP1 gigabit ethernet + USB3 v6.18), but two
+things disqualify it for this host today:
+
+1. No thermal/fan support at all: mainline's =bcm2712= DT has no
+   thermal-zones, no cooling maps, and no RP1 PWM driver exists upstream. A
+   CI runner under sustained compile load would sit at the firmware throttle
+   ceiling with an inert active cooler.
+2. The DTB schema trap: the NixOS boot chain hands the kernel the
+   /downstream/-schema DTB (from =raspberrypifw=, via the GPU firmware and
+   U-Boot). Mainline's RP1 driver expects a structurally different topology.
+   Kernel 6.18 tolerates the mismatch via a PCI quirk; v6.19 deliberately
+   removed that fallback — a routine kernel bump could silently cost the
+   ethernet on a headless box.
+
+Revisit when mainline gains RP1 PWM + bcm2712 thermal-zones AND the DTB
+story is settled (either the boot chain loads mainline DTBs by default or
+the RP1 driver regains firmware-DTB tolerance).
+
+* Target state
+
+| aspect         | before (nixos-raspberrypi)                      | after (nixos-hardware)                                  |
+|----------------+-------------------------------------------------+---------------------------------------------------------|
+| kernel         | vendor 6.18.42, tag =unstable_20260806=, foreign pin | vendor 6.18.34, tag =stable_20260609=, our nixpkgs |
+| kernel binaries | nixos-raspberrypi.cachix.org                   | built natively on prometheus, served by its harmonia    |
+| boot chain     | GPU firmware → kernel directly ("kernel" bootloader) | GPU firmware → =u-boot.bin= → =extlinux.conf=      |
+| generations    | on the FAT firmware partition                   | on the ext4 root (=/boot/extlinux=), FAT holds firmware only |
+| firmware files | nixos-raspberrypi module                        | =hardware.raspberry-pi.firmware= activation script      |
+| config.txt     | nixos-raspberrypi generated                     | =hardware.raspberry-pi.configtxt= (=kernel=u-boot.bin=; pi5 =enable_uart=0= default) |
+| page size      | 16K                                             | 16K (=bcm2712_defconfig= sets =ARM64_16K_PAGES=y= — verified at the pinned tag) |
+| filesystems    | =FIRMWARE= vfat + =NIXOS_SD= ext4               | unchanged; =sd-image-aarch64.nix= declares the same labels |
+| sd image       | nixos-raspberrypi sd-image module               | nixpkgs =sd-image-aarch64.nix=                          |
+
+Invariants worth stating: same SD card, no repartitioning; DTBs stay
+vendor-schema (coherent with the vendor kernel); U-Boot keeps using the
+firmware-provided DTB (=uboot.enable= sets
+=generic-extlinux-compatible.useGenerationDeviceTree = false=, so
+=extlinux.conf= carries no =FDTDIR= line and config.txt overlays survive).
+
+Two gotchas the module reads surfaced:
+
+- The =raspberry-pi-5= profile does /not/ enable the firmware install or
+  U-Boot chainload by default — =hardware.raspberry-pi.firmware.enable= and
+  =.uboot.enable= must both be set explicitly, or the SD image and the
+  running system get an =extlinux.conf= nothing ever reads.
+- hyperion's nixos-raspberrypi cachix entries are what let it deploy
+  prometheus today (binfmt emulation + substitution). They must be
+  /replaced/ by prometheus's harmonia, not merely deleted, or future
+  =deploy-rs= runs will rebuild the kernel under QEMU (Phase 4).
+
+* Plan [/]
+
+** TODO Phase 0: pre-flight and recovery collateral [/]
+
+All read-only. Run from hyperion.
+
+- [ ] Isolate in-flight work: the working tree currently has unrelated
+  =flake.nix= / =flake.lock= modifications. Land or stash them first so the
+  migration branch contains nothing else (a bundled flake bump would restart
+  unrelated services and muddy the rollback story).
+- [ ] Snapshot the boot state — this is the hand-recovery reference for the
+  FAT partition:
+  #+begin_src nushell
+  ssh prometheus "cat /boot/firmware/config.txt" | save prometheus_config_txt_before.txt
+  ssh prometheus "^ls -la /boot/firmware" | save prometheus_firmware_listing_before.txt
+  #+end_src
+- [ ] Back up host identity off-box. The sops age identity
+  (=age1zpelh87…= in =.sops.yaml=) is derived from
+  =/etc/ssh/ssh_host_ed25519_key= — losing it means re-keying every secret.
+  netbird identity lives in =/var/lib/netbird=.
+  #+begin_src nushell
+  ssh prometheus "sudo tar czf - -C /etc ssh" | save --raw prometheus_etc_ssh.tgz
+  ssh prometheus "sudo tar czf - -C /var/lib netbird" | save --raw prometheus_netbird_state.tgz
+  #+end_src
+- [ ] Confirm the on-disk labels match what =sd-image-aarch64.nix= will
+  declare — expect =FIRMWARE= (vfat) and =NIXOS_SD= (ext4):
+  #+begin_src nushell
+  ssh prometheus "lsblk -f"
+  #+end_src
+- [ ] Record the baseline for post-migration comparison:
+  #+begin_src nushell
+  ssh prometheus "uname -r; getconf PAGESIZE"
+  #+end_src
+  Expected: =6.18.42-unstable_20260806= (or whatever is current) and =16384=.
+
+** TODO Phase 1: stage the branch [/]
+
+- [ ] Branch off clean main.
+- [ ] =flake.nix=: drop the =specialArgs= block from the prometheus
+  =mkHost= call. Keep the =nixos-raspberrypi= input for now — the
+  =rpi5-installer= image still uses it until Phase 5.
+- [ ] Rewrite =nix/hosts/prometheus/configuration.nix=:
+  #+begin_src nix
+  {
+    config,
+    lib,
+    pkgs,
+    inputs,
+    modulesPath,
+    ...
+  }: {
+    imports = [
+      ./hardware.nix
+      ../../modules
+      ./oci.nix
+      # Vendor Pi 5 kernel built against this flake's nixpkgs, RP1 initrd
+      # modules, extlinux bootloader selection, bcm2712 DTB filter.
+      inputs.nixos-hardware.nixosModules.raspberry-pi-5
+      # Declares the FIRMWARE/NIXOS_SD mounts (same labels as the running
+      # SD) and keeps system.build.sdImage buildable for recovery images.
+      "${modulesPath}/installer/sd-card/sd-image-aarch64.nix"
+      inputs.determinate.nixosModules.default
+    ];
+
+    # GPU firmware -> u-boot.bin -> extlinux.conf. The activation script
+    # restages /boot/firmware (boot code, vendor DTBs, config.txt, U-Boot)
+    # on every switch. Neither option is enabled by the profile itself.
+    hardware.raspberry-pi.firmware = {
+      enable = true;
+      uboot.enable = true;
+    };
+  }
+  #+end_src
+  Removals from the current file:
+  - the four =nixos-raspberrypi.*= imports and the =nixos-raspberrypi=
+    module argument,
+  - the whole =boot.kernelPackages= block including the =passthru.target=
+    graft (the profile now sets =kernelPackages= via =mkDefault=),
+  - the =https://nixos-raspberrypi.cachix.org= substituter and its key from
+    =nix.settings=.
+  Kept as-is: the determinate module and substituter, =vulcan.lan:4965=,
+  all =modules.*= config, sops templates, =console.enable = false=,
+  =libraspberrypi= / =raspberrypi-eeprom= packages.
+- [ ] Update the tags — =boot.loader.raspberry-pi.*= no longer exists and
+  the current expression would fail eval:
+  #+begin_src nix
+  system.nixos.tags = [
+    "raspberry-pi-5"
+    config.boot.kernelPackages.kernel.version
+  ];
+  #+end_src
+- [ ] Keep =boot.supportedFilesystems.zfs = false= but update its comment:
+  the reason is no longer a cachix gap, it's keeping the ZFS module build
+  out of an already-long native kernel job. Nothing on this host uses ZFS.
+- [ ] Raise the CI build timeouts: =timeout-minutes: 180= → =360= in
+  =.forgejo/workflows/build-and-cache.yml= and =flake-update.yml=. A native
+  vendor-kernel build on the Pi runner can plausibly exceed 3 h, and it
+  will recur on every stdenv mass-rebuild.
+- [ ] =git add= everything — flake evals only see tracked files.
+- [ ] Validate without building:
+  #+begin_src nushell
+  nix eval '.#nixosConfigurations.prometheus.config.system.nixos.tags'
+  nix build --dry-run '.#nixosConfigurations.prometheus.config.system.build.toplevel'
+  #+end_src
+  Expect =linux-rpi-6.18.34-stable_20260609= (config + kernel) in "will be
+  built" and /no/ nixos-raspberrypi store paths anywhere in the plan.
+
+** TODO Phase 2: pre-build natively on prometheus [/]
+
+hyperion deploys aarch64 via binfmt emulation plus substituters. Without
+this phase, the first deploy or CI run would compile the kernel under QEMU
+(hyperion) or eat hours of the Pi runner mid-merge. Building natively from
+the branch primes prometheus's store — and its harmonia — ahead of time,
+and proves the config builds before main is touched.
+
+- [ ] On prometheus, inside a zellij session (the build runs for hours):
+  #+begin_src nushell
+  git clone https://github.com/rfaulhaber/dotfiles.git
+  cd dotfiles
+  git switch <migration-branch>
+  nix build -L '.#nixosConfigurations.prometheus.config.system.build.toplevel'
+  #+end_src
+- [ ] Build the recovery image from the same config and stash it on
+  hyperion:
+  #+begin_src nushell
+  nix build -L '.#nixosConfigurations.prometheus.config.system.build.sdImage'
+  # then from hyperion:
+  scp "prometheus:dotfiles/result/sd-image/*.img.zst" .
+  #+end_src
+- [ ] Note the toplevel out path for reference during cutover.
+
+** TODO Phase 3: cut over [/]
+
+Cutover happens /on the host/ with =nixos-rebuild=, not via deploy-rs:
+magic-rollback re-running the old activation across a boot-chain swap is
+exactly the "rollback reapplies old spec to new live state" pattern that
+has bitten before, and the closure is already in prometheus's store from
+Phase 2, so there is nothing to push.
+
+- [ ] Switch from the Phase 2 clone:
+  #+begin_src nushell
+  sudo nixos-rebuild switch --flake '.#prometheus'
+  #+end_src
+- [ ] Verify the new boot chain *before rebooting* — this is the last
+  moment recovery is trivial:
+  #+begin_src nushell
+  cat /boot/firmware/config.txt        # expect kernel=u-boot.bin and arm_64bit=1
+  ^ls -l /boot/firmware/u-boot.bin
+  head -40 /boot/extlinux/extlinux.conf  # default entry -> the new generation
+  ^ls /boot/firmware/bcm2712-rpi-5-b.dtb
+  #+end_src
+- [ ] Reboot (CI runner goes down briefly — pick an idle window).
+- [ ] Post-reboot verification:
+  #+begin_src nushell
+  ssh prometheus "uname -r"            # 6.18.34-stable_20260609
+  ssh prometheus "getconf PAGESIZE"    # 16384
+  ssh prometheus "ip -br addr show dev end0"
+  ssh prometheus "systemctl --failed"
+  ssh prometheus "netbird status"
+  ssh prometheus "systemctl list-units 'podman-*'"   # runner units active => sops age key intact
+  ssh prometheus "vcgencmd measure_temp"
+  ssh prometheus "cat /sys/class/hwmon/hwmon*/fan1_input"  # fan visible; path may vary
+  http get http://prometheus.lan:4965/nix-cache-info       # harmonia serving
+  #+end_src
+- [ ] Leave the old nixos-raspberrypi files on the FAT partition for now —
+  they are inert (config.txt no longer references them) and double as
+  recovery collateral. Cleanup is Phase 5.
+
+** TODO Phase 4: land it [/]
+
+- [ ] Merge the branch. The CI aarch64 leg should be a near-pure cache hit
+  against prometheus's own store.
+- [ ] Swap hyperion's kernel-cache wiring in the same or a follow-up
+  change — replace the two cachix lines with prometheus's harmonia (the
+  key already lives in =.forgejo/scripts/configure-nix.nu=):
+  #+begin_src nix
+  # nix/hosts/hyperion/configuration.nix
+  substituters = [
+    "https://install.determinate.systems"
+    "http://vulcan.lan:4965"
+    "http://prometheus.lan:4965"
+  ];
+  trusted-public-keys = [
+    "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
+    "vulcan.lan-1:Zu8N+6EtaIeDTyCVpR15uvIYYByZqMmd8W09vu8GKl8="
+    "prometheus.lan-1:GetZTCVHg6NcVVteshbEZQbyMzZfIATcsIgt7si5Lmo="
+  ];
+  #+end_src
+  Rebuild hyperion, then confirm a no-op =deploy-rs= run of prometheus
+  substitutes everything (no QEMU kernel build):
+  #+begin_src nushell
+  nix run '.#deploy-rs' '.#prometheus'
+  #+end_src
+- [ ] Watch the next =flake-update= PR build prometheus within the raised
+  timeout.
+
+** TODO Phase 5: cleanup [/]
+
+- [ ] Port =nix/images/rpi5-installer.nix= to the same module set
+  (=raspberry-pi-5= profile + =sd-image-aarch64.nix= +
+  =hardware.raspberry-pi.firmware= with =uboot.enable=), or drop it —
+  =prometheus-sd-image= built from the host config covers reinstalls.
+- [ ] Remove the =nixos-raspberrypi= input and its =outputs= destructuring
+  from =flake.nix=; drop the =specialArgs= plumbing in the
+  =rpi5-installer= packages entry. =flake.lock= shrinks.
+- [ ] After a stable week: prune the stale nixos-raspberrypi boot files
+  from =/boot/firmware= (old kernel images and their config plumbing; the
+  Phase 0 listing shows exactly what was there). Move aside before
+  deleting.
+- [ ] Optional: set =remoteBuild = true= on the prometheus deploy-rs node
+  so future deploys build/substitute on the Pi natively instead of relying
+  on hyperion's emulation.
+- [ ] Optional: revisit the ZFS opt-out only if ZFS is ever wanted here —
+  it costs a module build on every kernel rebuild.
+
+* Failure modes and rollback
+
+** Switched but not yet rebooted, want out
+The old generation is still installed. =sudo nixos-rebuild switch
+--rollback= re-runs the nixos-raspberrypi activation, which rewrites
+config.txt back to direct-kernel boot and re-copies its DTBs. Verify
+=config.txt= afterwards before any reboot — this is a boot-chain swap in
+reverse and deserves the same pre-reboot checklist.
+
+** Reboot fails (host never comes back)
+Pull the SD card and mount the FAT partition on another machine:
+- Restore =config.txt= from the Phase 0 snapshot. The old kernel files are
+  still on the partition — the new firmware install only prunes =*.dtb=
+  and =overlays/*=, and Phase 5's cleanup hasn't run yet.
+- The old vendor DTBs /were/ pruned, but the =raspberrypifw= vendor DTBs
+  now present are downstream-schema and boot the old vendor kernel fine.
+
+** SD card dead / total loss
+Flash the Phase 2 recovery image. Then restore identity: unpack
+=prometheus_etc_ssh.tgz= over =/etc/ssh= (restores the sops age identity
+and SSH host identity), restore =/var/lib/netbird= or re-enroll with a
+fresh setup key, reboot.
+
+* Operational costs going forward
+
+- Kernel rebuilds recur on every nixos-hardware kernel-tag bump /and/ every
+  nixpkgs stdenv mass-rebuild — each one is a multi-hour native build on
+  the prometheus runner. CI absorbs it (timeout raised in Phase 1);
+  deploys stay fast because harmonia serves the result.
+- EEPROM updates are manual now (=rpi-eeprom-update= from the
+  =raspberrypi-eeprom= package); nixos-raspberrypi had its own wiring.
+- nixos-hardware couples its kernel tag to =raspberryPiWirelessFirmware=
+  freshness — irrelevant to this wired-only host, but worth remembering if
+  WiFi is ever enabled.
+
+* Reference
+
+- nixos-hardware pin =2e790b0a= (2026-07-28): =raspberry-pi/5/default.nix=
+  (profile), =raspberry-pi/common/kernel.nix= (vendor kernel: tag
+  =stable_20260609= → 6.18.34, =bcm2712_defconfig=, =NR_CPUS=4=,
+  full-preempt to match the vendor config), =common/firmware.nix=
+  (firmware-partition staging + U-Boot chainload),
+  =common/config-txt-defaults.nix= (includes the =[pi5]= =enable_uart=0=
+  ghost-input workaround).
+- nixpkgs vendor-kernel deprecation: PR 477665; =linux_rpi5= never existed
+  in nixpkgs.
+- Cache verification [2026-08-07 Fri]: =nix build --dry-run= of
+  nixos-hardware's =rpi5-kernel= puts the kernel derivation in "will be
+  built" against cache.nixos.org + vulcan.
+- Mainline Pi 5 status (for the future revisit): basic boot + SD v6.12,
+  watchdog v6.14, PCIe/NVMe v6.16, RP1 driver v6.17, RP1 ethernet + USB3
+  v6.18, RP1 DTB-quirk tolerance removed in v6.19; thermal/fan and most
+  other RP1 peripherals (UARTs, SPI, PWM, PIO, DSI/DPI/VEC) still absent
+  upstream.
+- Alternatives rejected: nix-community/raspberry-pi-nix (dead since
+  2025-03, pinned to nixpkgs 24.11); EDK2 UEFI port worproject/rpi5-uefi
+  (archived 2025-02, no RP1 ethernet).
