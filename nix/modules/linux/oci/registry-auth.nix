@@ -41,6 +41,17 @@ in {
       type = types.str;
       default = "/root/.config/containers/auth.json";
     };
+
+    owner = mkOption {
+      description = ''
+        Owner of the rendered auth.json. Null means root, which suits
+        service hosts; workstations set the login user (with authFile in
+        that user's XDG config path) so rootless podman/skopeo find the
+        credentials.
+      '';
+      type = types.nullOr types.str;
+      default = null;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -53,6 +64,7 @@ in {
           cfg.registries;
       };
       path = cfg.authFile;
+      inherit (cfg) owner;
     };
 
     # Container units get the explicit env var instead of relying on

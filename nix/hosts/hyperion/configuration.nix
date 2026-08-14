@@ -155,6 +155,16 @@
       };
       airvpn.enable = true;
     };
+    # No OCI services run here; registryAuth alone gives interactive
+    # podman/skopeo credentials for the forgejo registry. The auth file is
+    # user-owned and sits in the user's XDG path, which rootless
+    # podman/skopeo already search — no REGISTRY_AUTH_FILE needed.
+    linux.oci.registryAuth = {
+      enable = true;
+      registries."git.3679.space".secret = "registry-auth/forgejo";
+      authFile = "${config.user.home}/.config/containers/auth.json";
+      owner = config.user.name;
+    };
     hardware = {
       zsa.enable = true;
       nvidia = {
