@@ -92,7 +92,7 @@
 ;; :around advice on ghostel--redraw must match the native fn's arity
 ;; (v0.44.0 added FORCE-SYNC; a stale advice signals
 ;; wrong-number-of-arguments on every redraw and blanks the terminal).
-(let ((ghostel-pin "37a82caa25c41fa4fda768ddb727b1cbe117ceba"))
+(let ((ghostel-pin "57c320310f5eec0c5826d613b2806d7237606469"))
   (package! ghostel :pin ghostel-pin)
   (package! evil-ghostel :pin ghostel-pin))
 
