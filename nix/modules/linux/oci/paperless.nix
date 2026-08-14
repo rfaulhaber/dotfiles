@@ -546,7 +546,7 @@ in {
           ]
           ++ imageLib.mkImageLabels {
             module = "paperless";
-            image = cfg.image;
+            inherit (cfg) image;
           };
         log-driver = "journald";
       };

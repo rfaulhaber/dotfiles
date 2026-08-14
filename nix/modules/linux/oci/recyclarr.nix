@@ -340,7 +340,7 @@ in {
       )
       ++ imageLib.mkImageLabels {
         module = "recyclarr";
-        image = cfg.image;
+        inherit (cfg) image;
       };
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
 

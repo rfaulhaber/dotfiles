@@ -99,10 +99,10 @@ in {
         # nixpkgs' emacs-packages.nix), which survives that rebuild, so Doom's
         # pinned ghostel grafts the flake's native module instead of nixpkgs'
         # older one (which fails ghostel--minimum-module-version at runtime).
-        (final: prev: {
+        (_final: prev: {
           emacsPackagesFor = emacs:
             (prev.emacsPackagesFor emacs).overrideScope (
-              eself: esuper:
+              _eself: esuper:
                 esuper.override (args: {
                   manualPackages =
                     (args.manualPackages or esuper.manualPackages)

@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -118,13 +117,13 @@ in {
         ++ ["--user=${toString cfg.user.uid}:${toString cfg.user.gid}"]
         ++ imageLib.mkImageLabels {
           module = "navidrome";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };
 
     systemd.services."podman-navidrome" = ociLib.mkServiceConfig {
-      networks = cfg.networks;
+      inherit (cfg) networks;
       sopsTemplates = optional cfg.lastfm.enable "navidrome-env";
     };
   };

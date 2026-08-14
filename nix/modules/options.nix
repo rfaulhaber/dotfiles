@@ -7,7 +7,7 @@
   isDarwin,
   ...
 }: let
-  inherit (lib) types mkOption mkAliasDefinitions optionalAttrs concatMapStringsSep isList mapAttrs findFirst pathExists;
+  inherit (lib) types mkOption mkAliasDefinitions concatMapStringsSep isList mapAttrs findFirst pathExists;
   inherit (lib.my) mkOpt mkOptDesc;
   inherit (types) attrs attrsOf oneOf str path listOf either;
 in {
@@ -39,9 +39,9 @@ in {
 
     env = mkOption {
       type = attrsOf (oneOf [str path (listOf (either str path))]);
-      apply = mapAttrs (n: v:
+      apply = mapAttrs (_n: v:
         if isList v
-        then concatMapStringsSep ":" (x: toString x) v
+        then concatMapStringsSep ":" toString v
         else (toString v));
       default = {};
       description = "";

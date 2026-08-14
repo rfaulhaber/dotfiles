@@ -24,7 +24,7 @@
   # author intended rather than arbitrarily recolored.
   p =
     {
-      bg = colors.bg;
+      inherit (colors) bg;
       selection = colors.base02;
       dim = colors.grey;
       text = colors.fg;

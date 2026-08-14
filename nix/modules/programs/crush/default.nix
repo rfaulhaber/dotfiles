@@ -22,7 +22,7 @@ with lib; let
       "$schema" = "https://charm.land/crush.json";
       inherit (cfg) providers models;
       options = cfg.crushOptions;
-      permissions = cfg.permissions;
+      inherit (cfg) permissions;
     }
     // cfg.extraConfig;
 

@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 # NOTE: might be worth looking into some of the advanced Nix options:

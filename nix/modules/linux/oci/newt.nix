@@ -133,13 +133,13 @@ in {
           ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
           ++ imageLib.mkImageLabels {
             module = "newt";
-            image = cfg.image;
+            inherit (cfg) image;
           };
         log-driver = "journald";
       };
 
       systemd.services."podman-newt" = ociLib.mkServiceConfig {
-        networks = cfg.networks;
+        inherit (cfg) networks;
         sopsTemplates = ["newt-env"];
       };
     }

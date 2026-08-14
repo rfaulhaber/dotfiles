@@ -57,6 +57,6 @@ in {
       };
     };
 
-    user.packages = optionals (cfg.useJJ) [pkgs.jujutsu];
+    user.packages = optionals cfg.useJJ [pkgs.jujutsu];
   };
 }

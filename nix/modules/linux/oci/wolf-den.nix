@@ -105,13 +105,13 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "wolf-den";
-          image = cfg.image;
+          inherit (cfg) image;
         };
     };
 
     systemd.services."podman-wolf-den" = mkMerge [
       (ociLib.mkServiceConfig {
-        networks = cfg.networks;
+        inherit (cfg) networks;
       })
       {
         serviceConfig.ExecStartPre = [

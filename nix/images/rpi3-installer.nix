@@ -2,7 +2,6 @@
 # Build with: nix build .#rpi3-installer
 # Flash with: zstd -d result/sd-image/*.img.zst -o hecate.img && dd if=hecate.img of=/dev/sdX bs=4M status=progress
 {
-  lib,
   pkgs,
   modulesPath,
   inputs,

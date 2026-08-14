@@ -250,7 +250,7 @@ in {
         ++ optionals (cfg.gpu == "nvidia") ["--device=nvidia.com/gpu=all"]
         ++ imageLib.mkImageLabels {
           module = "wolf";
-          image = cfg.image;
+          inherit (cfg) image;
         };
     };
 

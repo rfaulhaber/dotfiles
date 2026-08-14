@@ -4,7 +4,6 @@
   pkgs,
   inputs,
   hostDir,
-  hostname,
   isLinux,
   isDarwin,
   ...

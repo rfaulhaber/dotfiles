@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -169,13 +168,13 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "kitchenowl";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };
 
     systemd.services."podman-kitchenowl" = ociLib.mkServiceConfig {
-      networks = cfg.networks;
+      inherit (cfg) networks;
       sopsTemplates = ["kitchenowl-env"];
     };
   };

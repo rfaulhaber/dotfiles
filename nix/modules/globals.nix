@@ -6,7 +6,7 @@ in {
   config = {
     home.configFile = {
       "globals.json".text = toJSON {
-        font = themeCfg.font;
+        inherit (themeCfg) font;
         colors.theme = themeCfg.themeAttrs;
         themeFile = themeCfg.colors;
         name = themeCfg.colors.scheme;

@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -298,13 +297,13 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "job-ops";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };
 
     systemd.services."podman-job-ops" = ociLib.mkServiceConfig {
-      networks = cfg.networks;
+      inherit (cfg) networks;
       sopsTemplates = ["job-ops-env"];
     };
   };

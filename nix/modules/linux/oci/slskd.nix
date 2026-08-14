@@ -12,7 +12,7 @@ with lib; let
   # API consumers (e.g. soularr) authenticate against slskd via a named
   # api_key entry. The key value is a sops secret; the consumer name is
   # an arbitrary label.
-  apiKeyOpts = {name, ...}: {
+  apiKeyOpts = _: {
     options = {
       secretName = mkOption {
         description = ''
@@ -36,12 +36,12 @@ with lib; let
   configYamlAttrs = {
     shares.directories = cfg.shares;
     web.authentication.api_keys =
-      mapAttrs (name: k: {
+      mapAttrs (_name: k: {
         key = config.sops.placeholder.${k.secretName};
-        role = k.role;
+        inherit (k) role;
       })
       cfg.apiKeys;
-    retention = cfg.retention;
+    inherit (cfg) retention;
   };
 in {
   options.modules.linux.oci.services.slskd = {
@@ -230,7 +230,7 @@ in {
       )
       ++ imageLib.mkImageLabels {
         module = "slskd";
-        image = cfg.image;
+        inherit (cfg) image;
       };
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
 

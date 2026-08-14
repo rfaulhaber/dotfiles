@@ -260,7 +260,7 @@ in {
   config = mkIf cfg.enable (let
     datasourcesYaml = builtins.toJSON {
       apiVersion = 1;
-      datasources = cfg.datasources;
+      inherit (cfg) datasources;
     };
 
     # If substitutions are configured, copy the dashboards into a
@@ -406,14 +406,14 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "grafana";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };
 
     systemd.services."podman-grafana" = mkMerge [
       (ociLib.mkServiceConfig {
-        networks = cfg.networks;
+        inherit (cfg) networks;
         sopsTemplates =
           ["grafana-datasources" "grafana-env"]
           ++ optional (cfg.dashboardsPath != null) "grafana-dashboards-provider"

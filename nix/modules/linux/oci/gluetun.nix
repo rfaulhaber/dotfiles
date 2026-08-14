@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -185,13 +184,13 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "gluetun";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };
 
     systemd.services."podman-gluetun" = ociLib.mkServiceConfig {
-      networks = cfg.networks;
+      inherit (cfg) networks;
       sopsTemplates = ["gluetun-env"];
     };
   };

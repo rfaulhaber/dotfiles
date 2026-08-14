@@ -114,7 +114,7 @@ in {
         };
       };
 
-      outputs = cfg.outputs;
+      inherit (cfg) outputs;
 
       layout = import ./layout.nix {inherit colors;};
 

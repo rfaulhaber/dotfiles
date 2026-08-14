@@ -149,13 +149,13 @@ in {
   config = mkIf cfg.enable {
     services.ollama = {
       enable = true;
-      package = cfg.package;
-      host = cfg.host;
-      port = cfg.port;
-      home = cfg.home;
-      modelsDir = cfg.modelsDir;
+      inherit (cfg) package;
+      inherit (cfg) host;
+      inherit (cfg) port;
+      inherit (cfg) home;
+      inherit (cfg) modelsDir;
       loadModels = cfg.models;
-      openFirewall = cfg.openFirewall;
+      inherit (cfg) openFirewall;
       # Static user/group so the (possibly ZFS-mounted) home directory
       # can be chowned deterministically. DynamicUser doesn't combine
       # cleanly with a custom home path on a managed dataset.

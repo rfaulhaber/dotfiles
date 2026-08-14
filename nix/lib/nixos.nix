@@ -31,7 +31,7 @@ in rec {
           # than done for some reason
           nixpkgs.config.allowUnfree = true;
         }
-        ({...}: {
+        (_: {
           nixpkgs.overlays = overlays;
         })
         ../../nix/modules

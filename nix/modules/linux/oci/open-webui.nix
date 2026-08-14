@@ -83,13 +83,13 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "open-webui";
-          image = cfg.image;
+          inherit (cfg) image;
         };
     };
 
     systemd.services."podman-open-webui" = mkMerge [
       (ociLib.mkServiceConfig {
-        networks = cfg.networks;
+        inherit (cfg) networks;
       })
       {
         serviceConfig.ExecStartPre = ["${pkgs.coreutils}/bin/mkdir -p ${cfg.baseDir}"];

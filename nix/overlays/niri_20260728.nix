@@ -30,7 +30,7 @@ final: prev: let
     && lib.versionOlder sysCrate.version "0.4"
     && lib.versionAtLeast prev.libdisplay-info.version "0.4";
 
-  libdisplay-info_0_3 = prev.libdisplay-info.overrideAttrs (old: {
+  libdisplay-info_0_3 = prev.libdisplay-info.overrideAttrs (_old: {
     version = "0.3.0";
     src = final.fetchFromGitLab {
       domain = "gitlab.freedesktop.org";

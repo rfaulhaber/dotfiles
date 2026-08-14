@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -59,7 +58,7 @@ with lib; let
           authurl = p.authUrl;
           clientid = config.sops.placeholder."vikunja/oidc-${name}-client-id";
           clientsecret = config.sops.placeholder."vikunja/oidc-${name}-client-secret";
-          scope = p.scope;
+          inherit (p) scope;
           usernamefallback = p.usernameFallback;
           emailfallback = p.emailFallback;
         })
@@ -227,13 +226,13 @@ in {
         ++ ["--user=${cfg.user}"]
         ++ imageLib.mkImageLabels {
           module = "vikunja";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };
 
     systemd.services."podman-vikunja" = ociLib.mkServiceConfig {
-      networks = cfg.networks;
+      inherit (cfg) networks;
       sopsTemplates =
         ["vikunja-env"]
         ++ optional oidcEnabled "vikunja-config-yml";

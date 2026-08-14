@@ -128,7 +128,7 @@ with lib; let
     labelsStr = concatStringsSep "," runnerCfg.labels;
     configFile = pkgs.writeText "forgejo-runner-${name}-config.yaml" (builtins.toJSON {
       runner = {
-        capacity = runnerCfg.capacity;
+        inherit (runnerCfg) capacity;
       };
       container = {
         valid_volumes = effectiveValidVolumes runnerCfg;
@@ -171,7 +171,7 @@ with lib; let
       ++ (map (n: "--network=${ociLib.networkName n}") runnerCfg.networks)
       ++ imageLib.mkImageLabels {
         module = "forgejo-runner.${name}";
-        image = runnerCfg.image;
+        inherit (runnerCfg) image;
       };
     log-driver = "journald";
   };
@@ -224,7 +224,7 @@ in {
       mapAttrs' (
         name: runnerCfg:
           nameValuePair "podman-forgejo-runner-${name}" (ociLib.mkServiceConfig {
-            networks = runnerCfg.networks;
+            inherit (runnerCfg) networks;
           })
       )
       enabledRunners;

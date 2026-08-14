@@ -175,14 +175,14 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "prometheus";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };
 
     systemd.services."podman-prometheus" = mkMerge [
       (ociLib.mkServiceConfig {
-        networks = cfg.networks;
+        inherit (cfg) networks;
         sopsTemplates = ["prometheus-config"];
       })
       {

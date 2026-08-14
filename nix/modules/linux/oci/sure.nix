@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -493,7 +492,7 @@ in {
           ]
           ++ imageLib.mkImageLabels {
             module = "sure";
-            image = cfg.image;
+            inherit (cfg) image;
           };
         log-driver = "journald";
       };
@@ -516,7 +515,7 @@ in {
           ]
           ++ imageLib.mkImageLabels {
             module = "sure.worker";
-            image = cfg.image;
+            inherit (cfg) image;
           };
         log-driver = "journald";
       };

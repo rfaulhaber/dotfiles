@@ -148,13 +148,13 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "podman-exporter";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };
 
     systemd.services."podman-podman-exporter" = ociLib.mkServiceConfig {
-      networks = cfg.networks;
+      inherit (cfg) networks;
     };
 
     networking.firewall = mkIf cfg.openFirewall {

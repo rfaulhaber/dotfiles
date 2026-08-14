@@ -112,7 +112,7 @@ in {
   config = mkIf cfg.enable {
     services.samba = {
       enable = true;
-      package = cfg.package;
+      inherit (cfg) package;
       settings =
         {
           global =

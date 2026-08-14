@@ -48,7 +48,7 @@ in {
     services.netbird = {
       enable = true;
       clients.default = {
-        autoStart = cfg.autoStart;
+        inherit (cfg) autoStart;
         # Point the client at the self-hosted Netbird control plane. Merged
         # into /var/lib/netbird/config.json at preStart, so the daemon enrolls
         # against the right management server (default would be api.netbird.io).
@@ -83,7 +83,7 @@ in {
           };
         login = mkIf (cfg.setupKeyFile != null) {
           enable = true;
-          setupKeyFile = cfg.setupKeyFile;
+          inherit (cfg) setupKeyFile;
           systemdDependencies =
             lib.optional config.modules.programs.sops.enable
             "sops-install-secrets.service";

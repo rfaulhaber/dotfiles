@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -105,10 +104,10 @@ in {
       image = imageLib.renderImage cfg.image;
       extraOptions = imageLib.mkImageLabels {
         module = "radarr";
-        image = cfg.image;
+        inherit (cfg) image;
       };
-      baseDir = cfg.baseDir;
-      configProperties = cfg.configProperties;
+      inherit (cfg) baseDir;
+      inherit (cfg) configProperties;
       mediaMounts = mapAttrsToList (mountPoint: hostPath: "${hostPath}:/${mountPoint}:rw") cfg.mediaDirs;
       inherit (cfg) useGluetun gluetunContainer networks user timezone dependsOn;
       ports = portMappings;

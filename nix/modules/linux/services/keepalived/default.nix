@@ -116,10 +116,10 @@ in {
       vrrpInstances =
         {
           VI_DNS = {
-            interface = cfg.interface;
-            state = cfg.state;
-            priority = cfg.priority;
-            virtualRouterId = cfg.virtualRouterId;
+            inherit (cfg) interface;
+            inherit (cfg) state;
+            inherit (cfg) priority;
+            inherit (cfg) virtualRouterId;
             virtualIps = map (addr: {inherit addr;}) cfg.virtualIps;
             trackScripts = optional cfg.healthCheck.enable "check_dns";
             extraConfig = ''
@@ -133,9 +133,9 @@ in {
         }
         // optionalAttrs (cfg.virtualIpv6s != []) {
           VI_DNS6 = {
-            interface = cfg.interface;
-            state = cfg.state;
-            priority = cfg.priority;
+            inherit (cfg) interface;
+            inherit (cfg) state;
+            inherit (cfg) priority;
             virtualRouterId = cfg.virtualRouterId6;
             virtualIps = map (addr: {inherit addr;}) cfg.virtualIpv6s;
             trackScripts = optional cfg.healthCheck.enable "check_dns";

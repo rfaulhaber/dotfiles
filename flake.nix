@@ -81,26 +81,15 @@
 
   outputs = inputs @ {
     self,
-    nixpkgs,
-    home-manager,
     deploy-rs,
-    nixos-hardware,
-    nix-darwin,
-    emacs-overlay,
     flake-parts,
     nixos-raspberrypi,
     ...
   }:
-    flake-parts.lib.mkFlake {inherit inputs;} (top @ {
-      config,
-      withSystem,
-      moduleWithSystem,
-      system,
-      ...
-    }: {
+    flake-parts.lib.mkFlake {inherit inputs;} ({...}: {
       imports = [];
       flake = let
-        lib = inputs.nixpkgs.lib.extend (self: super: {
+        lib = inputs.nixpkgs.lib.extend (self: _super: {
           my = import ./nix/lib {
             inherit inputs;
             lib = self;
@@ -140,7 +129,7 @@
           # flake's 25.11 and break modules written against unstable (e.g. nix-cache).
           prometheus = mkHost ./nix/hosts/prometheus/configuration.nix {
             specialArgs = {
-              nixos-raspberrypi = inputs.nixos-raspberrypi;
+              inherit (inputs) nixos-raspberrypi;
             };
           };
         };
@@ -232,13 +221,7 @@
               })
         );
 
-        packages.x86_64-linux = let
-          system = "x86_64-linux";
-          pkgs = import inputs.nixpkgs {
-            inherit system;
-          };
-          lib = pkgs.lib;
-        in {
+        packages.x86_64-linux = {
           rpi3-installer =
             (inputs.nixpkgs.lib.nixosSystem {
               system = "aarch64-linux";
@@ -251,7 +234,7 @@
               modules = [./nix/images/rpi5-installer.nix];
               specialArgs = {
                 inherit inputs;
-                nixos-raspberrypi = inputs.nixos-raspberrypi;
+                inherit (inputs) nixos-raspberrypi;
               };
             }).config.system.build.sdImage;
           x86_64-installer =
@@ -267,10 +250,8 @@
       };
       systems = ["x86_64-linux" "aarch64-darwin"];
       perSystem = {
-        config,
         pkgs,
         inputs',
-        self',
         system,
         ...
       }: {
@@ -286,7 +267,7 @@
         };
         packages.generated-configs = import ./nix/generated {
           inherit pkgs inputs;
-          lib = pkgs.lib;
+          inherit (pkgs) lib;
         };
 
         devShells.default = pkgs.mkShell {

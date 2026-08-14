@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -23,7 +22,7 @@ with lib; let
 
   mlImage = imageLib.mkGpuImage {
     image = cfg.machineLearning.image;
-    gpu = cfg.gpu;
+    inherit (cfg) gpu;
   };
 in {
   options.modules.linux.oci.services.immich = {
@@ -284,7 +283,7 @@ in {
             ]
             ++ imageLib.mkImageLabels {
               module = "immich";
-              image = cfg.image;
+              inherit (cfg) image;
             };
           log-driver = "journald";
         };

@@ -12,7 +12,7 @@ with lib; let
   # Generate a Caddyfile from configuration
   generateCaddyfile = let
     # Generate a reverse proxy block
-    mkProxyBlock = name: proxy: let
+    mkProxyBlock = _name: proxy: let
       hosts = concatStringsSep ",\n" (map (h: "${proxy.scheme}://${h}") proxy.hosts);
       upstream =
         if proxy.upstreamScheme == "https"
@@ -38,7 +38,7 @@ with lib; let
     '';
 
     # Generate a file server block
-    mkFileServerBlock = name: site: let
+    mkFileServerBlock = _name: site: let
       hosts = concatStringsSep ",\n" (map (h: "${site.scheme}://${h}") site.hosts);
     in ''
       ${hosts} {
@@ -61,7 +61,7 @@ with lib; let
 
   # Generate an index.html listing all services
   generateIndexHtml = let
-    proxyRows = concatStringsSep "\n" (mapAttrsToList (name: proxy: ''
+    proxyRows = concatStringsSep "\n" (mapAttrsToList (_name: proxy: ''
       <tr>
         <td>${proxy.displayName}</td>
         <td><a href="${proxy.scheme}://${head proxy.hosts}">${head proxy.hosts}</a></td>
@@ -176,7 +176,7 @@ with lib; let
   };
 
   # File server option type
-  fileServerOpts = {name, ...}: {
+  fileServerOpts = _: {
     options = {
       hosts = mkOption {
         type = types.listOf types.str;
@@ -334,7 +334,7 @@ in {
         ]
         ++ imageLib.mkImageLabels {
           module = "caddy";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };

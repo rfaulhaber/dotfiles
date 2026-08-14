@@ -292,10 +292,10 @@ in {
       image = imageLib.renderImage cfg.image;
       extraOptions = imageLib.mkImageLabels {
         module = "transmission";
-        image = cfg.image;
+        inherit (cfg) image;
       };
-      baseDir = cfg.baseDir;
-      configProperties = cfg.configProperties;
+      inherit (cfg) baseDir;
+      inherit (cfg) configProperties;
       mediaMounts = ["${cfg.downloadsDir}:/downloads"];
       inherit (cfg) useGluetun gluetunContainer networks user timezone dependsOn;
       environmentFiles = [config.sops.templates."transmission-env".path];

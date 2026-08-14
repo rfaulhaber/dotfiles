@@ -48,7 +48,7 @@ in {
 
           settings = let
             mkLocalHostname = n: "192.168.0.${n}";
-            sshPath = cfg.sshPath;
+            inherit (cfg) sshPath;
             defaultIdentityFile = "${sshPath}/id_host";
           in {
             "*" =

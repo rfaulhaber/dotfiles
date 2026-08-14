@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -127,10 +126,10 @@ in {
       image = imageLib.renderImage cfg.image;
       extraOptions = imageLib.mkImageLabels {
         module = "calibre-web-auto";
-        image = cfg.image;
+        inherit (cfg) image;
       };
-      baseDir = cfg.baseDir;
-      configProperties = cfg.configProperties;
+      inherit (cfg) baseDir;
+      inherit (cfg) configProperties;
       mediaMounts = [
         "${cfg.ingestDir}:/cwa-book-ingest:rw"
         "${cfg.libraryDir}:/calibre-library:rw"

@@ -226,7 +226,7 @@ in {
         ++ optional cfg.ntpSync "--cap-add=SYS_TIME"
         ++ imageLib.mkImageLabels {
           module = "pihole";
-          image = cfg.image;
+          inherit (cfg) image;
         };
 
       environmentFiles = [

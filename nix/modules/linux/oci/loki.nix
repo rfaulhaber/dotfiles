@@ -169,14 +169,14 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "loki";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };
 
     systemd.services."podman-loki" = mkMerge [
       (ociLib.mkServiceConfig {
-        networks = cfg.networks;
+        inherit (cfg) networks;
         sopsTemplates = ["loki-config"];
       })
       {

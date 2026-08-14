@@ -5,7 +5,7 @@
   isLinux,
   ...
 }: let
-  inherit (lib) mkEnableOption mkOption types mkIf mkMerge optionals;
+  inherit (lib) mkEnableOption mkOption types mkIf mkMerge;
   isX11 = isLinux && config.modules.desktop.environment.isX11;
   isWayland = isLinux && config.modules.desktop.environment.isWayland;
   cfg = config.modules.programs.nushell;
@@ -85,7 +85,7 @@ in {
           })
         ]);
 
-        plugins = cfg.plugins;
+        inherit (cfg) plugins;
       };
 
       zoxide.enable = cfg.zoxide.enable;

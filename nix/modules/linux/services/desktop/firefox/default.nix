@@ -26,7 +26,7 @@ in {
   config = lib.mkIf cfg.enable {
     programs.firefox = {
       enable = true;
-      package = cfg.package;
+      inherit (cfg) package;
     };
 
     home.programs.nushell.shellAliases = lib.optionalAttrs config.modules.programs.nushell.enable firefoxAlias;

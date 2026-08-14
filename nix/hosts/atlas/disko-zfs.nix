@@ -1,5 +1,5 @@
 let
-  lib = (import <nixpkgs> {}).lib;
+  inherit ((import <nixpkgs> {})) lib;
   mkDevice = pool: name: {
     ${name} = {
       type = "disk";

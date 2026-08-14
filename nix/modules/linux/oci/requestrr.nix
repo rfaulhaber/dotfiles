@@ -427,7 +427,7 @@ in {
       )
       ++ imageLib.mkImageLabels {
         module = "requestrr";
-        image = cfg.image;
+        inherit (cfg) image;
       };
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
 

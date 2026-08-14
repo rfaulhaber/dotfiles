@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -90,7 +89,7 @@ in {
       )
       ++ imageLib.mkImageLabels {
         module = "flaresolverr";
-        image = cfg.image;
+        inherit (cfg) image;
       };
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
   in {

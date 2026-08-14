@@ -20,7 +20,7 @@
 
   ghosttyConfigs = import ../lib/configs/ghostty.nix {
     colors = colors.withHashtag;
-    font = defaults.font;
+    inherit (defaults) font;
     fontSize = defaults.ghostty.fontSize;
     extraConfig = ''
       command = /opt/homebrew/bin/nu --login

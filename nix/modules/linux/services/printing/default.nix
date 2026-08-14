@@ -28,7 +28,7 @@ in {
   config =
     mkIf cfg.enable
     (mkMerge [
-      (mkIf (cfg.server) {
+      (mkIf cfg.server {
         services = {
           avahi = {
             enable = true;
@@ -67,7 +67,7 @@ in {
           ensureDefaultPrinter = "Brother";
         };
       })
-      (mkIf (cfg.client) {
+      (mkIf cfg.client {
         services.printing = {
           enable = true;
           drivers = with pkgs; [brlaser];

@@ -34,7 +34,7 @@ with lib; let
   };
 
   # Generate systemd service for a named volume
-  mkVolumeService = name: volCfg: {
+  mkVolumeService = name: _volCfg: {
     path = [pkgs.podman];
     serviceConfig = {
       Type = "oneshot";

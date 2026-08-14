@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -221,7 +220,7 @@ in {
     configContent = builtins.toJSON {
       server = {
         port = cfg.webPort;
-        sources = cfg.sources;
+        inherit (cfg) sources;
         database = cfg.databasePath;
       };
       userDefaults = {
@@ -286,13 +285,13 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "filebrowser";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };
 
     systemd.services."podman-filebrowser" = ociLib.mkServiceConfig {
-      networks = cfg.networks;
+      inherit (cfg) networks;
       sopsTemplates = ["filebrowser-config" "filebrowser-env"];
     };
   });

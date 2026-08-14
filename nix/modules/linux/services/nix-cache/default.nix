@@ -121,7 +121,7 @@ in {
       settings =
         {
           bind = "[::]:${toString cfg.port}";
-          priority = cfg.priority;
+          inherit (cfg) priority;
         }
         // optionalAttrs (cfg.harmonia.workers != null) {
           workers = cfg.harmonia.workers;
@@ -134,8 +134,8 @@ in {
     # nix-serve backend
     services.nix-serve = mkIf (cfg.backend == "nix-serve") {
       enable = true;
-      port = cfg.port;
-      secretKeyFile = cfg.secretKeyFile;
+      inherit (cfg) port;
+      inherit (cfg) secretKeyFile;
       openFirewall = false; # We handle this ourselves for consistency
     };
 

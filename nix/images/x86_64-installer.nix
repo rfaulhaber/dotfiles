@@ -1,12 +1,7 @@
 # Minimal x86_64 installer ISO with ZFS support.
 # Build with: nix build .#x86_64-installer
 # Flash with: dd if=result/iso/*.iso of=/dev/sdX bs=4M status=progress
-{
-  lib,
-  pkgs,
-  modulesPath,
-  ...
-}: {
+{modulesPath, ...}: {
   imports = [
     (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
   ];

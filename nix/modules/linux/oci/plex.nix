@@ -116,13 +116,13 @@ in {
         ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri:/dev/dri"]
         ++ imageLib.mkImageLabels {
           module = "plex";
-          image = cfg.image;
+          inherit (cfg) image;
         };
     };
 
     systemd.services."podman-plex" = mkMerge [
       (ociLib.mkServiceConfig {
-        networks = cfg.networks;
+        inherit (cfg) networks;
       })
       {
         serviceConfig.ExecStartPre = ["${pkgs.coreutils}/bin/mkdir -p ${cfg.baseDir}/config ${cfg.baseDir}/transcode"];

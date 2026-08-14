@@ -48,7 +48,7 @@ in {
         carry `canmount=noauto` so the early `zfs-mount.service` skips them.
       '';
       default = {};
-      type = types.attrsOf (types.submodule ({name, ...}: {
+      type = types.attrsOf (types.submodule (_: {
         options = {
           dataset = mkOption {
             description = "Full ZFS dataset name (e.g. data/apps/immich/files).";

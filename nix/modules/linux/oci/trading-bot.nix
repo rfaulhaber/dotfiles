@@ -160,7 +160,7 @@ in {
         Recursively merged over the generated trading-bot config.toml. The
         defaults run the news pipeline on BTC-USD/ETH-USD via claude-opus-5.
       '';
-      type = settingsFormat.type;
+      inherit (settingsFormat) type;
       default = {};
     };
 
@@ -191,7 +191,7 @@ in {
           the momentum strategy on BTC-USD/ETH-USD with the kill switch
           armed at a 15% daily loss.
         '';
-        type = settingsFormat.type;
+        inherit (settingsFormat) type;
         default = {};
       };
 
@@ -327,7 +327,7 @@ in {
           ]
           ++ imageLib.mkImageLabels {
             module = "trading-bot.paper";
-            image = cfg.image;
+            inherit (cfg) image;
           };
         log-driver = "journald";
       };

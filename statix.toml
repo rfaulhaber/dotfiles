@@ -1,0 +1,3 @@
+# repeated_keys flags idiomatic NixOS module style (separate systemd.services.x /
+# systemd.tmpfiles.rules keys); merging them into one attrset hurts readability
+disabled = ["repeated_keys"]

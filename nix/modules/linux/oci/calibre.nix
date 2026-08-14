@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -91,10 +90,10 @@ in {
       image = imageLib.renderImage cfg.image;
       extraOptions = imageLib.mkImageLabels {
         module = "calibre";
-        image = cfg.image;
+        inherit (cfg) image;
       };
-      baseDir = cfg.baseDir;
-      configProperties = cfg.configProperties;
+      inherit (cfg) baseDir;
+      inherit (cfg) configProperties;
       mediaMounts = ["${cfg.booksDir}:/books:rw"];
       inherit (cfg) networks user timezone dependsOn;
       environmentFiles = [config.sops.templates."calibre-env".path];

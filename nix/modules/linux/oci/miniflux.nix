@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -204,7 +203,7 @@ in {
           ]
           ++ imageLib.mkImageLabels {
             module = "miniflux";
-            image = cfg.image;
+            inherit (cfg) image;
           };
         log-driver = "journald";
       };

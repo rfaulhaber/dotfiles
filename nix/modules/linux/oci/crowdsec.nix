@@ -22,7 +22,7 @@ with lib; let
     mapAttrsToList (name: a: {
       source = "file";
       filenames = ["/var/log/${name}/${baseNameOf a.hostPath}"];
-      labels = {type = a.type;};
+      labels = {inherit (a) type;};
     })
     enabledAcquisitions;
 
@@ -379,7 +379,7 @@ in {
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
           module = "crowdsec";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       log-driver = "journald";
     };
@@ -412,7 +412,7 @@ in {
     in
       mkMerge [
         (ociLib.mkServiceConfig {
-          networks = cfg.networks;
+          inherit (cfg) networks;
           sopsTemplates = ["crowdsec-env"];
           # Map container-level `dependsOn` into systemd ordering: podman's own
           # --depends is service-of-record only and doesn't gate ExecStartPre,

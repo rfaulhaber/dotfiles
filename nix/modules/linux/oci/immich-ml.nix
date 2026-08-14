@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 with lib; let
@@ -10,8 +9,8 @@ with lib; let
   imageLib = import ./lib.nix {inherit lib;};
 
   mlImage = imageLib.mkGpuImage {
-    image = cfg.image;
-    gpu = cfg.gpu;
+    inherit (cfg) image;
+    inherit (cfg) gpu;
   };
 in {
   options.modules.linux.oci.services.immich-ml = {
@@ -69,7 +68,7 @@ in {
         ++ optionals (cfg.gpu == "intel") ["--device=/dev/dri"]
         ++ imageLib.mkImageLabels {
           module = "immich-ml";
-          image = cfg.image;
+          inherit (cfg) image;
         };
       environment = optionalAttrs (cfg.gpu == "nvidia") {
         "NVIDIA_VISIBLE_DEVICES" = "all";
@@ -78,7 +77,7 @@ in {
     };
 
     systemd.services."podman-immich_machine_learning" = ociLib.mkServiceConfig {
-      networks = cfg.networks;
+      inherit (cfg) networks;
       volumes = ["immich_model_cache"];
     };
 
