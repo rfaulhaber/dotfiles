@@ -26,6 +26,8 @@ with lib; let
 
   derivedSettings = {
     session.default = "niri";
+    # Equivalent of tuigreet's --remember.
+    user.default = config.user.name;
     output = {
       inherit layout transforms scales;
       width = spanFor "x" "width";
@@ -56,6 +58,11 @@ in {
     ];
 
     nixpkgs.overlays = [inputs.noctalia-greeter.overlays.default];
+
+    # The greeter discovers sessions by scanning the system path; with nothing
+    # found it silently logs into /bin/sh. tuigreet never needed this because it
+    # was handed `--cmd niri-session` directly.
+    environment.pathsToLink = ["/share/wayland-sessions"];
 
     programs.noctalia-greeter = {
       enable = true;

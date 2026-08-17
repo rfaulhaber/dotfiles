@@ -52,6 +52,7 @@ in {
       awww.enable = true;
       wayland.enable = true;
       noctalia.enable = true;
+      noctalia-greeter.enable = true;
       environment.type = "wayland";
       fuzzel.enable = true;
     };
