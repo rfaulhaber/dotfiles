@@ -1,9 +1,0 @@
-[
-  { "host": "hyperion", "runner": "nix" },
-  { "host": "atlas", "runner": "nix" },
-  { "host": "janus", "runner": "nix" },
-  { "host": "vulcan", "runner": "nix" },
-  { "host": "prometheus", "runner": "nix-aarch64" },
-  { "host": "pallas", "runner": "nix-aarch64" },
-  { "host": "hecate", "runner": "nix-aarch64" }
-]
