@@ -258,12 +258,15 @@ in {
             builtins.foldl' (acc: el: {"${el}" = true;} // acc) {} plugins;
         };
 
-        skills = "${config.dotfiles.configDir}/claude/skills";
+        # Path literals, not dotfiles.configDir: home-manager copies these into a
+        # sandboxed derivation, and a toString'd path carries no store context to
+        # register as a build input.
+        skills = ../../../../config/claude/skills;
 
         # Pinning the tier in each agent's frontmatter makes picking the agent
         # equivalent to picking the model, so cheap subagents stop depending on
         # the main loop remembering to pass `model:`.
-        agentsDir = "${config.dotfiles.configDir}/claude/agents";
+        agentsDir = ../../../../config/claude/agents;
 
         context = ../../../../config/claude/CLAUDE.md;
       };
