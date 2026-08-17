@@ -2,7 +2,7 @@
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:b3d44d324399152be4d50775ff639a364c0fa1cfda67f71b1f38264c4d0ca09f"
+      "digest": "sha256:45a0ba295f5ca41c2cf1853ecedc099fb6f23dabbc80b8c1a73cd85eb195b60c"
     }
   },
   "calibre": {
@@ -20,7 +20,7 @@
   "filebrowser": {
     "image": {
       "version": "latest",
-      "digest": "sha256:e82e3bb6d03d4c9e6d5b6ded452b202f79bad335490889591580bf350b601133"
+      "digest": "sha256:adc48bbc85a7f3ab3994cf2cc721159ad82046ea9edcaf22fdc41ef4be6466f7"
     }
   },
   "flaresolverr": {
@@ -49,8 +49,8 @@
   },
   "grafana": {
     "image": {
-      "version": "13.0.1",
-      "digest": "sha256:0f86bada30d65ef9d0183b90c1e2682ac92d53d95da8bed322b984ea78a4a73a"
+      "version": "13.1.3",
+      "digest": "sha256:ab5cb380e3ff3172d6c8bd2e7cfd31cce977d2881b260e1f5bc089bf0b759b43"
     }
   },
   "immich": {
@@ -73,8 +73,8 @@
   },
   "job-ops": {
     "image": {
-      "version": "v0.9.0",
-      "digest": "sha256:588b571fb44c3fdd86b462035dacd0abb7f434146c1b76199be1081dec5df25a"
+      "version": "latest",
+      "digest": "sha256:37b11b43f2e88b034a3b64066cedd530687e7f280d5a980b60af1714434ef43d"
     }
   },
   "kitchenowl": {
@@ -86,19 +86,19 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:174890eae2d51eb15280c237fe1d791b5861c877f75bcbab6a0420c41beb9054"
+      "digest": "sha256:2dd323f2bd17612d0e780b14fef8315746f091e4972210d9a5c2a69cf1f117a3"
     }
   },
   "linkding": {
     "image": {
       "version": "latest",
-      "digest": "sha256:49eff0b0b90c63760fda75e615357a0e55fcb7dc51876f2a0a5dddb958bd3df4"
+      "digest": "sha256:45ab921bb772ea24cb05f36d35853f78c7141d932cdc5b30a39b626830908e27"
     }
   },
   "loki": {
     "image": {
-      "version": "3.7.1",
-      "digest": "sha256:73e905b51a7f917f7a1075e4be68759df30226e03dcb3cd2213b989cc0dc8eb4"
+      "version": "3.7.6",
+      "digest": "sha256:efd47c67f9bac88ca29bcf8cb997d9ab29d1848bd0aff579282295542a745952"
     }
   },
   "miniflux": {
@@ -109,7 +109,7 @@
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:a1d02e4bd40c94d3bf2bdd3678c137388e76d9efcd23c285e9429d336a834b44"
+        "digest": "sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2"
       }
     }
   },
@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:65910327938f535b32424e3586d0900db41b3a3ecb8180415a85f135d61b6d07"
+      "digest": "sha256:ba6abb402d66fc9c6eb749f015c9fd504684895f9511e83e1e753f7354966346"
     }
   },
   "paperless": {
@@ -139,7 +139,7 @@
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:a1d02e4bd40c94d3bf2bdd3678c137388e76d9efcd23c285e9429d336a834b44"
+        "digest": "sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2"
       }
     },
     "redis": {
@@ -151,14 +151,14 @@
   },
   "podman-exporter": {
     "image": {
-      "version": "v1.21.0",
-      "digest": "sha256:2ebb9e09101d8cc1e28e3f306b56a722450918e628208435201ed39bd62403cb"
+      "version": "v1.21.2",
+      "digest": "sha256:b32899364b6761e2f4f496f110f2bc91a6cbab064f737c19efff200f7f3a25bf"
     }
   },
   "prometheus": {
     "image": {
-      "version": "v3.11.3",
-      "digest": "sha256:e4254400b85610324913f0dc4acf92603d9984e7519414c5a12811aa6146acc3"
+      "version": "v3.13.2",
+      "digest": "sha256:508729e0e2d18e11fd742a5a5ca70e557b940a93948c3c95fd0123a6fd538b69"
     }
   },
   "prowlarr": {
@@ -206,7 +206,7 @@
   "syncthing": {
     "image": {
       "version": "latest",
-      "digest": "sha256:07da4c778027cb13d4a2b9bb8b8d7432ac3a0f0540bb7248b016be3a1cc69788"
+      "digest": "sha256:9e9b931bf48a8a08bffaaa7e2fc2b7d0126b02def2bf1d3395d9b531817f9af3"
     }
   },
   "tautulli": {
@@ -230,12 +230,12 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:4e43261e72ff962c44661944e7a608cb2b95218fd27b56b0e7d7527afc036a78"
+      "digest": "sha256:651d5e1020b5c58e3bbc6288cded9be6306eaaf8d60c2fba02815ad5b27abce4"
     },
     "postgres": {
       "image": {
         "version": "16-alpine",
-        "digest": "sha256:44c4ee9810eff91f7eab4d822642e01115b1a9eccce4bcbdde7604752d68eac6"
+        "digest": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
       }
     },
     "redis": {

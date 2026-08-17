@@ -141,7 +141,7 @@ Nushell scripts in `/bin/` for system tasks:
 - `bandcamp-import.nu` - Import Bandcamp purchases into the atlas music library, with Lidarr catalog registration
 - `build-fan-out.nu` - Build every host's toplevel in parallel
 - `nix-lines-history.nu` - Emit CSV of file line counts sampled across git history
-- `update-oci-digests.nu` - Refresh pinned container digests in `nix/hosts/*/oci-images.json`. Dual-purpose: run by hand for an urgent bump, and invoked by `oci-update.yml` weekly. Needs `skopeo`.
+- `update-oci-digests.nu` - Refresh pinned container digests in `nix/hosts/*/oci-images.json`, and warn when an explicitly-versioned entry has a newer upstream release on the same tag line (a digest refresh can't move those). Dual-purpose: run by hand for an urgent bump, and invoked by `oci-update.yml` weekly. Needs `skopeo`.
 
 ### CI / Automation
 

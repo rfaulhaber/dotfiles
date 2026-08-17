@@ -7,6 +7,11 @@
 # place when digests have moved. After rewriting, evaluates each affected
 # host's toplevel as a sanity check.
 #
+# Entries pinned to an explicit version get a second, read-only check: the
+# registry's tag list is scanned for a newer release on the same tag line.
+# A digest refresh can never move those pins — that is the point of pinning —
+# so without this a pinned service drifts years behind in total silence.
+#
 # This script does NOT touch git — it leaves modified files in the working
 # tree for the caller (a CI follow-up step, or a human running locally) to
 # review and commit. See .github/scripts/commit-oci-digests.nu for the CI
@@ -14,15 +19,16 @@
 #
 # Env:
 #   DRY_RUN — when "true", print proposed changes without writing files
-#             or evaluating.
+#             or evaluating. The version check still runs; it only reads.
 #   OCI_REPORT_DIR — any writable dir; receives oci-changes.json,
-#                    oci-fetch-failures.json and
-#                    oci-validation-failures.json. Defaults to the cwd.
+#                    oci-fetch-failures.json, oci-validation-failures.json
+#                    and oci-version-warnings.json. Defaults to the cwd.
 #
 # Outputs (via $env.GITHUB_OUTPUT):
 #   changed        — "true" if any digest moved
 #   date           — UTC date stamp for downstream branch/PR naming
 #   fetch_failures — count of entries whose repo or tag would not resolve
+#   newer_versions — count of pinned entries with a newer upstream version
 
 let dry_run = ($env.DRY_RUN? | default "false") == "true"
 
@@ -130,6 +136,85 @@ def fetch-digest [repo: string, tag: string] {
     }
 }
 
+# --- Newer-version detection for pinned tags ---
+#
+# Container tags are not semver and cannot be parsed as such: the fleet pins
+# "17.2-alpine", "v3.4.0", "14-vectorchord0.4.3-pgvectors0.2.0" and bare "8".
+# Instead each tag is reduced to a *shape* — every digit run replaced by "#" —
+# and only tags sharing a shape are compared, positionally, on the integers
+# they contain. Identical shapes therefore always yield equal-length number
+# lists, which is what makes the comparison total.
+#
+# Shape matching buys three properties that a looser comparison loses:
+#   - variant lines stay apart: "17.2-alpine" (#.#-alpine) never compares
+#     against "17.2-alpine3.16" (#.#-alpine#.#), which is a different image
+#   - the pin's own precision is honoured: recyclarr's "8" (#) is measured
+#     against "9", not "8.4.1" — tag 8 already floats onto 8.4.1, so the only
+#     news worth reporting there is a new major
+#   - floating tags exclude themselves, having no leading digit run at all
+#
+# The cost is under-reporting when upstream renames a tag component (immich's
+# postgres went "-pgvectors" to "-pgvector", a shape change), which is the
+# right way to be wrong: a missed warning is noise-free, a false one is not.
+
+def tag-shape [tag: string] {
+    $tag | str replace --all --regex '\d+' '#'
+}
+
+def tag-nums [tag: string] {
+    $tag | parse --regex '(?<n>\d+)' | get n | each {|x| $x | into int }
+}
+
+# Only tags that *lead* with a version are pins. This rejects "latest",
+# "release-openvino" and "nightly", but also "main-20260101", where the digits
+# are a build stamp rather than a version to compare.
+def pinned-tag? [tag: string] {
+    (tag-shape $tag) =~ '^v?#'
+}
+
+# Callers must pass number lists of equal length — guaranteed by only ever
+# comparing tags of the same shape.
+def version-gt [a: list<int>, b: list<int>] {
+    for i in 0..<($a | length) {
+        let x = ($a | get $i)
+        let y = ($b | get $i)
+        if $x > $y {
+            return true
+        } else if $x < $y {
+            return false
+        }
+    }
+    false
+}
+
+# Returns {ok, tags, error}. Like fetch-digest, a failure is carried rather
+# than raised: this whole check is advisory, and a registry that refuses a
+# tag listing must not cost the run its digest refresh.
+def list-tags [repo: string] {
+    let result = (^skopeo list-tags $"docker://($repo)" | complete)
+    if $result.exit_code != 0 {
+        {ok: false, tags: [], error: $"skopeo list-tags failed for ($repo): ($result.stderr | str trim)"}
+    } else {
+        {ok: true, tags: ($result.stdout | from json | get Tags), error: null}
+    }
+}
+
+# Greatest same-shape tag above `tag`, plus how many there are. Returns null
+# when the pin is already current.
+def newer-than [tags: list<string>, tag: string] {
+    let shape = (tag-shape $tag)
+    let current = (tag-nums $tag)
+    let newer = ($tags | where {|t| (tag-shape $t) == $shape and (version-gt (tag-nums $t) $current) })
+    if ($newer | is-empty) {
+        null
+    } else {
+        let latest = ($newer | reduce --fold ($newer | first) {|t, acc|
+            if (version-gt (tag-nums $t) (tag-nums $acc)) { $t } else { $acc }
+        })
+        {latest: $latest, count: ($newer | length)}
+    }
+}
+
 # --- Main ---
 
 def main [...hosts: string]: nothing -> nothing {
@@ -152,11 +237,13 @@ def main [...hosts: string]: nothing -> nothing {
       $canonical_hosts
     }
 
-    # Each entry yields either a "change" record, a "failure" record, or null
-    # (digest unmoved). Failures are carried rather than raised: an entry can
-    # stop resolving for reasons entirely outside this repo — an upstream
-    # retiring a tag is enough — and aborting there would discard every other
-    # host's already-computed digests, including hosts not yet inspected.
+    # Each entry yields a "change", "unchanged" or "failure" record. Failures
+    # are carried rather than raised: an entry can stop resolving for reasons
+    # entirely outside this repo — an upstream retiring a tag is enough — and
+    # aborting there would discard every other host's already-computed
+    # digests, including hosts not yet inspected. Unchanged entries are kept
+    # (rather than dropped as null) because a pinned tag whose digest never
+    # moves is precisely what the newer-version check needs to see.
     let per_host = ($hosts | each { |h|
     print $"=== Inspecting ($h.host) ==="
     let manifest = (open $h.file)
@@ -192,7 +279,14 @@ def main [...hosts: string]: nothing -> nothing {
                     error: $fetched.error
                 }
             } else if $fetched.digest == $s.digest {
-                null
+                {
+                    kind: "unchanged"
+                    host: $h.host
+                    path: $s.path
+                    repo: $repo
+                    version: $s.version
+                    tag: $tag
+                }
             } else {
                 print $"  CHANGE  ($path_str): ($s.digest | str substring 0..19)… → ($fetched.digest | str substring 0..19)…"
                 {
@@ -201,12 +295,13 @@ def main [...hosts: string]: nothing -> nothing {
                     path: $s.path
                     repo: $repo
                     version: $s.version
+                    tag: $tag
                     old_digest: $s.digest
                     new_digest: $fetched.digest
                 }
             }
         }
-    } | compact)
+    })
 
     let host_changes = ($host_results | where kind == "change")
 
@@ -256,9 +351,81 @@ def main [...hosts: string]: nothing -> nothing {
         exit 1
     }
 
+    # Runs ahead of every early exit below, and regardless of DRY_RUN: a pinned
+    # tag produces no digest movement by design, so the weeks where this has
+    # something to say are exactly the weeks that otherwise print "No digest
+    # updates." and stop.
+    let pinned = ($all_results
+        | where kind != "failure"
+        | where {|r| pinned-tag? $r.tag })
+
+    # One tag listing per repository, not per entry: postgres alone is pinned
+    # at three different tags across the fleet, and podman-exporter at the same
+    # tag on three hosts.
+    let tag_lists = ($pinned
+        | get repo
+        | uniq
+        | par-each {|repo| {repo: $repo, result: (list-tags $repo)} }
+        | reduce --fold {} {|it, acc| $acc | upsert $it.repo $it.result })
+
+    # A repo whose tags cannot be listed contributes no warnings, which is
+    # indistinguishable from a pin that is current. Say so rather than let the
+    # check rot into a permanent all-clear.
+    for entry in ($tag_lists | transpose repo result | where {|e| not $e.result.ok }) {
+        print -e $"WARN: version check skipped for ($entry.repo): ($entry.result.error)"
+    }
+
+    let version_warnings = ($pinned | each {|p|
+        let listing = ($tag_lists | get $p.repo)
+        if not $listing.ok {
+            null
+        } else {
+            let newer = (newer-than $listing.tags $p.tag)
+            if $newer == null {
+                null
+            } else {
+                {
+                    host: $p.host
+                    path: $p.path
+                    repo: $p.repo
+                    tag: $p.tag
+                    latest: $newer.latest
+                    newer_count: $newer.count
+                }
+            }
+        }
+    } | compact)
+
+    $version_warnings | to json | save -f $"($report_dir)/oci-version-warnings.json"
+
+    if (not ($version_warnings | is-empty)) {
+        print $"!! ($version_warnings | length) pinned image\(s\) have a newer upstream version — a digest refresh cannot move these:"
+        for w in $version_warnings {
+            let path_str = ($w.path | str join ".")
+            print $"     ($w.host) ($path_str): ($w.repo):($w.tag) → ($w.latest) \(($w.newer_count) newer tag\(s\)\)"
+        }
+        print ""
+    }
+
+    # The job summary is written here rather than from the PR step because the
+    # PR step only runs when a digest moved. A stale pin is most likely to show
+    # up in a week with no diff at all, where this is the only surface it has.
+    if (not ($version_warnings | is-empty)) {
+        let summary_file = ($env.GITHUB_STEP_SUMMARY? | default "/dev/null")
+        let rows = ($version_warnings | each {|w|
+            let path_str = ($w.path | str join ".")
+            $"| `($w.host)` | `($path_str)` | `($w.repo):($w.tag)` | `($w.latest)` |"
+        } | str join "\n")
+        ($"## Pinned images behind upstream\n\n($version_warnings | length) pinned image\(s\) have a newer version on the same tag line. "
+            + "Digest refreshes cannot move a pinned tag — bump `version` in the host's `oci-images.json` and re-run this workflow.\n\n"
+            + $"| Host | Module path | Pinned | Newest |\n| --- | --- | --- | --- |\n($rows)\n\n")
+        | save --append $summary_file
+    }
+
     if ($all_changes | is-empty) {
         print "No digest updates."
-        $"changed=false\ndate=\nfetch_failures=($fetch_failures | length)\n" | save --append $output_file
+        ($"changed=false\ndate=\nfetch_failures=($fetch_failures | length)"
+            + $"\nnewer_versions=($version_warnings | length)\n") | save --append $output_file
         exit 0
     }
 
@@ -267,7 +434,8 @@ def main [...hosts: string]: nothing -> nothing {
 
     if $dry_run {
         print "DRY_RUN=true — not writing files or validating."
-        $"changed=false\ndate=\nfetch_failures=($fetch_failures | length)\n" | save --append $output_file
+        ($"changed=false\ndate=\nfetch_failures=($fetch_failures | length)"
+            + $"\nnewer_versions=($version_warnings | length)\n") | save --append $output_file
         exit 0
     }
 
@@ -299,5 +467,6 @@ def main [...hosts: string]: nothing -> nothing {
     $all_changes | to json | save -f $"($report_dir)/oci-changes.json"
     $validation_failures | to json | save -f $"($report_dir)/oci-validation-failures.json"
 
-    $"changed=true\ndate=($date_str)\nfetch_failures=($fetch_failures | length)\n" | save --append $output_file
+    ($"changed=true\ndate=($date_str)\nfetch_failures=($fetch_failures | length)"
+        + $"\nnewer_versions=($version_warnings | length)\n") | save --append $output_file
 }

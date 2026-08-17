@@ -60,6 +60,22 @@ def main [branch_name: string, date_str: string] {
     $"\n> [!CAUTION]\n> ($fetch_failures | length) image\(s\) could not be resolved and were **not** refreshed. A tag that stopped resolving usually means upstream retired it — check the image's current tags before assuming the pin is still valid.\n>\n> | Host | Module path | Image |\n> | --- | --- | --- |\n($rows)\n"
   }
 
+  # Pinned entries never appear in the diff — that is what pinning means — so
+  # the PR is the one place a reviewer already reading about image versions can
+  # be told a pin has fallen behind. The refresh step writes the matching job
+  # summary itself, since it also runs in the weeks that open no PR at all.
+  let versions_path = ($report_dir | path join "oci-version-warnings.json")
+  let version_warnings = if ($versions_path | path exists) { open $versions_path } else { [] }
+  let version_note = if ($version_warnings | is-empty) {
+    ""
+  } else {
+    let rows = ($version_warnings | each { |w|
+      let path_str = ($w.path | str join ".")
+      $"| `($w.host)` | `($path_str)` | `($w.repo):($w.tag)` | `($w.latest)` |"
+    } | str join "\n")
+    $"\n## Pinned images behind upstream\n\n($version_warnings | length) pinned image\(s\) have a newer version on the same tag line. These are **not** part of the diff above — a digest refresh cannot move a pinned tag. Bump `version` in the host's `oci-images.json` to take them.\n\n| Host | Module path | Pinned | Newest |\n| --- | --- | --- | --- |\n($rows)\n"
+  }
+
   # The same blocks go to the job summary: a warning buried in a PR body is
   # easy to scroll past, and a retired tag produces no diff to notice.
   if (not ($warning | is-empty)) or (not ($fetch_warning | is-empty)) {
@@ -72,7 +88,7 @@ def main [branch_name: string, date_str: string] {
 Refreshed ($changes | length) image\(s\) across ($by_host | columns | length) host\(s\).
 ($warning)($fetch_warning)
 ($sections)
-
+($version_note)
 Each pinned tag was re-resolved against its registry; only digests where the
 upstream manifest moved appear above. The full digest values land in the
 host's `oci-images.json` — see the diff for the new SHAs.

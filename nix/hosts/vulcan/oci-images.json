@@ -2,13 +2,13 @@
   "immich-ml": {
     "image": {
       "version": "release",
-      "digest": "sha256:5a0839dc5303cd7215bcd2180a26aed3af41675aefb3e75e5157e9f10ad16e6e"
+      "digest": "sha256:4b6ef958e7749fc548377bb23ee219c09c74da8decee080d76dc6a388c39b013"
     }
   },
   "plex": {
     "image": {
       "version": "latest",
-      "digest": "sha256:d5ee6068a20ae57f95060038eaef292cdfd4285efb213ea4daaccdc184e45d1b"
+      "digest": "sha256:d2d85229429f2a8b84a6f5523f7cd69470d9b705a1aba9046887eb73d395101f"
     }
   },
   "jellyfin": {
@@ -33,16 +33,16 @@
     "runners": {
       "default": {
         "image": {
-          "version": "6.2.2",
-          "digest": "sha256:fe4f55e1842a50ffa321324f80128987bef3722dce1a911f963eecfd740309e7"
+          "version": "13.0.0",
+          "digest": "sha256:7fb853bfe73c229be6349398359c0a7bd01fadfd17c106607b2221150b799ed2"
         }
       }
     }
   },
   "podman-exporter": {
     "image": {
-      "version": "v1.21.0",
-      "digest": "sha256:2ebb9e09101d8cc1e28e3f306b56a722450918e628208435201ed39bd62403cb"
+      "version": "v1.21.2",
+      "digest": "sha256:b32899364b6761e2f4f496f110f2bc91a6cbab064f737c19efff200f7f3a25bf"
     }
   },
   "wolf": {
@@ -54,7 +54,7 @@
   "wolf-den": {
     "image": {
       "version": "stable",
-      "digest": "sha256:2e9467a36b240421592735ba85940e22388c2d6d4e217932309632b6b40f7363"
+      "digest": "sha256:8aa5e3ab0696d7606a4a6a00c7b8e5539498d5c9e839a4e1a53a4331849bceb8"
     }
   }
 }

@@ -3,8 +3,8 @@
     "runners": {
       "default": {
         "image": {
-          "version": "6.2.2",
-          "digest": "sha256:fe4f55e1842a50ffa321324f80128987bef3722dce1a911f963eecfd740309e7"
+          "version": "13.0.0",
+          "digest": "sha256:7fb853bfe73c229be6349398359c0a7bd01fadfd17c106607b2221150b799ed2"
         }
       }
     }

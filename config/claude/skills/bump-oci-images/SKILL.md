@@ -36,9 +36,9 @@ nu bin/update-oci-digests.nu atlas
 with-env {DRY_RUN: "true"} { nu bin/update-oci-digests.nu atlas }
 ```
 
-Reports (`oci-changes.json`, `oci-fetch-failures.json`, `oci-validation-failures.json`) go to
-`/tmp` unless `OCI_REPORT_DIR` says otherwise, deliberately keeping them out of the working tree
-you are about to review.
+Reports (`oci-changes.json`, `oci-fetch-failures.json`, `oci-validation-failures.json`,
+`oci-version-warnings.json`) go to `/tmp` unless `OCI_REPORT_DIR` says otherwise, deliberately
+keeping them out of the working tree you are about to review.
 
 It deliberately does not touch git — it leaves modified files in the working tree for review.
 Do not reimplement any part of this inline. If it fails, fix the script.
@@ -59,6 +59,29 @@ For each changed entry, ask whether that service *should* be on a floating tag a
 
 If a diff shows a service moving several major versions at once, that is the signal it should have
 been pinned, not a reason to merge faster.
+
+## Pinned entries: the warning block, not the diff
+
+A pinned tag's digest does not move, so a pin **never appears in the diff**. The script instead
+scans the registry's tag list for a newer release on the same tag line and reports it separately —
+as a `!! N pinned image(s) have a newer upstream version` block in the log, a table in the PR body,
+and a job summary section (the summary is written even in weeks that open no PR, since a stale pin
+produces no diff to hang one on).
+
+Acting on a warning means editing `version` in the host's `oci-images.json` by hand, then re-running
+the script so the matching digest is fetched. **Never edit `version` without re-running** — the
+digest is what podman actually pulls, so a bumped version beside a stale digest silently deploys
+the old image.
+
+Comparison is by tag *shape*: digit runs are normalized to `#` and only tags of the same shape are
+compared. That is why `17.2-alpine` is never measured against `17.2-alpine3.16` (a different
+variant) and why recyclarr's bare `8` pin is measured against `9` rather than `8.4.1` (tag `8`
+already floats onto 8.4.1). It errs toward silence: an upstream that renames part of a tag changes
+its shape and drops out of comparison, so absence of a warning is not proof a pin is current.
+
+Warnings are advisory and never block. A registry that refuses a tag listing is skipped, and a
+newer major on a service that was pinned *because* it breaks on major bumps is information, not an
+instruction — check the upstream release notes before taking it.
 
 ## After the bump: what a digest change actually costs
 
