@@ -301,11 +301,13 @@ in {
       }
     ];
 
-    modules.linux.oci._managedPaths.${cfg.baseDir}.properties = cfg.configProperties;
-    modules.linux.oci._gluetunPorts = mkIf cfg.useGluetun portMappings;
+    modules.linux.oci = {
+      _managedPaths.${cfg.baseDir}.properties = cfg.configProperties;
+      _gluetunPorts = mkIf cfg.useGluetun portMappings;
 
-    modules.linux.oci.networks = mkIf (!cfg.useGluetun) (
-      listToAttrs (map (n: nameValuePair n {enable = true;}) cfg.networks)
-    );
+      networks = mkIf (!cfg.useGluetun) (
+        listToAttrs (map (n: nameValuePair n {enable = true;}) cfg.networks)
+      );
+    };
   });
 }
