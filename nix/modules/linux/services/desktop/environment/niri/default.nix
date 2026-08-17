@@ -51,7 +51,7 @@ in {
     modules.desktop = {
       awww.enable = true;
       wayland.enable = true;
-      waybar.enable = true;
+      noctalia.enable = true;
       environment.type = "wayland";
       fuzzel.enable = true;
     };
@@ -85,10 +85,16 @@ in {
       gnome.gnome-keyring.enable = true;
       greetd = {
         enable = true;
-        settings.default_session = {
-          command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd '${niriPkg}/bin/niri-session'";
-          user = "greeter";
-        };
+        # noctalia-greeter supplies its own command via mkDefault, which a plain
+        # definition here would silently outrank. Leave the slot empty for it,
+        # but keep `user` — that module reads it back to own its state dir.
+        settings.default_session =
+          {
+            user = "greeter";
+          }
+          // optionalAttrs (!config.modules.desktop.noctalia-greeter.enable) {
+            command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd '${niriPkg}/bin/niri-session'";
+          };
       };
     };
 
@@ -118,8 +124,9 @@ in {
 
       layout = import ./layout.nix {inherit colors;};
 
+      # noctalia runs as a systemd user unit bound to graphical-session.target,
+      # so unlike waybar it is not spawned from here.
       spawn-at-startup = [
-        {argv = ["waybar"];}
         {argv = ["xwayland-satellite"];}
       ];
 

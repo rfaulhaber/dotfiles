@@ -14,6 +14,8 @@ in {
     ./firefox
     ./fuzzel
     ./mako
+    ./noctalia
+    ./noctalia-greeter
     ./random-wallpaper.nix
     ./sound
     ./waybar

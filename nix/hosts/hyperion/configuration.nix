@@ -221,9 +221,7 @@
         inputs.rz.packages.${pkgs.stdenv.hostPlatform.system}.with-xz2-bzip2
         feishin
         gh
-        # moonlight-qt
-        # temporary, moonlight build is failing
-        (moonlight-qt.override {ffmpeg = ffmpeg_8;})
+        moonlight-qt
         signal-desktop
         ungoogled-chromium
       ];
