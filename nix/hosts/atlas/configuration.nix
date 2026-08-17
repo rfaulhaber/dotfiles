@@ -165,6 +165,11 @@
   # until a manual `exportfs -r`; order the server behind dataset creation.
   systemd.services.nfs-server.after = ["zfs-manage-datasets.service"];
 
+  # Without a scope avahi publishes across every podman bridge and veth pair
+  # (~40 interfaces here) plus the netbird overlay; the printer only belongs on
+  # the LAN.
+  services.avahi.allowInterfaces = ["eno2"];
+
   sops.secrets = {
     "filebrowser/zfs-key" = {
       format = "binary";
@@ -185,6 +190,11 @@
     hostId = "d6acc614";
 
     useDHCP = false;
+
+    # Privacy addresses rotate the v6 address every few minutes, which forces
+    # avahi to re-probe and eventually rename itself (atlas -> atlas-N), breaking
+    # every saved mDNS printer entry on the LAN. Servers want a stable address.
+    tempAddresses = "disabled";
 
     interfaces = {
       eno1.useDHCP = true;

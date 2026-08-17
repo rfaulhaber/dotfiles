@@ -68,20 +68,26 @@ in {
         };
       })
       (mkIf cfg.client {
-        services.printing = {
-          enable = true;
-          drivers = with pkgs; [brlaser];
+        services = {
+          printing.enable = true;
+          avahi = {
+            enable = true;
+            nssmdns4 = true;
+            openFirewall = true;
+          };
         };
+
+        # Deliberately driverless: a real PPD here makes the client rasterize to
+        # application/vnd.cups-raster before submitting, and the server's own
+        # filter chain then fails on the already-converted stream. Filtering has
+        # to happen exactly once, on the host that owns the hardware.
         hardware.printers = {
           ensurePrinters = [
             {
               name = "Brother";
               location = "Home";
-              deviceUri = "http://192.168.0.3:631/printers/Brother";
-              model = "drv:///brlaser.drv/brl2320d.ppd";
-              ppdOptions = {
-                PageSize = "A4";
-              };
+              deviceUri = "ipp://192.168.0.3:631/printers/Brother";
+              model = "everywhere";
             }
           ];
           ensureDefaultPrinter = "Brother";
