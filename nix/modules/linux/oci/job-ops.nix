@@ -73,7 +73,7 @@ in {
           roughly $12 for 3000+ scored jobs.
         '';
         type = types.str;
-        default = "google/gemini-3-flash-preview";
+        default = "google/gemini-3.7-flash";
       };
 
       apiKey = {
