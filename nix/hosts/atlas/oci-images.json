@@ -36,8 +36,8 @@
     },
     "postgres": {
       "image": {
-        "version": "17.2-alpine",
-        "digest": "sha256:7e5df973a74872482e320dcbdeb055e178d6f42de0558b083892c50cda833c96"
+        "version": "17.11-alpine",
+        "digest": "sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73"
       }
     }
   },
@@ -49,8 +49,8 @@
   },
   "grafana": {
     "image": {
-      "version": "13.1.3",
-      "digest": "sha256:ab5cb380e3ff3172d6c8bd2e7cfd31cce977d2881b260e1f5bc089bf0b759b43"
+      "version": "13.2.0",
+      "digest": "sha256:3fd54ae1214669f8355f065ec9f6445d5279a3d77095ab048ca045685272429b"
     }
   },
   "immich": {
@@ -157,8 +157,8 @@
   },
   "prometheus": {
     "image": {
-      "version": "v3.13.2",
-      "digest": "sha256:508729e0e2d18e11fd742a5a5ca70e557b940a93948c3c95fd0123a6fd538b69"
+      "version": "v3.14.0",
+      "digest": "sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0"
     }
   },
   "prowlarr": {
@@ -218,7 +218,7 @@
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:81787bc706d3833d252e6d8b94545fea46bf2156f616320991a395619a477d2c"
+      "digest": "sha256:7356451f32395838628b241f33bcd7130df9302777fc23f80cbc7ca8b4997c02"
     }
   },
   "vikunja": {
@@ -230,7 +230,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:651d5e1020b5c58e3bbc6288cded9be6306eaaf8d60c2fba02815ad5b27abce4"
+      "digest": "sha256:6f00fcf3e34ce4f73b8275dcff868df97a5f3f203e1b3272cc3bcf3dbe3d17d3"
     },
     "postgres": {
       "image": {

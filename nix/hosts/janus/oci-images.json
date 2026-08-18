@@ -10,8 +10,8 @@
         "digest": "sha256:0c5a7d9ccdf1b28e074ff7ed9ecd73882e47d46c9591702aa535add434fad566"
       },
       "traefik": {
-        "version": "v3.4.0",
-        "digest": "sha256:4cf907247939b5d20bf4eff73abd21cb413c339600dde76dbc94a874b2578a27"
+        "version": "v3.7",
+        "digest": "sha256:9c3b91d5fb7770853ca5c1124a23c34bf2d9b47ffaebeab2614cbaf410dcb2ac"
       }
     }
   },

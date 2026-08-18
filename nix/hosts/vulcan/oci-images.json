@@ -8,13 +8,13 @@
   "plex": {
     "image": {
       "version": "latest",
-      "digest": "sha256:d2d85229429f2a8b84a6f5523f7cd69470d9b705a1aba9046887eb73d395101f"
+      "digest": "sha256:f6c58cb2f5e41cd1397bf2ed4e61ef63bd86e0736841b3ef426fabfe04606293"
     }
   },
   "jellyfin": {
     "image": {
       "version": "latest",
-      "digest": "sha256:0dd18f8de37c7cfbe76877a8b928943b3588beb9678fb223121914ec9a3cdf7c"
+      "digest": "sha256:aef1046ab41bbd7b48e205e711aa31dfb1fa55a3fb8e22cbbb150a323c4a48c7"
     }
   },
   "open-webui": {
