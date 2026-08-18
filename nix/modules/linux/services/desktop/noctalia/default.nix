@@ -11,9 +11,18 @@ with lib; let
   noctaliaSettings = import ./config.nix {
     homePath = config.user.home;
     inherit (config.modules.themes) font;
+    inherit (cfg) networkInterface;
   };
 in {
-  options.modules.desktop.noctalia = {enable = mkEnableOption false;};
+  options.modules.desktop.noctalia = {
+    enable = mkEnableOption false;
+
+    networkInterface = lib.my.mkOptDesc types.str "" ''
+      Interface the bar's network throughput widgets sample. Left empty, sysmon
+      sums every non-loopback interface, so an overlay like netbird's wt0 is
+      counted alongside the physical link it already egresses over.
+    '';
+  };
 
   config = mkIf cfg.enable {
     assertions = [

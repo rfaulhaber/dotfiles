@@ -1,10 +1,21 @@
 {
   homePath,
   font,
-}: {
+  networkInterface,
+}: let
+  # Left-click already opens noctalia's summary panel on every sysmon widget;
+  # right-click goes to the tool that can answer the follow-up question.
+  sysmon = args:
+    {
+      type = "sysmon";
+      actions.right = "exec ghostty --command='btop'";
+    }
+    // args;
+in {
   # Bar-only deployment. mako, fuzzel, swaylock and awww keep their roles, so
   # every noctalia subsystem that would contend for them is off. The launcher
   # has no toggle — it stays inert as long as nothing binds or summons it.
+  # Clipboard history is the exception: nothing else in this config provides it.
   notification.enable_daemon = false;
   lockscreen.enabled = false;
 
@@ -48,6 +59,9 @@
     cpu_poll_seconds = 1.0;
     memory_poll_seconds = 1.0;
     disk_poll_seconds = 30.0;
+    # Graph widgets scroll at the fastest poll of any metric, so leaving this at
+    # its 3s default would stair-step the network graphs against a 1s scroll.
+    network_poll_seconds = 1.0;
   };
 
   bar.main = {
@@ -68,7 +82,28 @@
 
     start = ["workspaces" "taskbar" "active_window"];
     center = [];
-    end = ["tray" "cpu_usage" "ram_pct" "ram_used" "disk_home" "disk_nix" "clock"];
+    end = [
+      "clipboard"
+      "tray"
+      "net_rx"
+      "net_tx"
+      "cpu_usage"
+      "cpu_temp"
+      "ram_pct"
+      "ram_used"
+      "disk_home"
+      "disk_nix"
+      "lock_keys"
+      "clock"
+    ];
+
+    # The gap between the start and end sections is a click target the width of
+    # the screen. Right-click keeps its default (control center).
+    dead_zone.actions = {
+      # The launcher Mod+D reaches, not noctalia's, which stays inert.
+      left = "exec fuzzel";
+      middle = "panel-toggle clipboard";
+    };
   };
 
   widget = {
@@ -80,41 +115,70 @@
       workspace_group_content = "icons";
     };
 
-    cpu_usage = {
-      type = "sysmon";
-      stat = "cpu_usage";
+    workspaces = {
+      # One bar per output, so without this both bars paint a focused pill and
+      # neither says which head holds keyboard focus. Unfocused outputs fall
+      # back to the occupied color.
+      focused_output_only = true;
+      # niri keeps a trailing empty workspace at all times; labelling it is
+      # noise. The active workspace stays labelled even while empty.
+      labels_only_when_occupied = true;
     };
+
+    # Only meaningful for a metric that swings across orders of magnitude, where
+    # the graph carries the shape and the number just needs to stop reflowing
+    # the bar every second.
+    net_rx = sysmon {
+      stat = "net_rx";
+      interface = networkInterface;
+      visualization = "graph";
+      network_speed_compact = true;
+      label_min_width = 40;
+    };
+
+    net_tx = sysmon {
+      stat = "net_tx";
+      interface = networkInterface;
+      visualization = "graph";
+      network_speed_compact = true;
+      label_min_width = 40;
+    };
+
+    cpu_usage = sysmon {
+      stat = "cpu_usage";
+      visualization = "graph";
+    };
+
+    cpu_temp = sysmon {stat = "cpu_temp";};
 
     # One waybar module showed percentage and absolute together; sysmon reports
     # a single stat per instance, so the pair is split.
-    ram_pct = {
-      type = "sysmon";
-      stat = "ram_pct";
-    };
+    ram_pct = sysmon {stat = "ram_pct";};
 
-    ram_used = {
-      type = "sysmon";
-      stat = "ram_used";
-    };
+    ram_used = sysmon {stat = "ram_used";};
 
     # `path` only expands a leading `~`, never $VAR, so pass an absolute path.
-    disk_home = {
-      type = "sysmon";
+    disk_home = sysmon {
       stat = "disk_used";
       path = homePath;
     };
 
-    disk_nix = {
-      type = "sysmon";
+    disk_nix = sysmon {
       stat = "disk_used";
       path = "/nix";
     };
+
+    # zellij's share plugin silently drops <SPACE> while Num or Caps Lock is on,
+    # with nothing in its UI to say why. Surface the widget only in that
+    # abnormal state so its presence is the signal.
+    lock_keys.hide_when_off = true;
 
     clock = {
       format = "󰥔 {:%a, %b %d %Y %I:%M:%S %p}";
       # No calendar token exists for the bar clock; noctalia puts the calendar
       # in the control center panel instead.
       tooltip_format = "{:%A, %B %d, %Y}";
+      actions.right = "exec ghostty --command='zellij'";
     };
   };
 }

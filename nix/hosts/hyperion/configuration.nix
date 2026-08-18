@@ -205,6 +205,9 @@
           };
         };
       };
+      # wt0 (netbird) egresses over this link, so sampling both would count
+      # overlay traffic twice.
+      noctalia.networkInterface = "enp5s0";
       random-wallpaper = {
         enable = true;
         perDisplay = true;
