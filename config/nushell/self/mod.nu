@@ -57,7 +57,7 @@ export def rotn [n: int]: string -> string {
   let min = 'a' | into binary | into int
   let max = ('z' | into binary | into int) + 1
 
-  $in | str downcase | split chars | each {
+  $in | str lowercase | split chars | each {
     into binary
     | into int
     | do {
