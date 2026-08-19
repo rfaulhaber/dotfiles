@@ -109,4 +109,9 @@ in {
     upstreamScheme = "https";
     upstreamTlsInsecure = true;
   };
+  koito = {
+    hosts = ["koito.home.lan"];
+    upstream = "${atlas}:4110";
+    displayName = "Koito";
+  };
 }

@@ -65,9 +65,7 @@ in {
     extraEnv = mkOption {
       description = "Additional ND_* environment variables.";
       type = types.attrsOf types.str;
-      default = {
-        ND_LASTFM_SCROBBLEFIRSTARTISTONLY = "true";
-      };
+      default = {};
     };
 
     lastfm.enable = mkEnableOption ''
@@ -104,7 +102,11 @@ in {
     virtualisation.oci-containers.containers.navidrome = {
       image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
-      environment = cfg.extraEnv;
+      environment =
+        {
+          ND_LASTFM_SCROBBLEFIRSTARTISTONLY = "true";
+        }
+        // cfg.extraEnv;
       environmentFiles = optional cfg.lastfm.enable config.sops.templates."navidrome-env".path;
       volumes = [
         "${cfg.baseDir}:/data"

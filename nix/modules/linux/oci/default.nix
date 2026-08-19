@@ -177,6 +177,7 @@ in {
     ./jellyfin.nix
     ./job-ops.nix
     ./kitchenowl.nix
+    ./koito.nix
     ./lidarr.nix
     ./linkding.nix
     ./loki.nix
