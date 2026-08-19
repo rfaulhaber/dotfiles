@@ -264,12 +264,6 @@
           baseDir = "/data/apps/navidrome";
           musicDir = "/data/music";
           lastfm.enable = true;
-          extraEnv.ND_LISTENBRAINZ_BASEURL = "http://koito:4110/apis/listenbrainz/1/";
-        };
-
-        koito = {
-          enable = true;
-          baseDir = "/data/apps/koito";
         };
 
         paperless = {
