@@ -22,6 +22,9 @@
             "pallas.lan,192.168.0.2"
             "hecate.lan,192.168.0.77"
           ];
+          # Caddy runs on pallas, so this points off-host; must match
+          # pallas's list for failover.
+          dns.addressRecords."home.lan" = "192.168.0.2";
         };
       };
   };

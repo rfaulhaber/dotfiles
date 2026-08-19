@@ -29,6 +29,9 @@
             "pallas.lan,192.168.0.2"
             "hecate.lan,192.168.0.77"
           ];
+          # Every home.lan name lands on caddy below, which routes by Host
+          # header; must match hecate's list for failover.
+          dns.addressRecords."home.lan" = "192.168.0.2";
         };
         caddy = {
           enable = true;

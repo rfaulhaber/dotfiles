@@ -30,7 +30,8 @@ with lib; let
     # ra-param fields: <interface>,<ra-interval>,<router-lifetime>
     # (an interval of 0 selects dnsmasq's default interval).
     "ra-param=${cfg.interface},0,0"
-    ++ map (record: "host-record=${record}") cfg.dns.hostRecords;
+    ++ map (record: "host-record=${record}") cfg.dns.hostRecords
+    ++ mapAttrsToList (domain: addr: "address=/${domain}/${addr}") cfg.dns.addressRecords;
 
   customDnsmasqConf =
     pkgs.writeText "99-pihole-custom.conf"
@@ -170,6 +171,24 @@ in {
         type = types.listOf types.str;
         default = [];
         example = ["pallas.lan,192.168.0.2" "hecate.lan,192.168.0.77"];
+      };
+      addressRecords = mkOption {
+        description = ''
+          Wildcard domain -> address map, rendered as
+          "address=/<domain>/<addr>". Unlike host-record, an address
+          entry matches the domain itself *and* every name beneath it,
+          so a single entry points an entire subdomain tree at a
+          reverse proxy instead of enumerating each name. More
+          specific answers still win: a host-record, a DHCP lease, or
+          a Pi-hole local DNS record for one name overrides the
+          wildcard, which is how individual names get carved out.
+          Only the listed family is answered — a v4 address leaves
+          AAAA queries for those names as NODATA. List the same
+          entries on EVERY Pi-hole so names survive failover.
+        '';
+        type = types.attrsOf types.str;
+        default = {};
+        example = {"home.lan" = "192.168.0.2";};
       };
     };
 
