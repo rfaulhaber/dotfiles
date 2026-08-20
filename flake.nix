@@ -110,16 +110,6 @@
           };
         });
       in {
-        templates = {
-          rust = {
-            path = ./nix/templates/rust;
-            description = "Rust project template";
-          };
-          emacs-lisp = {
-            path = ./nix/templates/emacs-lisp;
-            description = "Emacs Lisp template";
-          };
-        };
         # overlays = mapModules ./nix/overlays import;
         # these are the actual system configurations
         # any particular system can be build with nixos-rebuild of course, but also:
@@ -287,11 +277,7 @@
 
         pre-commit.settings.hooks = {
           alejandra.enable = true;
-          deadnix = {
-            enable = true;
-            # templates are scaffolding; their unused bindings are placeholders
-            excludes = ["^nix/templates/"];
-          };
+          deadnix.enable = true;
           statix.enable = true;
         };
 
@@ -311,7 +297,7 @@
               # the installed git hook pins its own store path and doesn't need this
               config.pre-commit.settings.package
             ]
-            ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+            ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
               inputs'.nix-darwin.packages.default
             ];
           shellHook = config.pre-commit.installationScript;

@@ -1,3 +1,0 @@
-#+title: Nix Flake Templates
-
-These are my Nix flake templates.
