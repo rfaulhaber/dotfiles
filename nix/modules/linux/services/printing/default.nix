@@ -77,6 +77,17 @@ in {
           };
         };
 
+        # The generated ensure-printers unit only orders after cups.service, but a
+        # client queue has a network deviceUri: at boot lpadmin can run before the
+        # NIC has carrier, and one EHOSTDOWN leaves the host with no queue at all
+        # (oneshot, no retry — systemd forbids Restart= with RemainAfterExit=yes).
+        # network-online.target is passive, so it must be pulled in, not just
+        # ordered against.
+        systemd.services.ensure-printers = {
+          wants = ["network-online.target"];
+          after = ["network-online.target"];
+        };
+
         # Deliberately driverless: a real PPD here makes the client rasterize to
         # application/vnd.cups-raster before submitting, and the server's own
         # filter chain then fails on the already-converted stream. Filtering has
