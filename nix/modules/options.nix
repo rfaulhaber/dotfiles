@@ -1,6 +1,5 @@
 {
   config,
-  pkgs,
   options,
   lib,
   isLinux,
@@ -96,7 +95,7 @@ in {
       };
     };
 
-    users.groups = lib.mkIf pkgs.stdenv.isLinux {plugdev = {};};
+    users.groups = lib.mkIf isLinux {plugdev = {};};
 
     home-manager = {
       useUserPackages = true;

@@ -74,7 +74,7 @@ in {
         '';
         envFile.text = "source ${configDir}/env.nu";
 
-        shellAliases = mkIf (pkgs.stdenv.isLinux && desktopCfg.enable) (mkMerge [
+        shellAliases = mkIf (isLinux && desktopCfg.enable) (mkMerge [
           (mkIf isWayland {
             pbcopy = "${pkgs.wl-clipboard}/bin/wl-copy";
             pbpaste = "${pkgs.wl-clipboard}/bin/wl-paste";
