@@ -34,6 +34,14 @@ in {
             enable = true;
             nssmdns4 = true;
             openFirewall = true;
+            # The LAN routers advertise the v6 prefix with 300s valid=preferred
+            # lifetimes, so the SLAAC address expires and is deleted whenever an
+            # RA runs a few seconds late (~every 8 minutes). Each flap makes
+            # avahi withdraw and re-probe its records, and it occasionally loses
+            # the probe race against its own looped-back packets — renaming the
+            # host (atlas -> atlas-N) and breaking saved mDNS printer entries.
+            # v4-only mDNS sidesteps the churn; discovery works fine over v4.
+            ipv6 = false;
             publish = {
               enable = true;
               userServices = true;
@@ -74,6 +82,8 @@ in {
             enable = true;
             nssmdns4 = true;
             openFirewall = true;
+            # Same v6 RA-lifetime flap as the server block; browsing needs v4 only.
+            ipv6 = false;
           };
         };
 

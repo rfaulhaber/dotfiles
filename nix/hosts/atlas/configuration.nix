@@ -191,9 +191,8 @@
 
     useDHCP = false;
 
-    # Privacy addresses rotate the v6 address every few minutes, which forces
-    # avahi to re-probe and eventually rename itself (atlas -> atlas-N), breaking
-    # every saved mDNS printer entry on the LAN. Servers want a stable address.
+    # Privacy addresses rotate the v6 address every few minutes; servers want a
+    # stable, predictable address.
     tempAddresses = "disabled";
 
     interfaces = {
