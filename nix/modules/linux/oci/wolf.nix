@@ -86,6 +86,27 @@ in {
       default = {};
     };
 
+    keepSessionImages = mkOption {
+      description = ''
+        Exempt Wolf's runtime-pulled session images (the GOW app images —
+        steam, retroarch, es-de, pegasus — and Wolf UI) from the weekly
+        `podman system prune --all` the OCI module schedules.
+
+        Wolf pulls a session image only when it is missing and removes the
+        session container when the app exits, so between plays every session
+        image is unreferenced and the prune evicts the lot (~17 GB). The next
+        launch then re-pulls a floating tag, and because the GOW images take
+        Mesa from an unpinned PPA, a rebuilt `edge` can swap the GPU driver
+        underneath Steam — invalidating every shader cache in appStateDir and
+        forcing a full recompile on top of the multi-GB download. Keeping the
+        images resident makes the driver stable; updating one becomes a
+        deliberate `podman pull <image>` on the host (expect a one-time
+        shader recompile when Mesa moves).
+      '';
+      type = types.bool;
+      default = true;
+    };
+
     profiles = mkOption {
       description = ''
         Wolf profiles to ensure exist, keyed by profile id. Profiles are app
@@ -160,6 +181,19 @@ in {
     # steam:edge etc.) are pulled by Wolf at runtime and are NOT covered by
     # oci-images.json pinning.
     systemd.sockets.podman.wantedBy = ["sockets.target"];
+
+    # Session images carry no tag the oci module pins, so the only handle on
+    # them is the OCI source label they all share. `label!=` is podman's
+    # negated filter: prune removes only images lacking the label, and with
+    # several filters an image must lack all of them to go (libimage ANDs
+    # same-key filters). The same filters reach container/network prune,
+    # where they change nothing.
+    virtualisation.podman.autoPrune.flags = mkIf cfg.keepSessionImages (
+      concatMap (source: ["--filter" "label!=org.opencontainers.image.source=${source}"]) [
+        "https://github.com/games-on-whales/gow"
+        "https://github.com/games-on-whales/wolf-ui"
+      ]
+    );
 
     boot.kernelModules = ["uinput" "uhid"];
 
