@@ -26,7 +26,7 @@
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:d69d047c816ca7721eae90d5f3cd3be53b615b3d498678be21488d666538ee5c"
+      "digest": "sha256:345fdeb369be6608d82c41d70637636c78b2c04a6112ff6ec20fc21c48afc899"
     }
   },
   "forgejo-runner": {

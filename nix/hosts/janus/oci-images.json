@@ -7,11 +7,11 @@
       },
       "gerbil": {
         "version": "latest",
-        "digest": "sha256:0c5a7d9ccdf1b28e074ff7ed9ecd73882e47d46c9591702aa535add434fad566"
+        "digest": "sha256:a5e3d7d9008f7d216ac87e77e73090c29b42f5a6f578a7ec2baff28773ae27a7"
       },
       "traefik": {
         "version": "v3.7",
-        "digest": "sha256:9c3b91d5fb7770853ca5c1124a23c34bf2d9b47ffaebeab2614cbaf410dcb2ac"
+        "digest": "sha256:5203c3f39ca70de6790d964624e042463ffbd57715bc82be155cf224c0dd5144"
       }
     }
   },
@@ -42,7 +42,7 @@
   "pocket-id": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c9c1d7b70006968d673a1073df048a3fdec73ccb54e182320b56bb911340f6f1"
+      "digest": "sha256:01540977dcf4c7b41b1159f34d68e4632f2658d62790e460ca65a42722b13c4a"
     }
   },
   "podman-exporter": {
