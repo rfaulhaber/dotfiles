@@ -28,6 +28,29 @@ in {
               "encryption" = "on";
             };
           };
+          # A new dataset's root directory is root:root 0755. For datasets that
+          # live inside a user's home (cache or container storage carved out to
+          # escape snapshots) that makes the mountpoint unusable by its owner,
+          # so the manage unit fixes ownership/mode right after mounting. Only
+          # applied to datasets it auto-mounts itself (mountpoint set,
+          # canmount=on) — encrypted datasets mounted later by their
+          # zfs-load-key unit are left alone.
+          owner = mkOption {
+            description = "User that should own the dataset's mountpoint.";
+            type = types.nullOr types.str;
+            default = null;
+          };
+          group = mkOption {
+            description = "Group that should own the dataset's mountpoint.";
+            type = types.nullOr types.str;
+            default = null;
+          };
+          mode = mkOption {
+            description = "Octal mode for the dataset's mountpoint.";
+            type = types.nullOr types.str;
+            default = null;
+            example = "0700";
+          };
         };
       });
     };

@@ -60,6 +60,7 @@
         ];
       };
       direnv.enable = true;
+      devenv.enable = true;
       zellij = {
         enable = true;
         web.enable = true;
@@ -128,7 +129,30 @@
       };
     };
     services = {
-      zfs.enable = true;
+      zfs = {
+        enable = true;
+        # Cache-class data carved out of the snapshotted home dataset. Both
+        # directories churn by the tens of GB (nix tarball cache, browser and
+        # spotify caches, rootless podman layers) and every byte written there
+        # was being retained by auto-snapshots long after deletion — the home
+        # dataset held 4x its live size in snapshots. Flat names with explicit
+        # mountpoints: nesting under `.local/share` would make `zfs create -p`
+        # mount intermediate datasets over the live ~/.local.
+        datasets = let
+          cacheDataset = mountpoint: {
+            properties = {
+              inherit mountpoint;
+              "com.sun:auto-snapshot" = "false";
+            };
+            owner = config.user.name;
+            group = config.user.group;
+            mode = "0700";
+          };
+        in {
+          "zroot/home/${config.user.name}/cache" = cacheDataset "${config.user.home}/.cache";
+          "zroot/home/${config.user.name}/containers" = cacheDataset "${config.user.home}/.local/share/containers";
+        };
+      };
       sudo-rs.enable = true;
       printing = {
         enable = true;
@@ -264,6 +288,18 @@
       extraPools = ["zroot"];
       forceImportRoot = false;
     };
+  };
+
+  # Snapshots here are an undo buffer for the home dataset, not a backup
+  # (single NVMe, no replication). The weekly/monthly tiers only ever pinned
+  # months of deleted caches and build trees, so keep just the short window
+  # that catches a bad rm/reset. zfstools treats keep=0 as "create none and
+  # destroy any that exist", so the old weekly/monthly snapshots go away on
+  # the next timer run rather than needing a manual destroy.
+  services.zfs.autoSnapshot = {
+    daily = 3;
+    weekly = 0;
+    monthly = 0;
   };
 
   # TODO move, set defaults

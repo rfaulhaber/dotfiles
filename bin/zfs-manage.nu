@@ -161,6 +161,73 @@ def main [spec?: string, --file: string, --dry-run] {
               return { dataset: $dataset_name, result: $result }
             }
           }
+
+          # Ownership/mode live on the dataset's root inode, so this is a
+          # one-time fix in practice — but re-checking each run keeps a
+          # recreated dataset (fresh pool, reinstall) usable by its owner
+          # without a manual chown. Only meaningful once mounted, hence
+          # nested under the auto-mount branch.
+          let owner = $config | get --optional properties.owner
+          let group = $config | get --optional properties.group
+          let mode = $config | get --optional properties.mode
+
+          if $owner != null or $group != null {
+            let want = $"($owner | default '')(if $group != null { $':($group)' } else { '' })"
+            let have = if $dry_run { null } else {
+              ^stat -c '%U:%G' $mountpoint_now | complete
+                | if $in.exit_code == 0 { $in.stdout | str trim } else { null }
+            }
+            # stat always reports user:group; compare only the halves requested
+            # so owner-only / group-only specs don't churn every run.
+            let matches = (
+              $have != null
+              and ($owner == null or ($have | split row ':' | get 0) == $owner)
+              and ($group == null or ($have | split row ':' | get 1) == $group)
+            )
+
+            if not $matches {
+              print $"chown ($want) ($mountpoint_now) for ($dataset_name)"
+              let result = if $dry_run {
+                print $"[DEBUG]: would have run 'chown ($want) ($mountpoint_now)'"
+                { exit_code: 0 }
+              } else {
+                ^chown $want $mountpoint_now | complete
+              }
+
+              if $result.exit_code != 0 {
+                print --stderr $"chown ($want) on ($mountpoint_now) failed with status code ($result.exit_code)"
+                let err = $result | get --optional stderr | default "no error message"
+                print --stderr $err
+                return { dataset: $dataset_name, result: $result }
+              }
+            }
+          }
+
+          if $mode != null {
+            let have = if $dry_run { null } else {
+              ^stat -c '%04a' $mountpoint_now | complete
+                | if $in.exit_code == 0 { $in.stdout | str trim } else { null }
+            }
+            # Normalise "700" and "0700" to the same 4-digit form stat prints.
+            let want = $mode | fill --alignment right --character '0' --width 4
+
+            if $have != $want {
+              print $"chmod ($want) ($mountpoint_now) for ($dataset_name)"
+              let result = if $dry_run {
+                print $"[DEBUG]: would have run 'chmod ($want) ($mountpoint_now)'"
+                { exit_code: 0 }
+              } else {
+                ^chmod $want $mountpoint_now | complete
+              }
+
+              if $result.exit_code != 0 {
+                print --stderr $"chmod ($want) on ($mountpoint_now) failed with status code ($result.exit_code)"
+                let err = $result | get --optional stderr | default "no error message"
+                print --stderr $err
+                return { dataset: $dataset_name, result: $result }
+              }
+            }
+          }
         }
 
         return { dataset: $dataset_name, result: "ok" }
