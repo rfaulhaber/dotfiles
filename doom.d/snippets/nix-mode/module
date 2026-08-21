@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: module
 # key: mod
-# condition: '(eq major-mode "nix-mode")
+# condition: (derived-mode-p 'nix-mode)
 # --
 
 { config, lib, pkgs, ... }:

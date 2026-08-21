@@ -297,3 +297,17 @@ of line, moves cursor to the end of LINE."
   "Helper for going to a col at COL-NUMBER without invoking `goto-char' or
 `move-to-column'."
   (forward-char (- col-number (current-column))))
+
+;;;###autoload
+(defun self/get-file-hierarchy-names (path level)
+  "Return the name of the directory LEVEL steps above PATH.
+LEVEL 1 is the directory holding PATH, 2 its parent, and so on.
+Returns nil for a nil or relative PATH, and for a LEVEL that walks past
+the filesystem root, so snippets embedding this call expand to an empty
+field rather than to an error string."
+  (when (and path (file-name-absolute-p path) (> level 0))
+    (let ((dir (file-name-directory path)))
+      (dotimes (_ (1- level))
+        (setq dir (file-name-directory (directory-file-name dir))))
+      (let ((name (file-name-nondirectory (directory-file-name dir))))
+        (unless (string= name "") name)))))
