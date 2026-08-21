@@ -5,6 +5,7 @@
     ./btop
     ./claude
     ./crush
+    ./devenv
     ./direnv
     ./emacs
     ./ghostty
