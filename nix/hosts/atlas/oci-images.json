@@ -20,7 +20,7 @@
   "filebrowser": {
     "image": {
       "version": "latest",
-      "digest": "sha256:adc48bbc85a7f3ab3994cf2cc721159ad82046ea9edcaf22fdc41ef4be6466f7"
+      "digest": "sha256:e2ac55ccbe53d63b3f1d7d5ea5b82edf589b005a4b747b59912f97c6ba4f969e"
     }
   },
   "flaresolverr": {
@@ -31,8 +31,8 @@
   },
   "forgejo": {
     "image": {
-      "version": "16.0.2",
-      "digest": "sha256:2fdfe28b5c68f82f49580e227b84e2afb43af0250e0631a54a386ef3b1d9b759"
+      "version": "16.0.3",
+      "digest": "sha256:7c4e1db440be7b2ca685b49d0d7864cdd78e92431f531bf7893659def8200fc5"
     },
     "postgres": {
       "image": {
@@ -44,7 +44,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:e3272b29a4bc177b389fbdcb54cf9716ccbfc30f04d8b7a35b0a5be9cdb58461"
+      "digest": "sha256:8e92dcb57ed64b0e4469c933f00ef1e09ee00867fee150e783a95fa6b53effa4"
     }
   },
   "grafana": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:2dd323f2bd17612d0e780b14fef8315746f091e4972210d9a5c2a69cf1f117a3"
+      "digest": "sha256:183457a06298d97b65e10c013033a022466699ed1251b7e69f492522ae2a6615"
     }
   },
   "linkding": {
@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ba6abb402d66fc9c6eb749f015c9fd504684895f9511e83e1e753f7354966346"
+      "digest": "sha256:1dca6a4407e08313919d2780bf2a6bc17e21b947a6e8e34624b9e115795fcf8c"
     }
   },
   "paperless": {
@@ -164,13 +164,13 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:dcb53158072c700ab578e6f89d5b4d6efd784e74496e567f98bfa96cd1db3a31"
+      "digest": "sha256:2b2db31bb446db2dd29ac0596bfd82847f5778c93620917604c07d7d654a921e"
     }
   },
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:a45b5ab0f850f39edb4cc9c95bbd967b52ddc3d4574a4dfb45561177db6c88f4"
+      "digest": "sha256:119aaa4a4f7349bcd2a136c5373a0d7925b5479915c7dfe0c0ad352db2a6d438"
     }
   },
   "recyclarr": {
@@ -194,7 +194,7 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:373159ba768e23a3a1c497d9f2b936addf8fd5b1fdce7dd6a14080ac928bfda0"
+      "digest": "sha256:c19aa4ecdf03d73e1d5c901da33744cb7eb4d921f89bafed1ca264601d7fa224"
     }
   },
   "soularr": {
@@ -230,7 +230,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6f00fcf3e34ce4f73b8275dcff868df97a5f3f203e1b3272cc3bcf3dbe3d17d3"
+      "digest": "sha256:d531d1191355c336e00509124e2cd7aca7bfd71daf305258779ed5980fde444a"
     },
     "postgres": {
       "image": {
