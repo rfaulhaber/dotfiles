@@ -39,6 +39,7 @@ Used in loading config specific to those systems.")
 ;; and are lazy-loaded through doom's generated autoloads
 (load! "./lisp/+bindings")
 (load! "./lisp/+org")
+(load! "./lisp/+treesit")
 (load! "./lisp/+nix")
 (load! "./lisp/+langs")
 (load! "./lisp/+tools")

@@ -16,15 +16,15 @@
   (setq lsp-clients-lua-language-server-bin (executable-find "lua-language-server")))
 
 ;; nushell-ts-mode
-(if (treesit-language-available-p 'nu)
-    (add-to-list 'auto-mode-alist '("\\.nu\\'" . nushell-ts-mode))
-  (message "treesit language unavailable for nu!"))
+(add-to-list 'auto-mode-alist '("\\.nu\\'" . self/nushell-ts-mode-maybe))
 
-(add-to-list 'treesit-language-source-alist
-             '(nu . ("https://github.com/nushell/tree-sitter-nu" "main")))
+;; deferred because treesit may not be loaded yet (see the note in +nix.el)
+(after! treesit
+  (add-to-list 'treesit-language-source-alist
+               '(nu . ("https://github.com/nushell/tree-sitter-nu" "main"))))
 
 ;; kdl mode
-(add-to-list 'auto-mode-alist '("\\.kdl\\'" . kdl-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.kdl\\'" . self/kdl-ts-mode-maybe))
 
 ;; lisp mode
 (add-hook 'lisp-mode-hook #'rainbow-delimiters-mode)
