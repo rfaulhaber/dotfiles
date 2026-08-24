@@ -17,10 +17,10 @@
       "digest": "sha256:c31a738b6d5ec6982c050063dd3f063b6943eb1051fc81144789f840d9093a8d"
     }
   },
-  "filebrowser": {
+  "copyparty": {
     "image": {
-      "version": "latest",
-      "digest": "sha256:e2ac55ccbe53d63b3f1d7d5ea5b82edf589b005a4b747b59912f97c6ba4f969e"
+      "version": "1.20.21",
+      "digest": "sha256:341e3b6ee5fe4fc667435d96534d07b98060394024eb8c6f16a054a7e49a77bc"
     }
   },
   "flaresolverr": {
@@ -183,6 +183,12 @@
     "image": {
       "version": "latest",
       "digest": "sha256:74392e2e633b8c574aa93a93945e5ed481df5059441cc31d120796a72e3a7ff2"
+    }
+  },
+  "sftpgo": {
+    "image": {
+      "version": "v2.7.5-alpine",
+      "digest": "sha256:d1e2877600aba270ac395bf76fc7c8a2a0bb4ac83c3e6c180a0540f5d4c3efb2"
     }
   },
   "slskd": {

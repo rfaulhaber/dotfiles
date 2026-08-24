@@ -237,13 +237,26 @@
           ingestDir = "/data/books/cwa-book-ingest";
         };
 
-        filebrowser = {
+        sftpgo = {
           enable = true;
-          baseDir = "/data/apps/filebrowser";
-          filesDir = "/data/apps/filebrowser/files";
+          baseDir = "/data/apps/sftpgo";
+          dataDir = "/data/apps/sftpgo/data";
+          configEncryption = {
+            enable = true;
+            keyFile = ./secrets/sftpgo-config-zfs-key;
+          };
+          dataEncryption = {
+            enable = true;
+            keyFile = ./secrets/sftpgo-data-zfs-key;
+          };
+          # The shared backup dataset becomes the phone user's home, so
+          # the phone's backup URL is just https://dav.3679.space/ and
+          # data written during the copyparty trial carries over.
+          extraVolumes = ["/data/graphene-backups:/srv/sftpgo/data/phone"];
           oidc = {
             enable = true;
-            issuerUrl = "https://auth.3679.space";
+            configUrl = "https://auth.3679.space";
+            redirectBaseUrl = "https://files.3679.space";
           };
         };
 

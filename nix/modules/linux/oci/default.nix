@@ -165,6 +165,7 @@ in {
     ./caddy.nix
     ./calibre-web-auto.nix
     ./calibre.nix
+    ./copyparty.nix
     ./crowdsec.nix
     ./filebrowser.nix
     ./flaresolverr.nix
@@ -198,6 +199,7 @@ in {
     ./recyclarr.nix
     ./registry-auth.nix
     ./requestrr.nix
+    ./sftpgo.nix
     ./slskd.nix
     ./sonarr.nix
     ./soularr.nix
