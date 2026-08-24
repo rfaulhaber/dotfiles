@@ -48,7 +48,7 @@
 const AUDIO_EXTS = [flac mp3 m4a ogg opus wav aiff aif alac wv]
 
 def debug-on []: nothing -> bool {
-  ($env.BANDCAMP_DEBUG? | default "" | str downcase) in ["1" "true" "yes" "on"]
+  ($env.BANDCAMP_DEBUG? | default "" | str lowercase) in ["1" "true" "yes" "on"]
 }
 
 # Diagnostic line on stderr, gated by BANDCAMP_DEBUG. stdout stays reserved for
@@ -69,7 +69,7 @@ def sanitize [s: string]: nothing -> string {
 # name's value, else null.
 def tag-get [tags: record, names: list<string>]: nothing -> any {
   for n in $names {
-    let hit = ($tags | columns | where {|c| ($c | str downcase) == ($n | str downcase) })
+    let hit = ($tags | columns | where {|c| ($c | str lowercase) == ($n | str lowercase) })
     if ($hit | is-not-empty) {
       return ($tags | get ($hit | first))
     }
@@ -134,7 +134,7 @@ def describe-album [dir: string]: nothing -> any {
   let root = (content-root $dir)
   let audio = (
     do { cd $root; glob "**/*" --no-dir }
-    | where {|p| ($p | path parse | get extension | str downcase) in $AUDIO_EXTS }
+    | where {|p| ($p | path parse | get extension | str lowercase) in $AUDIO_EXTS }
   )
   if ($audio | is-empty) { return null }
 
@@ -314,8 +314,8 @@ def main [
 
   if not $yes {
     # input needs a TTY; a non-interactive stdin means "no confirmation given".
-    let ans = (try { input $"Transfer ($albums | length) album\(s\) to ($host)? [y/N] " } catch { "" })
-    if ($ans | str downcase) not-in ["y" "yes"] {
+    let resp = (try { input $"Trrespfer ($albums | length) album\(s\) to ($host)? [y/N] " } catch { "" })
+    if ($resp | str lowercase) not-in ["y" "yes"] {
       rm -rf $work
       print "Aborted (use -y to skip confirmation)."
       exit 0
@@ -523,7 +523,7 @@ def "main batch" [
     let zips = (
       ls $incoming
       | where type == file
-      | where {|f| $f.name | str downcase | str ends-with ".zip" }
+      | where {|f| $f.name | str lowercase | str ends-with ".zip" }
     )
     if ($zips | is-empty) { break }
 
