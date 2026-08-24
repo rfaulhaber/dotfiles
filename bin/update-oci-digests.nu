@@ -40,6 +40,13 @@ let registries_conf = $nu.temp-dir | path join "oci-digests-registries.conf"
 'unqualified-search-registries = ["docker.io"]' | save -f $registries_conf
 $env.CONTAINERS_REGISTRIES_CONF = $registries_conf
 
+# Without REGISTRY_AUTH_FILE or XDG_RUNTIME_DIR, skopeo's credential lookup
+# falls back to /run/containers/<uid>/auth.json, and on a root-podman host
+# that directory is 0700 root — a non-root run (e.g. the DynamicUser CI
+# runner) gets EACCES, which skopeo treats as fatal, unlike ENOENT. Point it
+# at a nonexistent file: every repo here is public, anonymous is correct.
+$env.REGISTRY_AUTH_FILE = $nu.temp-dir | path join "oci-digests-auth.json"
+
 # Walk a parsed JSON tree and yield {path, version, digest} for every leaf
 # record that has both "version" and "digest" keys. Path is a list of
 # attribute names (e.g. ["immich" "postgres" "image"]).
