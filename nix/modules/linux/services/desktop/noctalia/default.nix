@@ -38,12 +38,10 @@ in {
 
     nixpkgs.overlays = [inputs.noctalia.overlays.default];
 
-    # Deliberately the home-manager module rather than nixosModules.default:
-    # only this one exposes `settings`, and enabling both would define two
-    # systemd user units for the same process.
+    # home-manager ships programs.noctalia upstream now; importing
+    # inputs.noctalia.homeModules.default alongside it double-declares the
+    # option. Only the package still comes from the flake (via the overlay).
     home-manager.users.${config.user.name} = {
-      imports = [inputs.noctalia.homeModules.default];
-
       programs.noctalia = {
         enable = true;
         package = pkgs.noctalia;
