@@ -17,12 +17,6 @@
       "digest": "sha256:c31a738b6d5ec6982c050063dd3f063b6943eb1051fc81144789f840d9093a8d"
     }
   },
-  "copyparty": {
-    "image": {
-      "version": "1.20.21",
-      "digest": "sha256:341e3b6ee5fe4fc667435d96534d07b98060394024eb8c6f16a054a7e49a77bc"
-    }
-  },
   "flaresolverr": {
     "image": {
       "version": "latest",

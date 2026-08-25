@@ -40,11 +40,11 @@
             recordsize = "1M";
           };
           # GrapheneOS WebDAV backup target, declared host-level (not via a
-          # service module) so it survives flipping between the copyparty
-          # and sftpgo trials. Blobs are ~1MB client-side-encrypted chunks,
+          # service module) so it survives swapping out the file server
+          # that fronts it. Blobs are ~1MB client-side-encrypted chunks,
           # hence the large recordsize; ZFS encryption on top because every
           # volume the file server mounts is encrypted at rest regardless of
-          # payload. Both candidate containers run as 1000:100 — note
+          # payload. The sftpgo container runs as 1000:100 — note
           # zfs-manage only chowns auto-mounted datasets, so on a recreate
           # the owner/mode below must be applied by hand after unlock.
           "data/files/graphene-backups" = {
@@ -77,7 +77,6 @@
             keyFile = config.sops.secrets."org/zfs-key".path;
             consumers = ["podman-syncthing.service"];
           };
-          # If the copyparty trial resumes, add podman-copyparty.service here.
           graphene-backups = {
             dataset = "data/files/graphene-backups";
             keyFile = config.sops.secrets."graphene-backups/zfs-key".path;

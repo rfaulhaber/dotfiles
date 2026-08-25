@@ -165,7 +165,6 @@ in {
     ./caddy.nix
     ./calibre-web-auto.nix
     ./calibre.nix
-    ./copyparty.nix
     ./crowdsec.nix
     ./filebrowser.nix
     ./flaresolverr.nix

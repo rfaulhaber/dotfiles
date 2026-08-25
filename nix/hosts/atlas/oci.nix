@@ -250,8 +250,7 @@
             keyFile = ./secrets/sftpgo-data-zfs-key;
           };
           # The shared backup dataset becomes the phone user's home, so
-          # the phone's backup URL is just https://dav.3679.space/ and
-          # data written during the copyparty trial carries over.
+          # the phone's backup URL is just https://dav.3679.space/.
           extraVolumes = [
             "/data/graphene-backups:/srv/sftpgo/data/phone"
             # The bandcamp importer's watched drop dir, grafted into user
