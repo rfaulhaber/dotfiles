@@ -68,20 +68,15 @@
           "root" = {
             type = "zfs_fs";
             mountpoint = "/";
-            options.mountpoint = "legacy";
           };
           "nix" = {
             type = "zfs_fs";
             mountpoint = "/nix";
-            options = {
-              compression = "lz4";
-              mountpoint = "legacy";
-            };
+            options.compression = "lz4";
           };
           "home" = {
             type = "zfs_fs";
             mountpoint = "/home";
-            options.mountpoint = "legacy";
           };
         };
       };

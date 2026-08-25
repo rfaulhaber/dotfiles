@@ -266,6 +266,11 @@
           };
         };
 
+        radicale = {
+          enable = true;
+          baseDir = "/data/apps/radicale";
+        };
+
         linkding = {
           enable = true;
           baseDir = "/data/apps/linkding";
@@ -341,6 +346,11 @@
             enable = true;
             issuer = "https://auth.3679.space";
           };
+        };
+
+        kept = {
+          enable = true;
+          baseDir = "/data/apps/kept";
         };
 
         vikunja = {

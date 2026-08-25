@@ -71,6 +71,12 @@
       "digest": "sha256:37b11b43f2e88b034a3b64066cedd530687e7f280d5a980b60af1714434ef43d"
     }
   },
+  "kept": {
+    "image": {
+      "version": "1.6.0",
+      "digest": "sha256:2e74ba501fe918af1e6aafbf145f0ff3d8db2dbe59d2f50bba020121c6f2f67c"
+    }
+  },
   "kitchenowl": {
     "image": {
       "version": "latest",
@@ -165,6 +171,12 @@
     "image": {
       "version": "latest",
       "digest": "sha256:119aaa4a4f7349bcd2a136c5373a0d7925b5479915c7dfe0c0ad352db2a6d438"
+    }
+  },
+  "radicale": {
+    "image": {
+      "version": "3.7.8",
+      "digest": "sha256:3a0080ea51ac69dcd74e345b9587dc14a8c8af0652046069005749f9a75c5c80"
     }
   },
   "recyclarr": {

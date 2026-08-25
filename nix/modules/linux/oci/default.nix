@@ -176,6 +176,7 @@ in {
     ./immich.nix
     ./jellyfin.nix
     ./job-ops.nix
+    ./kept.nix
     ./kitchenowl.nix
     ./lidarr.nix
     ./linkding.nix
@@ -195,6 +196,7 @@ in {
     ./prometheus.nix
     ./prowlarr.nix
     ./radarr.nix
+    ./radicale.nix
     ./recyclarr.nix
     ./registry-auth.nix
     ./requestrr.nix
