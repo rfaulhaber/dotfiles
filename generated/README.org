@@ -11,8 +11,8 @@ oversight. The consumers are external machines that read this tree directly.
 * Regenerating
 
 The files are built by =nix/generated/default.nix= (exposed as the
-=generated-configs= package), which renders ghostty and nushell configs for
-both platforms from the theme pipeline in =nix/lib/configs/=. Theme and font
+=generated-configs= package), which renders ghostty, nushell, and zellij
+configs for both platforms from the theme pipeline in =nix/lib/configs/=. Theme and font
 defaults live in =nix/generated/defaults.nix=.
 
 After changing a theme, font, or the underlying config templates:

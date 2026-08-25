@@ -1,4 +1,4 @@
-source ~/.config/dotfiles/config/nushell/config.nu
+source /nix/store/pss5w8j5y6758rm3g87jk4xydy0bxji9-nushell-config/config.nu
 source ($nu.default-config-dir | path join "generated-theme.nu")
 
 # zoxide and carapace init must be sourced at the top level: `source` is a

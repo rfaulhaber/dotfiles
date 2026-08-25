@@ -2,8 +2,10 @@
 # Output structure:
 #   $out/linux/ghostty/{config,theme}
 #   $out/linux/nushell/{config.nu,env.nu,generated-theme.nu}
+#   $out/linux/zellij/config.kdl
 #   $out/darwin/ghostty/{config,theme}
 #   $out/darwin/nushell/{config.nu,env.nu,generated-theme.nu}
+#   $out/darwin/zellij/config.kdl
 {
   pkgs,
   lib,
@@ -40,19 +42,29 @@
     };
   };
 
+  zellijConfigs = import ../lib/configs/zellij.nix {
+    colors = colors.withHashtag;
+    # The managed hosts pin the store path of nu here; outside Nix there is no
+    # store, so pin the bare name — still overriding zellij's $SHELL fallback,
+    # which dev shells pollute with their own bash.
+    defaultShell = "nu";
+  };
+
   ghosttyConfig = pkgs.writeText "ghostty-config" ghosttyConfigs.config;
   ghosttyTheme = pkgs.writeText "ghostty-theme" ghosttyConfigs.theme;
   nushellConfig = pkgs.writeText "nushell-config" nushellConfigs.config;
   nushellEnv = pkgs.writeText "nushell-env" nushellConfigs.env;
   nushellTheme = pkgs.writeText "nushell-generated-theme" nushellConfigs.generated-theme;
+  zellijConfig = pkgs.writeText "zellij-config" zellijConfigs.config;
 in
   pkgs.runCommand "generated-configs" {} ''
     for platform in linux darwin; do
-      mkdir -p $out/$platform/ghostty $out/$platform/nushell
+      mkdir -p $out/$platform/ghostty $out/$platform/nushell $out/$platform/zellij
       cp ${ghosttyConfig} $out/$platform/ghostty/config
       cp ${ghosttyTheme} $out/$platform/ghostty/theme
       cp ${nushellConfig} $out/$platform/nushell/config.nu
       cp ${nushellEnv} $out/$platform/nushell/env.nu
       cp ${nushellTheme} $out/$platform/nushell/generated-theme.nu
+      cp ${zellijConfig} $out/$platform/zellij/config.kdl
     done
   ''
