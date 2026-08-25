@@ -37,6 +37,15 @@
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
 ;; projectile
+;; Treat `org-directory' as a project despite it having no VCS or marker
+;; file. A root function (rather than a .projectile file) keeps the wiring
+;; in config, so every machine gets it without dotfiles in the org dir.
+(defun self/projectile-org-directory-root (dir)
+  "Return `org-directory' when DIR is inside it, else nil."
+  (let ((org-root (file-name-as-directory (expand-file-name org-directory))))
+    (when (file-in-directory-p dir org-root)
+      org-root)))
+
 (after! projectile
   (setq projectile-switch-project-action 'projectile-dired)
   ;; for some reason projectile can't always find fd
@@ -45,7 +54,22 @@
       (setq projectile-fd-executable fd-exec))
 
     (when (null doom-fd-executable)
-      (setq doom-fd-executable fd-exec))))
+      (setq doom-fd-executable fd-exec)))
+
+  ;; `projectile-generic-command' (file listing for non-VCS projects, like
+  ;; the org dir) bakes in a slower `find' fallback at load time when fd
+  ;; wasn't visible yet; rebuild it against the executable found above.
+  (when (and projectile-fd-executable
+             (string-prefix-p "find" projectile-generic-command))
+    (setq projectile-generic-command
+          (format "%s . -0 --type f --color=never --strip-cwd-prefix"
+                  projectile-fd-executable)))
+
+  ;; appended so a marker-based root (e.g. a repo nested under the org
+  ;; dir) still wins over the org-dir root
+  (add-to-list 'projectile-project-root-functions #'self/projectile-org-directory-root t)
+  (when (file-directory-p org-directory)
+    (projectile-add-known-project org-directory)))
 
 ;; emacs-everywhere
 ;; avoids https://github.com/tecosaur/emacs-everywhere/issues/49
