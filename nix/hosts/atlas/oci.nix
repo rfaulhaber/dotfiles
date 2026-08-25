@@ -252,7 +252,14 @@
           # The shared backup dataset becomes the phone user's home, so
           # the phone's backup URL is just https://dav.3679.space/ and
           # data written during the copyparty trial carries over.
-          extraVolumes = ["/data/graphene-backups:/srv/sftpgo/data/phone"];
+          extraVolumes = [
+            "/data/graphene-backups:/srv/sftpgo/data/phone"
+            # The bandcamp importer's watched drop dir, grafted into user
+            # trees as a shared virtual folder (provider-side config). The
+            # container user 1000:100 matches the importer's ryan:users, so
+            # uploads are import-ready without ownership fixup.
+            "/data/import/bandcamp/incoming:/srv/sftpgo/mounts/bandcamp"
+          ];
           oidc = {
             enable = true;
             configUrl = "https://auth.3679.space";
