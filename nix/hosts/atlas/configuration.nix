@@ -33,6 +33,14 @@
       zfs = {
         enable = true;
         datasets = {
+          # Media/library datasets, adopted here from install-time legacy
+          # mounts. Note data/files and data/tv have child datasets with
+          # their own mountpoints outside the parent's tree (/data/archive,
+          # /data/gundam, ...).
+          "data/books".properties.mountpoint = "/data/books";
+          "data/files".properties.mountpoint = "/data/files";
+          "data/movies".properties.mountpoint = "/data/movies";
+          "data/tv".properties.mountpoint = "/data/tv";
           # LLM model store shared to vulcan over NFS (ollama blobs are
           # multi-GB sequential files, hence the large recordsize).
           "data/llm/models".properties = {

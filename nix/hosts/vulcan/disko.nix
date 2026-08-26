@@ -64,19 +64,27 @@
           xattr = "sa";
         };
         options.ashift = "12";
+        # The live datasets carry mountpoint=legacy; without declaring that
+        # here, disko appends zfsutil to the generated fstab entries, which
+        # only works against native-mountpoint datasets.
         datasets = {
           "root" = {
             type = "zfs_fs";
             mountpoint = "/";
+            options.mountpoint = "legacy";
           };
           "nix" = {
             type = "zfs_fs";
             mountpoint = "/nix";
-            options.compression = "lz4";
+            options = {
+              compression = "lz4";
+              mountpoint = "legacy";
+            };
           };
           "home" = {
             type = "zfs_fs";
             mountpoint = "/home";
+            options.mountpoint = "legacy";
           };
         };
       };

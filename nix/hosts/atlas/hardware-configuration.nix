@@ -16,26 +16,6 @@
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
 
-  fileSystems."/data/books" = {
-    device = "data/books";
-    fsType = "zfs";
-  };
-
-  fileSystems."/data/movies" = {
-    device = "data/movies";
-    fsType = "zfs";
-  };
-
-  fileSystems."/data/tv" = {
-    device = "data/tv";
-    fsType = "zfs";
-  };
-
-  fileSystems."/data/files" = {
-    device = "data/files";
-    fsType = "zfs";
-  };
-
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/113F-0AA3";
     fsType = "vfat";
