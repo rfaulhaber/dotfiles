@@ -266,11 +266,6 @@
           };
         };
 
-        radicale = {
-          enable = true;
-          baseDir = "/data/apps/radicale";
-        };
-
         linkding = {
           enable = true;
           baseDir = "/data/apps/linkding";

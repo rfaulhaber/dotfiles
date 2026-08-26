@@ -173,12 +173,6 @@
       "digest": "sha256:119aaa4a4f7349bcd2a136c5373a0d7925b5479915c7dfe0c0ad352db2a6d438"
     }
   },
-  "radicale": {
-    "image": {
-      "version": "3.7.8",
-      "digest": "sha256:3a0080ea51ac69dcd74e345b9587dc14a8c8af0652046069005749f9a75c5c80"
-    }
-  },
   "recyclarr": {
     "image": {
       "version": "8",
