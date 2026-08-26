@@ -1,5 +1,12 @@
 default_mode "normal"
 default_shell "nu"
+keybinds {
+	normal {
+		bind "Alt y" {
+			CopyLastCommandOutput
+		}
+	}
+}
 mouse_mode true
 theme "base16"
 themes {

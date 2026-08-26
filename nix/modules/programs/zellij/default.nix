@@ -74,6 +74,14 @@ in {
       settings =
         {
           default_mode = cfg.defaultMode;
+          # Renders as `bind "Alt y" { CopyLastCommandOutput }` in normal mode.
+          # The action relies on OSC 133 prompt markers, which nushell emits by
+          # default ($env.config.shell_integration.osc133); in a shell without
+          # them the bind is a silent no-op.
+          keybinds.normal.bind = {
+            _args = ["Alt y"];
+            CopyLastCommandOutput = {};
+          };
           mouse_mode = cfg.mouse;
           theme = themeName;
           themes.${themeName} = themeColors;

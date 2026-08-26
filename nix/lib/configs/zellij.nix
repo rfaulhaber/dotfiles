@@ -44,6 +44,9 @@ in {
         else []
       )
       ++ [
+        # Mirrors the keybind set in modules/programs/zellij/default.nix; keep
+        # both in sync.
+        "keybinds {\n\tnormal {\n\t\tbind \"Alt y\" {\n\t\t\tCopyLastCommandOutput\n\t\t}\n\t}\n}"
         "mouse_mode ${
           if mouse
           then "true"
