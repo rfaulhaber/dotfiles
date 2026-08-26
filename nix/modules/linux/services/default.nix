@@ -15,6 +15,7 @@
     ./observability-agent
     ./ollama
     ./printing
+    ./remote-builder
     ./samba
     ./sudo-rs
     ./syncthing

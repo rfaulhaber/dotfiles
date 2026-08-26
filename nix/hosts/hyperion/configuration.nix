@@ -77,6 +77,8 @@
           # and avoid rate limits when fetching flake inputs
           github = {};
           "netbird/setup-key" = {};
+          # root's dispatch key for remote builds on vulcan
+          vulcan-builder-ssh-key = {};
           anthropic-api-key = {
             owner = config.user.name;
             group = config.user.group;
@@ -173,6 +175,10 @@
       yubikey.enable = true;
       syncthing.enable = true;
       cachix.enable = true;
+      remote-builder.client = {
+        enable = true;
+        sshKey = config.sops.secrets.vulcan-builder-ssh-key.path;
+      };
       netbird = {
         enable = true;
         setupKeyFile = config.sops.secrets."netbird/setup-key".path;

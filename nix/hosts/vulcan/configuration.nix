@@ -86,6 +86,12 @@
         interface = "lan0";
         secretKeyFile = config.sops.secrets.nix-cache.path;
       };
+      remote-builder.server = {
+        enable = true;
+        authorizedKeys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBmGbkPFWsjCbJMDLNLoP8K+/UhursqMLvChTZul526M root@hyperion vulcan-builder"
+        ];
+      };
       github-runner = {
         enable = true;
         url = "https://github.com/rfaulhaber/dotfiles";
