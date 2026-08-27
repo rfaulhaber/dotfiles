@@ -287,6 +287,7 @@
               inputs'.deploy-rs.packages.default
               inputs'.nil.packages.default
               inputs'.sops-nix.packages.default
+              codegraph
               dix
               rage
               skopeo
