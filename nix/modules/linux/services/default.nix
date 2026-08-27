@@ -9,6 +9,7 @@
     ./github-runner
     ./hardware
     ./keepalived
+    ./keystats
     ./netbird
     ./nfs
     ./nix-cache
