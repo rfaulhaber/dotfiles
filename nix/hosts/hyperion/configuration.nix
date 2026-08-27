@@ -184,6 +184,7 @@
         setupKeyFile = config.sops.secrets."netbird/setup-key".path;
       };
       airvpn.enable = true;
+      keystats.enable = true;
     };
     # No OCI services run here; registryAuth alone gives interactive
     # podman/skopeo credentials for the forgejo registry. The auth file is
@@ -196,6 +197,7 @@
       owner = config.user.name;
     };
     hardware = {
+      bluetooth.enable = true;
       zsa.enable = true;
       nvidia = {
         enable = true;
