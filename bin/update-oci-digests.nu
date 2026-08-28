@@ -341,7 +341,7 @@ def main [...hosts: string]: nothing -> nothing {
     $fetch_failures | to json | save -f $"($report_dir)/oci-fetch-failures.json"
 
     if (not ($fetch_failures | is-empty)) {
-        print $"!! ($fetch_failures | length) image\(s\) failed to resolve — these are NOT refreshed:"
+        error $"($fetch_failures | length) image\(s\) failed to resolve — these are NOT refreshed:"
         for f in $fetch_failures {
             let path_str = ($f.path | str join ".")
             print $"     ($f.host) ($path_str): ($f.error)"
@@ -406,7 +406,7 @@ def main [...hosts: string]: nothing -> nothing {
     $version_warnings | to json | save -f $"($report_dir)/oci-version-warnings.json"
 
     if (not ($version_warnings | is-empty)) {
-        print $"!! ($version_warnings | length) pinned image\(s\) have a newer upstream version — a digest refresh cannot move these:"
+        warn $"($version_warnings | length) pinned image\(s\) have a newer upstream version — a digest refresh cannot move these:"
         for w in $version_warnings {
             let path_str = ($w.path | str join ".")
             print $"     ($w.host) ($path_str): ($w.repo):($w.tag) → ($w.latest) \(($w.newer_count) newer tag\(s\)\)"
@@ -476,4 +476,20 @@ def main [...hosts: string]: nothing -> nothing {
 
     ($"changed=true\ndate=($date_str)\nfetch_failures=($fetch_failures | length)"
         + $"\nnewer_versions=($version_warnings | length)\n") | save --append $output_file
+}
+
+def warn [--error, message: string]: nothing -> nothing {
+  message-with-color $error yellow, $message
+}
+
+def error [--error (-e), message: string]: nothing -> nothing {
+  message-with-color $error red, $message
+}
+
+def message-with-color [error: bool, color: string, message: string]: nothing -> nothing {
+  if $error {
+    print -e $"(ansi $color)($message)(ansi reset)"
+  } else {
+    print $"(ansi $color)($message)(ansi reset)"
+  }
 }
