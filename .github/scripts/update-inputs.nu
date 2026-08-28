@@ -15,7 +15,7 @@ let before = (nix flake metadata --json | from json)
 
 # --- Update nixpkgs ---
 print "=== Updating nixpkgs ==="
-nix flake update nixpkgs
+nix flake update
 
 # --- Capture after state ---
 let after = (nix flake metadata --json | from json)
