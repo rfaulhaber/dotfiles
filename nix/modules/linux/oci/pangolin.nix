@@ -453,6 +453,11 @@ in {
         image = imageLib.renderImage cfg.images.pangolin;
         volumes = [
           "${cfg.baseDir}/pangolin:/app/config:rw"
+          # Pangolin ≥1.22.0 syncs cert status from traefik's acme.json
+          # (default path /app/config/letsencrypt/acme.json, relative to
+          # WORKDIR). Read-only: the file holds every cert's private key and
+          # the sync only reads; all its writes go to pangolin's own DB.
+          "${cfg.baseDir}/letsencrypt:/app/config/letsencrypt:ro"
         ];
         extraOptions =
           [

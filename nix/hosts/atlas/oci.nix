@@ -319,6 +319,15 @@
           paper.enable = true;
         };
 
+        ebay-mcp = {
+          enable = true;
+          # The forgejo registry on this host via its published web port,
+          # same reasoning as trading-bot: no Pangolin hairpin, and the
+          # localhost:2835 registryAuth entry above covers the pull.
+          image.repository = "localhost:2835/private/ebay-mcp-server";
+          publicUrl = "https://ebay-mcp.3679.space/mcp";
+        };
+
         syncthing = {
           enable = true;
           baseDir = "/data/apps/syncthing";

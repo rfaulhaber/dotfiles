@@ -479,11 +479,11 @@ def main [...hosts: string]: nothing -> nothing {
 }
 
 def warn [--error, message: string]: nothing -> nothing {
-  message-with-color $error yellow, $message
+  message-with-color $error yellow $message
 }
 
 def error [--error (-e), message: string]: nothing -> nothing {
-  message-with-color $error red, $message
+  message-with-color $error red $message
 }
 
 def message-with-color [error: bool, color: string, message: string]: nothing -> nothing {

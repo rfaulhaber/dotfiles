@@ -166,6 +166,7 @@ in {
     ./calibre-web-auto.nix
     ./calibre.nix
     ./crowdsec.nix
+    ./ebay-mcp.nix
     ./filebrowser.nix
     ./flaresolverr.nix
     ./forgejo-runner.nix
