@@ -2,8 +2,8 @@
   "pangolin": {
     "images": {
       "pangolin": {
-        "version": "1.21.1",
-        "digest": "sha256:dd3ccdce1ae340b73a8b7dffcdd34dc1f73e81c7b2cce14b224d841822e4541d"
+        "version": "1.22.0",
+        "digest": "sha256:4e6f068bbb2b4d0a0a8b7808bcb5b762053208c09d3f074cc58969332d9e3e06"
       },
       "gerbil": {
         "version": "latest",
@@ -11,7 +11,7 @@
       },
       "traefik": {
         "version": "v3.7",
-        "digest": "sha256:5203c3f39ca70de6790d964624e042463ffbd57715bc82be155cf224c0dd5144"
+        "digest": "sha256:ef751c695afd26e2be41009047f651153dc1e61ace03e6d13f299d8c4be842b8"
       }
     }
   },

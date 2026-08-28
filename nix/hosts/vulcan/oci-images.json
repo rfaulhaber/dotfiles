@@ -14,13 +14,13 @@
   "jellyfin": {
     "image": {
       "version": "latest",
-      "digest": "sha256:aef1046ab41bbd7b48e205e711aa31dfb1fa55a3fb8e22cbbb150a323c4a48c7"
+      "digest": "sha256:4f6d8dfc53ec5a1ddf7a90e4338972d57d7b0adff6dc88b53184f8285d0b594f"
     }
   },
   "open-webui": {
     "image": {
       "version": "main",
-      "digest": "sha256:6a773e5c3a246b65cbe74ce942b294292c0e5f81c138f703d111bc162f7d7c3d"
+      "digest": "sha256:c792953395b43d4f49085fa4026850c5e923578345ebeaf56eabd980bcfc273a"
     }
   },
   "newt": {
