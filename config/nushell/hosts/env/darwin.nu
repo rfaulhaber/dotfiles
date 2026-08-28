@@ -13,6 +13,3 @@ $env.NIX_LINK_NEW = $nix_link
 $env.NIX_PROFILES = $"/nix/var/nix/profiles/default ($nix_link)"
 $env.NIX_SSL_CERT_FILE = "/nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt"
 $env.PATH = ($env.PATH | split row (char esep) | append $"($nix_link)/bin")
-
-$env.SHELL = "/run/current-system/sw/bin/nu"
-

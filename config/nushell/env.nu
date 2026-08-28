@@ -16,6 +16,14 @@ $env.PAGER = "bat -p"
 $env.MANPAGER = "sh -c 'col -bx | bat -l man -p'"
 $env.MANROFFOPT = "-c"
 
+# `nix develop` and `nix-shell` overwrite SHELL with their own bash, and every
+# process started from inside one inherits it — including `nix shell`, which
+# execs $SHELL. Re-assert nushell on every startup so a leaked dev-shell SHELL
+# cannot outlive the shell that leaked it. Hosts with no system profile
+# (generated configs, non-Nix machines) fall back to this nushell's own path.
+let system_nu = "/run/current-system/sw/bin/nu"
+$env.SHELL = if ($system_nu | path exists) { $system_nu } else { $nu.current-exe }
+
 # Doom Emacs bin
 let emacs_bin_path = $'($env.HOME)/.emacs.d/bin'
 let emacs_config_path = $'($env.HOME)/.config/emacs/bin'
