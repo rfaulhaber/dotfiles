@@ -12,11 +12,10 @@ in {
   config = mkIf cfg.enable {
     programs.steam = {
       enable = true;
-      # The desktop.wayland module exports GDK_SCALE=3 session-wide as a
-      # firefox HiDPI workaround. Steam's UI is Chromium (steamwebhelper)
-      # under XWayland, which also honors GDK_SCALE — tripling the client
-      # while Wayland-native apps ignore it. Neutralize the GTK vars inside
-      # the FHS env and size the client via Steam's own scaling knob.
+      # Steam's UI is Chromium (steamwebhelper) under XWayland, which honors
+      # GTK scaling vars. Pin them to neutral so stray session scaling can
+      # never leak in (it did once: notes/hidpi_scaling.org), and size the
+      # client via Steam's own knob instead.
       package = pkgs.steam.override {
         extraEnv = {
           GDK_SCALE = "1";
