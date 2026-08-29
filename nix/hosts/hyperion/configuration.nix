@@ -150,9 +150,18 @@
             group = config.user.group;
             mode = "0700";
           };
+          publicDataset = mountpoint: {
+            properties = {
+              inherit mountpoint;
+            };
+            owner = config.user.name;
+            group = config.user.group;
+            mode = "0755";
+          };
         in {
           "zroot/home/${config.user.name}/cache" = cacheDataset "${config.user.home}/.cache";
           "zroot/home/${config.user.name}/containers" = cacheDataset "${config.user.home}/.local/share/containers";
+          "games/steam" = publicDataset "/games/steam";
         };
       };
       sudo-rs.enable = true;
@@ -289,7 +298,7 @@
     binfmt.emulatedSystems = ["aarch64-linux"];
 
     zfs = {
-      extraPools = ["zroot"];
+      extraPools = ["zroot" "games" "bulk"];
       forceImportRoot = false;
     };
   };
