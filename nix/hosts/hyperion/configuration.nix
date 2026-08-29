@@ -130,6 +130,7 @@
         };
       };
       steam.enable = true;
+      heroic.enable = true;
     };
     services = {
       zfs = {

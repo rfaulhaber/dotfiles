@@ -10,6 +10,7 @@
     ./emacs
     ./ghostty
     ./git
+    ./heroic
     ./nushell
     ./sops
     ./steam
