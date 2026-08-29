@@ -8,6 +8,7 @@ with lib; let
   cfg = config.modules.linux.oci.services.wolf;
   ociLib = config.modules.linux.oci.lib;
   imageLib = import ./lib.nix {inherit lib;};
+  appCatalog = import ./wolf-apps.nix;
   # Wire shape of Wolf's profile API: pin is a per-digit short array, keys
   # are snake_case. Rendered to JSON and handed to the sync script by path.
   profilesSpec =
@@ -119,13 +120,19 @@ in {
         Reconciled after service start through the management API rather
         than by templating config.toml, which Wolf rewrites on every
         pairing. Each profile starts from the image-default `user` profile's
-        app list minus excludeApps plus extraApps, and is only rebuilt when
+        app list minus excludeApps plus includeApps/extraApps, and is only rebuilt when
         its declaration here changes — runtime edits made via the API or
         Wolf UI survive otherwise. Profiles removed from this set are left
-        in place, not deleted.
+        in place, not deleted. The baseline profile is cached beside the
+        state file while it exists live, so `user` itself may be deleted
+        from the picker without degrading later rebuilds.
       '';
       default = {};
-      type = types.attrsOf (types.submodule ({name, ...}: {
+      type = types.attrsOf (types.submodule ({
+        name,
+        config,
+        ...
+      }: {
         options = {
           name = mkOption {
             description = "Display name shown in the Wolf UI profile picker.";
@@ -150,11 +157,23 @@ in {
             default = null;
           };
 
+          includeApps = mkOption {
+            description = ''
+              Names of catalog apps (see ./wolf-apps.nix) to append to this
+              profile — shorthand for pasting the catalog entry into
+              extraApps.
+            '';
+            type = types.listOf (types.enum (attrNames appCatalog));
+            default = [];
+          };
+
           extraApps = mkOption {
             description = ''
               Extra app definitions appended to this profile, in the JSON
-              shape Wolf's /api/v1/profiles endpoints use (title, runner,
-              etc. — same fields as config.toml apps).
+              shape Wolf's /api/v1/profiles endpoints use. May be partial:
+              required App fields nix can't know (resolved gstreamer
+              pipelines, render_node) are completed from a live app record
+              by the sync script, and a missing id derives from the title.
             '';
             type = types.listOf (types.attrsOf types.anything);
             default = [];
@@ -166,6 +185,8 @@ in {
             default = [];
           };
         };
+
+        config.extraApps = map (n: appCatalog.${n}) config.includeApps;
       }));
     };
   };
@@ -312,7 +333,7 @@ in {
             lib.my.writeNushellScriptBin pkgs "wolf-profiles-sync"
             (builtins.readFile ./wolf-profiles-sync.nu);
           specFile = pkgs.writeText "wolf-profiles.json" (builtins.toJSON profilesSpec);
-        in "${syncScript}/bin/wolf-profiles-sync --file ${specFile} --state-file ${cfg.baseDir}/nix-profiles-last-applied.json --socket /tmp/sockets/wolf.sock";
+        in "${syncScript}/bin/wolf-profiles-sync --file ${specFile} --state-file ${cfg.baseDir}/nix-profiles-last-applied.json --template-cache-file ${cfg.baseDir}/nix-baseline-template.json --socket /tmp/sockets/wolf.sock";
       };
     };
 

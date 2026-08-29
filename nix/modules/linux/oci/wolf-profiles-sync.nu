@@ -24,9 +24,26 @@ def api-post [socket: string, path: string, body: string] {
   ^curl --silent --fail --unix-socket $socket --header "Content-Type: application/json" --data $body $"http://localhost($path)"
 }
 
+# The API's App schema has no server-side defaults: an add must carry every
+# non-optional field, including resolved gstreamer pipelines and the render
+# node — Wolf-version- and host-specific values nothing in nix can sensibly
+# declare. Declared apps are therefore allowed to be partial; the gaps are
+# filled from a live app record, whose values are valid for the running
+# Wolf by construction. Declared fields win. The donor's id is never kept:
+# ids only need to be unique within a profile (baseline cloning duplicates
+# them across profiles), but inheriting the donor's would collide with the
+# donor app itself when both land in the same profile.
+def complete-app [app: record, donor: any] {
+  let base = if $donor == null { {} } else { $donor }
+  let merged = $base | merge $app
+  let id = $app.id? | default ($merged.title | str lowercase | str replace --all " " "-")
+  $merged | upsert id $id
+}
+
 def main [
   --file: string # desired-profiles spec rendered at build time (JSON list)
   --state-file: string # last-applied spec; lives next to Wolf's config.toml so wiping Wolf identity also resets it
+  --template-cache-file: string # cached baseline profile record; consulted when the live baseline has been deleted from the picker
   --socket: string = "/tmp/sockets/wolf.sock"
 ] {
   let desired = open --raw $file | from json
@@ -55,9 +72,30 @@ def main [
   } else { [] }
 
   let templates = $current | where id == $BASELINE_PROFILE_ID
-  let template = if ($templates | is-empty) { null } else { $templates | first }
+  mut template: any = if ($templates | is-empty) { null } else { $templates | first }
+  if $template != null {
+    if $template_cache_file != null {
+      # Refresh while the live baseline exists: it's an ordinary profile
+      # Wolf's UI lists in the picker, so it may be deliberately deleted —
+      # the cache keeps rebuilds building from the full baseline anyway.
+      $template | to json | save --force $template_cache_file
+    }
+  } else if ($template_cache_file != null) and ($template_cache_file | path exists) {
+    $template = (try { open --raw $template_cache_file | from json } catch { null })
+    if $template != null {
+      log $"baseline profile '($BASELINE_PROFILE_ID)' not live, using cached template"
+    }
+  }
   if $template == null {
     log $"baseline profile '($BASELINE_PROFILE_ID)' not found, declared profiles get only their extra apps"
+  }
+
+  let donor_apps = if $template != null { $template | get apps } else {
+    $current | each {|pr| $pr.apps? | default [] } | flatten
+  }
+  let donor = if ($donor_apps | is-empty) { null } else { $donor_apps | first }
+  if $donor == null {
+    log "no live app record to complete partial declared apps from; adds may be rejected"
   }
 
   mut applied = []
@@ -67,6 +105,8 @@ def main [
 
     # Only (re)build a profile when its nix spec differs from what was last
     # applied — runtime edits made via wolf-ui or the API survive otherwise.
+    # Compared on the declared spec, not the completed payload, so donor
+    # drift alone never triggers a rebuild.
     if (not ($existing | is-empty)) and (not ($prev | is-empty)) and (($prev | first) == $p) {
       $applied = ($applied | append $p)
       continue
@@ -75,16 +115,18 @@ def main [
     let base_apps = if $template == null { [] } else {
       $template | get apps | where {|a| ($a.title? | default "") not-in $p.exclude_apps }
     }
+    let extra_apps = $p.extra_apps | each {|a| complete-app $a $donor }
     mut profile = if $template == null {
-      {id: $p.id, name: $p.name, icon_png_path: "", apps: ($base_apps ++ $p.extra_apps)}
+      {id: $p.id, name: $p.name, icon_png_path: "", apps: ($base_apps ++ $extra_apps)}
     } else {
-      $template | upsert id $p.id | upsert name $p.name | upsert apps ($base_apps ++ $p.extra_apps)
+      $template | upsert id $p.id | upsert name $p.name | upsert apps ($base_apps ++ $extra_apps)
     }
     if "pin" in $profile { $profile = ($profile | reject pin) }
     if $p.pin != null { $profile = ($profile | upsert pin $p.pin) }
     if $p.icon_png_path != null { $profile = ($profile | upsert icon_png_path $p.icon_png_path) }
 
-    if not ($existing | is-empty) {
+    let prior = if ($existing | is-empty) { null } else { $existing | first }
+    if $prior != null {
       # The API has no update endpoint; replace is remove + add.
       log $"profile '($p.id)': spec changed, rebuilding"
       let removed = try { api-post $socket "/api/v1/profiles/remove" ({id: $p.id} | to json --raw) } catch { null }
@@ -98,7 +140,19 @@ def main [
 
     let added = try { api-post $socket "/api/v1/profiles/add" ($profile | to json --raw) } catch { null }
     if $added == null {
-      log $"profile '($p.id)': add failed"
+      if $prior == null {
+        log $"profile '($p.id)': add failed"
+        continue
+      }
+      # A rejected add after a successful remove would otherwise leave the
+      # profile deleted; put back the exact record that was removed — it
+      # came from the API, so it round-trips.
+      let restored = try { api-post $socket "/api/v1/profiles/add" ($prior | to json --raw) } catch { null }
+      if $restored == null {
+        log $"profile '($p.id)': add failed and restore failed, profile is gone from Wolf \(on-disk state untouched)"
+      } else {
+        log $"profile '($p.id)': add rejected, previous profile restored"
+      }
       continue
     }
     $applied = ($applied | append $p)

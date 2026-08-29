@@ -96,7 +96,9 @@
         # person pairs. PINs can be added later via `pin = "...."` — they
         # gate the picker UI only, nothing cryptographic.
         profiles = {
-          ryan = {};
+          ryan = {
+            includeApps = ["heroic"];
+          };
           juni = {};
         };
       };
