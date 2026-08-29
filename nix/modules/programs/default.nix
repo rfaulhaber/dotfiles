@@ -12,6 +12,7 @@
     ./git
     ./nushell
     ./sops
+    ./steam
     ./zellij
   ];
 }

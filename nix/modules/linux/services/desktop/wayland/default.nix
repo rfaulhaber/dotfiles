@@ -19,7 +19,9 @@ in {
         WLR_NO_HARDWARE_CURSORS = "1";
         NIXOS_OZONE_WL = "1";
 
-        # to make firefox look right
+        # to make firefox look right — but session-wide, so it leaks into any
+        # XWayland app whose toolkit reads it (Chromium/CEF: see the Steam
+        # module). Scope corrections per-app; recipe in notes/hidpi_scaling.org
         GDK_SCALE = "3";
         GDK_DPI_SCALE = "1.5";
       };

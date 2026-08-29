@@ -129,6 +129,7 @@
           };
         };
       };
+      steam.enable = true;
     };
     services = {
       zfs = {
