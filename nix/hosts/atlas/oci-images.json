@@ -38,7 +38,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:8e92dcb57ed64b0e4469c933f00ef1e09ee00867fee150e783a95fa6b53effa4"
+      "digest": "sha256:71388a455697b2cdfcbff789ba0de7be41272eebd3606373b32b0ca8647a62b3"
     }
   },
   "grafana": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:d2d3366dc31c6b8f4644060617d2475dacee874a6104d76adbc86e81d39d95f8"
+      "digest": "sha256:3b07546ceab28c6a435ecb0ee49f07b6dc6c4f92caed86aa6733effe547b23bd"
     }
   },
   "linkding": {
