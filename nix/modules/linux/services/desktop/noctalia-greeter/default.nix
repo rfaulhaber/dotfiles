@@ -28,6 +28,11 @@ with lib; let
     session.default = "niri";
     # Equivalent of tuigreet's --remember.
     user.default = config.user.name;
+    # pam_u2f is `sufficient` and first in the auth stack, so PAM's opening
+    # message is the FIDO touch cue and no password is ever requested. The
+    # greeter still holds create_session — and therefore that cue — behind a
+    # non-empty password field until empty submissions are permitted.
+    auth.allow_empty_password = config.modules.services.yubikey.enable;
     output = {
       inherit layout transforms scales;
       width = spanFor "x" "width";
