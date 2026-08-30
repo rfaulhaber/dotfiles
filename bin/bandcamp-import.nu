@@ -31,10 +31,10 @@
 # Batch mode (`batch` subcommand) is the non-interactive flavor of the same
 # pipeline, meant to run ON atlas under the bandcamp-import systemd path unit
 # (modules.services.bandcamp-import). It drains a drop directory instead of
-# taking a one-off folder: zips arrive in <watch>/incoming, albums are placed
-# locally (no ssh), the Lidarr key is read from a local path, and every zip
-# ends up in <watch>/archive or <watch>/failed. See "main batch" at the bottom
-# for the path-unit contract.
+# taking a one-off folder: album zips and loose single tracks arrive in
+# <watch>/incoming, albums are placed locally (no ssh), the Lidarr key is read
+# from a local path, and every dropped file ends up in <watch>/archive or
+# <watch>/failed. See "main batch" at the bottom for the path-unit contract.
 #   nu bin/bandcamp-import.nu batch /data/import/bandcamp
 #
 # Requires locally: unzip, rsync, ffprobe (ffmpeg). If missing:
@@ -46,6 +46,13 @@
 # The API key is never logged — only its source path and length.
 
 const AUDIO_EXTS = [flac mp3 m4a ogg opus wav aiff aif alac wv]
+
+# Bandcamp sells individual tracks as bare audio files rather than a zip. One
+# with no album tag is filed here rather than under its own title, so a run of
+# single purchases collects in one directory instead of scattering one-track
+# albums across the artist.
+const SINGLES_ALBUM = "Singles"
+
 
 def debug-on []: nothing -> bool {
   ($env.BANDCAMP_DEBUG? | default "" | str lowercase) in ["1" "true" "yes" "on"]
@@ -162,6 +169,34 @@ def describe-album [dir: string]: nothing -> any {
     tracks: ($audio | length)
     size: $bytes
     src: $root
+  }
+}
+
+# Read one loose audio file (a Bandcamp single) into a plan row. Tags lead
+# here, unlike describe-album: single filenames carry no dependable
+# "Artist - Title" separator ("tsubiclub-burbankhouse.flac"), so the stem is
+# only a last resort. An empty tag counts as absent — ffprobe reports a blank
+# rather than omitting the field on some encoders.
+def describe-single [file: string]: nothing -> record {
+  let tags = (ffprobe-tags $file)
+  let stem = ($file | path parse | get stem)
+  let parts = ($stem | split row " - ")
+
+  let artist_tag = (tag-get $tags [album_artist albumartist artist album-artist])
+  let artist = (if ($artist_tag | is-empty) {
+    if (($parts | length) > 1) { $parts | first } else { $stem }
+  } else {
+    $artist_tag
+  })
+
+  let album_tag = (tag-get $tags [album])
+  let album = (if ($album_tag | is-empty) { $SINGLES_ALBUM } else { $album_tag })
+
+  dbg $"parsed single ($file | path basename): artist='($artist)' album='($album)'"
+  {
+    path: $file
+    artist: (sanitize ($artist | into string))
+    album: (sanitize ($album | into string))
   }
 }
 
@@ -314,7 +349,7 @@ def main [
 
   if not $yes {
     # input needs a TTY; a non-interactive stdin means "no confirmation given".
-    let resp = (try { input $"Trrespfer ($albums | length) album\(s\) to ($host)? [y/N] " } catch { "" })
+    let resp = (try { input $"Transfer ($albums | length) album\(s\) to ($host)? [y/N] " } catch { "" })
     if ($resp | str lowercase) not-in ["y" "yes"] {
       rm -rf $work
       print "Aborted (use -y to skip confirmation)."
@@ -422,7 +457,7 @@ def import-one [
   lidarr: any
 ]: nothing -> record {
   let name = ($zip_path | path basename)
-  let skipped = { zip: $name, artist: null, album: null, imported: false, lidarr: "skipped" }
+  let skipped = { item: $name, kind: "zip", artist: null, album: null, imported: false, lidarr: "skipped" }
 
   # A truncated upload eventually settles (its mtime stops moving) but fails
   # the integrity test; quarantining it here is what terminates the retry loop.
@@ -464,19 +499,84 @@ def import-one [
   })
 
   mv $zip_path (unique-dest $archive_dir $name)
-  { zip: $name, artist: $row.artist, album: $row.album, imported: true, lidarr: $lid }
+  { item: $name, kind: "zip", artist: $row.artist, album: $row.album, imported: true, lidarr: $lid }
+}
+
+# Bucket one incoming/ entry by how it should be handled. The watch glob
+# matches every visible entry, not just *.zip, so every entry must come out of
+# here with a disposition — "other" is quarantined rather than ignored.
+def classify [entry: record]: nothing -> string {
+  if $entry.type != "file" { return "other" }
+  let ext = ($entry.name | path parse | get extension | str lowercase)
+  if $ext == "zip" {
+    "zip"
+  } else if $ext in $AUDIO_EXTS {
+    "single"
+  } else {
+    "other"
+  }
+}
+
+# Import loose audio files. Tracks are grouped by their derived Artist/Album
+# before transfer so several singles bought off the same release land in one
+# directory and Lidarr is asked about each artist once, not once per file.
+# Like import-one, every path out of here moves each file out of incoming/.
+def import-singles [
+  files: list<string>            # absolute paths of settled loose audio files
+  failed_dir: string
+  archive_dir: string
+  music_root: string
+  lidarr_url: string
+  lidarr: any
+]: nothing -> list<record> {
+  let groups = (
+    $files
+    | each {|f| describe-single $f }
+    | group-by {|r| $"($r.artist)/($r.album)" }
+  )
+
+  $groups
+  | transpose _key members
+  | each {|g|
+    let lead = ($g.members | first)
+    let paths = ($g.members | get path)
+    let target = $"($music_root)/($lead.artist)/($lead.album)"
+    print $"→ ($lead.artist) — ($lead.album) \(($paths | length) single\(s\)\) -> ($target)"
+
+    let xfer = (^rsync -a --mkpath ...$paths $"($target)/" | complete)
+    if $xfer.exit_code != 0 {
+      $g.members | each {|m|
+        quarantine $m.path $failed_dir $"rsync to ($target) failed: ($xfer.stderr | str trim | str substring 0..120)"
+        { item: ($m.path | path basename), kind: "single", artist: $m.artist, album: $m.album, imported: false, lidarr: "skipped" }
+      }
+    } else {
+      let lid = (if $lidarr == null {
+        "skipped"
+      } else {
+        (lidarr-register $lidarr_url $lidarr.key $lidarr.root $lidarr.qid $lidarr.mid $lead.artist).status
+      })
+      $g.members | each {|m|
+        mv $m.path (unique-dest $archive_dir ($m.path | path basename))
+        { item: ($m.path | path basename), kind: "single", artist: $m.artist, album: $m.album, imported: true, lidarr: $lid }
+      }
+    }
+  }
+  | flatten
 }
 
 # Non-interactive drop-directory importer, run on the media host itself by a
-# systemd path unit watching <watch_dir>/incoming for *.zip.
+# systemd path unit watching <watch_dir>/incoming.
 #
-# Contract with PathExistsGlob: on a clean exit no zip may remain in incoming/
-# — systemd re-checks the glob when the service deactivates and would re-fire
-# immediately, forever. Zips still being written (mtime younger than
-# --settle-seconds, e.g. an in-flight scp) are waited on *inside* this run;
-# everything else is moved to archive/ (imported) or failed/ (quarantined).
-# --max-wait-seconds bounds the waiting so a trickling upload can't wedge the
-# unit; the next trigger simply picks it up.
+# Contract with PathExistsGlob: on a clean exit incoming/ must be empty —
+# systemd re-checks the glob when the service deactivates and would re-fire
+# immediately, forever. The glob matches every visible entry, so that covers
+# album zips, loose single tracks, and anything else that lands here; a file
+# with no importer is quarantined so it surfaces instead of accumulating
+# unnoticed. Files still being written (mtime younger than --settle-seconds,
+# e.g. an in-flight scp) are waited on *inside* this run; everything else is
+# moved to archive/ (imported) or failed/ (quarantined). --max-wait-seconds
+# bounds the waiting so a trickling upload can't wedge the unit; the next
+# trigger simply picks it up.
 def "main batch" [
   watch_dir: path                # root dir; incoming/, failed/, archive/ live beneath it
   --music-root: string = "/data/music"
@@ -519,18 +619,20 @@ def "main batch" [
 
   let started = (date now)
   mut results = []
+  mut stuck = false
   loop {
-    let zips = (
-      ls $incoming
-      | where type == file
-      | where {|f| $f.name | str lowercase | str ends-with ".zip" }
-    )
-    if ($zips | is-empty) { break }
+    let entries = (ls $incoming)
+    if ($entries | is-empty) { break }
 
-    let cutoff = ((date now) - ($settle_seconds * 1sec))
-    let settled = ($zips | where modified < $cutoff)
+    let now = (date now)
+    let cutoff = ($now - ($settle_seconds * 1sec))
+    # A future mtime (a skewed clock, or one preserved by rsync -a from
+    # elsewhere) never falls behind the cutoff, so treat it as settled rather
+    # than wait on it until max-wait every single trigger.
+    let settled = ($entries | where {|e| $e.modified < $cutoff or $e.modified > $now })
+    let ready = ($settled | insert kind {|e| classify $e })
 
-    for z in $settled {
+    for z in ($ready | where kind == "zip") {
       # An unexpected error must not leave the zip in incoming/ (see the
       # contract above), so even the catch-all quarantines.
       let row = (try {
@@ -539,14 +641,47 @@ def "main batch" [
         if ($z.name | path exists) {
           quarantine $z.name $failed_dir $"unexpected error: ($e.msg | str substring 0..120)"
         }
-        { zip: ($z.name | path basename), artist: null, album: null, imported: false, lidarr: "skipped" }
+        { item: ($z.name | path basename), kind: "zip", artist: null, album: null, imported: false, lidarr: "skipped" }
       })
       $results = ($results | append $row)
     }
 
-    if (($zips | length) == ($settled | length)) { continue }
+    # Singles go in one call so tracks from the same release are grouped
+    # before transfer rather than raced into the directory one at a time.
+    let singles = ($ready | where kind == "single" | get name)
+    if ($singles | is-not-empty) {
+      let rows = (try {
+        import-singles $singles $failed_dir $archive_dir $music_root $lidarr_url $lidarr
+      } catch {|e|
+        $singles | each {|f|
+          if ($f | path exists) {
+            quarantine $f $failed_dir $"unexpected error: ($e.msg | str substring 0..120)"
+          }
+          { item: ($f | path basename), kind: "single", artist: null, album: null, imported: false, lidarr: "skipped" }
+        }
+      })
+      $results = ($results | append $rows)
+    }
+
+    for o in ($ready | where kind == "other") {
+      quarantine $o.name $failed_dir "no importer for this file type"
+      $results = ($results | append { item: ($o.name | path basename), kind: "other", artist: null, album: null, imported: false, lidarr: "skipped" })
+    }
+
+    # Contract guard: a handler that returned without moving its entry out
+    # would spin this loop with no sleep between passes, and then the path unit
+    # after it. Fail loudly and let the unit stop instead.
+    let remaining = ($ready | get name | where {|f| $f | path exists })
+    if ($remaining | is-not-empty) {
+      print -e $"✗ ($remaining | length) item\(s\) could not be moved out of incoming/; stopping to avoid a re-trigger loop:"
+      for r in $remaining { print -e $"  ($r | path basename)" }
+      $stuck = true
+      break
+    }
+
+    if (($entries | length) == ($settled | length)) { continue }
     if ((date now) - $started) > ($max_wait_seconds * 1sec) {
-      print -e $"⚠ giving up on (($zips | length) - ($settled | length)) still-changing zip\(s\); next trigger retries."
+      print -e $"⚠ giving up on (($entries | length) - ($settled | length)) still-changing file\(s\); next trigger retries."
       break
     }
     sleep 15sec
@@ -556,9 +691,10 @@ def "main batch" [
 
   if ($results | is-empty) {
     print "Nothing to import."
+    if $stuck { exit 1 }
     return
   }
-  print ($results | select zip artist album imported lidarr)
+  print ($results | select item kind artist album imported lidarr)
   let failed_count = ($results | where imported == false | length)
   let ok_count = (($results | length) - $failed_count)
   let unmatched = ($results | where lidarr == "no-match" | length)
@@ -566,5 +702,5 @@ def "main batch" [
     print $"($unmatched) artist\(s\) not in MusicBrainz — placed for Navidrome only."
   }
   print $"✓ ($ok_count) imported, ($failed_count) quarantined."
-  if $failed_count > 0 { exit 1 }
+  if $failed_count > 0 or $stuck { exit 1 }
 }

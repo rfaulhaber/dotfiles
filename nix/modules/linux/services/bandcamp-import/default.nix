@@ -1,9 +1,13 @@
-# Watched-directory Bandcamp importer: a path unit watches
-# <watchDir>/incoming for *.zip and triggers a oneshot service running
-# bin/bandcamp-import.nu in batch mode. PathExistsGlob is level-triggered —
-# systemd re-checks it whenever the service deactivates — so draining a batch
-# needs no loop here; the script guarantees every zip leaves incoming/ before
-# a clean exit (see its header for the full contract).
+# Watched-directory Bandcamp importer: a path unit watches <watchDir>/incoming
+# and triggers a oneshot service running bin/bandcamp-import.nu in batch mode.
+# Bandcamp hands over album purchases as a zip and single-track purchases as a
+# bare audio file, so the glob deliberately matches any visible entry rather
+# than enumerating extensions: keeping the accepted set in the script alone
+# means it cannot drift out of step with what the watcher wakes for.
+# PathExistsGlob is level-triggered — systemd re-checks it whenever the service
+# deactivates — so draining a batch needs no loop here; the script guarantees
+# incoming/ is empty before a clean exit, quarantining anything it has no
+# importer for (see its header for the full contract).
 {
   config,
   lib,
@@ -125,7 +129,10 @@ in {
       # the shadowed mountpoint inode and never fire (mounting generates no
       # inotify event), so only start watching once declarative datasets exist.
       after = ["zfs-manage-datasets.service"];
-      pathConfig.PathExistsGlob = "${cfg.watchDir}/incoming/*.zip";
+      # Matches album zips, loose singles and junk alike. The script's scratch
+      # dir is dot-prefixed and lives at watchDir, not under incoming/, so it
+      # stays outside this glob twice over.
+      pathConfig.PathExistsGlob = "${cfg.watchDir}/incoming/*";
     };
 
     systemd.services.bandcamp-import = let
