@@ -10,7 +10,6 @@ in {
   options.modules.desktop.wayland = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
-    modules.desktop.mako.enable = true;
     security.polkit.enable = true;
 
     environment = {

@@ -13,7 +13,6 @@ in {
     ./environment
     ./firefox
     ./fuzzel
-    ./mako
     ./noctalia
     ./noctalia-greeter
     ./random-wallpaper.nix

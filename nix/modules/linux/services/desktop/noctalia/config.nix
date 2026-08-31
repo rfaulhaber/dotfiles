@@ -12,11 +12,11 @@
     }
     // args;
 in {
-  # Bar-only deployment. mako, fuzzel, swaylock and awww keep their roles, so
-  # every noctalia subsystem that would contend for them is off. The launcher
-  # has no toggle — it stays inert as long as nothing binds or summons it.
-  # Clipboard history is the exception: nothing else in this config provides it.
-  notification.enable_daemon = false;
+  # fuzzel, swaylock and awww keep their roles, so every noctalia subsystem
+  # that would contend for them is off. The launcher has no toggle — it stays
+  # inert as long as nothing binds or summons it. Notifications and clipboard
+  # history are the exceptions: nothing else in this config provides them.
+  notification.enable_daemon = true;
   lockscreen.enabled = false;
 
   wallpaper = {
