@@ -54,7 +54,6 @@ in {
       noctalia.enable = true;
       noctalia-greeter.enable = true;
       environment.type = "wayland";
-      fuzzel.enable = true;
     };
 
     systemd.packages = [niriPkg];
@@ -65,7 +64,7 @@ in {
     # Keep the running compositor; the new build takes over at next login.
     # Written at the units level (not systemd.user.services.niri.restartIfChanged)
     # because serviceToUnit would also inject Environment=PATH into the drop-in,
-    # clobbering the session PATH niri uses to spawn waybar/fuzzel/etc.
+    # clobbering the session PATH niri uses to spawn bound commands.
     systemd.user.units."niri.service".text = ''
       [Service]
       X-RestartIfChanged=false
@@ -100,7 +99,6 @@ in {
     };
 
     user.packages = with pkgs; [
-      fuzzel
       swaylock
     ];
 

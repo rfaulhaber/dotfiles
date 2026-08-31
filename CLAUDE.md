@@ -137,7 +137,8 @@ Nushell scripts in `/bin/` for system tasks:
 - `extract-embedded-subs.nu` - Extract embedded subtitle tracks to sidecar files to avoid Jellyfin's full-container NFS demux
 - `random-wallpaper.nu` - Unsplash wallpaper rotation
 - `exec-emacs-project.nu` - Run a command in the context of a projectile project
-- `open-zellij-workspace.nu` - Fuzzel-pick a project and open it in a zellij session
+- `open-zellij-workspace.nu` - Pick a project via `noctalia dmenu` and open it in a zellij session
+- `launch-executable.nu` - Pick an executable from PATH via `noctalia dmenu` and run it
 - `bandcamp-import.nu` - Import Bandcamp purchases into the atlas music library, with Lidarr catalog registration
 - `build-fan-out.nu` - Build every host's toplevel in parallel
 - `nix-lines-history.nu` - Emit CSV of file line counts sampled across git history

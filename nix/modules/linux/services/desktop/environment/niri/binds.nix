@@ -17,14 +17,15 @@
   # tree whose store path varies by flake fetch method.
   execEmacsProject = mkNuScript "exec-emacs-project";
   openZellijWorkspace = mkNuScript "open-zellij-workspace";
+  launchExecutable = mkNuScript "launch-executable";
 in {
   "Mod+Shift+Slash" = action "show-hotkey-overlay";
 
   # Application launchers
   "Mod+Return" = spawn [terminal "--command='zellij'"];
   "Mod+S" = spawn "${openZellijWorkspace}/bin/open-zellij-workspace";
-  "Mod+D" = spawn "fuzzel";
-  "Mod+Alt+D" = spawn ["fuzzel" "--list-executables-in-path"];
+  "Mod+D" = spawn ["noctalia" "msg" "panel-toggle" "launcher"];
+  "Mod+Alt+D" = spawn "${launchExecutable}/bin/launch-executable";
   "Super+Alt+L" = spawn "swaylock";
   "Mod+E" = spawn "${execEmacsProject}/bin/exec-emacs-project";
 

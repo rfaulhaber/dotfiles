@@ -12,10 +12,11 @@
     }
     // args;
 in {
-  # fuzzel, swaylock and awww keep their roles, so every noctalia subsystem
-  # that would contend for them is off. The launcher has no toggle — it stays
-  # inert as long as nothing binds or summons it. Notifications and clipboard
-  # history are the exceptions: nothing else in this config provides them.
+  # swaylock and awww keep their roles, so every noctalia subsystem that would
+  # contend for them is off. The launcher, notifications, and clipboard history
+  # are the active subsystems: niri's Mod+D and the bar dead-zone summon the
+  # launcher over IPC, and the picker scripts in bin/ reach it via
+  # `noctalia dmenu`.
   notification.enable_daemon = true;
   lockscreen.enabled = false;
 
@@ -100,8 +101,7 @@ in {
     # The gap between the start and end sections is a click target the width of
     # the screen. Right-click keeps its default (control center).
     dead_zone.actions = {
-      # The launcher Mod+D reaches, not noctalia's, which stays inert.
-      left = "exec fuzzel";
+      left = "panel-toggle launcher";
       middle = "panel-toggle clipboard";
     };
   };

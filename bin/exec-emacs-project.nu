@@ -13,10 +13,10 @@ def main []: nothing -> nothing {
     | sort
     | to text --no-newline
 
-  let fuzzel_input = $projects | ^fuzzel --dmenu --prompt "Projects: " | default ""
+  let selection = $projects | ^noctalia dmenu --prompt "Projects: " | default ""
 
-  if $fuzzel_input != "" {
-    let full_project_path = $"~/Projects/($fuzzel_input)" | path expand
+  if $selection != "" {
+    let full_project_path = $"~/Projects/($selection)" | path expand
     ^emacs --chdir $full_project_path
   }
 }
