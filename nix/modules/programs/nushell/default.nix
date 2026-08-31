@@ -83,6 +83,10 @@ in {
             pbcopy = "${pkgs.xclip}/bin/xclip -selection clipboard";
             pbpaste = "${pkgs.xclip}/bin/xclip -selection clipboard -o";
           })
+          (mkIf config.modules.programs.zellij.enable {
+            # zellij is installed to user.packages, so we grab the profie executable
+            zj = "/etc/profiles/per-user/${config.user.name}/bin/zellij";
+          })
         ]);
 
         inherit (cfg) plugins;
