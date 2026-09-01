@@ -164,6 +164,7 @@
           "zroot/home/${config.user.name}/cache" = cacheDataset "${config.user.home}/.cache";
           "zroot/home/${config.user.name}/containers" = cacheDataset "${config.user.home}/.local/share/containers";
           "games/steam" = publicDataset "/games/steam";
+          "games/heroic" = publicDataset "/games/heroic";
         };
       };
       sudo-rs.enable = true;
