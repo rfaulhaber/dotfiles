@@ -34,6 +34,12 @@ in {
   calendar.enabled = false;
   location.auto_locate = false;
 
+  # The launcher and control center expose no size options of their own, so
+  # this global scale is the only lever that grows them. It deliberately does
+  # not touch the bar, whose widgets scale from bar.main.scale instead.
+  # Range 0.5-2.5, step 0.05.
+  accessibility.ui_scale = 1.35;
+
   shell = {
     # Defaults to sans-serif, which is not guaranteed to carry the Nerd Font
     # glyphs the widget formats use.
