@@ -38,13 +38,13 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:71388a455697b2cdfcbff789ba0de7be41272eebd3606373b32b0ca8647a62b3"
+      "digest": "sha256:8fe9e44630300175cdff41f8621c0de43228993f38c015d86d8f8c291e27ba5b"
     }
   },
   "grafana": {
     "image": {
-      "version": "13.2.0",
-      "digest": "sha256:3fd54ae1214669f8355f065ec9f6445d5279a3d77095ab048ca045685272429b"
+      "version": "13.2.1",
+      "digest": "sha256:f772d434e8fab0049deb2b1b30abd43342bcfca1537614aa8d36080232cf4283"
     }
   },
   "immich": {
@@ -61,7 +61,7 @@
     "redis": {
       "image": {
         "version": "9",
-        "digest": "sha256:70739f85ad2ee01a726a965584a0f94895f01b0c60b3cc8b0aeef11eaa6888cf"
+        "digest": "sha256:a91d34ab33975b1054e26f1bd9995b268f7e0c507b5ded7f3d181a1a25521630"
       }
     }
   },
@@ -73,8 +73,8 @@
   },
   "kept": {
     "image": {
-      "version": "1.6.1",
-      "digest": "sha256:dfb80ab833b0f5b9cd9d60aed38a4ad36a2b5e164187a5a3adc11ad278375b5b"
+      "version": "1.6.3",
+      "digest": "sha256:aa9ff411cb9fd1542c063430d26f64b393b156207de9ed81401fe530300aad17"
     }
   },
   "kitchenowl": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:3b07546ceab28c6a435ecb0ee49f07b6dc6c4f92caed86aa6733effe547b23bd"
+      "digest": "sha256:82cf3b0d7ef3ee116c82ca02fddc844b922eeab32da8830e4245b1238f44f9e4"
     }
   },
   "linkding": {
@@ -134,7 +134,7 @@
   "paperless": {
     "image": {
       "version": "latest",
-      "digest": "sha256:49eba766581b9134cfa6b584b9eb718355fb9cfbd44b2a7c9c72a427d4891648"
+      "digest": "sha256:5ab4f4f9bb099a36bec3e092906ea3e611323c5f18dc5cc38c76a1d540bdca9c"
     },
     "postgres": {
       "image": {
@@ -164,7 +164,7 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:2b2db31bb446db2dd29ac0596bfd82847f5778c93620917604c07d7d654a921e"
+      "digest": "sha256:363769676eb4a58dc5f691fb95ff65b3ed6918654b90c15c676c988aa2921048"
     }
   },
   "radarr": {
@@ -230,13 +230,13 @@
   "vikunja": {
     "image": {
       "version": "latest",
-      "digest": "sha256:22df4c1bc8843c28d383bc5f52b59e7b601bf5f6560b36b29c0a500833c77fa3"
+      "digest": "sha256:417ada6f94e81f0267aa2f007d0a811fc82d38dd2aa58351e3ea520ca01c2ea5"
     }
   },
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:63f1be17489c239d3bec1d71e1199bfc3d6deaf478f107802db625b190d4a855"
+      "digest": "sha256:81bc4dc4c4e95c334047de036dc42675fb5d04dd8ee8238f7d3ec076aa683940"
     },
     "postgres": {
       "image": {

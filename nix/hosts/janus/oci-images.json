@@ -7,7 +7,7 @@
       },
       "gerbil": {
         "version": "latest",
-        "digest": "sha256:a5e3d7d9008f7d216ac87e77e73090c29b42f5a6f578a7ec2baff28773ae27a7"
+        "digest": "sha256:6cde03ff29bfc2d3d307b09431afe280ff7437960ad470b9e770ba4ad006b794"
       },
       "traefik": {
         "version": "v3.7",
@@ -54,7 +54,7 @@
   "crowdsec": {
     "image": {
       "version": "latest",
-      "digest": "sha256:2f527c9bb8b367120eb08b82890aa912ce96bfa1ada93dda0721700e4b4e0dde"
+      "digest": "sha256:99eb4df235527e978595ef5ebb30182831686dc875521de67ef39b7659a86897"
     }
   }
 }

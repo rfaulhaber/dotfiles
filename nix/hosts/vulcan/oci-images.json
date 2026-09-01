@@ -8,19 +8,19 @@
   "plex": {
     "image": {
       "version": "latest",
-      "digest": "sha256:f6c58cb2f5e41cd1397bf2ed4e61ef63bd86e0736841b3ef426fabfe04606293"
+      "digest": "sha256:7f9a1d574958fc2f177c14ca190d4b811a58c274477f5bae8fb44ee676fb96bf"
     }
   },
   "jellyfin": {
     "image": {
       "version": "latest",
-      "digest": "sha256:4f6d8dfc53ec5a1ddf7a90e4338972d57d7b0adff6dc88b53184f8285d0b594f"
+      "digest": "sha256:438e44330078e6b1a810fdec9dc0f4773e6595edb137c5eb4417a516da4c7f0e"
     }
   },
   "open-webui": {
     "image": {
       "version": "main",
-      "digest": "sha256:c792953395b43d4f49085fa4026850c5e923578345ebeaf56eabd980bcfc273a"
+      "digest": "sha256:8afd2d774834c618a75411b3491cdc5da7396dc464f56a160b937ff2992eb6e4"
     }
   },
   "newt": {
@@ -33,8 +33,8 @@
     "runners": {
       "default": {
         "image": {
-          "version": "13.0.0",
-          "digest": "sha256:7fb853bfe73c229be6349398359c0a7bd01fadfd17c106607b2221150b799ed2"
+          "version": "13.1.0",
+          "digest": "sha256:c4af85fd9f0dd03788676a534781a87c71aa2c6a37737143e017eb94d4312952"
         }
       }
     }
