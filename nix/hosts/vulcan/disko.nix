@@ -126,6 +126,9 @@
           "games/state" = {
             type = "zfs_fs";
           };
+          # Not the whole list: games/heroic is declared in
+          # modules.services.zfs.datasets (oci.nix) so it also lands on the
+          # already-installed host, where disko never runs.
         };
       };
     };

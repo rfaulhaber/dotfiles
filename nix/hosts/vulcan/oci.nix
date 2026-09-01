@@ -91,6 +91,15 @@
         appStateDir = "/store/games/state";
         gpu = "intel";
         openFirewall = true;
+        # Heroic's library, on the 1M-record dataset below rather than the
+        # 128K appStateDir it would otherwise inherit. Deliberately a
+        # sibling of Heroic's Prefixes/ dir instead of a mount over
+        # Games/Heroic itself: wine prefixes are thousands of small files
+        # rewritten during play and belong on the small record size.
+        # Heroic's own "Default Install Path" has to point here — it is
+        # runtime state in config.json, not something nix sets.
+        appMounts.heroic = ["/store/games/heroic:/home/retro/Games/Heroic/Library:rw"];
+
         # Picked inside the Wolf UI session; each profile keeps its own
         # Steam login and per-app state, shared across every device that
         # person pairs. PINs can be added later via `pin = "...."` — they
@@ -159,6 +168,23 @@
   modules.services.docker-socket-proxy = {
     enable = true;
     allowedApiSections = ["containers" "events"];
+  };
+
+  # Game content for the Heroic session app: large files read sequentially,
+  # so the same 1M record as store/games/steam. Declared here rather than in
+  # disko.nix because disko only runs from an installer — zfs-manage-datasets
+  # creates this on the live host during activation, and adopts it on a
+  # from-scratch rebuild. Owned by ryan (uid 1000) to match the uid Wolf
+  # lobby sessions run as; a root-owned mount source would be read-only to
+  # the container.
+  modules.services.zfs.datasets."store/games/heroic" = {
+    properties = {
+      mountpoint = "/store/games/heroic";
+      recordsize = "1M";
+    };
+    owner = "ryan";
+    group = "users";
+    mode = "0755";
   };
 
   # Ordering only — the bind-mount source must exist when podman-newt starts

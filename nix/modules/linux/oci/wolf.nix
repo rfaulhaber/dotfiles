@@ -108,6 +108,27 @@ in {
       default = true;
     };
 
+    appMounts = mkOption {
+      description = ''
+        Extra bind mounts to attach to catalog apps, keyed by catalog app
+        name (see ./wolf-apps.nix), appended to the app's runner mounts.
+        The catalog mirrors upstream's app definitions verbatim and is
+        shared across hosts, so host paths belong here rather than in it.
+
+        Mount at a subpath of the session home, never /home/retro itself:
+        Wolf implicitly mounts the profile's app-state folder there and
+        podman rejects the duplicate destination docker tolerates (wolf
+        issue #461). The host side must already exist when a session
+        starts — podman errors on a missing bind source rather than
+        creating it — so back each one with a dataset or a tmpfiles rule.
+      '';
+      type = types.attrsOf (types.listOf types.str);
+      default = {};
+      example = {
+        heroic = ["/store/games/heroic:/home/retro/Games/Heroic/Library:rw"];
+      };
+    };
+
     profiles = mkOption {
       description = ''
         Wolf profiles to ensure exist, keyed by profile id. Profiles are app
@@ -186,13 +207,34 @@ in {
           };
         };
 
-        config.extraApps = map (n: appCatalog.${n}) config.includeApps;
+        config.extraApps =
+          map (
+            n: let
+              app = appCatalog.${n};
+            in
+              app
+              // {
+                runner =
+                  app.runner
+                  // {mounts = (app.runner.mounts or []) ++ (cfg.appMounts.${n} or []);};
+              }
+          )
+          config.includeApps;
       }));
     };
   };
 
   config = mkIf cfg.enable {
     modules.linux.oci._managedPaths.${cfg.baseDir} = {};
+
+    # An appMounts key naming no catalog app is a typo that would otherwise
+    # apply nowhere and fail silently at session start rather than at build.
+    assertions =
+      mapAttrsToList (n: _: {
+        assertion = appCatalog ? ${n};
+        message = "modules.linux.oci.services.wolf.appMounts: '${n}' is not a catalog app. Known apps: ${concatStringsSep ", " (attrNames appCatalog)}.";
+      })
+      cfg.appMounts;
 
     # Wolf spawns one sibling container per streaming session over the Docker
     # HTTP API. Podman's compat socket implements the surface Wolf uses
