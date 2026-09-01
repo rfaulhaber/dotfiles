@@ -15,6 +15,6 @@ def main []: nothing -> nothing {
   let selection = $executables | ^noctalia dmenu --prompt "Run: " | default ""
 
   if $selection != "" {
-    ^$selection
+    nu -c $selection
   }
 }
