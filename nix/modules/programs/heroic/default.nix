@@ -10,9 +10,11 @@ in {
   options.modules.programs.heroic = {enable = mkEnableOption false;};
 
   config = mkIf cfg.enable {
-    # does this even need to be a module?
-    user.packages = with pkgs; [
-      heroic
-    ];
+    programs = {
+      gamescope.enable = true;
+      gamemode.enable = true;
+    };
+
+    user.packages = [pkgs.heroic];
   };
 }
