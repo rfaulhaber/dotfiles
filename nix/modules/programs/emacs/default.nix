@@ -55,6 +55,8 @@
       ripgrep
       sqlite
       texliveMedium
+      # I use JSON across all projects, might as well have a global lsp for it
+      vscode-json-languageserver
       wordnet
       zstd
     ]
