@@ -14,6 +14,7 @@ with lib; let
     inherit (cfg) networkInterface;
     allowEmptyPassword = config.modules.services.yubikey.enable;
     inherit (config.userInfo) location;
+    lockscreenOutputs = attrNames config.modules.desktop.environment.niri.outputs;
   };
 in {
   options.modules.desktop.noctalia = {

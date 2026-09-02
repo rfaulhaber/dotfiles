@@ -4,6 +4,7 @@
   networkInterface,
   allowEmptyPassword,
   location,
+  lockscreenOutputs,
 }: let
   # Left-click already opens noctalia's summary panel on every sysmon widget;
   # right-click goes to the tool that can answer the follow-up question.
@@ -13,6 +14,48 @@
       actions.right = "exec ghostty --command='btop'";
     }
     // args;
+
+  # Lock screen widgets are placed per output in that output's logical pixels.
+  # The login box is itself a widget with a fixed id; noctalia drops any login
+  # box entry that names no output, and one without a centre is clamped into
+  # the top-left corner rather than placed at the default. The coordinates
+  # below assume a 4K output at scale 1.
+  lockscreenWidgetsFor = output: [
+    {
+      name = "clock@${output}";
+      value = {
+        type = "clock";
+        inherit output;
+        cx = 1920.0;
+        cy = 720.0;
+        # A non-zero box scales the clock's text to fill it; zero would leave
+        # the 56px default, which is unreadable from across the room on 4K.
+        box_width = 900.0;
+        box_height = 240.0;
+        rotation = 0.0;
+        settings = {
+          format = "{:%I:%M %p}";
+          center_text = true;
+        };
+      };
+    }
+    {
+      name = "lockscreen-login-box@${output}";
+      value = {
+        type = "login_box";
+        inherit output;
+        # noctalia's own default placement for this layout: centred, 84px
+        # above the bottom edge.
+        cx = 1920.0;
+        cy = 2001.0;
+        settings = {
+          show_session_buttons = false;
+          show_media = false;
+          show_weather = true;
+        };
+      };
+    }
+  ];
 in {
   # awww keeps the wallpaper role, so noctalia's wallpaper subsystem is off.
   # The launcher, notifications, clipboard history, and lock screen are the
@@ -28,6 +71,11 @@ in {
     # unlock without first waiting out the password fallback. With no key
     # present an empty password still falls through to pam_deny.
     allow_empty_password = allowEmptyPassword;
+  };
+
+  lockscreen_widgets = {
+    enabled = true;
+    widget = builtins.listToAttrs (builtins.concatMap lockscreenWidgetsFor lockscreenOutputs);
   };
 
   wallpaper = {
@@ -102,7 +150,7 @@ in {
   in
     map mkShortcut shortcuts;
 
-  nightlight.enable = true;
+  nightlight.enabled = true;
 
   bar.main = {
     position = "top";
