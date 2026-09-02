@@ -26,7 +26,6 @@ in {
   "Mod+S" = spawn "${openZellijWorkspace}/bin/open-zellij-workspace";
   "Mod+D" = spawn ["noctalia" "msg" "panel-toggle" "launcher"];
   "Mod+Alt+D" = spawn "${launchExecutable}/bin/launch-executable";
-  "Super+Alt+L" = spawn "swaylock";
   "Mod+E" = spawn "${execEmacsProject}/bin/exec-emacs-project";
 
   # Volume control
@@ -201,5 +200,6 @@ in {
   };
   "Mod+Shift+E" = action "quit";
   "Mod+Shift+P" = action "power-off-monitors";
+  "Mod+Alt+S" = spawn ["noctalia" "msg" "session" "lock"];
   "Mod+A" = action "toggle-overview";
 }

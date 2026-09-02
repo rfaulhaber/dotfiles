@@ -98,10 +98,6 @@ in {
       };
     };
 
-    user.packages = with pkgs; [
-      swaylock
-    ];
-
     environment.systemPackages = with pkgs; [
       xdg-desktop-portal-gtk
       xwayland-satellite

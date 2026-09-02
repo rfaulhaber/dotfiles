@@ -12,6 +12,8 @@ with lib; let
     homePath = config.user.home;
     inherit (config.modules.themes) font;
     inherit (cfg) networkInterface;
+    allowEmptyPassword = config.modules.services.yubikey.enable;
+    inherit (config.userInfo) location;
   };
 in {
   options.modules.desktop.noctalia = {
@@ -41,13 +43,11 @@ in {
     # home-manager ships programs.noctalia upstream now; importing
     # inputs.noctalia.homeModules.default alongside it double-declares the
     # option. Only the package still comes from the flake (via the overlay).
-    home-manager.users.${config.user.name} = {
-      programs.noctalia = {
-        enable = true;
-        package = pkgs.noctalia;
-        systemd.enable = true;
-        settings = noctaliaSettings;
-      };
+    home.programs.noctalia = {
+      enable = true;
+      package = pkgs.noctalia;
+      systemd.enable = true;
+      settings = noctaliaSettings;
     };
   };
 }

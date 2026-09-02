@@ -2,6 +2,8 @@
   homePath,
   font,
   networkInterface,
+  allowEmptyPassword,
+  location,
 }: let
   # Left-click already opens noctalia's summary panel on every sysmon widget;
   # right-click goes to the tool that can answer the follow-up question.
@@ -12,27 +14,44 @@
     }
     // args;
 in {
-  # swaylock and awww keep their roles, so every noctalia subsystem that would
-  # contend for them is off. The launcher, notifications, and clipboard history
-  # are the active subsystems: niri's Mod+D and the bar dead-zone summon the
-  # launcher over IPC, and the picker scripts in bin/ reach it via
-  # `noctalia dmenu`.
+  # awww keeps the wallpaper role, so noctalia's wallpaper subsystem is off.
+  # The launcher, notifications, clipboard history, and lock screen are the
+  # active subsystems: niri's Mod+D and the bar dead-zone summon the launcher
+  # over IPC, Mod+Shift+L locks the same way, and the picker scripts in bin/
+  # reach the launcher via `noctalia dmenu`.
   notification.enable_daemon = true;
-  lockscreen.enabled = false;
+
+  lockscreen = {
+    enabled = true;
+    # Same pam_u2f ordering the greeter works around: the `login` stack opens
+    # with a sufficient FIDO touch, so an empty submission is what lets a touch
+    # unlock without first waiting out the password fallback. With no key
+    # present an empty password still falls through to pam_deny.
+    allow_empty_password = allowEmptyPassword;
+  };
 
   wallpaper = {
     enabled = false;
     automation.enabled = false;
   };
 
+  # Locking is explicit (the bind, or lock-before-suspend); nothing fires on
+  # idle.
   idle.behavior = {
     lock.enabled = false;
     screen-off.enabled = false;
   };
-
-  weather.enabled = false;
+  weather = {
+    enabled = true;
+    refresh_minutes = 30;
+    unit = "imperial";
+    effects = true;
+  };
   calendar.enabled = false;
-  location.auto_locate = false;
+  location = {
+    auto_locate = false;
+    inherit (location) latitude longitude;
+  };
 
   # The launcher and control center expose no size options of their own, so
   # this global scale is the only lever that grows them. It deliberately does
@@ -70,6 +89,20 @@ in {
     # its 3s default would stair-step the network graphs against a 1s scroll.
     network_poll_seconds = 1.0;
   };
+
+  control_center.shortcuts = let
+    mkShortcut = type: {inherit type;};
+    shortcuts = [
+      "wifi"
+      "bluetooth"
+      "nightlight"
+      "clipboard"
+      "notification"
+    ];
+  in
+    map mkShortcut shortcuts;
+
+  nightlight.enable = true;
 
   bar.main = {
     position = "top";
