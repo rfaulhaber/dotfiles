@@ -12,6 +12,7 @@
     ./git
     ./heroic
     ./nushell
+    ./nvtop
     ./sops
     ./steam
     ./zellij

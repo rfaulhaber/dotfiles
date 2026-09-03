@@ -37,11 +37,21 @@ in {
             # The LAN routers advertise the v6 prefix with 300s valid=preferred
             # lifetimes, so the SLAAC address expires and is deleted whenever an
             # RA runs a few seconds late (~every 8 minutes). Each flap makes
-            # avahi withdraw and re-probe its records, and it occasionally loses
-            # the probe race against its own looped-back packets — renaming the
-            # host (atlas -> atlas-N) and breaking saved mDNS printer entries.
-            # v4-only mDNS sidesteps the churn; discovery works fine over v4.
+            # avahi withdraw and re-probe its AAAA record, and it occasionally
+            # loses the probe race against its own looped-back packets — renaming
+            # the host (atlas -> atlas-N). cupsd bakes the hostname into the
+            # printer's SRV target when it registers and never follows a rename,
+            # so a single rename leaves clients with a target that resolves to
+            # nothing. Discovery works fine over v4 alone.
             ipv6 = false;
+            # use-ipv6=no only closes the v6 socket: publish-aaaa-on-ipv4 defaults
+            # to yes, so avahi still tracks every v6 address and publishes its
+            # AAAA record over v4, and the flap-driven renames continue. Dropping
+            # AAAA publication is what removes v6 from avahi's view entirely.
+            extraConfig = ''
+              [publish]
+              publish-aaaa-on-ipv4=no
+            '';
             publish = {
               enable = true;
               userServices = true;
@@ -84,6 +94,10 @@ in {
             openFirewall = true;
             # Same v6 RA-lifetime flap as the server block; browsing needs v4 only.
             ipv6 = false;
+            extraConfig = ''
+              [publish]
+              publish-aaaa-on-ipv4=no
+            '';
           };
         };
 
