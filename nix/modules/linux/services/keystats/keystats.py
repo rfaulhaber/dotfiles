@@ -3,9 +3,10 @@
 
 Collects ONLY aggregates from a ZSA keyboard's evdev nodes: per-key press
 counts bucketed by held modifiers, adjacent-key (bigram) counts with summed
-inter-key latency, and autorepeat counts. No key sequences or per-event
-timestamps are stored, so the data cannot reconstruct typed text beyond
-pair frequencies. Create <state-dir>/pause to suspend recording (e.g.
+inter-key latency (plus a second accumulator restricted to short gaps, so
+finger travel can be separated from thinking pauses), and autorepeat counts.
+No key sequences or per-event timestamps are stored, so the data cannot
+reconstruct typed text beyond pair frequencies. Create <state-dir>/pause to suspend recording (e.g.
 before typing a password), remove it to resume.
 """
 
@@ -26,6 +27,10 @@ EVENT_FMT = "llHHi"  # struct input_event on 64-bit: timeval + type + code + val
 EVENT_SIZE = struct.calcsize(EVENT_FMT)
 EV_KEY = 0x01
 BIGRAM_MAX_GAP_MS = 1500  # pairs across longer pauses aren't typing rolls
+# Gaps up to this are dominated by finger travel; above it the mean is mostly
+# hesitation, which is why a plain mean gap ranks Enter→x as "slow".
+BIGRAM_ROLL_MAX_MS = 400
+STATE_VERSION = 2
 SAVE_INTERVAL_S = 60
 RESCAN_INTERVAL_S = 30
 
@@ -109,9 +114,12 @@ class Aggregator:
             self._count_press(code)
             gap = t_ms - self.prev_ms
             if self.prev_code is not None and 0 <= gap <= BIGRAM_MAX_GAP_MS:
-                pair = self.bigrams.setdefault(f"{self.prev_code}:{code}", [0, 0])
+                pair = self.bigrams.setdefault(f"{self.prev_code}:{code}", [0, 0, 0, 0])
                 pair[0] += 1
                 pair[1] += int(gap)
+                if gap <= BIGRAM_ROLL_MAX_MS:
+                    pair[2] += 1
+                    pair[3] += int(gap)
             self.prev_code = code
             self.prev_ms = t_ms
         elif value == 2:
@@ -130,12 +138,24 @@ class Aggregator:
         self.dirty = True
 
 
+def migrate_state(state):
+    """Bring older on-disk state up to STATE_VERSION in place."""
+    if state.get("version", 1) < STATE_VERSION:
+        # v1 bigrams are [n, sum_ms]; the roll accumulator starts from zero
+        # because the original gap distribution was never recorded.
+        for pair in state.get("bigrams", {}).values():
+            while len(pair) < 4:
+                pair.append(0)
+        state["version"] = STATE_VERSION
+    return state
+
+
 def load_state(path):
     try:
         with open(path) as f:
-            return json.load(f)
+            return migrate_state(json.load(f))
     except (OSError, ValueError):
-        return {"version": 1, "started": now_iso()}
+        return {"version": STATE_VERSION, "started": now_iso()}
 
 
 def save_state(path, state):
@@ -256,17 +276,23 @@ def report(sdir, top):
     for name, n in chorded_keys.most_common(15):
         print(f"  {name:>20} ({n:,})")
 
-    pairs = [(k, n, ms) for k, (n, ms) in state["bigrams"].items()]
-    print(f"\ntop {top} bigrams (count, mean gap ms):")
-    for key, n, ms in sorted(pairs, key=lambda p: -p[1])[:top]:
-        a, b = (keyname(int(x)) for x in key.split(":"))
-        print(f"  {a:>6} → {b:<6} {n:6,}  {ms / n:6.0f}ms")
+    pairs = [(k, *v) for k, v in state["bigrams"].items()]
 
-    slow = [(k, n, ms) for k, n, ms in pairs if n >= 30]
-    print("\nslowest common bigrams (n ≥ 30) — awkwardness candidates:")
-    for key, n, ms in sorted(slow, key=lambda p: -p[2] / p[1])[:15]:
+    def roll_ms(nf, msf):
+        return f"{msf / nf:4.0f}ms" if nf else "   —"
+
+    print(f"\ntop {top} bigrams (count, mean gap, mean roll gap <{BIGRAM_ROLL_MAX_MS}ms):")
+    for key, n, ms, nf, msf in sorted(pairs, key=lambda p: -p[1])[:top]:
         a, b = (keyname(int(x)) for x in key.split(":"))
-        print(f"  {a:>6} → {b:<6} {ms / n:6.0f}ms  (n={n})")
+        print(f"  {a:>6} → {b:<6} {n:6,}  {ms / n:5.0f}ms  {roll_ms(nf, msf)}")
+
+    print(f"\nslowest rolls (gap <{BIGRAM_ROLL_MAX_MS}ms, n ≥ 30) — finger-travel awkwardness candidates:")
+    if not any(p[3] for p in pairs):
+        print("  no roll samples yet (recorded since state version 2)")
+    slow = [p for p in pairs if p[3] >= 30]
+    for key, n, ms, nf, msf in sorted(slow, key=lambda p: -p[4] / p[3])[:15]:
+        a, b = (keyname(int(x)) for x in key.split(":"))
+        print(f"  {a:>6} → {b:<6} {msf / nf:4.0f}ms  (n={nf}, {100 * nf / n:.0f}% of {n})")
 
     print("\ntop held keys (autorepeats):")
     for code, n in Counter({int(k): v for k, v in state["repeats"].items()}).most_common(10):
@@ -281,17 +307,21 @@ def selftest():
         (150, 10, 1), (160, 10, 0),     # shift+9 = (
         (170, 42, 0),                   # shift up
         (200, 1, 1), (210, 1, 2), (220, 1, 2), (230, 1, 0),  # esc + repeats
+        (1000, 30, 1), (1030, 30, 0),   # 800ms gap: a bigram, but not a roll
         (5000, 30, 1), (5030, 30, 0),   # gap > max: no bigram
     ]
     for ev in events:
         agg.key_event(*ev)
-    assert agg.state["total_presses"] == 5, agg.state
-    assert agg.counts == {"0:30": 2, "0:42": 1, "1:10": 1, "0:1": 1}, agg.counts
-    assert agg.bigrams == {"30:10": [1, 150], "10:1": [1, 50]}, agg.bigrams
+    assert agg.state["total_presses"] == 6, agg.state
+    assert agg.counts == {"0:30": 3, "0:42": 1, "1:10": 1, "0:1": 1}, agg.counts
+    assert agg.bigrams == {"30:10": [1, 150, 1, 150], "10:1": [1, 50, 1, 50],
+                           "1:30": [1, 800, 0, 0]}, agg.bigrams
     assert agg.repeats == {"1": 2} and agg.state["total_repeats"] == 2
     agg.paused = True
     agg.key_event(5100, 31, 1)
-    assert agg.state["total_presses"] == 5
+    assert agg.state["total_presses"] == 6
+    old = migrate_state({"version": 1, "bigrams": {"30:31": [4, 400]}})
+    assert old["version"] == STATE_VERSION and old["bigrams"] == {"30:31": [4, 400, 0, 0]}, old
     print("selftest ok")
 
 
