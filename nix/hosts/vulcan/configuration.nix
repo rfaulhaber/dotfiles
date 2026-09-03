@@ -26,6 +26,7 @@
     };
     programs = {
       btop.enable = true;
+      nvtop.enable = true;
       nushell = {
         enable = true;
         setDefault = true;
