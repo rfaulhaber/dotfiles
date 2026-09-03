@@ -127,7 +127,9 @@
             };
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {};
           janus = mkHost ./nix/hosts/janus/configuration.nix {};
-          pallas = mkHost ./nix/hosts/pallas/configuration.nix {};
+          pallas = mkHost ./nix/hosts/pallas/configuration.nix {
+            overlays = [(import ./nix/overlays/flashrom_20260903.nix)];
+          };
           hecate = mkHost ./nix/hosts/hecate/configuration.nix {};
           vulcan = mkHost ./nix/hosts/vulcan/configuration.nix {};
           # prometheus uses the stock nixpkgs-unstable channel (via mkHost) and
@@ -135,6 +137,7 @@
           # through nixos-raspberrypi.lib.nixosSystem would re-pin nixpkgs to the
           # flake's 25.11 and break modules written against unstable (e.g. nix-cache).
           prometheus = mkHost ./nix/hosts/prometheus/configuration.nix {
+            overlays = [(import ./nix/overlays/flashrom_20260903.nix)];
             specialArgs = {
               inherit (inputs) nixos-raspberrypi;
             };
