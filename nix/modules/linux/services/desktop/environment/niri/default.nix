@@ -49,7 +49,9 @@ in {
 
   config = mkIf cfg.enable {
     modules.desktop = {
-      awww.enable = true;
+      # awww and noctalia each paint a background layer; the one that owns the
+      # wallpaper excludes the other.
+      awww.enable = !config.modules.desktop.noctalia.wallpaper.enable;
       wayland.enable = true;
       noctalia.enable = true;
       noctalia-greeter.enable = true;

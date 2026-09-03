@@ -131,6 +131,7 @@
       };
       steam.enable = true;
       heroic.enable = true;
+      nvtop.enable = true;
     };
     services = {
       zfs = {
@@ -252,6 +253,7 @@
       # wt0 (netbird) egresses over this link, so sampling both would count
       # overlay traffic twice.
       noctalia.networkInterface = "enp5s0";
+      noctalia.wallpaper.enable = true;
       random-wallpaper = {
         enable = true;
         perDisplay = true;

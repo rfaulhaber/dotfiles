@@ -1,11 +1,16 @@
 {
+  lib,
   homePath,
   font,
   networkInterface,
   allowEmptyPassword,
   location,
   lockscreenOutputs,
+  wallpaper,
 }: let
+  # The tile only makes sense with the service whose units it starts.
+  wallpaperTile = wallpaper.enable && wallpaper.tile;
+
   # Left-click already opens noctalia's summary panel on every sysmon widget;
   # right-click goes to the tool that can answer the follow-up question.
   sysmon = args:
@@ -57,11 +62,11 @@
     }
   ];
 in {
-  # awww keeps the wallpaper role, so noctalia's wallpaper subsystem is off.
   # The launcher, notifications, clipboard history, and lock screen are the
   # active subsystems: niri's Mod+D and the bar dead-zone summon the launcher
   # over IPC, Mod+Shift+L locks the same way, and the picker scripts in bin/
-  # reach the launcher via `noctalia dmenu`.
+  # reach the launcher via `noctalia dmenu`. The wallpaper layer joins them
+  # only when the module's wallpaper knob takes that role away from awww.
   notification.enable_daemon = true;
 
   lockscreen = {
@@ -78,10 +83,21 @@ in {
     widget = builtins.listToAttrs (builtins.concatMap lockscreenWidgetsFor lockscreenOutputs);
   };
 
-  wallpaper = {
-    enabled = false;
-    automation.enabled = false;
-  };
+  wallpaper =
+    if wallpaper.enable
+    then {
+      # The folder the service downloads into, so the picker panel can browse
+      # what has come down recently.
+      inherit (wallpaper) directory;
+      enabled = true;
+      # The random-wallpaper timer decides when to rotate; noctalia only
+      # renders, so its own automation stays off.
+      automation.enabled = false;
+    }
+    else {
+      enabled = false;
+      automation.enabled = false;
+    };
 
   # Locking is explicit (the bind, or lock-before-suspend); nothing fires on
   # idle.
@@ -140,15 +156,33 @@ in {
 
   control_center.shortcuts = let
     mkShortcut = type: {inherit type;};
-    shortcuts = [
-      "wifi"
-      "bluetooth"
-      "nightlight"
-      "clipboard"
-      "notification"
-    ];
+    shortcuts =
+      [
+        "wifi"
+        "bluetooth"
+        "nightlight"
+        "clipboard"
+        "notification"
+      ]
+      ++ lib.optional wallpaperTile "ryan/random-wallpaper:pick";
   in
     map mkShortcut shortcuts;
+
+  plugins = lib.mkIf wallpaperTile {
+    enabled = ["ryan/random-wallpaper"];
+    # Declaring any source replaces noctalia's default official and community
+    # git sources, so nothing is cloned or auto-updated: the one plugin comes
+    # from this repo, copied to the store and read in place.
+    auto_update = "none";
+    source = [
+      {
+        name = "dotfiles";
+        kind = "path";
+        location = "${./plugins}";
+        enabled = true;
+      }
+    ];
+  };
 
   nightlight.enabled = true;
 

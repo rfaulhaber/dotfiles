@@ -1,0 +1,13 @@
+id          = "ryan/random-wallpaper"
+name        = "Random wallpaper"
+version     = "1.0.0"
+# 24 introduced the argv form of runAsync, which is what lets the unit name be
+# passed without shell quoting.
+plugin_api  = 24
+author      = "ryan"
+icon        = "shuffle"
+description = "Fetch a fresh Unsplash wallpaper for the focused monitor; right-click for every monitor."
+
+[[shortcut]]
+id    = "pick"
+entry = "shortcut.luau"
