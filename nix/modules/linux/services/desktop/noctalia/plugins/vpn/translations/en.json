@@ -1,0 +1,4 @@
+{
+  "settings.profile.label": "NetworkManager profile",
+  "settings.profile.description": "Connection id of the VPN profile the tile switches."
+}

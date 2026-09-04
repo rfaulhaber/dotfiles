@@ -196,7 +196,12 @@
         enable = true;
         setupKeyFile = config.sops.secrets."netbird/setup-key".path;
       };
-      airvpn.enable = true;
+      airvpn = {
+        enable = true;
+        # AirVPN's rotating US pool on entry IP 3, the one that carries IPv6
+        # inside the tunnel. Any endpoint from the config generator works.
+        endpoint = "america3.vpn.airdns.org:1637";
+      };
       keystats.enable = true;
     };
     # No OCI services run here; registryAuth alone gives interactive
@@ -325,19 +330,17 @@
   networking = {
     hostName = "hyperion";
     hostId = "836be91c";
-    useNetworkd = true;
-
-    useDHCP = false;
-
-    interfaces.enp5s0.useDHCP = true;
-
+    # NetworkManager alone owns enp5s0. With networkd also DHCP-ing the link
+    # the interface carried two addresses and two default routes, and
+    # resolved treated it as networkd's, refusing NM's per-link DNS updates
+    # (LinkBusy) whenever a VPN profile tried to take over default-route DNS.
     networkmanager.enable = true;
-
-    # should only get its ip address from the pihole
-    dhcpcd.extraConfig = ''
-      blacklist 192.168.0.1
-    '';
   };
+
+  # NM's split DNS, netbird's per-link resolver and the VPN's routing domain
+  # all go through resolved; it used to be enabled only as a side effect of
+  # networkd.
+  services.resolved.enable = true;
 
   # TODO implement encrypted home
   # security.pam.zfs = {

@@ -16,6 +16,9 @@ with lib; let
     allowEmptyPassword = config.modules.services.yubikey.enable;
     inherit (config.userInfo) location;
     lockscreenOutputs = attrNames config.modules.desktop.environment.niri.outputs;
+    vpn = {
+      inherit (config.modules.services.airvpn) enable profile;
+    };
     wallpaper = {
       inherit (cfg.wallpaper) enable;
       directory = config.modules.desktop.random-wallpaper.storeDir;

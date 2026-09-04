@@ -1,0 +1,29 @@
+id          = "ryan/vpn"
+name        = "VPN"
+version     = "1.1.0"
+# 24 introduced the argv form of runAsync, which keeps the profile name out of
+# a shell string.
+plugin_api  = 24
+author      = "ryan"
+icon        = "shield-check"
+description = "Switch the on-demand VPN profile NetworkManager manages."
+
+# Which connection the plugin drives; set from config.toml so the plugin
+# itself names no provider.
+[[setting]]
+key             = "profile"
+type            = "string"
+label_key       = "settings.profile.label"
+description_key = "settings.profile.description"
+default         = "airvpn"
+
+# The service is the only entry that polls. A shortcut's own update timer runs
+# only while the control center is open, so a tile that polled for itself
+# would show stale state for the first interval after every open.
+[[service]]
+id    = "poll"
+entry = "service.luau"
+
+[[shortcut]]
+id    = "toggle"
+entry = "shortcut.luau"

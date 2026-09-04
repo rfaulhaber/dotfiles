@@ -7,6 +7,7 @@
   location,
   lockscreenOutputs,
   wallpaper,
+  vpn,
 }: let
   # The tile only makes sense with the service whose units it starts.
   wallpaperTile = wallpaper.enable && wallpaper.tile;
@@ -158,18 +159,27 @@ in {
     mkShortcut = type: {inherit type;};
     shortcuts =
       [
-        "wifi"
         "bluetooth"
         "nightlight"
         "clipboard"
-        "notification"
       ]
+      # The tunnel switch takes the notification tile's slot.
+      ++ [
+        (
+          if vpn.enable
+          then "ryan/vpn:toggle"
+          else "notification"
+        )
+      ]
+      ++ ["session"]
       ++ lib.optional wallpaperTile "ryan/random-wallpaper:pick";
   in
     map mkShortcut shortcuts;
 
-  plugins = lib.mkIf wallpaperTile {
-    enabled = ["ryan/random-wallpaper"];
+  plugins = lib.mkIf (wallpaperTile || vpn.enable) {
+    enabled =
+      lib.optional wallpaperTile "ryan/random-wallpaper"
+      ++ lib.optional vpn.enable "ryan/vpn";
     # Declaring any source replaces noctalia's default official and community
     # git sources, so nothing is cloned or auto-updated: the one plugin comes
     # from this repo, copied to the store and read in place.
@@ -182,6 +192,12 @@ in {
         enabled = true;
       }
     ];
+  };
+
+  # The tile reads the profile it drives from here rather than baking a
+  # provider name into the plugin.
+  plugin_settings."ryan/vpn" = lib.mkIf vpn.enable {
+    inherit (vpn) profile;
   };
 
   nightlight.enabled = true;
@@ -204,20 +220,25 @@ in {
 
     start = ["workspaces" "taskbar" "active_window"];
     center = [];
-    end = [
-      "clipboard"
-      "tray"
-      "net_rx"
-      "net_tx"
-      "cpu_usage"
-      "cpu_temp"
-      "ram_pct"
-      "ram_used"
-      "disk_home"
-      "disk_nix"
-      "lock_keys"
-      "clock"
-    ];
+    end =
+      [
+        "clipboard"
+        "tray"
+      ]
+      # The connection glyph sits beside the throughput graphs it describes.
+      ++ lib.optional vpn.enable "network"
+      ++ [
+        "net_rx"
+        "net_tx"
+        "cpu_usage"
+        "cpu_temp"
+        "ram_pct"
+        "ram_used"
+        "disk_home"
+        "disk_nix"
+        "lock_keys"
+        "clock"
+      ];
 
     # The gap between the start and end sections is a click target the width of
     # the screen. Right-click keeps its default (control center).
@@ -287,6 +308,17 @@ in {
     disk_nix = sysmon {
       stat = "disk_used";
       path = "/nix";
+    };
+
+    # The tunnel toggle. NetworkManager reports wireguard profiles as VPNs, so
+    # the glyph flips to a shield the moment the tunnel comes up and left-click
+    # opens the control center's Network tab, which lists the profile with its
+    # own connect/disconnect button. Right-click is overridden because the
+    # widget's default disconnects the active wired connection.
+    network = lib.mkIf vpn.enable {
+      show_label = false;
+      vpn_status = "replace";
+      actions.right = "exec vpn toggle";
     };
 
     # zellij's share plugin silently drops <SPACE> while Num or Caps Lock is on,
