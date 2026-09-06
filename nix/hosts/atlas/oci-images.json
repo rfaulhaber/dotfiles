@@ -61,7 +61,7 @@
     "redis": {
       "image": {
         "version": "9",
-        "digest": "sha256:a91d34ab33975b1054e26f1bd9995b268f7e0c507b5ded7f3d181a1a25521630"
+        "digest": "sha256:475ee65cc75c327407458f5096cdd36954b3de3fc83f4c8ac31a4a8edecbf49e"
       }
     }
   },
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:24322462f93e00da24c4734aad243d294255d0d4c99e6d4f1ff93d587c1798b6"
+      "digest": "sha256:1691b86ae86f005f4bc879cadac2c66a69d727be47ed24727531775d89f8a2e7"
     }
   },
   "linkding": {
@@ -128,13 +128,13 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:5f3d3fa71029004156eff2cbf4ef4455ce4ce59517cf13fa7d1d7c8a4cd2c8a4"
+      "digest": "sha256:4cc4afc944e0239037b7b95c64deb8e39e49ca770b7e2f61476a04443d7fcab9"
     }
   },
   "paperless": {
     "image": {
       "version": "latest",
-      "digest": "sha256:5ab4f4f9bb099a36bec3e092906ea3e611323c5f18dc5cc38c76a1d540bdca9c"
+      "digest": "sha256:aa810a36942c63d4ee70d00eda7236cd3d6acfb7eb3f7987fb568ed14df8817a"
     },
     "postgres": {
       "image": {
@@ -200,7 +200,7 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c19aa4ecdf03d73e1d5c901da33744cb7eb4d921f89bafed1ca264601d7fa224"
+      "digest": "sha256:4d9df314875e1249ab7d6170c2b9b3dc1d8e6383f168ceb10dc9a5ad9b324739"
     }
   },
   "soularr": {
@@ -236,7 +236,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c4043ecc77b9d32cc8f0b602d1785f1fbc26a50587c3fd9f67e51ff9228fedfe"
+      "digest": "sha256:16a4cad4fcf8501ace4535e5e553f82932e62921a3d213cb5f6eb8ada6a12eca"
     },
     "postgres": {
       "image": {
