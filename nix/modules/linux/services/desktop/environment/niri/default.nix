@@ -121,16 +121,6 @@ in {
 
       layout = import ./layout.nix {inherit colors;};
 
-      # noctalia runs as a systemd user unit bound to graphical-session.target,
-      # so unlike waybar it is not spawned from here.
-      spawn-at-startup = [
-        {argv = ["xwayland-satellite"];}
-      ];
-
-      environment = {
-        DISPLAY = ":0";
-      };
-
       screenshot-path = "~/pictures/screenshots/screenshot-%Y-%m-%d-%H:%M:%S.png";
 
       window-rules = import ./window-rules.nix;
