@@ -150,6 +150,12 @@
           sshUser = "ryan";
           autoRollback = true;
           magicRollback = true;
+          # deploy-rs leaves activation itself unbounded but gives confirmation
+          # only 30s, so a slow-but-correct activation gets rolled back. The OCI
+          # hosts pass that easily whenever a nixpkgs bump restarts every
+          # container at once, and Pi-hole hosts drop the DNS that confirmation
+          # needs to resolve. 120s clears both without hiding a genuine hang.
+          confirmTimeout = 120;
           nodes = {
             # run with: nix run '.#deploy-rs' '.#atlas'
             atlas = {
