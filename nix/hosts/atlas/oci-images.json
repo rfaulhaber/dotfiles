@@ -236,7 +236,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:16a4cad4fcf8501ace4535e5e553f82932e62921a3d213cb5f6eb8ada6a12eca"
+      "digest": "sha256:253cbe4f533aa8aed3103c495f6545e5cb3ba5da3778387c87d0541e5cf60290"
     },
     "postgres": {
       "image": {
