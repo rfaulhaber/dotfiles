@@ -17,6 +17,16 @@ with lib; let
     inherit colors;
     inherit (cfg) colorOverrides;
   };
+
+  # Replaces zellij's default Ctrl-g, which is keyboard-quit in Emacs and
+  # readline and the external-editor key in Claude Code. Unlike every
+  # other zellij chord it cannot be escaped by locking, since it is the lock
+  # toggle itself. Ctrl-; has no legacy control code, so nothing running in a
+  # pane can claim it; it reaches zellij through the kitty keyboard protocol
+  # (on by default in zellij, and spoken by ghostty). Under a terminal without
+  # that protocol the key types a literal `;`; unlock with
+  # `zellij action switch-mode normal` from inside the pane.
+  lockKey = "Ctrl ;";
 in {
   options.modules.programs.zellij = {
     enable = mkEnableOption false;
@@ -34,7 +44,7 @@ in {
       description = ''
         Input mode panes start in. `locked` keeps zellij's Ctrl-key bindings
         out of the way (useful under Emacs/readline) until unlocked with
-        Ctrl-g.
+        Ctrl-;.
       '';
       default = "normal";
       type = types.enum ["normal" "locked"];
@@ -74,13 +84,32 @@ in {
       settings =
         {
           default_mode = cfg.defaultMode;
-          # Renders as `bind "Alt y" { CopyLastCommandOutput }` in normal mode.
-          # The action relies on OSC 133 prompt markers, which nushell emits by
-          # default ($env.config.shell_integration.osc133); in a shell without
-          # them the bind is a silent no-op.
-          keybinds.normal.bind = {
-            _args = ["Alt y"];
-            CopyLastCommandOutput = {};
+          keybinds = {
+            # A top-level unbind strips the key from every mode, including the
+            # defaults' `shared_except "locked"` block that holds the original
+            # lock toggle. The replacement is bound in the same two places the
+            # default was: in every unlocked mode to lock, and in locked to
+            # unlock.
+            unbind = {_args = ["Ctrl g"];};
+            locked.bind = {
+              _args = [lockKey];
+              SwitchToMode = "normal";
+            };
+            shared_except = {
+              _args = ["locked"];
+              bind = {
+                _args = [lockKey];
+                SwitchToMode = "locked";
+              };
+            };
+            # Renders as `bind "Alt y" { CopyLastCommandOutput }` in normal
+            # mode. The action relies on OSC 133 prompt markers, which nushell
+            # emits by default ($env.config.shell_integration.osc133); in a
+            # shell without them the bind is a silent no-op.
+            normal.bind = {
+              _args = ["Alt y"];
+              CopyLastCommandOutput = {};
+            };
           };
           mouse_mode = cfg.mouse;
           theme = themeName;

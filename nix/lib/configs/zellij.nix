@@ -34,6 +34,31 @@
     "themes {\n\t${themeName} {\n"
     + concatStringsSep "\n" (map (n: renderComponent n themeColors.${n}) (attrNames themeColors))
     + "\n\t}\n}";
+
+  # Mirrors the keybind set in modules/programs/zellij/default.nix (which also
+  # explains the lock key choice); keep both in sync. Mode blocks are listed
+  # alphabetically because that is the order toKDL emits them in.
+  lockKey = "Ctrl ;";
+  keybindsBlock = concatStringsSep "\n" [
+    "keybinds {"
+    "\tlocked {"
+    "\t\tbind \"${lockKey}\" {"
+    "\t\t\tSwitchToMode \"normal\""
+    "\t\t}"
+    "\t}"
+    "\tnormal {"
+    "\t\tbind \"Alt y\" {"
+    "\t\t\tCopyLastCommandOutput"
+    "\t\t}"
+    "\t}"
+    "\tshared_except \"locked\" {"
+    "\t\tbind \"${lockKey}\" {"
+    "\t\t\tSwitchToMode \"locked\""
+    "\t\t}"
+    "\t}"
+    "\tunbind \"Ctrl g\""
+    "}"
+  ];
 in {
   config =
     concatStringsSep "\n" (
@@ -44,9 +69,7 @@ in {
         else []
       )
       ++ [
-        # Mirrors the keybind set in modules/programs/zellij/default.nix; keep
-        # both in sync.
-        "keybinds {\n\tnormal {\n\t\tbind \"Alt y\" {\n\t\t\tCopyLastCommandOutput\n\t\t}\n\t}\n}"
+        keybindsBlock
         "mouse_mode ${
           if mouse
           then "true"

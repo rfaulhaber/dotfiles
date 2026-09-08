@@ -1,11 +1,22 @@
 default_mode "normal"
 default_shell "nu"
 keybinds {
+	locked {
+		bind "Ctrl ;" {
+			SwitchToMode "normal"
+		}
+	}
 	normal {
 		bind "Alt y" {
 			CopyLastCommandOutput
 		}
 	}
+	shared_except "locked" {
+		bind "Ctrl ;" {
+			SwitchToMode "locked"
+		}
+	}
+	unbind "Ctrl g"
 }
 mouse_mode true
 theme "base16"
