@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  isLinux,
   ...
 }:
 with lib; let
@@ -9,7 +10,9 @@ with lib; let
 in {
   options.modules.programs.steam = {enable = mkEnableOption false;};
 
-  config = mkIf cfg.enable {
+  # NixOS-only options. Defining them on darwin fails evaluation even under a
+  # false mkIf, because the option itself is undeclared there.
+  config = mkIf cfg.enable (optionalAttrs isLinux {
     programs.steam = {
       enable = true;
 
@@ -32,5 +35,5 @@ in {
         };
       };
     };
-  };
+  });
 }
