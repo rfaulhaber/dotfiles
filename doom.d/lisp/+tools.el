@@ -4,6 +4,20 @@
 (defalias 'direnv-allow 'envrc-allow)
 (defalias 'direnv-reload 'envrc-reload)
 
+;; `envrc-global-mode' sweeps a snapshot of `buffer-list' and enables
+;; `envrc-mode' in each buffer. With `envrc-async' nil the first buffer
+;; blocks in `sleep-for' until direnv exits, which also runs other process
+;; sentinels: diff-hl-dired's vc-git status sentinel kills its temp buffer,
+;; and when the sweep reaches that dead buffer it fails with "Selecting
+;; deleted buffer" (first-file dired in a git repo with a .envrc). Run the
+;; sweep fully async instead; direnv's sentinel still applies the result to
+;; every envrc-mode buffer, and later per-buffer activation blocks as usual.
+(defvar envrc-async)
+(defun self/envrc-global-mode-no-block-a (fn &rest args)
+  (let ((envrc-async t))
+    (apply fn args)))
+(advice-add 'envrc-global-mode :around #'self/envrc-global-mode-no-block-a)
+
 ;; common directories, used by `self/visit-common-directories'
 (setq self/common-directories '(("Downloads" . "~/Downloads")
                                 ("Projects" . "~/Projects")
