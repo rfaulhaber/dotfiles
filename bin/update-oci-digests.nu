@@ -11,6 +11,17 @@
 # registry's tag list is scanned for a newer release on the same tag line.
 # A digest refresh can never move those pins — that is the point of pinning —
 # so without this a pinned service drifts years behind in total silence.
+# The `update` subcommand is how a pin is then moved deliberately: it rewrites
+# version and digest together, so the two can never disagree.
+#
+# Usage:
+#   update-oci-digests.nu [host ...]
+#       Refresh every digest (all hosts when none are named).
+#   update-oci-digests.nu update <host>.<path> [version]
+#       Bump one pinned entry, addressed by the dotted path the newer-version
+#       warning prints (e.g. janus.pangolin.images.pangolin). Without a
+#       version, moves to the newest upstream tag of the same shape; with
+#       one, pins exactly that tag. Honours DRY_RUN; writes no reports.
 #
 # This script does NOT touch git — it leaves modified files in the working
 # tree for the caller (a CI follow-up step, or a human running locally) to
@@ -126,6 +137,16 @@ def resolve-tag [rendered: list<string>, repo: string, spec] {
     } else {
         $hits | first | str substring (($repo | str length) + 1).. | split row "@" | first
     }
+}
+
+# Evaluate a host's toplevel derivation path — the cheapest check that a
+# rewritten oci-images.json still yields a buildable configuration.
+def eval-toplevel [host: string] {
+    let result = (
+        ^nix eval --raw $".#nixosConfigurations.($host).config.system.build.toplevel.drvPath"
+        | complete
+    )
+    {ok: ($result.exit_code == 0), stderr: $result.stderr}
 }
 
 # Resolve the current manifest digest of repo:tag against the registry.
@@ -409,8 +430,9 @@ def main [...hosts: string]: nothing -> nothing {
         warn $"($version_warnings | length) pinned image\(s\) have a newer upstream version — a digest refresh cannot move these:"
         for w in $version_warnings {
             let path_str = ($w.path | str join ".")
-            print $"     ($w.host) ($path_str): ($w.repo):($w.tag) → ($w.latest) \(($w.newer_count) newer tag\(s\)\)"
+            print $"     ($w.host).($path_str): ($w.repo):($w.tag) → ($w.latest) \(($w.newer_count) newer tag\(s\)\)"
         }
+        print "   Bump one with: nu bin/update-oci-digests.nu update <host>.<path> [version]"
         print ""
     }
 
@@ -424,7 +446,7 @@ def main [...hosts: string]: nothing -> nothing {
             $"| `($w.host)` | `($path_str)` | `($w.repo):($w.tag)` | `($w.latest)` |"
         } | str join "\n")
         ($"## Pinned images behind upstream\n\n($version_warnings | length) pinned image\(s\) have a newer version on the same tag line. "
-            + "Digest refreshes cannot move a pinned tag — bump `version` in the host's `oci-images.json` and re-run this workflow.\n\n"
+            + "Digest refreshes cannot move a pinned tag — run `nu bin/update-oci-digests.nu update <host>.<path> [version]` locally to bump one.\n\n"
             + $"| Host | Module path | Pinned | Newest |\n| --- | --- | --- | --- |\n($rows)\n\n")
         | save --append $summary_file
     }
@@ -457,11 +479,8 @@ def main [...hosts: string]: nothing -> nothing {
     print "=== Validating affected hosts ==="
     let validation_failures = ($affected_hosts | each { |h|
         print $"  nix eval ($h)"
-        let result = (
-            ^nix eval --raw $".#nixosConfigurations.($h).config.system.build.toplevel.drvPath"
-            | complete
-        )
-        if $result.exit_code != 0 {
+        let result = (eval-toplevel $h)
+        if not $result.ok {
             print $"    FAIL: ($result.stderr)"
             {host: $h, stderr: $result.stderr}
         } else {
@@ -476,6 +495,115 @@ def main [...hosts: string]: nothing -> nothing {
 
     ($"changed=true\ndate=($date_str)\nfetch_failures=($fetch_failures | length)"
         + $"\nnewer_versions=($version_warnings | length)\n") | save --append $output_file
+}
+
+# Move one pinned entry to a newer tag and refetch its digest in the same
+# write. This is the intended way to act on the newer-version warning: the
+# digest is what podman actually pulls, so a version edited by hand beside a
+# stale digest silently deploys the old image.
+def "main update" [
+    target: string   # <host>.<module path>, as printed by the warning block
+    version?: string # tag to pin; omit to take the newest same-shape upstream tag
+]: nothing -> nothing {
+    let segments = ($target | split row ".")
+    if ($segments | length) < 2 {
+        error -e $"Target must be <host>.<path>, e.g. janus.pangolin.images.pangolin \(got '($target)'\)."
+        exit 1
+    }
+    let host = ($segments | first)
+    let path = ($segments | skip 1)
+    let file = $"nix/hosts/($host)/oci-images.json"
+    if not ($file | path exists) {
+        error -e $"No oci-images.json for host '($host)' \(expected ($file)\)."
+        exit 1
+    }
+
+    let manifest = (open $file)
+    let specs = (find-image-specs $manifest)
+    let matches = ($specs | where path == $path)
+    if ($matches | is-empty) {
+        let known = ($specs | get path | each {|p| $"($host).($p | str join '.')" } | str join "\n     ")
+        error -e $"($target) is not an image entry. Entries on ($host):\n     ($known)"
+        exit 1
+    }
+    let spec = ($matches | first)
+
+    let repo_result = (query-repo $host $path)
+    if not $repo_result.ok {
+        error -e $repo_result.error
+        exit 1
+    }
+    let repo = $repo_result.repository
+
+    # The rendered tag may carry a GPU suffix the leaf's version does not
+    # (mkGpuImage: "release" → "release-openvino"). The suffix belongs to the
+    # tag we fetch, never to the version we write back.
+    let current_tag = (resolve-tag (rendered-images $host) $repo $spec)
+    let suffix = ($current_tag | str substring ($spec.version | str length)..)
+
+    let new_version = if $version != null {
+        $version
+    } else {
+        if not (pinned-tag? $current_tag) {
+            error -e $"($target) floats on ($repo):($current_tag); pass a version explicitly to pin it."
+            exit 1
+        }
+        let listing = (list-tags $repo)
+        if not $listing.ok {
+            error -e $listing.error
+            exit 1
+        }
+        let newer = (newer-than $listing.tags $current_tag)
+        if $newer == null {
+            print $"($target) is already on the newest ($repo) tag of its shape \(($current_tag)\)."
+            exit 0
+        }
+        $newer.latest | str substring 0..<(($newer.latest | str length) - ($suffix | str length))
+    }
+
+    let new_tag = $"($new_version)($suffix)"
+    let fetched = (fetch-digest $repo $new_tag)
+    if not $fetched.ok {
+        error -e $fetched.error
+        exit 1
+    }
+
+    if ($new_version == $spec.version) and ($fetched.digest == $spec.digest) {
+        print $"($target) already pins ($repo):($new_tag) at its current digest; nothing to do."
+        exit 0
+    }
+
+    print $"($target): ($repo):($current_tag) → ($new_tag)"
+    print $"  ($spec.digest | str substring 0..19)… → ($fetched.digest | str substring 0..19)…"
+
+    # Same-shape comparison happily reports a new major, and services get
+    # pinned precisely because majors break them — flag it, don't block it.
+    if (pinned-tag? $current_tag) and (pinned-tag? $new_tag) {
+        let old_major = (tag-nums $current_tag | first)
+        let new_major = (tag-nums $new_tag | first)
+        if $old_major != $new_major {
+            warn $"  Major version change ($old_major) → ($new_major) — check the upstream release notes before deploying."
+        }
+    }
+
+    if $dry_run {
+        print "DRY_RUN=true — not writing files or validating."
+        exit 0
+    }
+
+    let with_version = (deep-set $manifest ($path ++ ["version"]) $new_version)
+    let new_manifest = (deep-set $with_version ($path ++ ["digest"]) $fetched.digest)
+    $new_manifest | to json --indent 2 | save -f $file
+    print $"Wrote ($file)."
+
+    print $"Validating: nix eval ($host)"
+    let result = (eval-toplevel $host)
+    if not $result.ok {
+        error -e $"($host) no longer evaluates; ($file) is left modified for inspection:"
+        print -e $result.stderr
+        exit 1
+    }
+    print "OK — review the diff before committing."
 }
 
 def warn [--error, message: string]: nothing -> nothing {

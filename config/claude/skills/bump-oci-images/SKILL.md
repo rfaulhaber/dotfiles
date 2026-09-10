@@ -68,10 +68,21 @@ as a `!! N pinned image(s) have a newer upstream version` block in the log, a ta
 and a job summary section (the summary is written even in weeks that open no PR, since a stale pin
 produces no diff to hang one on).
 
-Acting on a warning means editing `version` in the host's `oci-images.json` by hand, then re-running
-the script so the matching digest is fetched. **Never edit `version` without re-running** — the
-digest is what podman actually pulls, so a bumped version beside a stale digest silently deploys
-the old image.
+Acting on a warning is the `update` subcommand. It takes the exact target the warning line prints
+and rewrites `version` and `digest` together, then evaluates the host's toplevel:
+
+```nu
+# move to the newest tag of the same shape — the one the warning named
+nu bin/update-oci-digests.nu update janus.pangolin.images.pangolin
+
+# pin an explicit tag instead (also how a floating tag gets pinned)
+nu bin/update-oci-digests.nu update janus.pangolin.images.pangolin 1.22.2
+```
+
+It honours `DRY_RUN`. A floating tag with no version given is refused rather than guessed, and a
+change of major version is flagged but not blocked. **Never edit `version` by hand without
+re-running** — the digest is what podman actually pulls, so a bumped version beside a stale digest
+silently deploys the old image.
 
 Comparison is by tag *shape*: digit runs are normalized to `#` and only tags of the same shape are
 compared. That is why `17.2-alpine` is never measured against `17.2-alpine3.16` (a different
