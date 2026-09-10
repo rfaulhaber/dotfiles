@@ -1,6 +1,5 @@
 {
   lib,
-  homePath,
   font,
   networkInterface,
   allowEmptyPassword,
@@ -12,8 +11,8 @@
   # The tile only makes sense with the service whose units it starts.
   wallpaperTile = wallpaper.enable && wallpaper.tile;
 
-  # Left-click already opens noctalia's summary panel on every sysmon widget;
-  # right-click goes to the tool that can answer the follow-up question.
+  # Left-click already opens the control center's System tab on every sysmon
+  # widget; right-click goes to the tool that can answer the follow-up question.
   sysmon = args:
     {
       type = "sysmon";
@@ -135,6 +134,8 @@ in {
     # dock and taskbar only; bar buttons, hooks and plugin tiles still run
     # inside noctalia's cgroup.
     launch_apps_as_systemd_services = true;
+    # Translucent panel cards so the control center matches the frosted bar.
+    panel.transparency_mode = "glass";
   };
 
   theme = {
@@ -217,53 +218,91 @@ in {
     # the bar at 20px.
     scale = 1.5;
 
-    # noctalia floats the bar as an inset rounded pill by default; waybar drew a
-    # plain full-width strip, which is what the rest of this desktop expects.
+    # A full-width frosted strip: the compositor blurs whatever noctalia leaves
+    # translucent, and with the exclusive zone in place that is only wallpaper.
+    # Concavity applies to the corners facing into the screen, so the strip
+    # curves down into the screen edges; the two corners touching the top of the
+    # screen stay square so no wallpaper shows there. The carve is capped at
+    # half the thickness.
     margin_ends = 0;
     margin_edge = 0;
-    radius = 0;
-    shadow = false;
+    concave_edge_corners = true;
+    radius = 18;
+    radius_top_left = 0;
+    radius_top_right = 0;
+    background_opacity = 0.65;
+    shadow = true;
+
+    # Widgets sit in their own pills on top of the strip; the group below shares
+    # one. The taskbar opts out because its workspace groups draw their own.
+    capsule = true;
+    capsule_fill = "surface_variant";
+    capsule_opacity = 0.8;
 
     start = ["workspaces" "taskbar" "active_window"];
     center = [];
     end =
-      [
-        "clipboard"
-        "tray"
-      ]
+      ["group:vitals"]
       # The connection glyph sits beside the throughput graphs it describes.
       ++ lib.optional vpn.enable "network"
       ++ [
-        "net_rx"
-        "net_tx"
-        "cpu_usage"
-        "cpu_temp"
-        "ram_pct"
-        "ram_used"
-        "disk_home"
-        "disk_nix"
+        "tray"
         "lock_keys"
         "clock"
       ];
 
+    # The at-a-glance stats, valueless: each gauge or graph tints toward the
+    # error color past its [system.monitor] activity threshold and reaches it at
+    # the critical one, so a quiet glyph means fine. Exact numbers, temperatures
+    # and disks live one hover (the sysmon tooltip lists every stat) or one
+    # click (control center System tab) away.
+    capsule_group = [
+      {
+        id = "vitals";
+        members = ["cpu_usage" "gpu_vram" "ram_pct" "net_rx" "net_tx"];
+        widget_spacing = 10;
+      }
+    ];
+
     # The gap between the start and end sections is a click target the width of
-    # the screen. Right-click keeps its default (control center).
+    # the screen. Right-click keeps its default (control center). Middle-click
+    # is the bar's only route to clipboard history now that the button is gone.
     dead_zone.actions = {
       left = "panel-toggle launcher";
       middle = "panel-toggle clipboard";
     };
   };
 
-  widget = {
+  widget = let
+    gauge = stat:
+      sysmon {
+        inherit stat;
+        show_value = false;
+      };
+    # Throughput swings across orders of magnitude, so the graph's shape says
+    # more than any number could.
+    throughput = stat:
+      sysmon {
+        inherit stat;
+        interface = networkInterface;
+        visualization = "graph";
+        show_value = false;
+      };
+  in {
     # waybar folded per-window icons into its workspace buttons; noctalia splits
     # those into two widgets, since its workspaces widget renders at most one
-    # icon and only in focus_hint style.
+    # icon and only in focus_hint style. The workspaces widget already numbers
+    # the workspaces, so the taskbar's own badges would say it twice.
     taskbar = {
       group_by_workspace = true;
       workspace_group_content = "icons";
+      show_workspace_label = false;
+      capsule = false;
     };
 
     workspaces = {
+      # Bare labels; the widget's pill supplies the background.
+      style = "minimal";
       # One bar per output, so without this both bars paint a focused pill and
       # neither says which head holds keyboard focus. Unfocused outputs fall
       # back to the occupied color.
@@ -273,48 +312,13 @@ in {
       labels_only_when_occupied = true;
     };
 
-    # Only meaningful for a metric that swings across orders of magnitude, where
-    # the graph carries the shape and the number just needs to stop reflowing
-    # the bar every second.
-    net_rx = sysmon {
-      stat = "net_rx";
-      interface = networkInterface;
-      visualization = "graph";
-      network_speed_compact = true;
-      label_min_width = 40;
-    };
-
-    net_tx = sysmon {
-      stat = "net_tx";
-      interface = networkInterface;
-      visualization = "graph";
-      network_speed_compact = true;
-      label_min_width = 40;
-    };
-
-    cpu_usage = sysmon {
-      stat = "cpu_usage";
-      visualization = "graph";
-    };
-
-    cpu_temp = sysmon {stat = "cpu_temp";};
-
-    # One waybar module showed percentage and absolute together; sysmon reports
-    # a single stat per instance, so the pair is split.
-    ram_pct = sysmon {stat = "ram_pct";};
-
-    ram_used = sysmon {stat = "ram_used";};
-
-    # `path` only expands a leading `~`, never $VAR, so pass an absolute path.
-    disk_home = sysmon {
-      stat = "disk_used";
-      path = homePath;
-    };
-
-    disk_nix = sysmon {
-      stat = "disk_used";
-      path = "/nix";
-    };
+    cpu_usage = gauge "cpu_usage";
+    # The card has 8 GiB and games have run it dry; VRAM is the one resource
+    # whose exhaustion shows up as a black screen rather than a slowdown.
+    gpu_vram = gauge "gpu_vram";
+    ram_pct = gauge "ram_pct";
+    net_rx = throughput "net_rx";
+    net_tx = throughput "net_tx";
 
     # The tunnel toggle. NetworkManager reports wireguard profiles as VPNs, so
     # the glyph flips to a shield the moment the tunnel comes up and left-click
@@ -333,7 +337,7 @@ in {
     lock_keys.hide_when_off = true;
 
     clock = {
-      format = "󰥔 {:%a, %b %d %Y %I:%M:%S %p}";
+      format = "󰥔 {:%a %b %d  %I:%M %p}";
       # No calendar token exists for the bar clock; noctalia puts the calendar
       # in the control center panel instead.
       tooltip_format = "{:%A, %B %d, %Y}";

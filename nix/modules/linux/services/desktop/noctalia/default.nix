@@ -10,7 +10,6 @@ with lib; let
 
   noctaliaSettings = import ./config.nix {
     inherit lib;
-    homePath = config.user.home;
     inherit (config.modules.themes) font;
     inherit (cfg) networkInterface;
     allowEmptyPassword = config.modules.services.yubikey.enable;
