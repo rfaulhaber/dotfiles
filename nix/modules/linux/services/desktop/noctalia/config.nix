@@ -129,6 +129,12 @@ in {
     # glyphs the widget formats use.
     font_family = font;
     launcher.fetch_exchange_rates = false;
+    # Launched apps otherwise share noctalia.service's cgroup, and
+    # home-manager stop-starts that unit whenever its store path or config
+    # changes, killing every app launched from the shell. Covers the launcher,
+    # dock and taskbar only; bar buttons, hooks and plugin tiles still run
+    # inside noctalia's cgroup.
+    launch_apps_as_systemd_services = true;
   };
 
   theme = {
