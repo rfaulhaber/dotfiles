@@ -10,6 +10,10 @@
   # https://nix-darwin.github.io/nix-darwin/manual/index.html
   modules = {
     themes.active = "tokyo-night-dark";
+    nix = {
+      bigHost = true;
+      substituters.enable = true;
+    };
     darwin = {
       airvpn.enable = true;
       dock = {
@@ -70,18 +74,11 @@
   ];
 
   # Determinate Nix (its installer, not nix-darwin) owns /etc/nix/nix.conf on
-  # macOS, so nix-darwin's daemon management stays off and plain nix.settings
-  # is silently ignored. Custom settings must go through
-  # determinateNix.customSettings, which renders /etc/nix/nix.custom.conf
-  # (!include'd from the managed nix.conf).
-  nix.enable = false;
-  determinateNix.customSettings = {
-    # Parallel evaluation; 0 = all cores (Determinate Nix caps this at 32).
-    eval-cores = 0;
-    # extra-: append to the managed nix.conf's defaults (nix-command, flakes)
-    # rather than replacing them.
-    extra-experimental-features = ["pipe-operators" "ca-derivations" "parallel-eval"];
-  };
+  # macOS, so nix-darwin daemon management stays off and plain nix.settings is
+  # evaluated and then silently discarded. modules/conf.nix detects isDarwin
+  # and routes the shared baseline (trusted-users, substituters,
+  # experimental-features) through determinateNix.customSettings instead,
+  # which renders the nix.custom.conf that the managed nix.conf includes.
 
   # nixpkgs.config.contentAddressedByDefault = true;
 
