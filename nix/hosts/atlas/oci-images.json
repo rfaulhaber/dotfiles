@@ -20,7 +20,7 @@
   "flaresolverr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:139dfee1c6f89249c8d665d1333a42e8ec74ec0a86bc6bb1c8461e10d3a66a47"
+      "digest": "sha256:c80ae007ce2ccdcd217a12426e4f039ef763ff90738c808d38810c3e59323767"
     }
   },
   "forgejo": {
@@ -38,7 +38,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:62810455bc9dacdcf887ddeb33b0e054d39a048ebe9264dff2f2692ce180a35c"
+      "digest": "sha256:6bdf70ced4f3ea33b9091f3af7a710b47be003673b6ea94abfeed3343a580d8c"
     }
   },
   "grafana": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:10be0c5ca8f9fd03d7658729190aa6e5d23f9656591cc61927c519780c1d266c"
+      "digest": "sha256:806b5d7132b3888aa1773a7c4351e3591a1022089c99d3e13a503db863e22ac3"
     }
   },
   "linkding": {
@@ -116,7 +116,7 @@
   "navidrome": {
     "image": {
       "version": "latest",
-      "digest": "sha256:9012939114fbb1bb641b81cf96dec5ded15f0aafefe8d47a511d7cb919658e40"
+      "digest": "sha256:a384948b81bd1529986c5960169e7fc4fa00f46bde6bd517971a4c36671db2af"
     }
   },
   "newt": {
@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:4cc4afc944e0239037b7b95c64deb8e39e49ca770b7e2f61476a04443d7fcab9"
+      "digest": "sha256:24951ff9689ddbc0843e309ed16db74409a077541a8aeaecca606ae3565768f2"
     }
   },
   "paperless": {
@@ -164,7 +164,7 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:337a64f9a1a2d452cd58a1354599313b9ecb82acf43ba2fa85dfaed0f0e9276a"
+      "digest": "sha256:64b2bf5cd98525669dee1e0d1f618b9c939eddee6331b8708c9223ea14dc443a"
     }
   },
   "radarr": {
@@ -200,7 +200,7 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:4d9df314875e1249ab7d6170c2b9b3dc1d8e6383f168ceb10dc9a5ad9b324739"
+      "digest": "sha256:82172b363f9eddc02aca544f880a044f2ceb9aaf190bc87e4454e2f705eb91d0"
     }
   },
   "soularr": {
@@ -236,7 +236,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:454a54b0c9a28872e1abc568c183b6f615a3aa91b81892db19d38158f6e9eade"
+      "digest": "sha256:d5cb1952575af9436a089d99731dfc57534a5eb858d2a7524d9bdcf61631418a"
     },
     "postgres": {
       "image": {
