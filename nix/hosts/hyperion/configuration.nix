@@ -217,6 +217,12 @@
     hardware = {
       bluetooth.enable = true;
       zsa.enable = true;
+      sensors = {
+        enable = true;
+        # asus_ec_sensors exposes only the chipset fan on this board; CPU and
+        # case tachometers need the Nuvoton driver. Baseline for the CPU swap.
+        superIO.enable = true;
+      };
       nvidia = {
         enable = true;
         useOpenDrivers = true;
