@@ -38,7 +38,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6bdf70ced4f3ea33b9091f3af7a710b47be003673b6ea94abfeed3343a580d8c"
+      "digest": "sha256:a2d96492aaac1e57d91e324fcf32382fc3c4b4f1fb59997fcf7c93effc582209"
     }
   },
   "grafana": {
@@ -92,7 +92,7 @@
   "linkding": {
     "image": {
       "version": "latest",
-      "digest": "sha256:0c0a9a04c7ebd644293c37f98710872fe7cdff0ea1ff7fd9be4d235e4c4678d2"
+      "digest": "sha256:e35cb50e0581178f245125ffaa909c565416c94c9f22ace305a7d234a4345522"
     }
   },
   "loki": {
@@ -170,7 +170,7 @@
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:95ba0801df4d9d1d79d0d9a3849f656542497dab061d91b87ad4f53a71aff3ef"
+      "digest": "sha256:fe051413dfd91b383ba04910552e83fb0306895fefee275c48dafe7bb90807dc"
     }
   },
   "recyclarr": {

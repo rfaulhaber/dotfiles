@@ -41,8 +41,8 @@
   },
   "podman-exporter": {
     "image": {
-      "version": "v1.21.2",
-      "digest": "sha256:b32899364b6761e2f4f496f110f2bc91a6cbab064f737c19efff200f7f3a25bf"
+      "version": "v2.0.0",
+      "digest": "sha256:ddaa9003e86f435f2d958ab68041959e4d2bb290a350a2649a123c449db032db"
     }
   },
   "wolf": {
