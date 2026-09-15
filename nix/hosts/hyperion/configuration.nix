@@ -233,7 +233,8 @@
       environment.niri = {
         enable = true;
         outputs = {
-          "DP-3" = {
+          # LG HDR 4K, left
+          "DP-2" = {
             mode = {
               width = 3840;
               height = 2160;
@@ -246,7 +247,8 @@
               y = 0;
             };
           };
-          "DP-1" = {
+          # Dell U2723QE, right
+          "DP-3" = {
             mode = {
               width = 3840;
               height = 2160;
@@ -270,7 +272,7 @@
         perDisplay = true;
         token = config.sops.secrets.unsplash.path;
       };
-      monitors = ["DP-3" "DP-1"];
+      monitors = ["DP-2" "DP-3"];
       sound.enable = true;
       firefox = {
         enable = true;
