@@ -224,40 +224,77 @@ in {
               }
             ];
           };
+        };
 
-          enabledPlugins = let
-            plugins = [
-              "agent-orchestration@claude-code-workflows"
-              "api-testing-observability@claude-code-workflows"
-              "backend-api-security@claude-code-workflows"
-              "backend-development@claude-code-workflows"
-              "claude-code-setup@claude-plugins-official"
-              "claude-md-management@claude-plugins-official"
-              "code-refactoring@claude-code-workflows"
-              "code-review@claude-plugins-official"
-              "code-simplifier@claude-plugins-official"
-              "codebase-cleanup@claude-code-workflows"
-              "database-design@claude-code-workflows"
-              "database-migrations@claude-code-workflows"
-              "debugging-toolkit@claude-code-workflows"
-              "deployment-strategies@claude-code-workflows"
-              "documentation-generation@claude-code-workflows"
-              "error-debugging@claude-code-workflows"
-              "explanatory-output-style@claude-plugins-official"
-              "feature-dev@claude-plugins-official"
-              "frontend-design@claude-plugins-official"
-              "learning-output-style@claude-plugins-official"
-              "ralph-loop@claude-plugins-official"
-              "rust-analyzer-lsp@claude-plugins-official"
-              "security-guidance@claude-plugins-official"
-              "skill-creator@claude-plugins-official"
-              "superpowers@claude-plugins-official"
-              "systems-programming@claude-code-workflows"
-              "tdd-workflows@claude-code-workflows"
-              "typescript-lsp@claude-plugins-official"
-            ];
-          in
-            builtins.foldl' (acc: el: {"${el}" = true;} // acc) {} plugins;
+        # Marketplace plugins as Nix-pinned skills-dir plugins: home-manager
+        # links each one into ~/.claude/skills/<name>, and Claude Code loads any
+        # entry there carrying .claude-plugin/plugin.json as a plugin. Versions
+        # follow flake.lock rather than Claude Code's runtime updater, so a bump
+        # is `nix flake update <input>`. The names share a namespace with the
+        # skills directory below and must stay unique across both.
+        plugins = let
+          # Marketplace repos keep each plugin under plugins/<name>.
+          fromMarketplace = input: names:
+            genAttrs names (name: "${input}/plugins/${name}");
+        in
+          fromMarketplace inputs.claude-code-workflows [
+            "agent-orchestration"
+            "api-testing-observability"
+            "backend-api-security"
+            "backend-development"
+            "code-refactoring"
+            "codebase-cleanup"
+            "database-design"
+            "database-migrations"
+            "debugging-toolkit"
+            "deployment-strategies"
+            "documentation-generation"
+            "error-debugging"
+            "systems-programming"
+            "tdd-workflows"
+          ]
+          // fromMarketplace inputs.claude-plugins-official [
+            "claude-code-setup"
+            "claude-md-management"
+            "code-review"
+            "code-simplifier"
+            "explanatory-output-style"
+            "feature-dev"
+            "frontend-design"
+            "learning-output-style"
+            "ralph-loop"
+            "security-guidance"
+            "skill-creator"
+          ]
+          // {
+            # Repositories that are a single plugin at their root.
+            superpowers = "${inputs.superpowers}";
+            agent-skills = "${inputs.addy-agent-skills}";
+          };
+
+        # The official marketplace's *-lsp plugins are README-only: their server
+        # definitions sit in the marketplace entry, which a skills-dir plugin
+        # never sees. The two that were enabled are reproduced here verbatim;
+        # home-manager renders them into its generated plugin's .lsp.json.
+        lspServers = {
+          rust-analyzer = {
+            command = "rust-analyzer";
+            extensionToLanguage = {".rs" = "rust";};
+          };
+          typescript = {
+            command = "typescript-language-server";
+            args = ["--stdio"];
+            extensionToLanguage = {
+              ".ts" = "typescript";
+              ".tsx" = "typescriptreact";
+              ".js" = "javascript";
+              ".jsx" = "javascriptreact";
+              ".mts" = "typescript";
+              ".cts" = "typescript";
+              ".mjs" = "javascript";
+              ".cjs" = "javascript";
+            };
+          };
         };
 
         # Path literals, not dotfiles.configDir: home-manager copies these into a

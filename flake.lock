@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "addy-agent-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789182898,
+        "narHash": "sha256-jWoq4RqzvGnKEwjQ+FPyQU82gBqyz00U4X/eLGDavfE=",
+        "owner": "addyosmani",
+        "repo": "agent-skills",
+        "rev": "be4e44a9fbc5e8df0beaefadbb28bd22ee61cc39",
+        "type": "github"
+      },
+      "original": {
+        "owner": "addyosmani",
+        "repo": "agent-skills",
+        "type": "github"
+      }
+    },
     "argononed": {
       "flake": false,
       "locked": {
@@ -52,6 +68,38 @@
       "original": {
         "owner": "sadjow",
         "repo": "claude-code-nix",
+        "type": "github"
+      }
+    },
+    "claude-code-workflows": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789310633,
+        "narHash": "sha256-jJsolFsGXiAxpgvyEAxY8CvO9PDCjcJP1lXDHp8bLFw=",
+        "owner": "wshobson",
+        "repo": "agents",
+        "rev": "4236bb91f8395b0435f1d8b8baf9e8e4c69a8620",
+        "type": "github"
+      },
+      "original": {
+        "owner": "wshobson",
+        "repo": "agents",
+        "type": "github"
+      }
+    },
+    "claude-plugins-official": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789524931,
+        "narHash": "sha256-q0KVwL/GmnFt1KoV2RTk3w1ZQwzVlRHGQcvDvnqKSzY=",
+        "owner": "anthropics",
+        "repo": "claude-plugins-official",
+        "rev": "76c85b7366c8be78ce3ac67dd21945b3960d1a8c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "anthropics",
+        "repo": "claude-plugins-official",
         "type": "github"
       }
     },
@@ -1002,8 +1050,11 @@
     },
     "root": {
       "inputs": {
+        "addy-agent-skills": "addy-agent-skills",
         "base16": "base16",
         "claude-code": "claude-code",
+        "claude-code-workflows": "claude-code-workflows",
+        "claude-plugins-official": "claude-plugins-official",
         "deploy-rs": "deploy-rs",
         "determinate": "determinate",
         "disko": "disko",
@@ -1024,6 +1075,7 @@
         "noctalia-greeter": "noctalia-greeter",
         "rz": "rz",
         "sops-nix": "sops-nix",
+        "superpowers": "superpowers",
         "tt-schemes": "tt-schemes",
         "waybar": "waybar"
       }
@@ -1086,6 +1138,22 @@
       "original": {
         "owner": "Mic92",
         "repo": "sops-nix",
+        "type": "github"
+      }
+    },
+    "superpowers": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786553601,
+        "narHash": "sha256-EsGNO0dULWf5Bx6bGrCv2kI2Z8aKH0kRvGiuN23wChQ=",
+        "owner": "obra",
+        "repo": "superpowers",
+        "rev": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
+        "type": "github"
+      },
+      "original": {
+        "owner": "obra",
+        "repo": "superpowers",
         "type": "github"
       }
     },

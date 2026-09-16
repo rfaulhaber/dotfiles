@@ -33,6 +33,26 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Claude Code plugin sources. nix/modules/programs/claude links these into
+    # ~/.claude/skills as skills-dir plugins instead of letting Claude Code's
+    # marketplace fetcher manage them, so their versions are pinned here.
+    claude-plugins-official = {
+      url = "github:anthropics/claude-plugins-official";
+      flake = false;
+    };
+    claude-code-workflows = {
+      url = "github:wshobson/agents";
+      flake = false;
+    };
+    superpowers = {
+      url = "github:obra/superpowers";
+      flake = false;
+    };
+    addy-agent-skills = {
+      url = "github:addyosmani/agent-skills";
+      flake = false;
+    };
+
     # TODO consider using stylix
     # currently, a wallpaper is required with stylix. this is problematic
     # because I do not need to set a wallpaper in my config
