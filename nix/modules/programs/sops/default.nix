@@ -10,6 +10,7 @@
 }:
 with lib; let
   cfg = config.modules.programs.sops;
+  goBuilderAlias = import ../../../overlays/sops_install_secrets_20260917.nix inputs.sops-nix;
 in {
   imports =
     lib.optionals isLinux [
@@ -44,6 +45,9 @@ in {
         message = "$host/secrets.yaml must exist";
       }
     ];
+
+    nixpkgs.overlays = [goBuilderAlias.overlay];
+    warnings = [goBuilderAlias.warning];
 
     sops = {
       inherit (cfg) secrets;
