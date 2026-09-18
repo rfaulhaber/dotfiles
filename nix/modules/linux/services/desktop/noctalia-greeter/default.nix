@@ -69,7 +69,7 @@ in {
     # was handed `--cmd niri-session` directly.
     environment.pathsToLink = ["/share/wayland-sessions"];
 
-    programs.noctalia-greeter = {
+    services.displayManager.noctalia-greeter = {
       enable = true;
       package = pkgs.noctalia-greeter;
       settings = recursiveUpdate derivedSettings cfg.settings;
