@@ -140,3 +140,8 @@
   :pin "6485953fe6eff62938fd08720811c6fdd09d7d22"
   :recipe (:host github
            :repo "emacsmirror/json-process-client"))
+
+(package! tumbel
+  :pin "d8f782634f2ce2944bd8db0088b72e0e144ba16b"
+  :recipe (:host github
+           :repo "rfaulhaber/tumbel"))
