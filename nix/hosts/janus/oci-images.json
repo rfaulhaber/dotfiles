@@ -7,11 +7,11 @@
       },
       "gerbil": {
         "version": "latest",
-        "digest": "sha256:6cde03ff29bfc2d3d307b09431afe280ff7437960ad470b9e770ba4ad006b794"
+        "digest": "sha256:4d34b911fa1a68805e836d97778edd54a9ee692400ba0e49001cd78119804afb"
       },
       "traefik": {
         "version": "v3.7",
-        "digest": "sha256:f86a2cab1b5c649070c49f883c743dd32d8485a56e3368c5f93b9e91f1e91259"
+        "digest": "sha256:1c32e7c368204fd72812152ebdd2ac0425993df6fd982317deb02e48f2d5423c"
       }
     }
   },
@@ -23,15 +23,15 @@
       },
       "signal": {
         "version": "latest",
-        "digest": "sha256:8b06ac050d87e7e2f782e806e2adb8b58bbc17d484c590cb111cedeaa0b9d634"
+        "digest": "sha256:04c401eb167ef1aaaf266f9b5a4ee54bdac9d1d650db3a3e1288601632fa6d41"
       },
       "relay": {
         "version": "latest",
-        "digest": "sha256:a845ba99641778b8e58df5abe5871ad374573f8b51c504691a5d7f406f477e93"
+        "digest": "sha256:0ef3133050c7c5e596ba068d916d3e0f1675ac646d3d169e081331ef3ad2055e"
       },
       "management": {
         "version": "latest",
-        "digest": "sha256:66a008a3a865cd5ed3f79261bf97b67e7b9be6462ee190d33a9a9eaca3924fad"
+        "digest": "sha256:3c3bed2a982c45fe23300e08eb6ee0c3bfda374b671b7adc5d990c6a4700e5ed"
       },
       "coturn": {
         "version": "latest",

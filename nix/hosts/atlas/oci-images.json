@@ -8,7 +8,7 @@
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:63631e9a99f6cbf532759b096d9b51dde8659deb7950ee7d2ee17af0d025c07e"
+      "digest": "sha256:8c7b77ada7133cbac1519791035ac7e305e37adae5cd06038270a90f99f4b4d6"
     }
   },
   "calibre-web-auto": {
@@ -31,7 +31,7 @@
     "postgres": {
       "image": {
         "version": "17.11-alpine",
-        "digest": "sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73"
+        "digest": "sha256:f02121de6f74d30d8a94cd1d9584125e2178d7e6c377d8130112d4e52d867995"
       }
     }
   },
@@ -68,7 +68,7 @@
   "job-ops": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c27a12252866685c3ac380b2360b828d8317ca410b0c630eea94aece6dae6fec"
+      "digest": "sha256:42831cacd2021d65f808c9f0363e53d081fb55cb2626da7c9d233616618276c9"
     }
   },
   "kept": {
@@ -109,7 +109,7 @@
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2"
+        "digest": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd"
       }
     }
   },
@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:24951ff9689ddbc0843e309ed16db74409a077541a8aeaecca606ae3565768f2"
+      "digest": "sha256:3b92679543623c8710fec557de7dd525d55bb5dfc8c59526f054123eaae0f995"
     }
   },
   "paperless": {
@@ -139,13 +139,13 @@
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2"
+        "digest": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd"
       }
     },
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:becdda6c7f4b3fb42e42fd7f120bbf5c54c4caaaf16f26da24e4563d2c1f0576"
+        "digest": "sha256:bd999b5cfee25fb24b8320a31fddbd69f462df44c8138c66e369582937beebc0"
       }
     }
   },
@@ -241,13 +241,13 @@
     "postgres": {
       "image": {
         "version": "16-alpine",
-        "digest": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685"
+        "digest": "sha256:3c5c8892d184f738f4fe282d14ddaa613a38f00f4189d2d94725ebe6f2909ddb"
       }
     },
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:becdda6c7f4b3fb42e42fd7f120bbf5c54c4caaaf16f26da24e4563d2c1f0576"
+        "digest": "sha256:bd999b5cfee25fb24b8320a31fddbd69f462df44c8138c66e369582937beebc0"
       }
     }
   }
