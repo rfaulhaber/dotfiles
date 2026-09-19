@@ -134,7 +134,7 @@
   "paperless": {
     "image": {
       "version": "latest",
-      "digest": "sha256:aa810a36942c63d4ee70d00eda7236cd3d6acfb7eb3f7987fb568ed14df8817a"
+      "digest": "sha256:22dc423ff48ac1629977dbf0c9625ba9f60d3bd1291a2ff173c65351984a14c2"
     },
     "postgres": {
       "image": {
@@ -187,8 +187,8 @@
   },
   "sftpgo": {
     "image": {
-      "version": "v2.7.5-alpine",
-      "digest": "sha256:d1e2877600aba270ac395bf76fc7c8a2a0bb4ac83c3e6c180a0540f5d4c3efb2"
+      "version": "v2.7.6-alpine",
+      "digest": "sha256:484f430b2115ec8e015644b1a5e54a5f5b8568f883cb5146e9043885f691d8f7"
     }
   },
   "slskd": {
