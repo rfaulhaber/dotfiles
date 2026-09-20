@@ -120,17 +120,6 @@
         enable = true;
         setupKeyFile = config.sops.secrets."netbird/setup-key".path;
       };
-      samba.serve = {
-        enable = true;
-        subnet = "192.168.0.";
-        interface = "eno2";
-        shares.roms = {
-          path = "/data/games/roms/roms";
-          comment = "ROM library";
-          readOnly = true;
-          guestOk = true;
-        };
-      };
       nfs.serve = {
         enable = true;
         interface = "eno2";
@@ -152,11 +141,17 @@
             path = "/data/llm/models";
             clients = "192.168.0.105(rw,sync,no_subtree_check,root_squash)";
           };
-          # ro: the ROM library is canonical here; wolf sessions on vulcan
-          # only ever read it (saves/states live in vulcan's app state).
+          # ro: the ROM library is canonical here; emulators only ever read it
+          # (wolf's saves/states live in vulcan's app state). vulcan keeps its
+          # own entry so its uids pass through like the other exports — a
+          # specific host matches ahead of the subnet. Everything else on the
+          # LAN (Steam Deck and other handhelds, on DHCP addresses) is
+          # anonymous: all_squash maps every client uid to nobody, since
+          # AUTH_SYS would otherwise trust whatever uid an unmanaged device
+          # claims. NFSv4 clients may mount the roms/ subdirectory directly.
           roms = {
             path = "/data/games/roms";
-            clients = "192.168.0.105(ro,sync,no_subtree_check,root_squash)";
+            clients = "192.168.0.105(ro,sync,no_subtree_check,root_squash) 192.168.0.0/24(ro,sync,no_subtree_check,all_squash)";
           };
         };
       };
