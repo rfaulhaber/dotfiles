@@ -31,7 +31,7 @@
     "postgres": {
       "image": {
         "version": "17.11-alpine",
-        "digest": "sha256:f02121de6f74d30d8a94cd1d9584125e2178d7e6c377d8130112d4e52d867995"
+        "digest": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24"
       }
     }
   },
@@ -61,7 +61,7 @@
     "redis": {
       "image": {
         "version": "9",
-        "digest": "sha256:c123e3715db63d06d4ad6964884037aa0d5d4d703939b9929954112889708e1d"
+        "digest": "sha256:418652cfb58ef879d4978c33553735d7147016032d5aefaa14c828e611eb9dfd"
       }
     }
   },
@@ -109,7 +109,7 @@
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd"
+        "digest": "sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873"
       }
     }
   },
@@ -134,18 +134,18 @@
   "paperless": {
     "image": {
       "version": "latest",
-      "digest": "sha256:22dc423ff48ac1629977dbf0c9625ba9f60d3bd1291a2ff173c65351984a14c2"
+      "digest": "sha256:5fa76604a81df6945086e0837b14b56543d137e8ce4f311cc5d9ebe907e74e79"
     },
     "postgres": {
       "image": {
         "version": "18-alpine",
-        "digest": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd"
+        "digest": "sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873"
       }
     },
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:bd999b5cfee25fb24b8320a31fddbd69f462df44c8138c66e369582937beebc0"
+        "digest": "sha256:ef216d85ec44f4fdf7c0e6df2d1757a4734ed32fbb278cabd3181b5a27353b79"
       }
     }
   },
@@ -170,7 +170,7 @@
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c960f2b52ec6542dbe6707c5a21e696a7c74fd8b17997454f4d10a55dacee133"
+      "digest": "sha256:adb6c09d6b729ea5e642c99cea35af72702ef476bf4763f153299ac5db9f0b4f"
     }
   },
   "recyclarr": {
@@ -241,13 +241,13 @@
     "postgres": {
       "image": {
         "version": "16-alpine",
-        "digest": "sha256:3c5c8892d184f738f4fe282d14ddaa613a38f00f4189d2d94725ebe6f2909ddb"
+        "digest": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea"
       }
     },
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:bd999b5cfee25fb24b8320a31fddbd69f462df44c8138c66e369582937beebc0"
+        "digest": "sha256:ef216d85ec44f4fdf7c0e6df2d1757a4734ed32fbb278cabd3181b5a27353b79"
       }
     }
   }

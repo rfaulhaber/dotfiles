@@ -11,7 +11,7 @@
       },
       "traefik": {
         "version": "v3.7",
-        "digest": "sha256:1c32e7c368204fd72812152ebdd2ac0425993df6fd982317deb02e48f2d5423c"
+        "digest": "sha256:24841fe2de7304c149343d877d2923b4c8800a38ba015dea9174c23b20e344a0"
       }
     }
   },
@@ -42,7 +42,7 @@
   "pocket-id": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ec46886301a3159b2b32334ca1da83539c9e36f8d84bc566dafaf889ac509f2a"
+      "digest": "sha256:9366436f3fd21619ed7e5709fa0acac88130f73414ec8ee1caf768fc487111ea"
     }
   },
   "podman-exporter": {
