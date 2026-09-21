@@ -8,6 +8,7 @@
     ./devenv
     ./direnv
     ./emacs
+    ./gh
     ./ghostty
     ./git
     ./heroic

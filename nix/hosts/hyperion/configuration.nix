@@ -132,6 +132,7 @@
       steam.enable = true;
       heroic.enable = true;
       nvtop.enable = true;
+      gh.enable = true;
     };
     services = {
       zfs = {
@@ -263,10 +264,12 @@
           };
         };
       };
-      # wt0 (netbird) egresses over this link, so sampling both would count
-      # overlay traffic twice.
-      noctalia.networkInterface = "enp5s0";
-      noctalia.wallpaper.enable = true;
+      noctalia = {
+        # wt0 (netbird) egresses over this link, so sampling both would count
+        # overlay traffic twice.
+        networkInterface = "enp5s0";
+        wallpaper.enable = true;
+      };
       random-wallpaper = {
         enable = true;
         perDisplay = true;
@@ -281,8 +284,8 @@
       # misc packages that don't cleanly belong inside of a module
       extraPackages = with pkgs; [
         inputs.rz.packages.${pkgs.stdenv.hostPlatform.system}.with-xz2-bzip2
+        codegraph
         feishin
-        gh
         moonlight-qt
         signal-desktop
         ungoogled-chromium
