@@ -261,7 +261,6 @@ in {
             "explanatory-output-style"
             "feature-dev"
             "frontend-design"
-            "learning-output-style"
             "ralph-loop"
             "security-guidance"
             "skill-creator"
