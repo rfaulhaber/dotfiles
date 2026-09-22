@@ -89,9 +89,18 @@
             group = config.user.group;
             mode = "0400";
           };
+          # GitHub PAT for Claude Code's hosted GitHub MCP server
+          github_mcp = {
+            owner = config.user.name;
+            group = config.user.group;
+            mode = "0400";
+          };
         };
       };
-      claude.enable = true;
+      claude = {
+        enable = true;
+        githubMcpTokenSecret = "github_mcp";
+      };
       crush = {
         enable = true;
         openrouterApiKeySecret = "openrouter-crush-api-key";

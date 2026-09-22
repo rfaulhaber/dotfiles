@@ -99,6 +99,18 @@ in {
       default = [];
       description = "Tool patterns to always deny.";
     };
+
+    githubMcpTokenSecret = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      example = "github_mcp";
+      description = ''
+        Name of the sops secret holding a GitHub personal access token for
+        the hosted GitHub MCP server. Must be declared in
+        `modules.programs.sops.secrets.<name>` with the user as owner. When
+        `null`, the GitHub server is left out of the global MCP config.
+      '';
+    };
   };
 
   config = let
@@ -167,8 +179,55 @@ in {
       (cd "$root" && nix fmt "$file" >/dev/null 2>&1) || true
       exit 0
     '';
+
+    # home-manager renders mcpServers into a plugin whose .mcp.json is a
+    # world-readable store path, so the token can never be written into it.
+    # Claude Code expands `${VAR}` in MCP headers from its own environment,
+    # so the header names a variable and this launcher fills it from the sops
+    # path at exec time. An already-exported variable wins, so a one-off
+    # token can still be tested without a rebuild.
+    githubMcpTokenVar = "GITHUB_MCP_TOKEN";
+
+    claudePackage =
+      if cfg.githubMcpTokenSecret == null
+      then pkgs.claude-code
+      else let
+        tokenPath = config.sops.secrets.${cfg.githubMcpTokenSecret}.path;
+      in
+        pkgs.symlinkJoin {
+          name = "claude-code-with-secrets";
+          paths = [pkgs.claude-code];
+          # home-manager gates plugin loading on the package version; a
+          # wrapper without it falls back to the legacy --plugin-dir mode.
+          inherit (pkgs.claude-code) version meta;
+          nativeBuildInputs = [pkgs.makeWrapper];
+          postBuild = ''
+            wrapProgram $out/bin/claude --run ${escapeShellArg ''
+              if [ -z "''${${githubMcpTokenVar}-}" ]; then
+                if [ -r ${tokenPath} ]; then
+                  export ${githubMcpTokenVar}="$(<${tokenPath})"
+                else
+                  echo "claude: ${tokenPath} is unreadable; the GitHub MCP server will fail to authenticate" >&2
+                fi
+              fi
+            ''}
+          '';
+        };
   in
     mkIf cfg.enable {
+      assertions = [
+        {
+          assertion =
+            cfg.githubMcpTokenSecret
+            == null
+            || config.sops.secrets ? ${cfg.githubMcpTokenSecret};
+          message = ''
+            modules.programs.claude.githubMcpTokenSecret is set to "${toString cfg.githubMcpTokenSecret}"
+            but no matching secret is declared in modules.programs.sops.secrets.
+          '';
+        }
+      ];
+
       # Replaces pkgs.claude-code (and thus the home-manager module's default
       # package) with the always-current build from the claude-code-nix flake.
       nixpkgs.overlays = [inputs.claude-code.overlays.default];
@@ -180,6 +239,7 @@ in {
 
       home.programs.claude-code = {
         enable = true;
+        package = claudePackage;
         enableMcpIntegration = true;
 
         settings = {
@@ -275,6 +335,8 @@ in {
         # definitions sit in the marketplace entry, which a skills-dir plugin
         # never sees. The two that were enabled are reproduced here verbatim;
         # home-manager renders them into its generated plugin's .lsp.json.
+        # This should also only contain global LSP servers. Projects should
+        # define their own MCP servers.
         lspServers = {
           rust-analyzer = {
             command = "rust-analyzer";
@@ -295,6 +357,34 @@ in {
             };
           };
         };
+
+        # Projects should provide their own project-specific MCP servers;
+        # this holds only the global ones. Tools land under
+        # `mcp__plugin_hm_<server>__*` because home-manager ships them
+        # through its generated plugin.
+        mcpServers =
+          {
+            codegraph = {
+              type = "stdio";
+              command = "codegraph";
+              args = [
+                "serve"
+                "--mcp"
+              ];
+            };
+
+            ebay = {
+              type = "http";
+              url = "https://ebay-mcp.3679.space/mcp";
+            };
+          }
+          // optionalAttrs (cfg.githubMcpTokenSecret != null) {
+            github = {
+              type = "http";
+              url = "https://api.githubcopilot.com/mcp";
+              headers.Authorization = "Bearer \${${githubMcpTokenVar}}";
+            };
+          };
 
         # Path literals, not dotfiles.configDir: home-manager copies these into a
         # sandboxed derivation, and a toString'd path carries no store context to
