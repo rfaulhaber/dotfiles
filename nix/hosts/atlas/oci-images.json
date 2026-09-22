@@ -55,7 +55,7 @@
     "postgres": {
       "image": {
         "version": "14-vectorchord1.1.1-pgvector0.8.5",
-        "digest": "sha256:b2ffa7b9021dab3f047a297d88ac74245e2f47348bbbaaa20ef1e720d52e1a5f"
+        "digest": "sha256:cbe03f6dbd2e31f0f8dbf56c95d15edbbdf432acde7f428fd5c7627539a9c569"
       }
     },
     "redis": {
@@ -116,7 +116,7 @@
   "navidrome": {
     "image": {
       "version": "latest",
-      "digest": "sha256:a384948b81bd1529986c5960169e7fc4fa00f46bde6bd517971a4c36671db2af"
+      "digest": "sha256:df22d661b8d0322c33754d999b567150df9e131a47ae53be71fed0154bf8cef5"
     }
   },
   "newt": {
@@ -145,7 +145,7 @@
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:ef216d85ec44f4fdf7c0e6df2d1757a4734ed32fbb278cabd3181b5a27353b79"
+        "digest": "sha256:ba6e394f6acc2a695ef1b6944f161b9ca813711739be68319fa0db3470673f1d"
       }
     }
   },
@@ -247,7 +247,7 @@
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:ef216d85ec44f4fdf7c0e6df2d1757a4734ed32fbb278cabd3181b5a27353b79"
+        "digest": "sha256:ba6e394f6acc2a695ef1b6944f161b9ca813711739be68319fa0db3470673f1d"
       }
     }
   }

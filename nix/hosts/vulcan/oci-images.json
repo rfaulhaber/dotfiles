@@ -8,7 +8,7 @@
   "plex": {
     "image": {
       "version": "latest",
-      "digest": "sha256:1f6f97d76e7bdb013789e94c838f2d9133b01ee4b2d4194148e492c4e4f12d90"
+      "digest": "sha256:be083133dfe001b6caed5a321720e6db9d38fdde1ea8f9d29340d40057a7fa53"
     }
   },
   "jellyfin": {
@@ -20,7 +20,7 @@
   "open-webui": {
     "image": {
       "version": "main",
-      "digest": "sha256:1a6399d237dc392a2313e0ca826020b3fd5d22536357840eb63393d18dc8b924"
+      "digest": "sha256:8b432fe0a65b91116afc7961365c6cca5379cc923171386a96691f3471f3cae9"
     }
   },
   "newt": {
@@ -48,7 +48,7 @@
   "wolf": {
     "image": {
       "version": "stable",
-      "digest": "sha256:edb348d7440e5716081830c241e536a17ea8c5b9f5a6275dfda6c775b9a2204f"
+      "digest": "sha256:5df8d062dfaa42312fa395e09b9fed1841b6e47deda47f91ff42cef8a1971a30"
     }
   },
   "wolf-den": {
