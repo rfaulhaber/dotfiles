@@ -142,9 +142,9 @@
         nixosConfigurations = let
           mkHost = lib.my.mkNixOSHost;
         in {
-          hyperion =
-            mkHost ./nix/hosts/hyperion/configuration.nix {
-            };
+          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
+            overlays = [(import ./nix/overlays/emacs-git_20260922)];
+          };
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {};
           janus = mkHost ./nix/hosts/janus/configuration.nix {};
           pallas = mkHost ./nix/hosts/pallas/configuration.nix {

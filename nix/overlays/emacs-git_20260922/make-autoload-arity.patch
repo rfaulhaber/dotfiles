@@ -1,0 +1,26 @@
+--- a/lisp/obsolete/autoload.el
++++ b/lisp/obsolete/autoload.el
+@@ -95,7 +95,12 @@
+ 
+ (defvar autoload-modified-buffers)      ;Dynamically scoped var.
+ 
+-(defalias 'make-autoload #'loaddefs-generate--make-autoload)
++(defun make-autoload (form file &optional expansion)
++  "Turn FORM into an autoload or defvar for source file FILE.
++FILE is the load name of the source file, without its \".el\" suffix,
++as `loaddefs-generate--make-autoload' took it before it grew a separate
++argument for the full file name; that name is derived from FILE here."
++  (loaddefs-generate--make-autoload form file (concat file ".el") expansion))
+ 
+ ;; Forms which have doc-strings which should be printed specially.
+ ;; A doc-string-elt property of ELT says that (nth ELT FORM) is
+@@ -324,7 +329,8 @@
+              ;; Read the next form and make an autoload.
+              (let* ((form (prog1 (read (current-buffer))
+                             (or (bolp) (forward-line 1))))
+-                    (autoload (make-autoload form load-name)))
++                    (autoload (loaddefs-generate--make-autoload
++                               form load-name file)))
+                (if autoload
+                    nil
+                  (setq autoload form))
