@@ -98,6 +98,21 @@ in {
       default = ["default"];
     };
 
+    ipv4Only = mkOption {
+      description = ''
+        Disable IPv6 inside gluetun's network namespace, which every
+        useGluetun container shares. Podman leaves a link-local address on
+        the container interface even on an IPv4-only network, and gluetun
+        treats any IPv6 route as IPv6 support: it then brings up the
+        provider's IPv6 tunnel address and routes ::/0 through the VPN. A
+        dual-stack exit breaks anything that binds state to the client IP
+        across two HTTP clients, notably Cloudflare clearance cookies solved
+        by FlareSolverr over IPv4 and replayed by Prowlarr over IPv6.
+      '';
+      type = types.bool;
+      default = false;
+    };
+
     extraPorts = mkOption {
       description = ''
         Additional host port mappings to publish on gluetun, beyond those
@@ -180,6 +195,12 @@ in {
           "--cap-add=NET_ADMIN"
           "--device=/dev/net/tun:/dev/net/tun"
           "--network-alias=gluetun"
+        ]
+        # The tunnel interface is created after the container starts, so
+        # "default" is set alongside "all" to make the coverage explicit.
+        ++ optionals cfg.ipv4Only [
+          "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
+          "--sysctl=net.ipv6.conf.default.disable_ipv6=1"
         ]
         ++ (map (n: "--network=${ociLib.networkName n}") cfg.networks)
         ++ imageLib.mkImageLabels {
