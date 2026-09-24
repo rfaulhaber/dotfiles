@@ -26,6 +26,10 @@
         gluetun = {
           enable = true;
           baseDir = "/data/apps/gluetun";
+          # FlareSolverr solves Cloudflare challenges over IPv4 while
+          # Prowlarr's Happy Eyeballs replays the clearance cookie over IPv6;
+          # the cookie is bound to the exit address, so indexers stay blocked.
+          ipv4Only = true;
           extraPorts = [
             "8888:8888/tcp" # HTTP proxy
             "8388:8388/tcp" # Shadowsocks
