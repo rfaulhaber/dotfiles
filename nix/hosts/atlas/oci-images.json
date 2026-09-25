@@ -8,7 +8,7 @@
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:8c7b77ada7133cbac1519791035ac7e305e37adae5cd06038270a90f99f4b4d6"
+      "digest": "sha256:84d3e30e0f0b3bf74260ff3312d4443121f5359387e50691a49a86ea219ed347"
     }
   },
   "calibre-web-auto": {
@@ -116,7 +116,7 @@
   "navidrome": {
     "image": {
       "version": "latest",
-      "digest": "sha256:df22d661b8d0322c33754d999b567150df9e131a47ae53be71fed0154bf8cef5"
+      "digest": "sha256:38dc2727bfcfd5ede290f8ada114fc90368146f265ae4701ddddbcbe2a44ee52"
     }
   },
   "newt": {
@@ -145,7 +145,7 @@
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:ba6e394f6acc2a695ef1b6944f161b9ca813711739be68319fa0db3470673f1d"
+        "digest": "sha256:3811787313eba226a2ef38658c6ccb91cd5e110edc89c37767de373120a0e5a0"
       }
     }
   },
@@ -157,8 +157,8 @@
   },
   "prometheus": {
     "image": {
-      "version": "v3.14.0",
-      "digest": "sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0"
+      "version": "v3.15.0",
+      "digest": "sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e"
     }
   },
   "prowlarr": {
@@ -247,7 +247,7 @@
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:ba6e394f6acc2a695ef1b6944f161b9ca813711739be68319fa0db3470673f1d"
+        "digest": "sha256:3811787313eba226a2ef38658c6ccb91cd5e110edc89c37767de373120a0e5a0"
       }
     }
   }
