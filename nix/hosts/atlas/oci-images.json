@@ -2,7 +2,7 @@
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:762f802274598da27255b2e5778f262b2b71b355a23e3812d9ee1520f8dbe37c"
+      "digest": "sha256:8b30e81c4aec2991f469e78fae8afaa89ecc9b21a80e3897f50427216b55470c"
     }
   },
   "calibre": {
@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:3b92679543623c8710fec557de7dd525d55bb5dfc8c59526f054123eaae0f995"
+      "digest": "sha256:ac88c1293bec960e287bdaaca174020fab4c0f179f739e26f500d3def8015ed7"
     }
   },
   "paperless": {
@@ -200,7 +200,7 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:a5c1a5fecbef946927ab90ad68df319ac5fe644057e5fc18cd993f01ac07b2b2"
+      "digest": "sha256:f247545d23ba8b233d6604575347e48a623fe6ad75dda02348bf81917f3b5c06"
     }
   },
   "soularr": {
@@ -212,7 +212,7 @@
   "syncthing": {
     "image": {
       "version": "latest",
-      "digest": "sha256:455bb8427106eb8522f9133a43d4e6ca799d4983c1b53e77a2bc6f7290855483"
+      "digest": "sha256:26cfac865d0924afc7f1e34a65e34e41c22f7b6b61d0c23a6aaebad13104b113"
     }
   },
   "tautulli": {
@@ -236,7 +236,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:102c4594bcf7015b13ef110098a4329508de758ef6f91a40d6df3ac0836e644f"
+      "digest": "sha256:1c31f2349404f145415828bda48889b2fd8a574bb890872a6008bc5ef347f536"
     },
     "postgres": {
       "image": {
