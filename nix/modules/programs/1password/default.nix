@@ -50,7 +50,8 @@ in {
 
     modules = lib.optionalAttrs isLinux {
       desktop.autostart.entries = lib.optionals cfg.autostart [
-        "${pkgs._1password-gui}/share/applications/1password.desktop"
+        # in 8.12.36, this changed from 1password.desktop to a java-like fqp name
+        "${pkgs._1password-gui}/share/applications/com.onepassword.OnePassword.desktop"
       ];
     };
   };
