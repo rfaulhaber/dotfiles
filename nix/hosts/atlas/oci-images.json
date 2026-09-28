@@ -14,7 +14,7 @@
   "calibre-web-auto": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c31a738b6d5ec6982c050063dd3f063b6943eb1051fc81144789f840d9093a8d"
+      "digest": "sha256:6900d554dcfc164250a4c90208e4277a2385f5c2dbc1bb881c5ccae2b3723d29"
     }
   },
   "flaresolverr": {
@@ -38,7 +38,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:5cedd587404f96202060385d541faa4a73e51544ea098ec8d31c614f4d9c6ee0"
+      "digest": "sha256:2733bb22b27e3efa7a9f2cef9057ec12791b8b225793fcd3dbfd0508404dfc25"
     }
   },
   "grafana": {
