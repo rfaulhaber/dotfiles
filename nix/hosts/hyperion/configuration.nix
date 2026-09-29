@@ -142,6 +142,14 @@
       heroic.enable = true;
       nvtop.enable = true;
       gh.enable = true;
+      opencode = {
+        enable = true;
+        openrouterApiKeySecret = "openrouter-opencode-api-key";
+      };
+      pi = {
+        enable = true;
+        openrouterApiKeySecret = "openrouter-pi-api-key";
+      };
     };
     services = {
       zfs = {

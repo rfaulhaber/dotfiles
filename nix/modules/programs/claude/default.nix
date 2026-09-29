@@ -89,8 +89,9 @@ in {
         Uses glob syntax: Bash(command *) matches any bash call starting with "command".
         Setting this in a host config replaces the defaults. To extend them, use:
           modules.programs.claude.allowedTools = lib.mkAfter [ "Bash(npm *)" ];
-        The `Bash(...)` entries also drive crush's bash permission hook when
-        `modules.programs.crush.reuseClaudeConfig` is on.
+        The `Bash(...)` entries also drive crush's bash permission hook and
+        opencode's `permission.bash` rules when the respective
+        `reuseClaudeConfig` option is on.
       '';
     };
 

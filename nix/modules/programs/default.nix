@@ -14,6 +14,8 @@
     ./heroic
     ./nushell
     ./nvtop
+    ./opencode
+    ./pi
     ./sops
     ./steam
     ./zellij
