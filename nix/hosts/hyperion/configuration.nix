@@ -65,37 +65,32 @@
         enable = true;
         web.enable = true;
       };
-      sops = {
-        enable = true;
-        secrets = {
-          unsplash = {
-            owner = config.user.name;
-            group = config.user.group;
-            mode = "0440";
-          };
-          # used by nix.extraOptions to set access-tokens for github.com
-          # and avoid rate limits when fetching flake inputs
-          github = {};
-          "netbird/setup-key" = {};
-          # root's dispatch key for remote builds on vulcan
-          vulcan-builder-ssh-key = {};
-          anthropic-api-key = {
-            owner = config.user.name;
-            group = config.user.group;
-            mode = "0400";
-          };
-          openrouter-crush-api-key = {
-            owner = config.user.name;
-            group = config.user.group;
-            mode = "0400";
-          };
-          # GitHub PAT for Claude Code's hosted GitHub MCP server
-          github_mcp = {
-            owner = config.user.name;
-            group = config.user.group;
-            mode = "0400";
-          };
+      sops = let
+        userSecret = {
+          owner = config.user.name;
+          inherit (config.user) group;
+          mode = "0400";
         };
+      in {
+        enable = true;
+        secrets =
+          {
+            unsplash = userSecret // {mode = "0440";};
+            # used by nix.extraOptions to set access-tokens for github.com
+            # and avoid rate limits when fetching flake inputs
+            github = {};
+            "netbird/setup-key" = {};
+            # root's dispatch key for remote builds on vulcan
+            vulcan-builder-ssh-key = {};
+          }
+          // lib.genAttrs [
+            "anthropic-api-key"
+            "openrouter-crush-api-key"
+            "openrouter-opencode-api-key"
+            "openrouter-pi-api-key"
+            # GitHub PAT for Claude Code's hosted GitHub MCP server
+            "github_mcp"
+          ] (_: userSecret);
       };
       claude = {
         enable = true;
