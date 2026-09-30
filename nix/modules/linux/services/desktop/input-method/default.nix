@@ -69,9 +69,25 @@ in {
           # Both default to Super(+Shift)+space. There is only one group.
           "Hotkey/EnumerateGroupForwardKeys" = {};
           "Hotkey/EnumerateGroupBackwardKeys" = {};
+          # fcitx5 holds the keyboard in every text field, including terminals
+          # and Emacs, so its hotkeys shadow theirs even while typing English.
+          # This one is C-M-p.
+          "Hotkey/TogglePreedit" = {};
           # One state for the whole desktop, so the bar describes whichever
           # window takes the next keystroke.
           Behavior.ShareInputState = "All";
+          # Its picker sits on Ctrl+;, zellij's lock key, and noctalia already
+          # keeps clipboard history.
+          "Behavior/DisabledAddons"."0" = "clipboard";
+        };
+
+        # Word hints for plain layouts, on C-M-h and C-M-j.
+        settings.addons.keyboard = {
+          globalSection = {};
+          sections = {
+            "Hint Trigger" = {};
+            "One Time Hint Trigger" = {};
+          };
         };
 
         # The first item is what toggling off returns to.
@@ -89,13 +105,13 @@ in {
     };
 
     # fcitx5 rewrites its profile on exit and on idle autosave, and the first
-    # copy in ~/.config shadows /etc/xdg from then on. Linking the user paths
-    # back to the generated files leaves them read-only; fcitx5's save then
-    # fails silently and the next start reads these again.
-    home.configFile = {
-      "fcitx5/profile".source = config.environment.etc."xdg/fcitx5/profile".source;
-      "fcitx5/config".source = config.environment.etc."xdg/fcitx5/config".source;
-    };
+    # copy in ~/.config shadows /etc/xdg from then on; the configtool does the
+    # same to the rest. Linking the user paths back to the generated files
+    # leaves them read-only; fcitx5's save then fails silently and the next
+    # start reads these again.
+    home.configFile = genAttrs ["fcitx5/profile" "fcitx5/config" "fcitx5/conf/keyboard.conf"] (name: {
+      inherit (config.environment.etc."xdg/${name}") source;
+    });
 
     # Rime compiles its data into build/ under its user directory and decides
     # what to recompile by comparing source mtimes, which are all equal in the
