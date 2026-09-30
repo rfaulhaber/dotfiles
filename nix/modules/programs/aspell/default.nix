@@ -12,7 +12,7 @@ in {
   config = mkIf cfg.enable {
     user.packages = with pkgs; [
       (aspellWithDicts
-        (dicts: with dicts; [en en-computers en-science]))
+        (dicts: with dicts; [en]))
     ];
   };
 }
