@@ -7,6 +7,7 @@
 }:
 with lib; let
   cfg = config.modules.programs.claude;
+  mcp = config.modules.programs.mcp;
 in {
   options.modules.programs.claude = {
     enable = mkEnableOption false;
@@ -100,18 +101,6 @@ in {
       default = [];
       description = "Tool patterns to always deny.";
     };
-
-    githubMcpTokenSecret = mkOption {
-      type = types.nullOr types.str;
-      default = null;
-      example = "github_mcp";
-      description = ''
-        Name of the sops secret holding a GitHub personal access token for
-        the hosted GitHub MCP server. Must be declared in
-        `modules.programs.sops.secrets.<name>` with the user as owner. When
-        `null`, the GitHub server is left out of the global MCP config.
-      '';
-    };
   };
 
   config = let
@@ -182,19 +171,46 @@ in {
     '';
 
     # home-manager renders mcpServers into a plugin whose .mcp.json is a
-    # world-readable store path, so the token can never be written into it.
+    # world-readable store path, so a secret can never be written into it.
     # Claude Code expands `${VAR}` in MCP headers from its own environment,
-    # so the header names a variable and this launcher fills it from the sops
+    # so a header names a variable and this launcher fills it from the sops
     # path at exec time. An already-exported variable wins, so a one-off
     # token can still be tested without a rebuild.
-    githubMcpTokenVar = "GITHUB_MCP_TOKEN";
+    sanitize = s:
+      stringAsChars (
+        c:
+          if builtins.match "[A-Za-z0-9]" c == null
+          then "_"
+          else c
+      ) (toUpper s);
+    secretVar = {
+      server,
+      header,
+      ...
+    }: "MCP_${sanitize server}_${sanitize header}";
+
+    secretHeaders = mcp.lib.secretHeadersFor "claude";
+
+    launcherFor = {
+      server,
+      path,
+      ...
+    } @ entry: let
+      var = secretVar entry;
+    in ''
+      if [ -z "''${${var}-}" ]; then
+        if [ -r ${escapeShellArg path} ]; then
+          export ${var}="$(<${escapeShellArg path})"
+        else
+          echo "claude: ${path} is unreadable; the ${server} MCP server will fail to authenticate" >&2
+        fi
+      fi
+    '';
 
     claudePackage =
-      if cfg.githubMcpTokenSecret == null
+      if secretHeaders == []
       then pkgs.claude-code
-      else let
-        tokenPath = config.sops.secrets.${cfg.githubMcpTokenSecret}.path;
-      in
+      else
         pkgs.symlinkJoin {
           name = "claude-code-with-secrets";
           paths = [pkgs.claude-code];
@@ -203,32 +219,30 @@ in {
           inherit (pkgs.claude-code) version meta;
           nativeBuildInputs = [pkgs.makeWrapper];
           postBuild = ''
-            wrapProgram $out/bin/claude --run ${escapeShellArg ''
-              if [ -z "''${${githubMcpTokenVar}-}" ]; then
-                if [ -r ${tokenPath} ]; then
-                  export ${githubMcpTokenVar}="$(<${tokenPath})"
-                else
-                  echo "claude: ${tokenPath} is unreadable; the GitHub MCP server will fail to authenticate" >&2
-                fi
-              fi
-            ''}
+            wrapProgram $out/bin/claude --run ${escapeShellArg (concatMapStrings launcherFor secretHeaders)}
           '';
         };
+
+    mcpServers =
+      mapAttrs (
+        _: server:
+          if server.command != null
+          then
+            {
+              type = "stdio";
+              inherit (server) command;
+            }
+            // optionalAttrs (server.args != []) {inherit (server) args;}
+          else
+            {
+              type = "http";
+              inherit (server) url;
+            }
+            // optionalAttrs (server.headers != {}) {inherit (server) headers;}
+      )
+      (mcp.lib.serversFor "claude" (entry: "\${${secretVar entry}}"));
   in
     mkIf cfg.enable {
-      assertions = [
-        {
-          assertion =
-            cfg.githubMcpTokenSecret
-            == null
-            || config.sops.secrets ? ${cfg.githubMcpTokenSecret};
-          message = ''
-            modules.programs.claude.githubMcpTokenSecret is set to "${toString cfg.githubMcpTokenSecret}"
-            but no matching secret is declared in modules.programs.sops.secrets.
-          '';
-        }
-      ];
-
       # Replaces pkgs.claude-code (and thus the home-manager module's default
       # package) with the always-current build from the claude-code-nix flake.
       nixpkgs.overlays = [inputs.claude-code.overlays.default];
@@ -241,7 +255,6 @@ in {
       home.programs.claude-code = {
         enable = true;
         package = claudePackage;
-        enableMcpIntegration = true;
 
         settings = {
           includeCoAuthoredBy = false;
@@ -363,29 +376,7 @@ in {
         # this holds only the global ones. Tools land under
         # `mcp__plugin_hm_<server>__*` because home-manager ships them
         # through its generated plugin.
-        mcpServers =
-          {
-            codegraph = {
-              type = "stdio";
-              command = "codegraph";
-              args = [
-                "serve"
-                "--mcp"
-              ];
-            };
-
-            ebay = {
-              type = "http";
-              url = "https://ebay-mcp.3679.space/mcp";
-            };
-          }
-          // optionalAttrs (cfg.githubMcpTokenSecret != null) {
-            github = {
-              type = "http";
-              url = "https://api.githubcopilot.com/mcp";
-              headers.Authorization = "Bearer \${${githubMcpTokenVar}}";
-            };
-          };
+        inherit mcpServers;
 
         # Path literals, not dotfiles.configDir: home-manager copies these into a
         # sandboxed derivation, and a toString'd path carries no store context to

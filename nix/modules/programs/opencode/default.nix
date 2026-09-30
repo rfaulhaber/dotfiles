@@ -8,6 +8,7 @@
 with lib; let
   cfg = config.modules.programs.opencode;
   claude = config.modules.programs.claude;
+  mcp = config.modules.programs.mcp;
   inherit (inputs.home-manager.lib.hm) dag;
 
   # OpenCode provider id -> sops secret name, restricted to providers that
@@ -27,6 +28,28 @@ with lib; let
       options.apiKey = "{file:${config.sops.secrets.${secretName}.path}}";
     })
     apiKeySecrets;
+
+  # Header values take `{file:...}` like `providers` does. A remote server is
+  # otherwise treated as a possible OAuth server: a 401 starts discovery and
+  # dynamic client registration, which turns an expired static token into a
+  # misleading "needs authentication" prompt instead of a plain failure.
+  mcpServers =
+    mapAttrs (
+      _: server:
+        if server.command != null
+        then {
+          type = "local";
+          command = [server.command] ++ server.args;
+        }
+        else
+          {
+            type = "remote";
+            inherit (server) url;
+          }
+          // optionalAttrs (server.headers != {}) {inherit (server) headers;}
+          // optionalAttrs (server.secretHeaders != {}) {oauth = false;}
+    )
+    (mcp.lib.serversFor "opencode" ({path, ...}: "{file:${path}}"));
 
   # Claude's `Bash(<glob>)` rules carry over verbatim: OpenCode's patterns are
   # likewise anchored globs over the command text, and it splits compound
@@ -147,16 +170,13 @@ in {
       enable = true;
       inherit (cfg) package;
 
-      # Servers declared in programs.mcp.servers reach opencode, crush and
-      # claude-code alike.
-      enableMcpIntegration = true;
-
       settings = mkMerge [
         {
           inherit (cfg) model;
           small_model = cfg.smallModel;
         }
         (mkIf (providers != {}) {provider = providers;})
+        (mkIf (mcpServers != {}) {mcp = mcpServers;})
         (mkIf cfg.reuseClaudeConfig {
           permission.bash = bashPermissions;
         })

@@ -88,13 +88,24 @@
             "openrouter-crush-api-key"
             "openrouter-opencode-api-key"
             "openrouter-pi-api-key"
-            # GitHub PAT for Claude Code's hosted GitHub MCP server
+            # GitHub PAT for the hosted GitHub MCP server, shared by every
+            # agent opted into it in modules.programs.mcp
             "github_mcp"
           ] (_: userSecret);
       };
-      claude = {
-        enable = true;
-        githubMcpTokenSecret = "github_mcp";
+      claude.enable = true;
+      mcp.servers = {
+        codegraph.agents = {
+          claude = true;
+          crush = true;
+          opencode = true;
+        };
+        github.agents = {
+          claude = true;
+          crush = true;
+          opencode = true;
+        };
+        ebay.agents.claude = true;
       };
       crush = {
         enable = true;

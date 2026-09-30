@@ -41,6 +41,10 @@
         useDelta = true;
         useJJ = true;
       };
+      mcp.servers = {
+        codegraph.agents.claude = true;
+        ebay.agents.claude = true;
+      };
       nushell = {
         enable = true;
         setDefault = true;
