@@ -2,19 +2,19 @@
   "immich-ml": {
     "image": {
       "version": "release",
-      "digest": "sha256:4013ec28ccf6344d7ae24554743a116d7f61124b98858f5646a401d5c5df12e2"
+      "digest": "sha256:ee28c9419670b7f4c17765fb089527eff977deb8e8fb83e714aa1fa57aa89736"
     }
   },
   "plex": {
     "image": {
       "version": "latest",
-      "digest": "sha256:be083133dfe001b6caed5a321720e6db9d38fdde1ea8f9d29340d40057a7fa53"
+      "digest": "sha256:3f71bd6eb6a4478ac19b11c5d0ba9746a5eacad1976f9b99ed4a2c21767e57bb"
     }
   },
   "jellyfin": {
     "image": {
       "version": "latest",
-      "digest": "sha256:51252e7a416e703cdc3cd91e8a54673a2430cc80409be8a38abe511411577b95"
+      "digest": "sha256:b0b6d034aa52ed6e1a76daaa3d7ed29039d2b802a50fa8ffd1d9fc8d3fd836c7"
     }
   },
   "open-webui": {
@@ -26,7 +26,7 @@
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:3465d85200cceb0f46dad8e63a40b69ec043a81df66ed0c514714302e9b83dde"
+      "digest": "sha256:07507a530f3f239bee4dc208aabdd25095df650f132e926245659e1a67aa5de9"
     }
   },
   "forgejo-runner": {
@@ -48,7 +48,7 @@
   "wolf": {
     "image": {
       "version": "stable",
-      "digest": "sha256:5df8d062dfaa42312fa395e09b9fed1841b6e47deda47f91ff42cef8a1971a30"
+      "digest": "sha256:b0ef253739f9bd49b71eba7e150c955fd05990c0d409e666d89236995351551a"
     }
   },
   "wolf-den": {

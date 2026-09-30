@@ -8,13 +8,13 @@
   "calibre": {
     "image": {
       "version": "latest",
-      "digest": "sha256:84d3e30e0f0b3bf74260ff3312d4443121f5359387e50691a49a86ea219ed347"
+      "digest": "sha256:c97f86a5acc3372d5e25e75b4c98d1bffa64e70d4c413554beb1e554ae109187"
     }
   },
   "calibre-web-auto": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6900d554dcfc164250a4c90208e4277a2385f5c2dbc1bb881c5ccae2b3723d29"
+      "digest": "sha256:5e00373854247750cc3e4479b492ae09293ff5e06ed10177f226634d97888679"
     }
   },
   "flaresolverr": {
@@ -43,14 +43,14 @@
   },
   "grafana": {
     "image": {
-      "version": "13.2.2",
-      "digest": "sha256:ac461fb352abc50da10a51c7d02462e9c05488f11f53f14b3ad79a8145f638a0"
+      "version": "13.2.3",
+      "digest": "sha256:b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572"
     }
   },
   "immich": {
     "image": {
       "version": "release",
-      "digest": "sha256:79cc1623323d5894922686d8743b4780181428f98eecbfb58ce12c41ef02d1ea"
+      "digest": "sha256:d317916b28090c33eb36b308464ea391f8b7df1d850fcfea227a39ec879718c2"
     },
     "postgres": {
       "image": {
@@ -122,7 +122,7 @@
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:3465d85200cceb0f46dad8e63a40b69ec043a81df66ed0c514714302e9b83dde"
+      "digest": "sha256:07507a530f3f239bee4dc208aabdd25095df650f132e926245659e1a67aa5de9"
     }
   },
   "nzbget": {
@@ -218,13 +218,13 @@
   "tautulli": {
     "image": {
       "version": "latest",
-      "digest": "sha256:670e68dd9efca538d508b0c5b222b7e41bd70a22dce0cb822941ea55c457f5d1"
+      "digest": "sha256:a4323bc09b27e265e269d79421ed3eb795083ef988bb84788eba89e5738c8005"
     }
   },
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:1a12fef3c89eca48b7be9e7d36b17b4eb4e1bcf5e1ee7fbf372e3a38b562939d"
+      "digest": "sha256:4813745e2c721997d8849f5718786fd4406b3c656fbef479f87a161e51383cbd"
     }
   },
   "vikunja": {
@@ -236,7 +236,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:1c31f2349404f145415828bda48889b2fd8a574bb890872a6008bc5ef347f536"
+      "digest": "sha256:f80c834d198c947a1f850db73b0a29f73fb2e9da97de185a23badee96fa7009f"
     },
     "postgres": {
       "image": {
