@@ -18,6 +18,14 @@
   execEmacsProject = mkNuScript "exec-emacs-project";
   openZellijWorkspace = mkNuScript "open-zellij-workspace";
   launchExecutable = mkNuScript "launch-executable";
+
+  # fcitx5 binds the same chord, but compositor binds win over the input
+  # method's keyboard grab. Owning it here lets the switch poke the bar widget,
+  # which would otherwise only notice at its next poll.
+  toggleInputMethod = pkgs.writeShellScript "toggle-input-method" ''
+    fcitx5-remote -t
+    noctalia msg plugin ryan/ime:poll all refresh >/dev/null 2>&1 || true
+  '';
 in {
   "Mod+Shift+Slash" = action "show-hotkey-overlay";
 
@@ -201,5 +209,6 @@ in {
   "Mod+Shift+E" = action "quit";
   "Mod+Shift+P" = action "power-off-monitors";
   "Mod+Alt+S" = spawn ["noctalia" "msg" "session" "lock"];
+  "Mod+Space" = lib.mkIf config.modules.desktop.inputMethod.enable (spawn "${toggleInputMethod}");
   "Mod+A" = action "toggle-overview";
 }

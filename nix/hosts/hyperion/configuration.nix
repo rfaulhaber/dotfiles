@@ -288,6 +288,10 @@
         token = config.sops.secrets.unsplash.path;
       };
       monitors = ["DP-2" "DP-3"];
+      # US symbols everywhere; AltGr adds á é í ó ú ü ñ ¿ ¡.
+      keyboard.variant = "altgr-intl";
+      # Rime (rime-ice pinyin) behind Super+Space.
+      inputMethod.enable = true;
       sound.enable = true;
       firefox = {
         enable = true;

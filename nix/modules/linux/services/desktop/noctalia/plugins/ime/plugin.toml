@@ -1,0 +1,29 @@
+id          = "ryan/ime"
+name        = "Input method"
+version     = "1.0.0"
+# 24 introduced the argv form of runAsync, which runs fcitx5-remote without a
+# shell in between.
+plugin_api  = 24
+author      = "ryan"
+icon        = "language"
+description = "Show the active fcitx5 input method on the bar; click to toggle it."
+
+# Keyed by fcitx5's unique input method name, which is what `fcitx5-remote -n`
+# prints. A keyboard layout's name depends on the host's xkb layout, so the
+# host supplies that entry from config.toml.
+[[setting]]
+key             = "labels"
+type            = "string_map"
+label_key       = "settings.labels.label"
+description_key = "settings.labels.description"
+default         = { rime = "中" }
+
+# The only entry that polls. A bar widget runs one instance per output, so
+# polling there would ask fcitx5 once per monitor for the same answer.
+[[service]]
+id    = "poll"
+entry = "service.luau"
+
+[[widget]]
+id    = "indicator"
+entry = "widget.luau"

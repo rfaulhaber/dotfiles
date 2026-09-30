@@ -18,6 +18,9 @@ with lib; let
     vpn = {
       inherit (config.modules.services.airvpn) enable profile;
     };
+    ime = {
+      inherit (config.modules.desktop.inputMethod) enable layoutInputMethod;
+    };
     wallpaper = {
       inherit (cfg.wallpaper) enable;
       directory = config.modules.desktop.random-wallpaper.storeDir;

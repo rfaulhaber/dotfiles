@@ -7,6 +7,7 @@
   lockscreenOutputs,
   wallpaper,
   vpn,
+  ime,
 }: let
   # The tile only makes sense with the service whose units it starts.
   wallpaperTile = wallpaper.enable && wallpaper.tile;
@@ -183,13 +184,14 @@ in {
   in
     map mkShortcut shortcuts;
 
-  plugins = lib.mkIf (wallpaperTile || vpn.enable) {
+  plugins = lib.mkIf (wallpaperTile || vpn.enable || ime.enable) {
     enabled =
       lib.optional wallpaperTile "ryan/random-wallpaper"
-      ++ lib.optional vpn.enable "ryan/vpn";
+      ++ lib.optional vpn.enable "ryan/vpn"
+      ++ lib.optional ime.enable "ryan/ime";
     # Declaring any source replaces noctalia's default official and community
-    # git sources, so nothing is cloned or auto-updated: the one plugin comes
-    # from this repo, copied to the store and read in place.
+    # git sources, so nothing is cloned or auto-updated: the plugins come from
+    # this repo, copied to the store and read in place.
     auto_update = "none";
     source = [
       {
@@ -205,6 +207,15 @@ in {
   # provider name into the plugin.
   plugin_settings."ryan/vpn" = lib.mkIf vpn.enable {
     inherit (vpn) profile;
+  };
+
+  # The keyboard entry's name follows the host's xkb layout, so it is keyed
+  # here rather than in the plugin's defaults.
+  plugin_settings."ryan/ime" = lib.mkIf ime.enable {
+    labels = {
+      rime = "中";
+      ${ime.layoutInputMethod} = "EN";
+    };
   };
 
   nightlight.enabled = true;
@@ -245,6 +256,7 @@ in {
       ["group:vitals"]
       # The connection glyph sits beside the throughput graphs it describes.
       ++ lib.optional vpn.enable "network"
+      ++ lib.optional ime.enable "ryan/ime:indicator"
       ++ [
         "tray"
         "lock_keys"

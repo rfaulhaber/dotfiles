@@ -1,0 +1,4 @@
+{
+  "settings.labels.label": "Labels",
+  "settings.labels.description": "Bar text for each fcitx5 input method, keyed by the name fcitx5-remote -n prints."
+}

@@ -13,6 +13,7 @@ in {
     ./environment
     ./firefox
     ./fuzzel
+    ./input-method
     ./noctalia
     ./noctalia-greeter
     ./random-wallpaper.nix
@@ -26,6 +27,18 @@ in {
       description = "List of monitors.";
       type = types.listOf types.str;
       default = [];
+    };
+    keyboard = {
+      layout = lib.my.mkOptDesc types.str "us" ''
+        xkb layout for the compositor. The input method module builds its
+        keyboard entry from the same pair: fcitx5 cannot read or set the
+        layout outside KDE and GNOME, and interprets keys with a keymap of its
+        own whenever its group names a different one.
+      '';
+      variant = lib.my.mkOptDesc types.str "" ''
+        xkb variant of `layout`, e.g. `altgr-intl` for accented letters on
+        AltGr without dead keys on the base layer.
+      '';
     };
     laptop = mkOption {
       description = "Laptop-specific settings.";

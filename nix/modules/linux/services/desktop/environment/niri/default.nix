@@ -110,7 +110,7 @@ in {
     # (nixosModules.niri auto-imports the HM module when home-manager is present)
     home-manager.users.${config.user.name}.programs.niri.settings = {
       input = {
-        keyboard.xkb = {};
+        keyboard.xkb = {inherit (config.modules.desktop.keyboard) layout variant;};
         touchpad = {
           tap = true;
           natural-scroll = true;
