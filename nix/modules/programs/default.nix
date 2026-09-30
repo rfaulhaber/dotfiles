@@ -12,6 +12,7 @@
     ./ghostty
     ./git
     ./heroic
+    ./mcp
     ./nushell
     ./nvtop
     ./opencode

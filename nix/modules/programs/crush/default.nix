@@ -7,6 +7,7 @@
 with lib; let
   cfg = config.modules.programs.crush;
   claude = config.modules.programs.claude;
+  mcp = config.modules.programs.mcp;
 
   # Crush provider id -> sops secret name, restricted to providers that
   # actually have a secret wired up.
@@ -33,6 +34,29 @@ with lib; let
     )
     cfg.providers
     (attrNames apiKeySecrets);
+
+  # Header values get the same `$(command)` substitution as `providers`. The
+  # full coreutils path keeps `cat` from depending on the PATH crush was
+  # started with. `type` is always written: crush has no fallback for an empty
+  # one.
+  mcpServers =
+    mapAttrs (
+      _: server:
+        if server.command != null
+        then
+          {
+            type = "stdio";
+            inherit (server) command;
+          }
+          // optionalAttrs (server.args != []) {inherit (server) args;}
+        else
+          {
+            type = "http";
+            inherit (server) url;
+          }
+          // optionalAttrs (server.headers != {}) {inherit (server) headers;}
+    )
+    (mcp.lib.serversFor "crush" ({path, ...}: "$(${pkgs.coreutils}/bin/cat ${escapeShellArg path})"));
 
   # Claude's `Bash(<glob>)` rules, as shell `case` patterns. Each literal
   # segment is single-quoted so `#`, spaces and the like can't be
@@ -163,10 +187,10 @@ in {
           `deniedTools` are enforced through a PreToolUse hook on crush's
           `bash` tool, so the one curated command allowlist serves both.
 
-        Everything else crush should know about — `mcp`, `lsp`, more hooks,
-        `tui`, further providers — goes straight into
-        `home.programs.crush.settings`; home-manager deep-merges it with what
-        this module derives.
+        MCP servers are declared in `modules.programs.mcp`. Everything else
+        crush should know about — `lsp`, more hooks, `tui`, further providers
+        — goes straight into `home.programs.crush.settings`; home-manager
+        deep-merges it with what this module derives.
       '';
     };
   };
@@ -186,10 +210,6 @@ in {
       enable = true;
       inherit (cfg) package;
 
-      # Servers declared in programs.mcp.servers reach both crush and
-      # claude-code, which sets the same flag.
-      enableMcpIntegration = true;
-
       settings = mkMerge [
         {
           inherit providers;
@@ -201,6 +221,7 @@ in {
             generated_with = mkDefault false;
           };
         }
+        (mkIf (mcpServers != {}) {mcp = mcpServers;})
         (mkIf cfg.reuseClaudeConfig {
           # `Read(*)`: crush's grep/glob never prompt, and view/ls only do for
           # paths outside the working directory.

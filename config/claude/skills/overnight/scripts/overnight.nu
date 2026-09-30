@@ -182,10 +182,10 @@ def "main report show" [] {
 
 def gh-headers [] {
   let tok = (
-    $env | get -o GITHUB_MCP_TOKEN | default ($env | get -o GITHUB_TOKEN | default ($env | get -o GH_TOKEN | default ""))
+    $env | get -o MCP_GITHUB_AUTHORIZATION | default ($env | get -o GITHUB_TOKEN | default ($env | get -o GH_TOKEN | default ""))
   )
   if ($tok | is-empty) {
-    error make {msg: "no GitHub token in GITHUB_MCP_TOKEN, GITHUB_TOKEN or GH_TOKEN"}
+    error make {msg: "no GitHub token in MCP_GITHUB_AUTHORIZATION, GITHUB_TOKEN or GH_TOKEN"}
   }
   [
     Authorization $"Bearer ($tok)"
