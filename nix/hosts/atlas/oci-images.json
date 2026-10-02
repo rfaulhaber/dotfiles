@@ -73,8 +73,8 @@
   },
   "kept": {
     "image": {
-      "version": "1.7.2",
-      "digest": "sha256:9356989fba8fbe5bed8045e337396aa56443cbcdc04decfe428abada49321235"
+      "version": "1.8.0",
+      "digest": "sha256:e08baa4de6928f5302fe9875bc35099d2e634522e21192e7b9fe0d1a3e1248ac"
     }
   },
   "kitchenowl": {
@@ -236,7 +236,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:f80c834d198c947a1f850db73b0a29f73fb2e9da97de185a23badee96fa7009f"
+      "digest": "sha256:1fcc07a0d0b9e4a7fe7e97830764f9b4ffc4315333eab06d4c3b60e51814484d"
     },
     "postgres": {
       "image": {

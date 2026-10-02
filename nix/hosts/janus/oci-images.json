@@ -2,8 +2,8 @@
   "pangolin": {
     "images": {
       "pangolin": {
-        "version": "1.23.0",
-        "digest": "sha256:00cfb631097a819a0b6a65cf84e5d976a9f4a4fece533a59a984de374711f47a"
+        "version": "1.24.0",
+        "digest": "sha256:17774ddbb4bf13f4a2b9e813cc2dfc3ca8ded1c5745823624af632bab0376488"
       },
       "gerbil": {
         "version": "latest",
@@ -23,15 +23,15 @@
       },
       "signal": {
         "version": "latest",
-        "digest": "sha256:04c401eb167ef1aaaf266f9b5a4ee54bdac9d1d650db3a3e1288601632fa6d41"
+        "digest": "sha256:d0fe9d51cdbac2542dffabc85066d897f628cca57f1aa08328639777b496d5b4"
       },
       "relay": {
         "version": "latest",
-        "digest": "sha256:0ef3133050c7c5e596ba068d916d3e0f1675ac646d3d169e081331ef3ad2055e"
+        "digest": "sha256:1aff236dc73fde48857d6619816f442daa1035758f4d38a208c7b46752836484"
       },
       "management": {
         "version": "latest",
-        "digest": "sha256:3c3bed2a982c45fe23300e08eb6ee0c3bfda374b671b7adc5d990c6a4700e5ed"
+        "digest": "sha256:8bb1b26f3c8de72420c6a0dd40b979e619f8d05c6b3154e74efc0f471f4967fc"
       },
       "coturn": {
         "version": "latest",
@@ -42,7 +42,7 @@
   "pocket-id": {
     "image": {
       "version": "latest",
-      "digest": "sha256:9366436f3fd21619ed7e5709fa0acac88130f73414ec8ee1caf768fc487111ea"
+      "digest": "sha256:19f556d5852115c8ebbef271f6f7cf610d8803312a1fa63f29e1b342fe9d2939"
     }
   },
   "podman-exporter": {
