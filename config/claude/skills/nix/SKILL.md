@@ -133,4 +133,4 @@ nix path-info -rsh .#<attr>
 
 ## Formatting
 
-Always use `nix fmt` (which uses nixfmt in this repo) to format Nix files after editing them.
+Format Nix files with the flake's formatter after editing them, always with a path: `nix fmt .` or `nix fmt <file>`. In the dotfiles repo the formatter is alejandra, which reads stdin when given no path, so a bare `nix fmt` fails without touching the tree. Files written through the Edit and Write tools are already formatted by the format-on-write hook.

@@ -96,8 +96,11 @@ ssh <host> 'nixos-rebuild list-generations | first 3'
 # nothing failed to come up
 ssh <host> 'systemctl --failed'
 
-# Pi-hole hosts: confirm the DNS fallback survived (exits non-zero on failure)
-nu bin/verify-dns-fallback.nu pallas
+# Pi-hole hosts: the resolver fallback survived. Expect 127.0.0.1, 1.1.1.1 and 1.0.0.1,
+# and no 100.x netbird address.
+ssh-bash pallas <<'EOF'
+grep '^nameserver' /etc/resolv.conf
+EOF
 ```
 
 Remote commands run in **nushell** — every host's login shell is nu, so the string inside

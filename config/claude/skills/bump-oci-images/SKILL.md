@@ -105,7 +105,9 @@ consequence of that service restarting.
   bump without reading it.
 - **Registry pulls need working DNS on the target host.** This is what made the Pi-hole bump
   deadlock: stopping the container left the host with no resolver, so the pull died with
-  "no such host" mid-activation. Verify with `nu bin/verify-dns-fallback.nu` before and after.
+  "no such host" mid-activation. Before and after, check that the host's `/etc/resolv.conf`
+  lists 127.0.0.1, 1.1.1.1 and 1.0.0.1 with no 100.x netbird address (the `deploy-host`
+  skill has the command).
 - **A sops-rendered environment file does not reload on its own.** If the bump coincides with a
   changed secret, the recreated container picks up the new file, but a secret changed *without* a
   digest change does not — restart `podman-<service>` explicitly.

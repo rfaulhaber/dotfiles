@@ -290,6 +290,11 @@ in {
             tui = "fullscreen";
             remoteControlAtStartup = false;
 
+            # Transcripts are the only record of tool calls, agents and cost;
+            # the 30-day default deletes them before a bimonthly usage review
+            # (the usage-review skill) can read them.
+            cleanupPeriodDays = 120;
+
             permissions = {
               allow = cfg.allowedTools;
               deny = cfg.deniedTools;

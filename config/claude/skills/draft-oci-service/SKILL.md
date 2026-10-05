@@ -43,7 +43,7 @@ Batch these into one or two messages. Skip what the user already told you.
 
 ### Health check
 
-- Does the image expose one (`HEALTHCHECK` in its Dockerfile, or a known endpoint)? Add `--health-cmd`, `--health-interval`, `--health-start-period`. Postgres: `pg_isready -d <db> -U <user>`. HTTP services: `curl -fsS http://localhost:<port>/health || exit 1`.
+- Don't add one, even when the image ships a `HEALTHCHECK`. The oci module appends `--no-healthcheck` to every container (`nix/modules/linux/oci/default.nix`), and a `--health-cmd` beside it conflicts. The reason it is off: the first check fires during start-up, fails before the app is ready, and the failed transient unit makes switch-to-configuration report activation failure, so deploy-rs rolls back a deploy whose containers came up fine. `Restart=always` covers crashes; liveness and readiness belong to the Prometheus blackbox probes.
 
 ---
 
@@ -150,7 +150,7 @@ Use the `mkArrService` helper from `ociLib`. Cuts boilerplate significantly. See
 - **Two datasets** under a `mountpoint=none` parent: `data/apps/<svc>/files` (or whatever the app-data is) at `recordsize=64K`, `data/apps/<svc>/db` at `recordsize=8K`. Register both via `_managedPaths` with the parent at `mountpoint = "none"`.
 - **Render the full `DATABASE_URL` in the sops template**, not in the inline `environment` block. **Critical**: podman does *not* expand shell-style `$VAR` references in env values (docker-compose did, which is why the legacy worked and the first nix port broke). The `sops.placeholder` substitution happens at template-render time, before the env reaches the container.
 - **Add a `pgdata` option** that defaults to `/var/lib/postgresql/data` — overridable for legacy data layouts where the actual `PG_VERSION` is nested deeper.
-- **Health check** the postgres container: `--health-cmd=pg_isready -d <db> -U <user> --health-interval=10s --health-start-period=30s`.
+- **No health check** on the postgres container either (see Health check above); the app container orders on it through `dependsOn`, and `Restart=always` covers the window while postgres starts.
 - **Pin the postgres image to the exact major version** matching on-disk data. Downgrades require `pg_dumpall` first.
 
 Example template for postgres + app:

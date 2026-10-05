@@ -60,6 +60,12 @@ For ad-hoc calls that don't fit one of those, still set `model` deliberately: `h
 
 **You own delegated results.** Spot-check subagent output against the actual code before building on it or relaying it to me. If a cheaper model comes back wrong or useless once, redo that subtask one tier up instead of retrying the same tier.
 
+# Working Habits
+
+- **Never poll with `sleep`.** The harness blocks foreground sleeps. Run the long command with `run_in_background` and wait for its completion notification, or use the Monitor tool with an until-condition.
+- **Working documents stay untracked.** Plans, TODO lists, audits and review notes you write for me are not committed unless I say so or the project already tracks that kind of document (a committed specs directory, say). Exclude them through `.git/info/exclude`, which stays local, rather than `.gitignore`, and never stage them.
+- **Release notes** cover the commits since the last release tag and only what users of the project would notice: no dependabot bumps, CI or internal refactors. Keep them brief, and write each paragraph or bullet as one unwrapped line so it pastes cleanly into a GitHub release. When I ask for a file, write them to one and let me review before anything is published with `gh`.
+
 # Code Comments
 
 Write comments for the next person who reads this code in its committed, finished state — not as a log of how you arrived at it.
