@@ -171,6 +171,49 @@ in {
       exit 0
     '';
 
+    # The Bash tool never runs direnv's shell hook, so in a project whose
+    # devshell comes from .envrc every command needed a `nix develop -c`
+    # wrapper unless claude happened to start inside the devshell.
+    # SessionStart and CwdChanged hooks may write a script to $CLAUDE_ENV_FILE
+    # that Claude sources before each Bash command; this fills it with
+    # direnv's export for the session's directory. Like the formatter hook,
+    # every failure path exits 0, and nothing may reach stdout, which
+    # SessionStart would add to the model's context.
+    direnvEnv = pkgs.writeShellScript "claude-direnv-env" ''
+      set -u
+      [ -n "''${CLAUDE_ENV_FILE-}" ] || exit 0
+      command -v direnv >/dev/null 2>&1 || exit 0
+      dir=$(${pkgs.jq}/bin/jq -r '.new_cwd // .cwd // empty')
+      [ -n "$dir" ] && cd "$dir" 2>/dev/null || exit 0
+
+      # direnv reports an allowed .envrc as status 0.
+      allowed() {
+        [ "$(direnv status --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '.state.foundRC.allowed // empty')" = 0 ]
+      }
+
+      if ! allowed; then
+        # A linked git worktree puts .envrc at a path direnv has never been
+        # asked to trust, or lacks it entirely when it is untracked in the
+        # main checkout. Fall back to the main checkout's trust decision.
+        top=$(${pkgs.git}/bin/git rev-parse --show-toplevel 2>/dev/null) || exit 0
+        common=$(${pkgs.git}/bin/git rev-parse --path-format=absolute --git-common-dir 2>/dev/null) || exit 0
+        main=$(dirname "$common")
+        [ "$main" != "$top" ] && [ -f "$main/.envrc" ] || exit 0
+        (cd "$main" && allowed) || exit 0
+        if [ -f "$top/.envrc" ]; then
+          # Trust extends only to a byte-identical copy of the trusted file;
+          # a branch that edited .envrc still needs a human `direnv allow`.
+          ${pkgs.diffutils}/bin/cmp -s "$main/.envrc" "$top/.envrc" || exit 0
+          direnv allow "$top" >/dev/null 2>&1 || exit 0
+        else
+          cd "$main" || exit 0
+        fi
+      fi
+
+      direnv export bash >"$CLAUDE_ENV_FILE" 2>/dev/null || true
+      exit 0
+    '';
+
     # home-manager renders mcpServers into a plugin whose .mcp.json is a
     # world-readable store path, so a secret can never be written into it.
     # Claude Code expands `${VAR}` in MCP headers from its own environment,
@@ -315,6 +358,31 @@ in {
                     {
                       type = "command";
                       command = "echo 'Reminder: any shell command you hand me to run goes in nushell syntax, not bash (the Bash tool you run yourself is exempt for single external invocations).'";
+                    }
+                  ];
+                }
+              ];
+
+              # A cold nix-direnv cache (a fresh worktree) evaluates the flake,
+              # which can outlast the default hook timeout.
+              SessionStart = [
+                {
+                  hooks = [
+                    {
+                      type = "command";
+                      command = "${direnvEnv}";
+                      timeout = 120;
+                    }
+                  ];
+                }
+              ];
+              CwdChanged = [
+                {
+                  hooks = [
+                    {
+                      type = "command";
+                      command = "${direnvEnv}";
+                      timeout = 120;
                     }
                   ];
                 }
