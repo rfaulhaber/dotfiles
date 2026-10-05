@@ -40,10 +40,6 @@
       url = "github:anthropics/claude-plugins-official";
       flake = false;
     };
-    claude-code-workflows = {
-      url = "github:wshobson/agents";
-      flake = false;
-    };
     superpowers = {
       url = "github:obra/superpowers";
       flake = false;

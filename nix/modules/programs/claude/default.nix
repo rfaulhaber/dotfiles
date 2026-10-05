@@ -3,6 +3,7 @@
   lib,
   pkgs,
   inputs,
+  isLinux,
   ...
 }:
 with lib; let
@@ -16,9 +17,9 @@ in {
       type = types.listOf types.str;
       default = [
         # Deliberately absent, despite being the two highest-frequency prompts:
-        # `ssh` (a blanket allow authorizes any remote command, including
-        # deploy-rs and nixos-rebuild switch) and `python3` (arbitrary code).
-        # The prompt is the only thing gating those.
+        # `ssh` and `ssh-bash` (a blanket allow authorizes any remote command,
+        # including deploy-rs and nixos-rebuild switch) and `python3`
+        # (arbitrary code). The prompt is the only thing gating those.
 
         # Rust
         "Bash(cargo *)"
@@ -207,21 +208,47 @@ in {
       fi
     '';
 
+    # /tmp is a RAM-backed tmpfs on every NixOS host, and Claude Code keeps
+    # task output, scratchpads and plugin staging under its temp root; a few
+    # long sessions fill it and output is lost to ENOSPC. The binary appends
+    # claude-<uid> to this directory and refuses a root it does not own. The
+    # tmpfiles rule below ages out what sessions leave behind.
+    tmpDirSetup = optionalString isLinux ''
+      export CLAUDE_CODE_TMPDIR="''${CLAUDE_CODE_TMPDIR:-''${XDG_CACHE_HOME:-$HOME/.cache}/claude-code/tmp}"
+      mkdir -p -m 0700 "$CLAUDE_CODE_TMPDIR"
+    '';
+
+    launcherSetup = tmpDirSetup + concatMapStrings launcherFor secretHeaders;
+
     claudePackage =
-      if secretHeaders == []
+      if launcherSetup == ""
       then pkgs.claude-code
       else
         pkgs.symlinkJoin {
-          name = "claude-code-with-secrets";
+          name = "claude-code-wrapped";
           paths = [pkgs.claude-code];
           # home-manager gates plugin loading on the package version; a
           # wrapper without it falls back to the legacy --plugin-dir mode.
           inherit (pkgs.claude-code) version meta;
           nativeBuildInputs = [pkgs.makeWrapper];
           postBuild = ''
-            wrapProgram $out/bin/claude --run ${escapeShellArg (concatMapStrings launcherFor secretHeaders)}
+            wrapProgram $out/bin/claude --run ${escapeShellArg launcherSetup}
           '';
         };
+
+    # Every host's login shell is nushell, so `ssh host '<cmd>'` hands <cmd>
+    # to nushell's parser, where regex escapes, `&&` and `find -maxdepth`
+    # all break. A script on stdin reaches bash untouched and needs no
+    # second layer of quoting. Without a heredoc, stdin is whatever the caller
+    # inherited: a terminal, or under Claude Code's Bash tool a socket that
+    # never closes, which would leave `bash -s` waiting forever.
+    sshBash = pkgs.writeShellScriptBin "ssh-bash" ''
+      if [ $# -lt 1 ] || [ -t 0 ] || [ -S /dev/stdin ]; then
+        echo "usage: ssh-bash [ssh-options] <host> <<'EOF' ... EOF" >&2
+        exit 2
+      fi
+      exec ssh "$@" bash -s
+    '';
 
     mcpServers =
       mapAttrs (
@@ -242,153 +269,149 @@ in {
       )
       (mcp.lib.serversFor "claude" (entry: "\${${secretVar entry}}"));
   in
-    mkIf cfg.enable {
-      # Replaces pkgs.claude-code (and thus the home-manager module's default
-      # package) with the always-current build from the claude-code-nix flake.
-      nixpkgs.overlays = [inputs.claude-code.overlays.default];
+    mkIf cfg.enable (mkMerge [
+      {
+        # Replaces pkgs.claude-code (and thus the home-manager module's default
+        # package) with the always-current build from the claude-code-nix flake.
+        nixpkgs.overlays = [inputs.claude-code.overlays.default];
 
-      user.packages = with pkgs; [
-        # some of the plugins below use python3 and assume it's globally available, which of course it isn't
-        python3
-      ];
+        user.packages = with pkgs; [
+          # some of the plugins below use python3 and assume it's globally available, which of course it isn't
+          python3
+          sshBash
+        ];
 
-      home.programs.claude-code = {
-        enable = true;
-        package = claudePackage;
+        home.programs.claude-code = {
+          enable = true;
+          package = claudePackage;
 
-        settings = {
-          includeCoAuthoredBy = false;
-          tui = "fullscreen";
-          remoteControlAtStartup = false;
+          settings = {
+            includeCoAuthoredBy = false;
+            tui = "fullscreen";
+            remoteControlAtStartup = false;
 
-          permissions = {
-            allow = cfg.allowedTools;
-            deny = cfg.deniedTools;
-          };
+            permissions = {
+              allow = cfg.allowedTools;
+              deny = cfg.deniedTools;
+            };
 
-          statusLine = {
-            type = "command";
-            command = "${statusLine}";
-          };
+            statusLine = {
+              type = "command";
+              command = "${statusLine}";
+            };
 
-          hooks = {
-            # Re-inject the nushell rule on every prompt. UserPromptSubmit stdout is
-            # added to model context, which counters the salience decay of a rule
-            # that's otherwise only loaded once from CLAUDE.md at session start.
-            UserPromptSubmit = [
-              {
-                hooks = [
-                  {
-                    type = "command";
-                    command = "echo 'Reminder: any shell command you hand me to run goes in nushell syntax, not bash (the Bash tool you run yourself is exempt for single external invocations).'";
-                  }
-                ];
-              }
-            ];
+            hooks = {
+              # Re-inject the nushell rule on every prompt. UserPromptSubmit stdout is
+              # added to model context, which counters the salience decay of a rule
+              # that's otherwise only loaded once from CLAUDE.md at session start.
+              UserPromptSubmit = [
+                {
+                  hooks = [
+                    {
+                      type = "command";
+                      command = "echo 'Reminder: any shell command you hand me to run goes in nushell syntax, not bash (the Bash tool you run yourself is exempt for single external invocations).'";
+                    }
+                  ];
+                }
+              ];
 
-            PostToolUse = [
-              {
-                matcher = "Edit|Write|MultiEdit";
-                hooks = [
-                  {
-                    type = "command";
-                    command = "${nixFmtOnWrite}";
-                  }
-                ];
-              }
-            ];
-          };
-        };
-
-        # Marketplace plugins as Nix-pinned skills-dir plugins: home-manager
-        # links each one into ~/.claude/skills/<name>, and Claude Code loads any
-        # entry there carrying .claude-plugin/plugin.json as a plugin. Versions
-        # follow flake.lock rather than Claude Code's runtime updater, so a bump
-        # is `nix flake update <input>`. The names share a namespace with the
-        # skills directory below and must stay unique across both.
-        plugins = let
-          # Marketplace repos keep each plugin under plugins/<name>.
-          fromMarketplace = input: names:
-            genAttrs names (name: "${input}/plugins/${name}");
-        in
-          fromMarketplace inputs.claude-code-workflows [
-            "agent-orchestration"
-            "api-testing-observability"
-            "backend-api-security"
-            "backend-development"
-            "code-refactoring"
-            "codebase-cleanup"
-            "database-design"
-            "database-migrations"
-            "debugging-toolkit"
-            "deployment-strategies"
-            "documentation-generation"
-            "error-debugging"
-            "systems-programming"
-            "tdd-workflows"
-          ]
-          // fromMarketplace inputs.claude-plugins-official [
-            "claude-code-setup"
-            "claude-md-management"
-            "code-review"
-            "code-simplifier"
-            "explanatory-output-style"
-            "feature-dev"
-            "frontend-design"
-            "ralph-loop"
-            "security-guidance"
-            "skill-creator"
-          ]
-          // {
-            # Repositories that are a single plugin at their root.
-            superpowers = "${inputs.superpowers}";
-            agent-skills = "${inputs.addy-agent-skills}";
-          };
-
-        # The official marketplace's *-lsp plugins are README-only: their server
-        # definitions sit in the marketplace entry, which a skills-dir plugin
-        # never sees. The two that were enabled are reproduced here verbatim;
-        # home-manager renders them into its generated plugin's .lsp.json.
-        # This should also only contain global LSP servers. Projects should
-        # define their own MCP servers.
-        lspServers = {
-          rust-analyzer = {
-            command = "rust-analyzer";
-            extensionToLanguage = {".rs" = "rust";};
-          };
-          typescript = {
-            command = "typescript-language-server";
-            args = ["--stdio"];
-            extensionToLanguage = {
-              ".ts" = "typescript";
-              ".tsx" = "typescriptreact";
-              ".js" = "javascript";
-              ".jsx" = "javascriptreact";
-              ".mts" = "typescript";
-              ".cts" = "typescript";
-              ".mjs" = "javascript";
-              ".cjs" = "javascript";
+              PostToolUse = [
+                {
+                  matcher = "Edit|Write|MultiEdit";
+                  hooks = [
+                    {
+                      type = "command";
+                      command = "${nixFmtOnWrite}";
+                    }
+                  ];
+                }
+              ];
             };
           };
+
+          # Marketplace plugins as Nix-pinned skills-dir plugins: home-manager
+          # links each one into ~/.claude/skills/<name>, and Claude Code loads any
+          # entry there carrying .claude-plugin/plugin.json as a plugin. Versions
+          # follow flake.lock rather than Claude Code's runtime updater, so a bump
+          # is `nix flake update <input>`. The names share a namespace with the
+          # skills directory below and must stay unique across both.
+          plugins = let
+            # Marketplace repos keep each plugin under plugins/<name>.
+            fromMarketplace = input: names:
+              genAttrs names (name: "${input}/plugins/${name}");
+          in
+            # Every enabled plugin's skill and agent descriptions ride along in
+            # every request, so a plugin earns its place by being invoked.
+            fromMarketplace inputs.claude-plugins-official [
+              "claude-code-setup"
+              "code-review"
+              "explanatory-output-style"
+              "frontend-design"
+              "ralph-loop"
+              "security-guidance"
+              "skill-creator"
+            ]
+            // {
+              # Repositories that are a single plugin at their root.
+              superpowers = "${inputs.superpowers}";
+              agent-skills = "${inputs.addy-agent-skills}";
+            };
+
+          # The official marketplace's *-lsp plugins are README-only: their server
+          # definitions sit in the marketplace entry, which a skills-dir plugin
+          # never sees. The two that were enabled are reproduced here verbatim;
+          # home-manager renders them into its generated plugin's .lsp.json.
+          # This should also only contain global LSP servers. Projects should
+          # define their own MCP servers.
+          lspServers = {
+            rust-analyzer = {
+              command = "rust-analyzer";
+              extensionToLanguage = {".rs" = "rust";};
+            };
+            typescript = {
+              command = "typescript-language-server";
+              args = ["--stdio"];
+              extensionToLanguage = {
+                ".ts" = "typescript";
+                ".tsx" = "typescriptreact";
+                ".js" = "javascript";
+                ".jsx" = "javascriptreact";
+                ".mts" = "typescript";
+                ".cts" = "typescript";
+                ".mjs" = "javascript";
+                ".cjs" = "javascript";
+              };
+            };
+          };
+
+          # Projects should provide their own project-specific MCP servers;
+          # this holds only the global ones. Tools land under
+          # `mcp__plugin_hm_<server>__*` because home-manager ships them
+          # through its generated plugin.
+          inherit mcpServers;
+
+          # Path literals, not dotfiles.configDir: home-manager copies these into a
+          # sandboxed derivation, and a toString'd path carries no store context to
+          # register as a build input.
+          skills = ../../../../config/claude/skills;
+
+          # Pinning the tier in each agent's frontmatter makes picking the agent
+          # equivalent to picking the model, so cheap subagents stop depending on
+          # the main loop remembering to pass `model:`.
+          agentsDir = ../../../../config/claude/agents;
+
+          context = ../../../../config/claude/CLAUDE.md;
         };
 
-        # Projects should provide their own project-specific MCP servers;
-        # this holds only the global ones. Tools land under
-        # `mcp__plugin_hm_<server>__*` because home-manager ships them
-        # through its generated plugin.
-        inherit mcpServers;
+        # Saved Workflow scripts, run by name with `args`. home-manager's
+        # claude-code module has no option for this directory.
+        home.file.".claude/workflows".source = ../../../../config/claude/workflows;
+      }
 
-        # Path literals, not dotfiles.configDir: home-manager copies these into a
-        # sandboxed derivation, and a toString'd path carries no store context to
-        # register as a build input.
-        skills = ../../../../config/claude/skills;
-
-        # Pinning the tier in each agent's frontmatter makes picking the agent
-        # equivalent to picking the model, so cheap subagents stop depending on
-        # the main loop remembering to pass `model:`.
-        agentsDir = ../../../../config/claude/agents;
-
-        context = ../../../../config/claude/CLAUDE.md;
-      };
-    };
+      (optionalAttrs isLinux {
+        systemd.user.tmpfiles.users.${config.user.name}.rules = [
+          "d %C/claude-code/tmp 0700 - - 7d"
+        ];
+      })
+    ]);
 }

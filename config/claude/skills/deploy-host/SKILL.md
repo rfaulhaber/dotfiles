@@ -101,9 +101,9 @@ nu bin/verify-dns-fallback.nu pallas
 ```
 
 Remote commands run in **nushell** — every host's login shell is nu, so the string inside
-`ssh host '...'` is nushell syntax even though `ssh` itself is a local invocation. Use
-`first`/`last` rather than `head`/`tail` on structured output, and `ssh host 'bash -c "..."'`
-if you genuinely need POSIX on the far end.
+`ssh host '...'` is nushell syntax even though `ssh` itself is a local invocation. Keep raw
+`ssh` for single plain commands; anything with pipes, quotes, regexes or several steps goes
+through `ssh-bash <host> <<'EOF' ... EOF`, which runs the heredoc under bash on the far end.
 
 For anything more than a couple of checks, delegate to the `host-inspector` agent rather than
 pulling journals into the main context.

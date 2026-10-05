@@ -20,6 +20,24 @@ For comparisons between tools, get to the specific differences that would change
 the thing one does that the other cannot, the operational cost, the state of the project. Feature
 tables copied from marketing pages are worthless.
 
+## Reading GitHub without hitting its limits
+
+Several researchers often run at once, and GitHub's search endpoints allow 30 requests a minute
+per account (code search 10), shared across all of them. Parallel researchers exhaust that
+routinely, so treat search as the scarce resource.
+
+- Read before you search. `get_file_contents` at the ref, `list_tags`, `list_releases`,
+  `get_release_by_tag`, `list_commits` and `list_issues` don't touch the search quota and answer
+  most questions directly.
+- To read more than a handful of files, shallow-clone the ref into the scratchpad directory
+  (`git clone --depth 1 --branch <tag> <url>`) and search it with `rg`. Git transfers don't
+  count against the API quota, however much you then read.
+- Call `search_issues` / `search_code` only for what direct reads cannot answer, and at most
+  three times per task. Never pass `search_type: "semantic"`; it is rejected with a 422.
+- On a 403 rate-limit, do not retry in a loop. Switch to the reads above, or fetch files from
+  `raw.githubusercontent.com` with WebFetch, which sits outside the API quota. The `gh` CLI
+  authenticates as the same account and shares the same search limit, so it is no way around it.
+
 ## Reporting
 
 State the finding, then cite it: repository, ref, and path. Quote only the few lines that settle
