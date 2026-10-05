@@ -73,8 +73,8 @@
   },
   "kept": {
     "image": {
-      "version": "1.8.0",
-      "digest": "sha256:e08baa4de6928f5302fe9875bc35099d2e634522e21192e7b9fe0d1a3e1248ac"
+      "version": "1.8.1",
+      "digest": "sha256:53bff8e0036be04740759030e1575b740becef13c6ec9b79cb9b6940b4815e9d"
     }
   },
   "kitchenowl": {
@@ -170,7 +170,7 @@
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:adb6c09d6b729ea5e642c99cea35af72702ef476bf4763f153299ac5db9f0b4f"
+      "digest": "sha256:7dfd049e79c00b16fbc29c3f5d96a9e7b9e73a23930b4c5b3c4541d60b366814"
     }
   },
   "recyclarr": {
@@ -236,7 +236,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:1fcc07a0d0b9e4a7fe7e97830764f9b4ffc4315333eab06d4c3b60e51814484d"
+      "digest": "sha256:e1ed0da934ef7902f0c4003424349f553be642a667245aaba2f2f45ac8a0d71b"
     },
     "postgres": {
       "image": {
