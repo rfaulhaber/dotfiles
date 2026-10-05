@@ -76,7 +76,10 @@ in {
 
         shellAliases = mkIf (isLinux && desktopCfg.enable) (mkMerge [
           (mkIf isWayland {
-            pbcopy = "${pkgs.wl-clipboard}/bin/wl-copy";
+            # `open foo.ext | pbcopy` hands wl-copy the file itself, and wl-copy
+            # then types the clipboard by extension; a non-text guess such as
+            # application/sieve leaves nothing that GUI apps can paste.
+            pbcopy = "${pkgs.wl-clipboard}/bin/wl-copy --type text/plain";
             pbpaste = "${pkgs.wl-clipboard}/bin/wl-paste";
           })
           (mkIf isX11 {
