@@ -71,22 +71,6 @@
         "type": "github"
       }
     },
-    "claude-code-workflows": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1791120456,
-        "narHash": "sha256-fivehitBGdPdF8NCE37tFwAI+9zoL/gohd17Ccme0Uk=",
-        "owner": "wshobson",
-        "repo": "agents",
-        "rev": "83e95a4893fab062a539c49fde5a4c2db26da577",
-        "type": "github"
-      },
-      "original": {
-        "owner": "wshobson",
-        "repo": "agents",
-        "type": "github"
-      }
-    },
     "claude-plugins-official": {
       "flake": false,
       "locked": {
@@ -258,11 +242,11 @@
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
-        "lastModified": 1791123223,
-        "narHash": "sha256-ibZP8RUQFzJsT2AxTM9ia4l8hv/JUMSmu1wa5tlq628=",
+        "lastModified": 1791176526,
+        "narHash": "sha256-IwFNp987AhGuBm+CzWjamz2a0qTNU4q9GW2Ak/ois3k=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "899112825cc4a5877a2cb41a7322d99c0017609d",
+        "rev": "a5684483b4262432acb81d13c46c92596cc342bf",
         "type": "github"
       },
       "original": {
@@ -523,11 +507,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791123389,
-        "narHash": "sha256-4ln1QbTLlSC6Wo0Jus/YZuueOBBNhTSa9KMSnco+j8M=",
+        "lastModified": 1791163078,
+        "narHash": "sha256-DiuwfdoZtEqVRsWuAhXcHa+cfvkr0t/xWW8ugkcxNyI=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "8cfa9c9514e86f3b88856958b4692e7312b96598",
+        "rev": "f53f3267f5d009dd8f99443505e609389d7ff267",
         "type": "github"
       },
       "original": {
@@ -587,11 +571,11 @@
         "xwayland-satellite-unstable": "xwayland-satellite-unstable"
       },
       "locked": {
-        "lastModified": 1791134778,
-        "narHash": "sha256-6oo9LR+zmHgpsAXh/YxbABCDajuQAoZKvo70Za8x/1w=",
+        "lastModified": 1791182841,
+        "narHash": "sha256-NKprw4tJAT9jmAwXpLOEGvWSw/1381WgXsiKOe9Se1U=",
         "owner": "epireyn",
         "repo": "niri-flake",
-        "rev": "f5c037092454789d55e558713ccf471270c3d925",
+        "rev": "7fc142d36968f23b185f011ae7e92e8dd856572e",
         "type": "github"
       },
       "original": {
@@ -871,11 +855,11 @@
     },
     "nixpkgs-stable_2": {
       "locked": {
-        "lastModified": 1791031588,
-        "narHash": "sha256-/FGDr01siZ8txrVzkOz6CYjiz0XR27JuVJP+aWchi4s=",
+        "lastModified": 1791143449,
+        "narHash": "sha256-9+n3ReS2y9xS199LoJjKUWHwZrISGHWgkD/LUZTDZyA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "825e2028c29b702a4a5f085f08095d12099784f2",
+        "rev": "0d9e9b832d03ac387417e16ce1febf73b2e631e1",
         "type": "github"
       },
       "original": {
@@ -1019,11 +1003,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791133956,
-        "narHash": "sha256-hdAcZV2MAZgQGsEpFzxf1CCsERRxcp9eCDSmss07mBU=",
+        "lastModified": 1791192412,
+        "narHash": "sha256-BEN4jS8gSBqAgVrx8qh5ezgHVPo80Q4sEMc6hG0nqM0=",
         "owner": "noctalia-dev",
         "repo": "noctalia-greeter",
-        "rev": "89cccf48cc558e44ca7286cacbfa9a6c6b3d26e4",
+        "rev": "08c045a684739ba1a52ade040c6a5f08e25f5d27",
         "type": "github"
       },
       "original": {
@@ -1037,7 +1021,6 @@
         "addy-agent-skills": "addy-agent-skills",
         "base16": "base16",
         "claude-code": "claude-code",
-        "claude-code-workflows": "claude-code-workflows",
         "claude-plugins-official": "claude-plugins-official",
         "deploy-rs": "deploy-rs",
         "determinate": "determinate",
