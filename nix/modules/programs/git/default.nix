@@ -42,6 +42,7 @@ in {
           init.defaultBranch = "main";
           merge.conflictStyle = "zdiff3";
           push.autoSetupRemote = true;
+          fetch.prune = true;
         };
 
         signing = {
