@@ -232,13 +232,14 @@
           enable = true;
           baseDir = "/data/apps/calibre";
           booksDir = "/data/books";
+          importDir = "/data/import/calibre";
         };
 
         calibre-web-auto = {
           enable = true;
           baseDir = "/data/apps/calibre-web";
           libraryDir = "/data/books";
-          ingestDir = "/data/books/cwa-book-ingest";
+          ingestDir = "/data/import/calibre-web";
         };
 
         sftpgo = {
@@ -257,11 +258,15 @@
           # the phone's backup URL is just https://dav.3679.space/.
           extraVolumes = [
             "/data/graphene-backups:/srv/sftpgo/data/phone"
-            # The bandcamp importer's watched drop dir, grafted into user
-            # trees as a shared virtual folder (provider-side config). The
-            # container user 1000:100 matches the importer's ryan:users, so
-            # uploads are import-ready without ownership fixup.
+            # Drop folders under /data/import, grafted into user trees as
+            # shared virtual folders (provider-side config). Their consumers
+            # — the bandcamp importer (ryan:users), calibre's auto-add and
+            # CWA's ingest (both 1000:100) — match the container user, so
+            # uploads are import-ready without ownership fixup. Bandcamp
+            # exposes only incoming/; archive/ and failed/ stay host-side.
             "/data/import/bandcamp/incoming:/srv/sftpgo/mounts/bandcamp"
+            "/data/import/calibre:/srv/sftpgo/mounts/calibre"
+            "/data/import/calibre-web:/srv/sftpgo/mounts/calibre-web"
           ];
           oidc = {
             enable = true;

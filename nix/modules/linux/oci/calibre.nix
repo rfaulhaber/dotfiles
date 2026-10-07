@@ -28,6 +28,17 @@ in {
       example = "/data/books";
     };
 
+    importDir = mkOption {
+      description = ''
+        Host directory for calibre's automatic adding (mounted at /import).
+        The watched path is a GUI preference, not container config: set
+        Preferences → Adding books → Automatic adding to /import once.
+      '';
+      type = types.nullOr types.str;
+      default = null;
+      example = "/data/import/calibre";
+    };
+
     httpPort = mkOption {
       description = "Host port for the Kasm/HTTP web UI (container 8080).";
       type = types.port;
@@ -94,7 +105,9 @@ in {
       };
       inherit (cfg) baseDir;
       inherit (cfg) configProperties;
-      mediaMounts = ["${cfg.booksDir}:/books:rw"];
+      mediaMounts =
+        ["${cfg.booksDir}:/books:rw"]
+        ++ optional (cfg.importDir != null) "${cfg.importDir}:/import:rw";
       inherit (cfg) networks user timezone dependsOn;
       environmentFiles = [config.sops.templates."calibre-env".path];
       ports = [

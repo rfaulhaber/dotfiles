@@ -34,7 +34,7 @@ in {
         into the library and removed (mounted at /cwa-book-ingest).
       '';
       type = types.str;
-      example = "/data/books/cwa-book-ingest";
+      example = "/data/import/calibre-web";
     };
 
     webPort = mkOption {

@@ -41,6 +41,25 @@
           "data/files".properties.mountpoint = "/data/files";
           "data/movies".properties.mountpoint = "/data/movies";
           "data/tv".properties.mountpoint = "/data/tv";
+          # Book drop folders: calibre's auto-add watch and CWA's ingest dir,
+          # siblings of the bandcamp importer's dataset under data/import and
+          # exposed over WebDAV by sftpgo. Host-level rather than
+          # module-owned, like graphene-backups: the folders are the
+          # user-facing contract and outlive whichever app drains them.
+          # ryan:users is 1000:100, the uid all three containers run as —
+          # the consumer must be able to delete what it has imported.
+          "data/import/calibre" = {
+            properties.mountpoint = "/data/import/calibre";
+            owner = "ryan";
+            group = "users";
+            mode = "0755";
+          };
+          "data/import/calibre-web" = {
+            properties.mountpoint = "/data/import/calibre-web";
+            owner = "ryan";
+            group = "users";
+            mode = "0755";
+          };
           # LLM model store shared to vulcan over NFS (ollama blobs are
           # multi-GB sequential files, hence the large recordsize).
           "data/llm/models".properties = {
