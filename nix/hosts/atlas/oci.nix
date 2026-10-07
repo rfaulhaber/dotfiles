@@ -233,6 +233,12 @@
           baseDir = "/data/apps/calibre";
           booksDir = "/data/books";
           importDir = "/data/import/calibre";
+          # The embedded content server has had no client since the
+          # retired Readarr stopped syncing in 2025-07; Calibre-Web covers
+          # OPDS and the web UI. Its user DB also stores passwords in
+          # plaintext, so autolaunch stays off in the GUI and the port
+          # stays unpublished.
+          contentPort = null;
         };
 
         calibre-web-auto = {

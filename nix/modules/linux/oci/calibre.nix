@@ -52,8 +52,12 @@ in {
     };
 
     contentPort = mkOption {
-      description = "Host port for the calibre content server (container 8081).";
-      type = types.port;
+      description = ''
+        Host port for the calibre content server (container 8081). Null
+        leaves it unpublished; the server only runs if the GUI's
+        "run server automatically" preference is on anyway.
+      '';
+      type = types.nullOr types.port;
       default = 8081;
     };
 
@@ -110,11 +114,12 @@ in {
         ++ optional (cfg.importDir != null) "${cfg.importDir}:/import:rw";
       inherit (cfg) networks user timezone dependsOn;
       environmentFiles = [config.sops.templates."calibre-env".path];
-      ports = [
-        "${toString cfg.httpPort}:8080"
-        "${toString cfg.httpsPort}:8181"
-        "${toString cfg.contentPort}:8081"
-      ];
+      ports =
+        [
+          "${toString cfg.httpPort}:8080"
+          "${toString cfg.httpsPort}:8181"
+        ]
+        ++ optional (cfg.contentPort != null) "${toString cfg.contentPort}:8081";
       sopsTemplates = ["calibre-env"];
     };
   in {
