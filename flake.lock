@@ -74,11 +74,11 @@
     "claude-plugins-official": {
       "flake": false,
       "locked": {
-        "lastModified": 1791479201,
-        "narHash": "sha256-uVtG87hx2ksdrsq2cI7o5F6cycMTXNnmluHTUmcjVO8=",
+        "lastModified": 1791547076,
+        "narHash": "sha256-SwDRZwwQV/NlVvfdaZZn8Y2Ix2rSHw8yggVLLO1+eLw=",
         "owner": "anthropics",
         "repo": "claude-plugins-official",
-        "rev": "315c4e48967d9541c29c3c656441dded353ca7aa",
+        "rev": "b860d6f2554f145fe1e7ac4cdcabca0120d14030",
         "type": "github"
       },
       "original": {
@@ -440,11 +440,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791213536,
-        "narHash": "sha256-I0IFZHY9le0EwoQubSm2dd05rwlltLJVChi/mUFifHg=",
+        "lastModified": 1791547149,
+        "narHash": "sha256-DCQW7x1vTzZzCHYxFOaRlXm/EMdoiLcED6vh2QwzEH0=",
         "owner": "rfaulhaber",
         "repo": "ghostel-flake",
-        "rev": "e038bcc2f9b5ec8758d032c7aacbc155508f0ef3",
+        "rev": "2a722475885f06447defce5fbd038c5b662c46c1",
         "type": "github"
       },
       "original": {
@@ -983,11 +983,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791515269,
-        "narHash": "sha256-UdDeKbXyv2CAfB0VaD+Xb2r+kzdedwoh8ZR3zQtucjo=",
+        "lastModified": 1791541573,
+        "narHash": "sha256-mtndoRYrdI7vhnsow92ij70CbDYkkt7Owf9V/YZlqVE=",
         "owner": "noctalia-dev",
         "repo": "noctalia",
-        "rev": "da175871820e38446195f0b25c34f3d41f1e862e",
+        "rev": "a0ef2d027b2cf3a750e41749a10706969cdde663",
         "type": "github"
       },
       "original": {
