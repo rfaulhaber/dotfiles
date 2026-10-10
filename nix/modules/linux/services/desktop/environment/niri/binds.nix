@@ -33,7 +33,7 @@ in {
   "Mod+Return" = spawn [terminal "--command='zellij'"];
   "Mod+S" = spawn "${openZellijWorkspace}/bin/open-zellij-workspace";
   "Mod+D" = spawn ["noctalia" "msg" "panel-toggle" "launcher"];
-  "Mod+Alt+D" = spawn "${launchExecutable}/bin/launch-executable";
+  "Mod+Shift+D" = spawn "${launchExecutable}/bin/launch-executable";
   "Mod+E" = spawn "${execEmacsProject}/bin/exec-emacs-project";
 
   # Volume control
@@ -57,21 +57,22 @@ in {
   # Window management
   "Mod+W" = action "close-window";
 
-  # Focus navigation
-  "Mod+Left" = action "focus-column-left";
+  # Focus navigation; horizontal moves continue onto the adjacent monitor at
+  # the edge, the way J/K continue onto the adjacent workspace.
+  "Mod+Left" = action "focus-column-or-monitor-left";
   "Mod+Down" = action "focus-window-down";
   "Mod+Up" = action "focus-window-up";
-  "Mod+Right" = action "focus-column-right";
-  "Mod+H" = action "focus-column-left";
-  "Mod+L" = action "focus-column-right";
+  "Mod+Right" = action "focus-column-or-monitor-right";
+  "Mod+H" = action "focus-column-or-monitor-left";
+  "Mod+L" = action "focus-column-or-monitor-right";
 
   # Move columns/windows
-  "Mod+Ctrl+Left" = action "move-column-left";
+  "Mod+Ctrl+Left" = action "move-column-left-or-to-monitor-left";
   "Mod+Ctrl+Down" = action "move-window-down";
   "Mod+Ctrl+Up" = action "move-window-up";
-  "Mod+Ctrl+Right" = action "move-column-right";
-  "Mod+Ctrl+H" = action "move-column-left";
-  "Mod+Ctrl+L" = action "move-column-right";
+  "Mod+Ctrl+Right" = action "move-column-right-or-to-monitor-right";
+  "Mod+Ctrl+H" = action "move-column-left-or-to-monitor-left";
+  "Mod+Ctrl+L" = action "move-column-right-or-to-monitor-right";
 
   # Cross-workspace focus/move
   "Mod+J" = action "focus-window-or-workspace-down";
@@ -80,29 +81,16 @@ in {
   "Mod+Ctrl+K" = action "move-window-up-or-to-workspace-up";
 
   # Column first/last
-  "Mod+Home" = action "focus-column-first";
-  "Mod+End" = action "focus-column-last";
-  "Mod+Ctrl+Home" = action "move-column-to-first";
-  "Mod+Ctrl+End" = action "move-column-to-last";
+  "Mod+Shift+H" = action "focus-column-first";
+  "Mod+Shift+L" = action "focus-column-last";
+  "Mod+Ctrl+Shift+H" = action "move-column-to-first";
+  "Mod+Ctrl+Shift+L" = action "move-column-to-last";
 
-  # Monitor focus/move
-  "Mod+Alt+Left" = action "focus-monitor-left";
-  "Mod+Alt+Down" = action "focus-monitor-down";
-  "Mod+Alt+Up" = action "focus-monitor-up";
-  "Mod+Alt+Right" = action "focus-monitor-right";
-  "Mod+Alt+H" = action "focus-monitor-left";
-  "Mod+Alt+J" = action "focus-monitor-down";
-  "Mod+Alt+K" = action "focus-monitor-up";
-  "Mod+Alt+L" = action "focus-monitor-right";
-
-  "Mod+Alt+Ctrl+Left" = action "move-column-to-monitor-left";
-  "Mod+Alt+Ctrl+Down" = action "move-column-to-monitor-down";
-  "Mod+Alt+Ctrl+Up" = action "move-column-to-monitor-up";
-  "Mod+Alt+Ctrl+Right" = action "move-column-to-monitor-right";
-  "Mod+Alt+Ctrl+H" = action "move-column-to-monitor-left";
-  "Mod+Alt+Ctrl+J" = action "move-column-to-monitor-down";
-  "Mod+Alt+Ctrl+K" = action "move-column-to-monitor-up";
-  "Mod+Alt+Ctrl+L" = action "move-column-to-monitor-right";
+  # Monitor focus/move. With two outputs "next" is a toggle, so no direction
+  # to pick and one press regardless of how many columns are open.
+  "Mod+O" = action "focus-monitor-next";
+  "Mod+Ctrl+O" = action "move-column-to-monitor-next";
+  "Mod+Shift+O" = action "move-workspace-to-monitor-next";
 
   # Workspace navigation
   "Mod+Page_Down" = action "focus-workspace-down";
@@ -198,8 +186,8 @@ in {
 
   # Screenshots
   "Mod+P" = action "screenshot";
-  "Mod+Alt+P" = action "screenshot-window";
-  "Mod+Alt+W" = action "screenshot-screen";
+  "Mod+Shift+P" = action "screenshot-window";
+  "Mod+Ctrl+P" = action "screenshot-screen";
 
   # Misc
   "Mod+Escape" = {
@@ -207,8 +195,10 @@ in {
     action.toggle-keyboard-shortcuts-inhibit = [];
   };
   "Mod+Shift+E" = action "quit";
-  "Mod+Shift+P" = action "power-off-monitors";
-  "Mod+Alt+S" = spawn ["noctalia" "msg" "session" "lock"];
+  # Mod and Alt share the left thumb on the Moonlander, so Mod+Alt is kept for
+  # binds that should be hard to hit by accident.
+  "Mod+Alt+P" = action "power-off-monitors";
+  "Mod+Shift+S" = spawn ["noctalia" "msg" "session" "lock"];
   "Mod+Space" = lib.mkIf config.modules.desktop.inputMethod.enable (spawn "${toggleInputMethod}");
   "Mod+A" = action "toggle-overview";
 }
