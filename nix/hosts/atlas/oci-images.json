@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:149a8af5ff325ae1a6720467a5d4558d4b7d372a596a13d7e3a4d6f5ed2e9caa"
+      "digest": "sha256:fe4a744c0ac255e73a9a801a7f021ca1b1613963911170c61374e8fdec03b1cb"
     }
   },
   "linkding": {
@@ -128,7 +128,7 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:f9fcc04ca26aa113a2b97aeeb90f1f8c4370234e0b620604422e19c209270ffd"
+      "digest": "sha256:90f08a0c260f5ba3be401d9b21f7a92975ac0fb2331bb1f456ed9f09f3ca4ddb"
     }
   },
   "paperless": {
@@ -194,13 +194,13 @@
   "slskd": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ecd4026d4f8fb504e2cc55323efa2c1f5b56d20d3686b018249cc36b48ea17a6"
+      "digest": "sha256:588af49abc3088d639c8f1174d3bfad6e92c093a275a593140e3ac9311ebf6c4"
     }
   },
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:f247545d23ba8b233d6604575347e48a623fe6ad75dda02348bf81917f3b5c06"
+      "digest": "sha256:dffc730adcb8b4f4342792fbb27fcad9c62fb8660523f2aeb082416980d7fe0c"
     }
   },
   "soularr": {
@@ -236,7 +236,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:59b70af0840773cbc11aa3e79188c8972d3e97aa295051c7c7df5e5c9bdf8ef5"
+      "digest": "sha256:3da35ab7ba8d2bc13cf649df5bf451e49a0029e9c4571a61c7f890e31da27d2d"
     },
     "postgres": {
       "image": {
