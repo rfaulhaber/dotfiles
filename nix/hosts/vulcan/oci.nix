@@ -17,6 +17,14 @@
       # The secret is base64("<user>:<PAT with read:packages>").
       registries."git.3679.space".secret = "registry-auth/forgejo";
     };
+    # Jellyfin's KnownProxies (runtime network.xml, not managed here) names
+    # the default subnet so it trusts X-Forwarded-For from Newt. Unpinned,
+    # podman hands out the first free /24 whenever the network units recreate
+    # the networks, and which one comes up first is a race.
+    networks = {
+      default.subnet = "10.89.1.0/24";
+      observability.subnet = "10.89.0.0/24";
+    };
     # Image versions/digests come from oci-images.json so an
     # auto-update workflow can rewrite plain JSON instead of nix.
     services = lib.recursiveUpdate (lib.importJSON ./oci-images.json) {
