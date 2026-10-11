@@ -134,6 +134,23 @@ in {
             # cookie, so the endpoint is not a password-guessing surface;
             # real credential brute force on /login stays detectable.
             "evt.Meta.log_type == 'http_access-log' && evt.Meta.target_fqdn == 'tasks.3679.space' && evt.Meta.http_path == '/api/v1/user/token/refresh'"
+            # Never score our own bouncer's output. A 403 that no backend
+            # served (no ServiceAddr, empty body, router matched) is the
+            # bouncer's ban page or its fail-closed response while the LAPI
+            # restarts after a deploy. Counting those re-bans users who retry
+            # while banned and bans remote clients that reconnect during the
+            # restart window; the IPs they'd catch are already blocked, so
+            # nothing is lost. Traefik's own no-router 404s still score.
+            "evt.Meta.log_type == 'http_access-log' && evt.Meta.http_status == '403' && evt.Parsed.traefik_router_name != '' && evt.Parsed.service_addr == '' && evt.Parsed.body_bytes_sent == '0'"
+            # Apps 404 on resource IDs in normal use: Jellyfin asks for artwork
+            # for every item on screen whether or not it exists, and one
+            # home-screen render with ~11 poster-less items tripped
+            # crowdsecurity/http-probing (distinct paths, 404s count) and
+            # banned real users for 4h. Scanners walk fixed wordlists, not
+            # UUIDs or long hex IDs, so a backend 404 on an ID-shaped segment
+            # isn't probing. Paths carrying traversal or matrix-parameter
+            # markers stay scored so payloads wrapped around an ID still count.
+            "evt.Meta.log_type == 'http_access-log' && evt.Meta.http_status == '404' && evt.Parsed.service_addr != '' && evt.Meta.http_path matches '(?i)/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{24,})([/?]|$)' && !(evt.Meta.http_path contains '..' || evt.Meta.http_path contains ';' || evt.Meta.http_path matches '(?i)%2e')"
           ];
         };
 
