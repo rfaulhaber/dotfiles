@@ -400,7 +400,13 @@ in {
       ports = optionals (!cfg.useGluetun) portMappings;
       extraOptions =
         netOpts
-        ++ ["--user=${toString cfg.user.uid}:${toString cfg.user.gid}"];
+        ++ [
+          "--user=${toString cfg.user.uid}:${toString cfg.user.gid}"
+          # The peer port is internet-facing. slskd runs unprivileged and its
+          # --user entrypoint needs no capabilities, so a compromise gets none.
+          "--cap-drop=all"
+          "--security-opt=no-new-privileges:true"
+        ];
       log-driver = "journald";
     };
 
