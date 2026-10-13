@@ -8,6 +8,7 @@ with lib; let
   cfg = config.modules.linux.oci.services.slskd;
   ociLib = config.modules.linux.oci.lib;
   imageLib = import ./lib.nix {inherit lib;};
+  yamlFormat = pkgs.formats.yaml {};
 
   # API consumers (e.g. soularr) authenticate against slskd via a named
   # api_key entry. The key value is a sops secret; the consumer name is
@@ -30,19 +31,105 @@ with lib; let
     };
   };
 
-  # slskd.yml is built as a JSON-as-YAML payload and rendered through a
-  # sops template so the api_keys (sops placeholders) get substituted at
-  # activation time.
-  configYamlAttrs = {
-    shares.directories = cfg.shares;
-    web.authentication.api_keys =
-      mapAttrs (_name: k: {
-        key = config.sops.placeholder.${k.secretName};
-        inherit (k) role;
-      })
-      cfg.apiKeys;
-    inherit (cfg) retention;
+  # mkDefault on every leaf, so a host overriding one key keeps its
+  # siblings. mapAttrsRecursive treats lists as leaves, so a host's
+  # shares.directories replaces the default rather than appending.
+  defaultSettings = mapAttrsRecursive (_: mkDefault) {
+    shares = {
+      directories = ["/music"];
+      # Minutes. Without it slskd never rescans, and a restart only rescans
+      # when share options change, so new imports would stay unshared.
+      cache.retention = 1440;
+    };
+    retention = {
+      search = 10080;
+      transfers = {
+        upload = {
+          succeeded = 1440;
+          errored = 30;
+          cancelled = 5;
+        };
+        download = {
+          succeeded = 1440;
+          errored = 20160;
+          cancelled = 5;
+          # `errored` doesn't cover rejected downloads; `failed` covers
+          # every unsuccessful state.
+          failed = 20160;
+        };
+      };
+      files = {
+        complete = 20160;
+        incomplete = 43200;
+      };
+    };
+    transfers = {
+      # Per-user limits, enforced when a peer enqueues. Over-limit requests
+      # get the standard "Too many files/megabytes" reply, which clients
+      # treat as retry-later.
+      upload.limits = {
+        queued = {
+          files = 500;
+          megabytes = 5120;
+        };
+        weekly.megabytes = 51200;
+      };
+      groups.leechers = {
+        thresholds = {
+          files = 50;
+          directories = 5;
+        };
+        upload = {
+          priority = 999;
+          slots = 2;
+          speed_limit = 256;
+        };
+      };
+    };
+    # stdout already lands in journald.
+    logger.no_disk = true;
+    # 5031 would serve a self-signed cert regenerated on every start;
+    # TLS terminates at the reverse proxy.
+    web.https.disabled = true;
+    flags.no_version_check = true;
   };
+
+  # Keys tied to this module's mounts, port mapping and secrets. A host
+  # setting a different value gets an evaluation conflict.
+  ownedSettings = {
+    remote_configuration = cfg.remoteConfiguration;
+    # Incomplete files share the downloads bind mount so completion is a
+    # rename, not a cross-dataset copy. The dot keeps it out of slskd's
+    # complete-file pruning, which skips hidden entries.
+    directories = {
+      downloads = "/app/downloads";
+      incomplete = "/app/downloads/.incomplete";
+    };
+    web = {
+      port = 5030;
+      authentication.api_keys =
+        mapAttrs (_name: k: {
+          key = config.sops.placeholder.${k.secretName};
+          inherit (k) role;
+        })
+        cfg.apiKeys;
+    };
+  };
+
+  # Secrets travel through the env file, which podman reads literally.
+  # slskd.yml is JSON with secret text substituted in raw, so a quote or
+  # backslash in a secret would corrupt it. slskd lets slskd.yml override
+  # env vars, so the same key in settings would silently replace the secret.
+  envSecretPaths =
+    [
+      ["web" "authentication" "password"]
+      ["web" "authentication" "jwt" "key"]
+      ["soulseek" "username"]
+      ["soulseek" "password"]
+    ]
+    ++ optional (cfg.listenPortSecret != null) ["soulseek" "listen_port"];
+  # slskd skips null YAML values, so an explicit null shadows nothing.
+  shadowedSecretPaths = filter (p: attrByPath p null cfg.settings != null) envSecretPaths;
 in {
   options.modules.linux.oci.services.slskd = {
     enable = mkEnableOption "slskd Soulseek client";
@@ -65,7 +152,10 @@ in {
     };
 
     downloadsDir = mkOption {
-      description = "Host directory for completed Soulseek downloads (mounted at /app/downloads).";
+      description = ''
+        Host directory for Soulseek downloads (mounted at /app/downloads).
+        In-progress files live in its .incomplete subdirectory.
+      '';
       type = types.str;
       example = "/data/slskd";
     };
@@ -80,18 +170,6 @@ in {
       description = "Host port for the slskd web UI.";
       type = types.port;
       default = 5030;
-    };
-
-    grpcPort = mkOption {
-      description = "Host port for slskd's HTTPS/gRPC API.";
-      type = types.port;
-      default = 5031;
-    };
-
-    peerPort = mkOption {
-      description = "Host port for inbound Soulseek peer connections.";
-      type = types.port;
-      default = 50300;
     };
 
     user = {
@@ -109,13 +187,43 @@ in {
 
     remoteConfiguration = mkOption {
       description = ''
-        Whether to allow editing slskd.yml from the web UI. Now that Nix
-        manages slskd.yml, leaving this on lets you tweak settings from
-        the UI in-session (overwritten on next rebuild). Turn it off to
-        force fully-declarative config.
+        Whether to allow editing slskd.yml from the web UI. Anyone who can
+        log in could then add integrations.scripts entries, which slskd runs
+        as shell commands. Edits don't persist either: slskd.yml is copied
+        from Nix on every service start.
       '';
       type = types.bool;
-      default = true;
+      default = false;
+    };
+
+    webPasswordSecret = mkOption {
+      description = "Sops secret holding the web UI password. Declared by this module.";
+      type = types.str;
+      default = "slskd/web-password";
+    };
+
+    jwtKeySecret = mkOption {
+      description = ''
+        Sops secret holding the JWT signing key (32 to 255 characters).
+        Without a stable key slskd generates one per process, and every
+        restart logs the UI out. Declared by this module.
+      '';
+      type = types.str;
+      default = "slskd/jwt-key";
+    };
+
+    listenPortSecret = mkOption {
+      description = ''
+        Sops secret holding the Soulseek listen port (1024 to 65535). It
+        must equal the port the VPN provider forwards, with local port =
+        remote port: slskd advertises its listen port to the Soulseek server
+        as-is. Also opened on gluetun's VPN interface, so this requires
+        useGluetun. Null keeps slskd's default port, unreachable to inbound
+        peers.
+      '';
+      type = types.nullOr types.str;
+      default = null;
+      example = "slskd/listen-port";
     };
 
     timezone = mkOption {
@@ -154,17 +262,29 @@ in {
     };
 
     configProperties = mkOption {
-      description = "ZFS properties applied to the baseDir dataset. Defaults tuned for LiteDB.";
+      description = "ZFS properties applied to the baseDir dataset, which holds slskd's SQLite databases.";
       type = types.attrsOf types.str;
       default = {recordsize = "64K";};
     };
 
-    # ----- slskd.yml fields --------------------------------------------
+    settings = mkOption {
+      description = ''
+        slskd.yml contents, mirroring slskd's YAML layout. The module
+        supplies overridable defaults and owns the keys tied to its mounts,
+        port mapping and API keys (remote_configuration, directories.*,
+        web.port, web.authentication.api_keys).
 
-    shares = mkOption {
-      description = "Directories shared with the Soulseek network. Paths are container-side.";
-      type = types.listOf types.str;
-      default = ["/music"];
+        Values land in the Nix store, so secrets don't belong here. The web
+        password, JWT key, Soulseek login and listen port come from sops via
+        the env file; setting those keys here is an evaluation error.
+      '';
+      type = types.submodule {freeformType = yamlFormat.type;};
+      default = {};
+      example = literalExpression ''
+        {
+          transfers.upload.speed_limit = 10240;
+        }
+      '';
     };
 
     apiKeys = mkOption {
@@ -183,43 +303,10 @@ in {
         }
       '';
     };
-
-    retention = mkOption {
-      description = ''
-        slskd retention policies (minutes for time-based, except `logs`
-        which is days). Mirrors the slskd.yml layout 1:1 — see slskd
-        docs for the field semantics.
-      '';
-      type = types.attrs;
-      default = {
-        search = 10080;
-        transfers = {
-          upload = {
-            succeeded = 1440;
-            errored = 30;
-            cancelled = 5;
-          };
-          download = {
-            succeeded = 1440;
-            errored = 20160;
-            cancelled = 5;
-          };
-        };
-        files = {
-          complete = 20160;
-          incomplete = 43200;
-        };
-        logs = 180;
-      };
-    };
   };
 
   config = mkIf cfg.enable (let
-    portMappings = [
-      "${toString cfg.webPort}:5030"
-      "${toString cfg.grpcPort}:5031"
-      "${toString cfg.peerPort}:50300"
-    ];
+    portMappings = ["${toString cfg.webPort}:5030"];
     netOpts =
       (
         if cfg.useGluetun
@@ -233,29 +320,66 @@ in {
         inherit (cfg) image;
       };
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
+    uidGid = "-o ${toString cfg.user.uid} -g ${toString cfg.user.gid}";
 
     # Land slskd.yml owned by the container UID so slskd can rewrite it
-    # at runtime (UI edits, scan state). Nix wins on the next rebuild.
+    # if remote configuration is enabled. Nix wins on the next start. slskd
+    # refuses a custom incomplete directory that doesn't exist yet.
     configInitScript = pkgs.writeShellScript "slskd-config-init" ''
-      install -m 0640 -o ${toString cfg.user.uid} -g ${toString cfg.user.gid} \
+      install -m 0640 ${uidGid} \
         ${config.sops.templates."slskd-yml".path} \
         ${cfg.baseDir}/slskd.yml
+      install -d -m 0755 ${uidGid} ${cfg.downloadsDir}/.incomplete
     '';
   in {
+    assertions = [
+      {
+        assertion = shadowedSecretPaths == [];
+        message = ''
+          modules.linux.oci.services.slskd.settings sets
+          ${concatMapStringsSep ", " (concatStringsSep ".") shadowedSecretPaths}.
+          The module delivers these from sops through the env file, and
+          slskd.yml overrides env, so the settings value would silently
+          replace the secret.
+        '';
+      }
+      {
+        assertion = cfg.listenPortSecret != null -> cfg.useGluetun;
+        message = ''
+          modules.linux.oci.services.slskd.listenPortSecret requires
+          useGluetun. The port is secret, so it can't become a host port
+          mapping; only gluetun's VPN input ports can open it to peers.
+        '';
+      }
+    ];
+
+    modules.linux.oci.services.slskd.settings = mkMerge [defaultSettings ownedSettings];
+
     sops.secrets =
       {
         "slskd/username" = {};
         "slskd/password" = {};
+        ${cfg.webPasswordSecret} = {};
+        ${cfg.jwtKeySecret} = {};
       }
+      // optionalAttrs (cfg.listenPortSecret != null) {${cfg.listenPortSecret} = {};}
       // listToAttrs (mapAttrsToList (_: k: nameValuePair k.secretName {}) cfg.apiKeys);
 
     sops.templates = {
-      "slskd-env".content = ''
-        SLSKD_SLSK_USERNAME=${config.sops.placeholder."slskd/username"}
-        SLSKD_SLSK_PASSWORD=${config.sops.placeholder."slskd/password"}
-      '';
+      "slskd-env".content =
+        ''
+          SLSKD_SLSK_USERNAME=${config.sops.placeholder."slskd/username"}
+          SLSKD_SLSK_PASSWORD=${config.sops.placeholder."slskd/password"}
+          SLSKD_PASSWORD=${config.sops.placeholder.${cfg.webPasswordSecret}}
+          SLSKD_JWT_KEY=${config.sops.placeholder.${cfg.jwtKeySecret}}
+        ''
+        + optionalString (cfg.listenPortSecret != null) ''
+          SLSKD_SLSK_LISTEN_PORT=${config.sops.placeholder.${cfg.listenPortSecret}}
+        '';
+      # JSON is valid YAML. Rendered through sops so the api_keys
+      # placeholders get substituted at activation time.
       "slskd-yml" = {
-        content = builtins.toJSON configYamlAttrs;
+        content = builtins.toJSON cfg.settings;
         # Read-only by other UIDs; the ExecStartPre cp lands a copy into
         # baseDir owned by the container UID, so the container reads its
         # own writable copy and not this template directly.
@@ -266,13 +390,7 @@ in {
     virtualisation.oci-containers.containers.slskd = {
       image = imageLib.renderImage cfg.image;
       inherit (cfg) dependsOn;
-      environment = {
-        "SLSKD_REMOTE_CONFIGURATION" =
-          if cfg.remoteConfiguration
-          then "true"
-          else "false";
-        "TZ" = cfg.timezone;
-      };
+      environment."TZ" = cfg.timezone;
       environmentFiles = [config.sops.templates."slskd-env".path];
       volumes = [
         "${cfg.baseDir}:/app"
@@ -304,6 +422,7 @@ in {
     modules.linux.oci = {
       _managedPaths.${cfg.baseDir}.properties = cfg.configProperties;
       _gluetunPorts = mkIf cfg.useGluetun portMappings;
+      _gluetunVpnInputPortSecrets = optional (cfg.useGluetun && cfg.listenPortSecret != null) cfg.listenPortSecret;
 
       networks = mkIf (!cfg.useGluetun) (
         listToAttrs (map (n: nameValuePair n {enable = true;}) cfg.networks)

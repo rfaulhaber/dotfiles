@@ -350,7 +350,47 @@ in {
         inherit (cfg) image;
       };
     gluetunDeps = optional cfg.useGluetun "podman-${cfg.gluetunContainer}.service";
+
+    slskdCfg = config.modules.linux.oci.services.slskd;
+    slskdSubdirectory = attrByPath ["transfers" "download" "destination" "subdirectory"] null slskdCfg.settings;
+    normalizeUrlBase = b: let
+      trimmed = removeSuffix "/" b;
+    in
+      if trimmed == ""
+      then "/"
+      else trimmed;
   in {
+    # Soularr rebuilds download paths itself, so these slskd settings are part
+    # of its contract when both run on the same host.
+    assertions = [
+      {
+        # Soularr expects <download_dir>/<remote folder>/<file>, slskd's
+        # default layout; any other pattern fails every import.
+        assertion = slskdCfg.enable -> (slskdSubdirectory == null || slskdSubdirectory == "\${SOURCE_DIRECTORY}");
+        message = ''
+          slskd's settings.transfers.download.destination.subdirectory is
+          "${toString slskdSubdirectory}". Soularr only finds downloads under
+          slskd's default ''${SOURCE_DIRECTORY} layout.
+        '';
+      }
+      {
+        assertion = slskdCfg.enable -> normalizeUrlBase (attrByPath ["web" "url_base"] "/" slskdCfg.settings) == normalizeUrlBase cfg.slskd.urlBase;
+        message = ''
+          modules.linux.oci.services.soularr.slskd.urlBase doesn't match
+          slskd's settings.web.url_base, so Soularr's API calls would miss.
+        '';
+      }
+      {
+        assertion = slskdCfg.enable -> cfg.slskdDownloadsDir == slskdCfg.downloadsDir;
+        message = ''
+          modules.linux.oci.services.soularr.slskdDownloadsDir
+          (${cfg.slskdDownloadsDir}) must equal slskd's downloadsDir
+          (${slskdCfg.downloadsDir}): Soularr moves slskd's completed files
+          on disk.
+        '';
+      }
+    ];
+
     sops.secrets = {
       "soularr/lidarr-api-key" = {};
       "soularr/slskd-api-key" = {};

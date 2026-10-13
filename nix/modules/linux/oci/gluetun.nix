@@ -156,6 +156,9 @@ in {
       ''
       + optionalString cfg.usePresharedKey ''
         WIREGUARD_PRESHARED_KEY=${config.sops.placeholder."gluetun/wireguard-preshared-key"}
+      ''
+      + optionalString (ociCfg._gluetunVpnInputPortSecrets != []) ''
+        FIREWALL_VPN_INPUT_PORTS=${concatMapStringsSep "," (s: config.sops.placeholder.${s}) ociCfg._gluetunVpnInputPortSecrets}
       '';
 
     virtualisation.oci-containers.containers."gluetun" = {

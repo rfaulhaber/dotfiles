@@ -114,6 +114,10 @@
           musicDir = "/data/music";
           useGluetun = true;
           apiKeys.soularr.secretName = "slskd/soularr-api-key";
+          listenPortSecret = "slskd/listen-port";
+          # KiB/s; about a quarter of a conservative AirVPN tunnel estimate,
+          # which transmission and the *arr apps also share.
+          settings.transfers.upload.speed_limit = 10240;
         };
 
         lidarr = {
@@ -133,6 +137,9 @@
           baseDir = "/data/apps/soularr";
           slskdDownloadsDir = "/data/slskd";
           useGluetun = true;
+          # One search per album per run otherwise accumulates in slskd for
+          # the full search retention and bogs down its UI.
+          slskd.deleteSearches = true;
         };
 
         requestrr = {

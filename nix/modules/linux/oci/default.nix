@@ -271,6 +271,18 @@ in {
       '';
     };
 
+    _gluetunVpnInputPortSecrets = mkOption {
+      type = types.listOf types.str;
+      internal = true;
+      default = [];
+      description = ''
+        Sops secret names, each holding a port that gluetun must accept
+        inbound on its VPN interface (FIREWALL_VPN_INPUT_PORTS). Contributed
+        by services that listen for peers through the tunnel. The ports are
+        secret because a provider-forwarded port identifies the account.
+      '';
+    };
+
     lib = mkOption {
       type = types.attrs;
       internal = true;
