@@ -51,14 +51,6 @@
         gpu = "intel";
         openFirewall = true;
       };
-      open-webui = {
-        enable = true;
-        baseDir = "/zroot/apps/open-webui";
-        openFirewall = true;
-        # Native ollama runs on the host (modules.services.ollama), so
-        # reach it via the podman-injected host gateway DNS entry.
-        ollamaBaseUrl = "http://host.containers.internal:11434";
-      };
       newt = {
         enable = true;
         pangolinEndpoint = "https://pangolin.3679.space";

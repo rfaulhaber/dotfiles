@@ -156,10 +156,6 @@
             path = "/data/tv";
             clients = "192.168.0.105(rw,sync,no_subtree_check,root_squash)";
           };
-          llm-models = {
-            path = "/data/llm/models";
-            clients = "192.168.0.105(rw,sync,no_subtree_check,root_squash)";
-          };
           # ro: the ROM library is canonical here; emulators only ever read it
           # (wolf's saves/states live in vulcan's app state). vulcan keeps its
           # own entry so its uids pass through like the other exports — a
