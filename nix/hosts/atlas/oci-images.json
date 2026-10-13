@@ -25,8 +25,8 @@
   },
   "forgejo": {
     "image": {
-      "version": "16.0.5",
-      "digest": "sha256:cf5f5ae6acf2ababca0ee3d255705b83a47f35b25e07fc931d694d60664053fe"
+      "version": "16.0.6",
+      "digest": "sha256:e2c34a699543ca8a00217ee9ab2bea5feedc98bd6d0ea95ec287d3b7ae1355c6"
     },
     "postgres": {
       "image": {
@@ -43,8 +43,8 @@
   },
   "grafana": {
     "image": {
-      "version": "13.2.3",
-      "digest": "sha256:b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572"
+      "version": "13.2.4",
+      "digest": "sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f"
     }
   },
   "immich": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:fe4a744c0ac255e73a9a801a7f021ca1b1613963911170c61374e8fdec03b1cb"
+      "digest": "sha256:49119cb1d3dfda055dfbe1be1d51ca9a7bce21278abe24371040a673a44d86a3"
     }
   },
   "linkding": {
@@ -134,7 +134,7 @@
   "paperless": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6b94799bc769a063b3340cc5847402e626d4d91d29a295a8e747f8e9bead4207"
+      "digest": "sha256:cb91bfb468e63025a9d10c01b54c33665113668eee61b490db96de19b860b9c4"
     },
     "postgres": {
       "image": {
@@ -170,7 +170,7 @@
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:7dfd049e79c00b16fbc29c3f5d96a9e7b9e73a23930b4c5b3c4541d60b366814"
+      "digest": "sha256:cfbc4fa09dc9d78f7cedc898f4ec48c6277cacedc523c4e159db6ff1c741959c"
     }
   },
   "recyclarr": {
@@ -200,7 +200,7 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:dffc730adcb8b4f4342792fbb27fcad9c62fb8660523f2aeb082416980d7fe0c"
+      "digest": "sha256:0deb8db6c839ac475e9cd86277712772c40ba7f929a003d7e1de36c4b666bc13"
     }
   },
   "soularr": {
@@ -236,7 +236,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:3da35ab7ba8d2bc13cf649df5bf451e49a0029e9c4571a61c7f890e31da27d2d"
+      "digest": "sha256:ed721691646f1d06df8390ddd0c794e334965fa4e5dd49f4336bd6684579cd3f"
     },
     "postgres": {
       "image": {
