@@ -314,6 +314,7 @@
         codegraph
         feishin
         moonlight-qt
+        readest
         signal-desktop
         ungoogled-chromium
       ];
