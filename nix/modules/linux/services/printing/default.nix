@@ -101,13 +101,14 @@ in {
           };
         };
 
-        # The generated ensure-printers unit only orders after cups.service, but a
-        # client queue has a network deviceUri: at boot lpadmin can run before the
-        # NIC has carrier, and one EHOSTDOWN leaves the host with no queue at all
-        # (oneshot, no retry — systemd forbids Restart= with RemainAfterExit=yes).
+        # hardware.printers provisions queues from cups.service's ExecStartPost under
+        # `set -e`, and an `everywhere` queue makes lpadmin query the server. At boot
+        # that runs before the NIC has carrier, so EHOSTDOWN fails the unit and
+        # Restart=on-failure burns through the start limit within two seconds,
+        # leaving cupsd and cups.socket dead until a manual restart.
         # network-online.target is passive, so it must be pulled in, not just
         # ordered against.
-        systemd.services.ensure-printers = {
+        systemd.services.cups = {
           wants = ["network-online.target"];
           after = ["network-online.target"];
         };
