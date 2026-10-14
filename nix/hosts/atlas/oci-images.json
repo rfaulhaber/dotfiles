@@ -185,6 +185,12 @@
       "digest": "sha256:74392e2e633b8c574aa93a93945e5ed481df5059441cc31d120796a72e3a7ff2"
     }
   },
+  "seerr": {
+    "image": {
+      "version": "v3",
+      "digest": "sha256:27602401178d54f1964442287b9f23f67a3fa2252645ee8065839ea1c3f69e45"
+    }
+  },
   "sftpgo": {
     "image": {
       "version": "v2.7.6-alpine",

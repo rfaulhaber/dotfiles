@@ -364,6 +364,11 @@
           baseDir = "/data/apps/tautulli";
         };
 
+        seerr = {
+          enable = true;
+          baseDir = "/data/apps/seerr";
+        };
+
         kitchenowl = {
           enable = true;
           baseDir = "/data/apps/kitchenowl";

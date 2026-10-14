@@ -201,6 +201,7 @@ in {
     ./recyclarr.nix
     ./registry-auth.nix
     ./requestrr.nix
+    ./seerr.nix
     ./sftpgo.nix
     ./slskd.nix
     ./sonarr.nix
