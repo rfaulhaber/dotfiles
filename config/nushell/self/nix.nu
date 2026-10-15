@@ -13,6 +13,29 @@ export def --wrapped dev [...args: string] {
   ^nix develop ...$args --command nu
 }
 
+# list root flake inputs whose upstream has moved past flake.lock, without touching it
+export def "flake-outdated" [...inputs: string]: nothing -> table {
+  let tmp = (mktemp -t flake.lock.XXXXXX)
+  # --refresh bypasses tarball-ttl, which otherwise serves a branch's cached rev for an hour
+  ^nix flake update ...$inputs --refresh --output-lock-file $tmp
+  let old = (open --raw flake.lock | from json)
+  let new = (open --raw $tmp | from json)
+  rm $tmp
+
+  $old.nodes.root.inputs | transpose input key | each { |r|
+    let o = ($old.nodes | get $r.key | get locked)
+    let n = ($new.nodes | get ($new.nodes.root.inputs | get $r.input) | get locked)
+    if $o.narHash != $n.narHash {
+      {
+        input: $r.input
+        locked: ($o.lastModified * 1_000_000_000 | into datetime)
+        latest: ($n.lastModified * 1_000_000_000 | into datetime)
+        rev: $"($o.rev? | default "" | str substring 0..6) → ($n.rev? | default "" | str substring 0..6)"
+      }
+    }
+  }
+}
+
 export def "diff-metadata" [before: path, after: path]: nothing -> string  {
   nix store diff-closures $before $after --json
   | from json
