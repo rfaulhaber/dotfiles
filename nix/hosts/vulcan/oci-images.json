@@ -2,7 +2,7 @@
   "immich-ml": {
     "image": {
       "version": "release",
-      "digest": "sha256:9f5ea923b763435592280e2f5e051a62f1a33d6d14e87620fc15453c27a12ae0"
+      "digest": "sha256:43b6b964c6cc458b624ec9b7ed2af0231e19e3bcfaaa68fba8a2668353c48251"
     }
   },
   "plex": {
@@ -14,13 +14,13 @@
   "jellyfin": {
     "image": {
       "version": "latest",
-      "digest": "sha256:1bb4f88d822a0510bb3604b68aacb80d77c1d2a30181e500090c65111b98723b"
+      "digest": "sha256:799509f8ef3be7037478699cc6fd14d19dd75faac5e474ed219e98ae78a5b3e4"
     }
   },
   "open-webui": {
     "image": {
       "version": "main",
-      "digest": "sha256:e597ba2ca4425ff40f1f677930baae1278cc1e44cea399d5f588d5ce53611910"
+      "digest": "sha256:4e1dd31538187a4c5749b30880dbc8ae745b2827cf9016cbfd691b431199b230"
     }
   },
   "newt": {
