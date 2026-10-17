@@ -43,11 +43,12 @@
           "data/tv".properties.mountpoint = "/data/tv";
           # Book drop folders: calibre's auto-add watch and CWA's ingest dir,
           # siblings of the bandcamp importer's dataset under data/import and
-          # exposed over WebDAV by sftpgo. Host-level rather than
-          # module-owned, like graphene-backups: the folders are the
-          # user-facing contract and outlive whichever app drains them.
-          # ryan:users is 1000:100, the uid all three containers run as —
-          # the consumer must be able to delete what it has imported.
+          # exposed over WebDAV by sftpgo; shelfmark delivers into calibre's.
+          # Host-level rather than module-owned, like graphene-backups: the
+          # folders are the user-facing contract and outlive whichever app
+          # drains them. ryan:users is 1000:100, the uid every container
+          # writing or draining them runs as — the consumer must be able to
+          # delete what it has imported.
           "data/import/calibre" = {
             properties.mountpoint = "/data/import/calibre";
             owner = "ryan";

@@ -30,11 +30,26 @@ in {
     ingestDir = mkOption {
       description = ''
         Host directory finished downloads are delivered to (mounted at
-        /books). Point it at Calibre-Web-Automated's ingest folder to have
-        downloads imported into the library.
+        /books). Point it at a library's drop folder, such as calibre's
+        auto-add folder, to have downloads imported. Calibre only scans the
+        top level of that folder, so keep the default "rename" file
+        organization rather than "organize", which writes into
+        per-author subfolders.
       '';
       type = types.str;
-      example = "/data/import/calibre-web";
+      example = "/data/import/calibre";
+    };
+
+    calibreLibraryDir = mkOption {
+      description = ''
+        Host directory of a calibre library, mounted read-only at
+        /calibre-library to mark search results already in it. The folder is
+        mounted rather than metadata.db alone so SQLite sees the -wal/-shm
+        sidecars of a library that is being written to.
+      '';
+      type = types.nullOr types.str;
+      default = null;
+      example = "/data/books";
     };
 
     webPort = mkOption {
@@ -139,9 +154,17 @@ in {
         inherit (cfg) image;
       };
       inherit (cfg) baseDir configProperties;
-      mediaMounts = ["${cfg.ingestDir}:/books:rw"] ++ cfg.extraVolumes;
+      mediaMounts =
+        ["${cfg.ingestDir}:/books:rw"]
+        ++ optional (cfg.calibreLibraryDir != null) "${cfg.calibreLibraryDir}:/calibre-library:ro"
+        ++ cfg.extraVolumes;
       inherit (cfg) useGluetun gluetunContainer networks user timezone dependsOn;
-      extraEnv = {AUTH_METHOD = cfg.authMethod;} // cfg.extraEnv;
+      extraEnv =
+        {AUTH_METHOD = cfg.authMethod;}
+        // optionalAttrs (cfg.calibreLibraryDir != null) {
+          LIBRARY_CHECK_CALIBRE_ENABLED = "true";
+        }
+        // cfg.extraEnv;
       ports = portMappings;
       gluetunPorts = portMappings;
     };

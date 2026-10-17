@@ -197,8 +197,8 @@
         shelfmark = {
           enable = true;
           baseDir = "/data/apps/shelfmark";
-          ingestDir = "/data/import/calibre-web";
-          useGluetun = true;
+          ingestDir = "/data/import/calibre";
+          calibreLibraryDir = "/data/books";
         };
 
         immich = {
