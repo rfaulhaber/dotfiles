@@ -17,6 +17,7 @@
   # tree whose store path varies by flake fetch method.
   execEmacsProject = mkNuScript "exec-emacs-project";
   openZellijWorkspace = mkNuScript "open-zellij-workspace";
+  openSshSession = mkNuScript "open-ssh-session";
   launchExecutable = mkNuScript "launch-executable";
 
   # fcitx5 binds the same chord, but compositor binds win over the input
@@ -31,7 +32,8 @@ in {
 
   # Application launchers
   "Mod+Return" = spawn [terminal "--command='zellij'"];
-  "Mod+S" = spawn "${openZellijWorkspace}/bin/open-zellij-workspace";
+  "Mod+S" = spawn "${openSshSession}/bin/open-ssh-session";
+  "Mod+Z" = spawn "${openZellijWorkspace}/bin/open-zellij-workspace";
   "Mod+D" = spawn ["noctalia" "msg" "panel-toggle" "launcher"];
   "Mod+Shift+D" = spawn "${launchExecutable}/bin/launch-executable";
   "Mod+E" = spawn "${execEmacsProject}/bin/exec-emacs-project";

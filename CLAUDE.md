@@ -138,6 +138,7 @@ Nushell scripts in `/bin/` for system tasks:
 - `random-wallpaper.nu` - Unsplash wallpaper rotation
 - `exec-emacs-project.nu` - Run a command in the context of a projectile project
 - `open-zellij-workspace.nu` - Pick a project via `noctalia dmenu` and open it in a zellij session
+- `open-ssh-session.nu` - Pick a login host from `~/.ssh/config` via `noctalia dmenu` and open (or re-attach) an `ssh-<host>` zellij session running `ssh <host>`
 - `launch-executable.nu` - Pick an executable from PATH via `noctalia dmenu` and run it
 - `bandcamp-import.nu` - Import Bandcamp purchases into the atlas music library, with Lidarr catalog registration
 - `build-fan-out.nu` - Build every host's toplevel in parallel
