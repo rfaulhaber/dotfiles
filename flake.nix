@@ -124,6 +124,26 @@
             lib = self;
           };
         });
+
+        # deploy-rs's lib with nixpkgs' deploy-rs package swapped in, the
+        # pattern its README recommends. The flake's own package builds from
+        # its source, so no binary cache holds it and each nixpkgs bump means
+        # compiling it again — for the Pis, under binfmt emulation. Hydra
+        # builds nixpkgs' copy, so deploys fetch it from cache.nixos.org. The
+        # deploy CLI below comes from the same package, keeping it in lockstep
+        # with the activate binary it drives on the remote.
+        deployLib = lib.genAttrs ["x86_64-linux" "aarch64-linux"] (system: let
+          pkgs = inputs.nixpkgs.legacyPackages.${system};
+        in
+          (pkgs.appendOverlays [
+            deploy-rs.overlays.default
+            (_final: prev: {
+              deploy-rs = {
+                inherit (pkgs) deploy-rs;
+                inherit (prev.deploy-rs) lib;
+              };
+            })
+          ]).deploy-rs.lib);
       in {
         # overlays = mapModules ./nix/overlays import;
         # these are the actual system configurations
@@ -173,7 +193,7 @@
               profiles.system = {
                 user = "root";
                 path =
-                  deploy-rs.lib.x86_64-linux.activate.nixos
+                  deployLib.x86_64-linux.activate.nixos
                   self.nixosConfigurations.atlas;
               };
             };
@@ -183,7 +203,7 @@
                 user = "root";
                 fastConnection = true;
                 path =
-                  deploy-rs.lib.aarch64-linux.activate.nixos
+                  deployLib.aarch64-linux.activate.nixos
                   self.nixosConfigurations.pallas;
               };
             };
@@ -193,7 +213,7 @@
                 user = "root";
                 fastConnection = true;
                 path =
-                  deploy-rs.lib.aarch64-linux.activate.nixos
+                  deployLib.aarch64-linux.activate.nixos
                   self.nixosConfigurations.hecate;
               };
             };
@@ -202,7 +222,7 @@
               profiles.system = {
                 user = "root";
                 path =
-                  deploy-rs.lib.x86_64-linux.activate.nixos
+                  deployLib.x86_64-linux.activate.nixos
                   self.nixosConfigurations.janus;
               };
             };
@@ -211,7 +231,7 @@
               profiles.system = {
                 user = "root";
                 path =
-                  deploy-rs.lib.x86_64-linux.activate.nixos
+                  deployLib.x86_64-linux.activate.nixos
                   self.nixosConfigurations.vulcan;
               };
             };
@@ -221,7 +241,7 @@
                 user = "root";
                 fastConnection = true;
                 path =
-                  deploy-rs.lib.aarch64-linux.activate.nixos
+                  deployLib.aarch64-linux.activate.nixos
                   self.nixosConfigurations.prometheus;
               };
             };
@@ -238,7 +258,7 @@
         # aarch64-darwin has no deploy nodes and must not get a checks entry.
         checks = lib.genAttrs ["x86_64-linux" "aarch64-linux"] (
           system:
-            deploy-rs.lib.${system}.deployChecks (self.deploy
+            deployLib.${system}.deployChecks (self.deploy
               // {
                 nodes =
                   lib.filterAttrs
@@ -290,7 +310,10 @@
         apps = {
           # I re-export deploy-rs due to an issue with running `nix flake github:serokell/deploy-rs ...`
           # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
-          deploy-rs = inputs'.deploy-rs.apps.default;
+          deploy-rs = {
+            type = "app";
+            program = pkgs.lib.getExe' pkgs.deploy-rs "deploy";
+          };
         };
         packages.generated-configs = import ./nix/generated {
           inherit pkgs inputs;
@@ -306,7 +329,9 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs;
             [
-              inputs'.deploy-rs.packages.default
+              # Qualified because `with pkgs` loses to the lexically bound
+              # deploy-rs flake input of the same name.
+              pkgs.deploy-rs
               inputs'.nil.packages.default
               inputs'.sops-nix.packages.default
               codegraph
