@@ -93,11 +93,6 @@ in {
     hosts = ["prometheus.home.lan"];
     upstream = "${atlas}:9090";
   };
-  open-webui = {
-    hosts = ["webui.home.lan"];
-    upstream = "${vulcan}:3000";
-    displayName = "Open WebUI";
-  };
   calibre = {
     hosts = ["calibre.home.lan"];
     upstream = "${atlas}:3229";
@@ -108,5 +103,10 @@ in {
     # 8181); its self-signed cert can't match the IP caddy dials.
     upstreamScheme = "https";
     upstreamTlsInsecure = true;
+  };
+  seerr = {
+    hosts = ["seerr.home.lan"];
+    upstream = "${atlas}:5055";
+    displayName = "Seerr";
   };
 }
