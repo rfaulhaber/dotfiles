@@ -197,6 +197,12 @@
       "digest": "sha256:484f430b2115ec8e015644b1a5e54a5f5b8568f883cb5146e9043885f691d8f7"
     }
   },
+  "shelfmark": {
+    "image": {
+      "version": "latest",
+      "digest": "sha256:4ef757349c3c7a7d90ba95b1e2a46ce4dd460a4776efbcf2aa1b1c476e7d5de5"
+    }
+  },
   "slskd": {
     "image": {
       "version": "0.26.1",

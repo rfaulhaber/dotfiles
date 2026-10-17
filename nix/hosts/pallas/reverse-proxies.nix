@@ -109,4 +109,9 @@ in {
     upstream = "${atlas}:5055";
     displayName = "Seerr";
   };
+  shelfmark = {
+    hosts = ["shelfmark.home.lan"];
+    upstream = "${atlas}:8084";
+    displayName = "Shelfmark";
+  };
 }

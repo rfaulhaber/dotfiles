@@ -194,6 +194,13 @@
           useGluetun = true;
         };
 
+        shelfmark = {
+          enable = true;
+          baseDir = "/data/apps/shelfmark";
+          ingestDir = "/data/import/calibre-web";
+          useGluetun = true;
+        };
+
         immich = {
           enable = true;
           baseDir = "/data/apps/immich";

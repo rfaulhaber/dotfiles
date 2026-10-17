@@ -203,6 +203,7 @@ in {
     ./requestrr.nix
     ./seerr.nix
     ./sftpgo.nix
+    ./shelfmark.nix
     ./slskd.nix
     ./sonarr.nix
     ./soularr.nix
