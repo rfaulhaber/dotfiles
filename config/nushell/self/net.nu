@@ -5,7 +5,7 @@ export def list-ports [] {
     | where { |line| ($line | str trim) != "" }
     | each { |line|
         let cols = ($line | split row -r '\s+')
-        let proto = ($cols | get 0 | str downcase)
+        let proto = ($cols | get 0 | str lowercase)
         let local = ($cols | get 4)
 
         # Port is everything after the last ':'.
