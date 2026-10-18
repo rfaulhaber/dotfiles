@@ -329,10 +329,13 @@ in {
           package = claudePackage;
 
           settings = {
+            # TODO replace, this is deprecated
             includeCoAuthoredBy = false;
             tui = "fullscreen";
             remoteControlAtStartup = false;
-
+            agentPushNotifEnabled = true;
+            awaySummaryEnabled = true;
+            inputNeededNotifEnabled = true;
             # Transcripts are the only record of tool calls, agents and cost;
             # the 30-day default deletes them before a bimonthly usage review
             # (the usage-review skill) can read them.
