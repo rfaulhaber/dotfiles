@@ -25,8 +25,8 @@
   },
   "forgejo": {
     "image": {
-      "version": "16.0.6",
-      "digest": "sha256:e2c34a699543ca8a00217ee9ab2bea5feedc98bd6d0ea95ec287d3b7ae1355c6"
+      "version": "17.0.0",
+      "digest": "sha256:06d38310de496a10186d952bdad5ca764c153c8023ede8dfa0944c79a1dc5412"
     },
     "postgres": {
       "image": {

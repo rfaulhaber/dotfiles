@@ -17,12 +17,6 @@
       "digest": "sha256:799509f8ef3be7037478699cc6fd14d19dd75faac5e474ed219e98ae78a5b3e4"
     }
   },
-  "open-webui": {
-    "image": {
-      "version": "main",
-      "digest": "sha256:4860ba005ae8f19f08d1e12b0868855b7b339ea0dad9927f196820fc0de04575"
-    }
-  },
   "newt": {
     "image": {
       "version": "latest",
