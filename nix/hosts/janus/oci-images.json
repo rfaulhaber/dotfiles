@@ -11,7 +11,7 @@
       },
       "traefik": {
         "version": "v3.7",
-        "digest": "sha256:575fa15b135078fe5e50aa847987d96dbddd7b093c172429618404df73f3fa7c"
+        "digest": "sha256:0f6150202bc1fed72a7bd2107460eaa510e5b8a905f3fdb5b84f2c8619c33368"
       }
     }
   },
@@ -23,15 +23,15 @@
       },
       "signal": {
         "version": "latest",
-        "digest": "sha256:313655028527f7fde3835ceedc671ce12cc74892474cc24f55a82d855c1f757b"
+        "digest": "sha256:efc06046f1c09fe8a3378edc39428b28f77a68de8936604a08abd6a71baac7ff"
       },
       "relay": {
         "version": "latest",
-        "digest": "sha256:5e279ebe54991c653a78718d0d72990325a67a3182dd551e253b08635794b5f7"
+        "digest": "sha256:76915c0ec21683c0c420862fbfda1caef047a4698397b4ef4a33a8b80f9c0285"
       },
       "management": {
         "version": "latest",
-        "digest": "sha256:f58faec35469228f447e692776a98c20de715a6739bf7bab6cf034126bc701ed"
+        "digest": "sha256:f9f721ab1c0e2d11e8223f33296413da06d66da4b8b764958676c2e683ba5e06"
       },
       "coturn": {
         "version": "latest",
