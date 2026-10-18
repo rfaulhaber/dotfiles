@@ -108,6 +108,8 @@ in {
     hosts = ["seerr.home.lan"];
     upstream = "${atlas}:5055";
     displayName = "Seerr";
+    scheme = "https";
+    tls = "internal";
   };
   shelfmark = {
     hosts = ["shelfmark.home.lan"];
