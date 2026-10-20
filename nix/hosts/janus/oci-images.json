@@ -23,15 +23,15 @@
       },
       "signal": {
         "version": "latest",
-        "digest": "sha256:efc06046f1c09fe8a3378edc39428b28f77a68de8936604a08abd6a71baac7ff"
+        "digest": "sha256:67c9a97195dde8f4c50c270d1a04a0af052861808ffec3ac658f1346bf47e488"
       },
       "relay": {
         "version": "latest",
-        "digest": "sha256:76915c0ec21683c0c420862fbfda1caef047a4698397b4ef4a33a8b80f9c0285"
+        "digest": "sha256:721a15a9de4817b142134b5e039bfc3559b0c80db8054408d3723bc52ccba4ec"
       },
       "management": {
         "version": "latest",
-        "digest": "sha256:f9f721ab1c0e2d11e8223f33296413da06d66da4b8b764958676c2e683ba5e06"
+        "digest": "sha256:e153ba69d5f70558f9750744d8837dceb29f93400e83e79e8e145f3489c32af9"
       },
       "coturn": {
         "version": "latest",

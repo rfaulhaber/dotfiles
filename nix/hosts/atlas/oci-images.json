@@ -38,7 +38,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:945d325be5c2abe50b89c84791b51a4e3d039737ed3703b2482c1e2b396e8fbe"
+      "digest": "sha256:c2ee4191762fca6b6a3c3359a731198a95d9c9af4db32d466e223bf3a84e779b"
     }
   },
   "grafana": {
@@ -50,7 +50,7 @@
   "immich": {
     "image": {
       "version": "release",
-      "digest": "sha256:bae7664ff3aa4c2c1fcbdcdd86b40b105643c5f861f3e6a770fc760089f25862"
+      "digest": "sha256:f6475c58b07a8d89ec845aa8782731d36656c3c17d943e0a101dc6ed99a2e53f"
     },
     "postgres": {
       "image": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:49119cb1d3dfda055dfbe1be1d51ca9a7bce21278abe24371040a673a44d86a3"
+      "digest": "sha256:901e31858139a4b099e615e736c588aadaf5560c531d223308cf17872d8bb345"
     }
   },
   "linkding": {
@@ -104,7 +104,7 @@
   "miniflux": {
     "image": {
       "version": "latest",
-      "digest": "sha256:49d7b60987616387c306a8023087b31f2c9b7b21288b523026cb04058e8b6dbb"
+      "digest": "sha256:72e49f513a63104506aab98ba8cfc3a409d4fde23550a583dec07ec941f1e94e"
     },
     "postgres": {
       "image": {
@@ -134,7 +134,7 @@
   "paperless": {
     "image": {
       "version": "latest",
-      "digest": "sha256:d232cba37cc0bab0d6c6581ecd320383b7a6f49f33e0fd16adda4d009eb600dd"
+      "digest": "sha256:dba0242c1df1843643df4eb50ce5639f3a7900f414879088fd5bed8eaf2d456d"
     },
     "postgres": {
       "image": {
@@ -164,13 +164,13 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:e7a05286500b6e51084b0ba263dbbaf825db1ec7b731bf18aea30df84714e5f6"
+      "digest": "sha256:5f2281d9ba83f1edebe8e38823e6e5b174cf7958f6deb0cb992fc5f17eb0761f"
     }
   },
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ea6822c956d26db648b237919f41340318f32e5b7dcc4ba702cf256a0f5f3c12"
+      "digest": "sha256:ff4430fe2d6159b4dbaac9903acfecee5aa68dec8c929259e2f3114c63f7a09e"
     }
   },
   "recyclarr": {
