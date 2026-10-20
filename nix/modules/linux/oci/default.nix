@@ -87,9 +87,11 @@ with lib; let
   # images expect. The no-trust-rules variant is plain PEM: Go, Python and Ruby
   # parse only plain CERTIFICATE blocks, and the rejected-root entries in the
   # OpenSSL trust-rules bundle mean nothing to them.
+  # ca-bundle.crt is the name Fedora-family and Nix-built images point at.
   hostTrustDir = pkgs.runCommand "oci-host-ca-certificates" {} ''
     mkdir $out
     cp ${dirOf config.security.pki.caBundle}/ca-no-trust-rules-bundle.crt $out/ca-certificates.crt
+    ln -s ca-certificates.crt $out/ca-bundle.crt
   '';
   hostTrustBundle = "/etc/ssl/certs/ca-certificates.crt";
 
@@ -308,6 +310,15 @@ in {
             instead; this replaces any NODE_OPTIONS the image defines.
           '';
         };
+        options.bundlePaths = mkOption {
+          type = types.listOf types.str;
+          default = [];
+          example = ["/usr/lib/plexmediaserver/Resources/cacert.pem"];
+          description = ''
+            Further in-container files to replace with the host bundle, for
+            apps that read a CA file of their own and ignore the environment.
+          '';
+        };
       });
       default = {};
       example = literalExpression ''
@@ -356,7 +367,9 @@ in {
       config = mkMerge [
         {extraOptions = mkAfter ["--no-healthcheck"];}
         (mkIf (cfg.hostTrustStore ? ${name}) {
-          volumes = ["${hostTrustDir}:/etc/ssl/certs:ro"];
+          volumes =
+            ["${hostTrustDir}:/etc/ssl/certs:ro"]
+            ++ map (p: "${hostTrustDir}/ca-certificates.crt:${p}:ro") cfg.hostTrustStore.${name}.bundlePaths;
           environment =
             {
               SSL_CERT_FILE = hostTrustBundle;

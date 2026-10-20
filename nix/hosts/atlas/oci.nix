@@ -18,13 +18,15 @@
       registries."localhost:2835".secret = "registry-auth/forgejo";
     };
 
-    # Containers whose outbound TLS guards more than themselves: newt's
-    # tunnel control channel, and every service that signs users in through
-    # Pocket-ID, whose ID tokens it validates against keys fetched from
-    # auth.3679.space across the internet.
+    # Containers whose outbound TLS guards more than a public page: newt's
+    # tunnel control channel; services that sign users in through Pocket-ID,
+    # validating ID tokens against keys fetched from auth.3679.space across
+    # the internet; everything in gluetun's network namespace, whose traffic
+    # all crosses a VPN exit; and services holding third-party credentials.
     hostTrustStore =
       lib.genAttrs [
         "newt"
+        # Pocket-ID sign-in
         "sftpgo"
         "paperless"
         "sure"
@@ -36,8 +38,31 @@
         "linkding"
         "forgejo"
         "calibre-web-auto"
+        # gluetun's network namespace
+        "gluetun"
+        "prowlarr"
+        "sonarr"
+        "radarr"
+        "lidarr"
+        "bazarr"
+        "transmission"
+        "slskd"
+        "recyclarr"
+        "flaresolverr"
+        "requestrr"
+        "soularr"
+        # third-party credentials
+        "tautulli"
+        "ebay-mcp"
       ] (_: {})
-      // {immich_server.node = true;};
+      // {
+        immich_server.node = true;
+        seerr.node = true;
+        job-ops.node = true;
+        # NZBGet verifies usenet servers against its CertStore,
+        # ${AppDir}/cacert.pem, not the system bundle.
+        nzbget.bundlePaths = ["/app/nzbget/cacert.pem"];
+      };
 
     # Image versions/digests come from oci-images.json so an
     # auto-update workflow can rewrite plain JSON instead of nix.

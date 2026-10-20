@@ -5,6 +5,8 @@
 }: {
   modules.linux.oci = {
     enable = true;
+    # The runner fetches the actions its jobs execute.
+    hostTrustStore.forgejo-runner-default = {};
     # Image versions/digests come from oci-images.json so an
     # auto-update workflow can rewrite plain JSON instead of nix.
     services = lib.recursiveUpdate (lib.importJSON ./oci-images.json) {

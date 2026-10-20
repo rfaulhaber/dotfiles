@@ -18,8 +18,17 @@
       registries."git.3679.space".secret = "registry-auth/forgejo";
     };
     # newt's control channel to Pangolin carries the site secret and the
-    # WireGuard config for the tunnel every public request rides.
-    hostTrustStore.newt = {};
+    # WireGuard config for the tunnel every public request rides. The runner
+    # fetches the actions its jobs execute; Plex and the alt-text bot hold
+    # plex.tv and API tokens; Jellyfin installs plugin DLLs it downloads.
+    hostTrustStore = {
+      newt = {};
+      forgejo-runner-default = {};
+      tumblr-alt-text-bot = {};
+      jellyfin = {};
+      # Plex Media Server's HTTP client verifies against its own bundle.
+      plex.bundlePaths = ["/usr/lib/plexmediaserver/Resources/cacert.pem"];
+    };
     # Jellyfin's KnownProxies (runtime network.xml, not managed here) names
     # the default subnet so it trusts X-Forwarded-For from Newt. Unpinned,
     # podman hands out the first free /24 whenever the network units recreate

@@ -16,10 +16,14 @@ in {
 
     # netbird-mgmt admits peers to the mesh on Pocket-ID tokens it validates
     # against keys fetched over TLS. Traefik's only outbound TLS left is ACME,
-    # but it terminates every public route.
+    # but it terminates every public route. Pangolin sends mail through
+    # Fastmail with an app password, and CrowdSec pulls hub content and the
+    # community blocklist.
     hostTrustStore = {
       traefik = {};
       netbird-mgmt = {};
+      pangolin.node = true;
+      crowdsec = {};
     };
 
     services =
