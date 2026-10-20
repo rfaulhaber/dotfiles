@@ -73,8 +73,8 @@
   },
   "kept": {
     "image": {
-      "version": "1.8.1",
-      "digest": "sha256:53bff8e0036be04740759030e1575b740becef13c6ec9b79cb9b6940b4815e9d"
+      "version": "1.8.2",
+      "digest": "sha256:850abdbfa9cd8befed3e16bfb1e25e64642772a8cd308bf3aaa1ee624a486883"
     }
   },
   "kitchenowl": {
@@ -122,7 +122,7 @@
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:7fed6605e0a104a337e1cb903bbb1225f80c7f6e5e56ff1eb1d70c57740d8e0f"
+      "digest": "sha256:10e59a42c3445ff557f862f491be5d13b4c78cf662e2dab13ec5f0c94abf5bf5"
     }
   },
   "nzbget": {
@@ -170,7 +170,7 @@
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ff4430fe2d6159b4dbaac9903acfecee5aa68dec8c929259e2f3114c63f7a09e"
+      "digest": "sha256:fc0ae3c50f8128b97e84381903ec8d6845c3a569641cb7117c124376cccb57c1"
     }
   },
   "recyclarr": {
@@ -212,7 +212,7 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:44b06045a98bc1f237b9ffefc4b28dab64cb29305e4a2a94875ae93b5224e4cc"
+      "digest": "sha256:889dcc58c6aea859033985894b519b2e6b1e55d92527ed123f9f52e42ae7c97b"
     }
   },
   "soularr": {
