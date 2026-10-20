@@ -236,7 +236,7 @@
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:d6caecad406774a18511be7bfa99ba5070c17a3bdd7a5d73091651841603273c"
+      "digest": "sha256:55aaeedf9fc354d34136387e15ee0ba4679096f20398dd2875867e5cd5cf8be5"
     }
   },
   "vikunja": {
