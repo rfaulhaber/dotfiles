@@ -18,6 +18,27 @@
       registries."localhost:2835".secret = "registry-auth/forgejo";
     };
 
+    # Containers whose outbound TLS guards more than themselves: newt's
+    # tunnel control channel, and every service that signs users in through
+    # Pocket-ID, whose ID tokens it validates against keys fetched from
+    # auth.3679.space across the internet.
+    hostTrustStore =
+      lib.genAttrs [
+        "newt"
+        "sftpgo"
+        "paperless"
+        "sure"
+        "sure_worker"
+        "grafana"
+        "vikunja"
+        "miniflux"
+        "kitchenowl"
+        "linkding"
+        "forgejo"
+        "calibre-web-auto"
+      ] (_: {})
+      // {immich_server.node = true;};
+
     # Image versions/digests come from oci-images.json so an
     # auto-update workflow can rewrite plain JSON instead of nix.
     services =

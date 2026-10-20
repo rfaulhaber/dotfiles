@@ -10,6 +10,28 @@ with lib; let
   imageLib = import ./lib.nix {inherit lib;};
   networkName = "pangolin";
 
+  # Traefik's plugins load as local sources pinned here. Under
+  # `experimental.plugins` it downloads them from plugins.traefik.io on every
+  # container start, verified by nothing stronger than TLS, and the plugin
+  # code then runs inside the proxy that terminates every public route.
+  badgerModule = "github.com/fosrl/badger";
+  badgerSrc = pkgs.fetchFromGitHub {
+    owner = "fosrl";
+    repo = "badger";
+    rev = "v1.4.1";
+    hash = "sha256-s0d3Rp7ZFJKPcVHRPYrjI/4W2nM311Hs52qdtH5imWw=";
+  };
+  crowdsecPluginModule = "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin";
+  crowdsecPluginSrc = pkgs.fetchFromGitHub {
+    owner = "maxlerebourg";
+    repo = "crowdsec-bouncer-traefik-plugin";
+    rev = cfg.crowdsec.pluginVersion;
+    hash = cfg.crowdsec.pluginHash;
+  };
+  # Traefik looks a local plugin up at ./plugins-local/src/<moduleName> under
+  # its working directory, which is / in the official image.
+  pluginMount = module: src: "${src}:/plugins-local/src/${module}:ro";
+
   # When CrowdSec is enabled we attach its bouncer as a default middleware on
   # both HTTP entrypoints so it covers every router — including the tunneled
   # resources Pangolin generates dynamically via the http provider.
@@ -32,16 +54,15 @@ with lib; let
     optionalString cfg.crowdsec.enable
     "      middlewares:\n        - \"crowdsec-bouncer@file\"";
 
-  # Inserted at end of the badger `version:` line in source (which sits at
+  # Inserted at end of the badger `moduleName:` line in source (which sits at
   # col 6 after the static config's 4-space strip). We need
   # `crowdsec-bouncer-traefik-plugin:` to land at col 4 (sibling of `badger:`)
-  # and its children at col 6/8.
+  # and its child at col 6.
   crowdsecPluginEntry = optionalString cfg.crowdsec.enable (
     "\n"
     + concatMapStringsSep "\n" (line: "    " + line) [
       "crowdsec-bouncer-traefik-plugin:"
-      "  moduleName: \"github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin\""
-      "  version: \"${cfg.crowdsec.pluginVersion}\""
+      "  moduleName: \"${crowdsecPluginModule}\""
     ]
   );
 
@@ -59,10 +80,9 @@ with lib; let
         filename: "/etc/traefik/dynamic_config.yml"
 
     experimental:
-      plugins:
+      localPlugins:
         badger:
-          moduleName: "github.com/fosrl/badger"
-          version: "v1.4.1"${crowdsecPluginEntry}
+          moduleName: "${badgerModule}"${crowdsecPluginEntry}
 
     log:
       level: "INFO"
@@ -311,9 +331,15 @@ in {
       '';
 
       pluginVersion = mkOption {
-        description = "Version tag of crowdsec-bouncer-traefik-plugin to load.";
+        description = "Version tag of crowdsec-bouncer-traefik-plugin to load. Bump together with pluginHash.";
         type = types.str;
         default = "v1.4.2";
+      };
+
+      pluginHash = mkOption {
+        description = "Hash of the plugin source at pluginVersion, as fetchFromGitHub reports it.";
+        type = types.str;
+        default = "sha256-1Mc1jtUf5x1twtWpNxGNVnZs4tC1yg8z+esx5pHKuaI=";
       };
 
       mode = mkOption {
@@ -517,9 +543,12 @@ in {
             "${traefikDynamicConfig}:/etc/traefik/dynamic_config.yml:ro"
             "${cfg.baseDir}/letsencrypt:/letsencrypt:rw"
             "${cfg.baseDir}/traefik:/var/log/traefik:rw"
+            (pluginMount badgerModule badgerSrc)
           ]
-          ++ optional cfg.crowdsec.enable
-          "${cfg.crowdsec.bouncerKeyFile}:${cfg.crowdsec.bouncerKeyContainerPath}:ro";
+          ++ optionals cfg.crowdsec.enable [
+            "${cfg.crowdsec.bouncerKeyFile}:${cfg.crowdsec.bouncerKeyContainerPath}:ro"
+            (pluginMount crowdsecPluginModule crowdsecPluginSrc)
+          ];
         extraOptions =
           [
             "--network=container:gerbil"

@@ -17,6 +17,9 @@
       # The secret is base64("<user>:<PAT with read:packages>").
       registries."git.3679.space".secret = "registry-auth/forgejo";
     };
+    # newt's control channel to Pangolin carries the site secret and the
+    # WireGuard config for the tunnel every public request rides.
+    hostTrustStore.newt = {};
     # Jellyfin's KnownProxies (runtime network.xml, not managed here) names
     # the default subnet so it trusts X-Forwarded-For from Newt. Unpinned,
     # podman hands out the first free /24 whenever the network units recreate

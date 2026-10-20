@@ -82,6 +82,17 @@ with lib; let
     };
   };
 
+  # The host's own trust bundle, as built by security.pki (so every distrust
+  # applied there is already in it), laid out as the /etc/ssl/certs directory
+  # images expect. The no-trust-rules variant is plain PEM: Go, Python and Ruby
+  # parse only plain CERTIFICATE blocks, and the rejected-root entries in the
+  # OpenSSL trust-rules bundle mean nothing to them.
+  hostTrustDir = pkgs.runCommand "oci-host-ca-certificates" {} ''
+    mkdir $out
+    cp ${dirOf config.security.pki.caBundle}/ca-no-trust-rules-bundle.crt $out/ca-certificates.crt
+  '';
+  hostTrustBundle = "/etc/ssl/certs/ca-certificates.crt";
+
   # Filter to enabled items
   enabledNetworks = filterAttrs (_: v: v.enable) cfg.networks;
   enabledVolumes = filterAttrs (_: v: v.enable) cfg.volumes;
@@ -285,6 +296,37 @@ in {
       '';
     };
 
+    hostTrustStore = mkOption {
+      type = types.attrsOf (types.submodule {
+        options.node = mkOption {
+          type = types.bool;
+          default = false;
+          description = ''
+            The container runs Node.js, which verifies against a root list
+            compiled into its binary and ignores the system store. Sets
+            NODE_OPTIONS=--use-openssl-ca so it reads the mounted bundle
+            instead; this replaces any NODE_OPTIONS the image defines.
+          '';
+        };
+      });
+      default = {};
+      example = literalExpression ''
+        {
+          newt = {};
+          immich_server.node = true;
+        }
+      '';
+      description = ''
+        Containers, by name, that verify TLS against the host's CA bundle
+        instead of the one frozen into their image. The bundle is mounted over
+        /etc/ssl/certs and named by SSL_CERT_FILE, SSL_CERT_DIR and
+        REQUESTS_CA_BUNDLE, so a CA distrusted through security.pki reaches
+        the container on the next deploy rather than whenever upstream
+        rebuilds the image. Anything else in the image's /etc/ssl/certs, such
+        as Java's cacerts or extra CAs added at build time, is hidden.
+      '';
+    };
+
     lib = mkOption {
       type = types.attrs;
       internal = true;
@@ -307,11 +349,31 @@ in {
   #
   # We extend the submodule type rather than reading the merged containers
   # attrset (which causes infinite recursion) — this injects extraOptions
-  # into every container regardless of where it's defined.
+  # into every container regardless of where it's defined. The same hook
+  # applies hostTrustStore to the containers it names.
   options.virtualisation.oci-containers.containers = mkOption {
-    type = types.attrsOf (types.submodule {
-      config.extraOptions = mkAfter ["--no-healthcheck"];
-    });
+    type = types.attrsOf (types.submodule ({name, ...}: {
+      config = mkMerge [
+        {extraOptions = mkAfter ["--no-healthcheck"];}
+        (mkIf (cfg.hostTrustStore ? ${name}) {
+          volumes = ["${hostTrustDir}:/etc/ssl/certs:ro"];
+          environment =
+            {
+              SSL_CERT_FILE = hostTrustBundle;
+              # Go also reads every file in its default certificate
+              # directories, /etc/pki/tls/certs among them, unless this
+              # narrows the search.
+              SSL_CERT_DIR = "/etc/ssl/certs";
+              # requests verifies against certifi's own copy of the roots
+              # unless pointed elsewhere.
+              REQUESTS_CA_BUNDLE = hostTrustBundle;
+            }
+            // optionalAttrs cfg.hostTrustStore.${name}.node {
+              NODE_OPTIONS = "--use-openssl-ca";
+            };
+        })
+      ];
+    }));
   };
 
   config = mkIf cfg.enable {
@@ -421,7 +483,13 @@ in {
       mapAttrsToList (path: _: "d ${path} 0755 root root - -") cfg._managedPaths
     );
 
-    assertions = mkIf zfsCfg.enable managedPathAssertions;
+    assertions =
+      optionals zfsCfg.enable managedPathAssertions
+      ++ mapAttrsToList (name: _: {
+        assertion = config.virtualisation.oci-containers.containers ? ${name};
+        message = "modules.linux.oci.hostTrustStore.${name}: no container named '${name}' is defined.";
+      })
+      cfg.hostTrustStore;
 
     virtualisation.podman = {
       enable = true;

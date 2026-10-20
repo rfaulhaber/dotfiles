@@ -14,6 +14,14 @@ in {
       netbird.enable = true;
     };
 
+    # netbird-mgmt admits peers to the mesh on Pocket-ID tokens it validates
+    # against keys fetched over TLS. Traefik's only outbound TLS left is ACME,
+    # but it terminates every public route.
+    hostTrustStore = {
+      traefik = {};
+      netbird-mgmt = {};
+    };
+
     services =
       lib.importJSON ./oci-images.json
       |> lib.recursiveUpdate {
