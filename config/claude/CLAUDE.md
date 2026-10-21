@@ -75,3 +75,11 @@ Write comments for the next person who reads this code in its committed, finishe
 - Reserve comments for things that genuinely help a future reader: an unusual or surprising decision, a workaround for an external bug or constraint, a subtle invariant, or a warning about a non-obvious consequence.
 - Prefer fewer, durable comments over many situational ones. When in doubt, leave it out — clear naming and structure beat a comment.
 - Match the surrounding code's existing comment style and density.
+
+# Documentation
+
+Covers READMEs, CLAUDE.md files, skills, plans and notes, whatever the format (Markdown, Org, plain text).
+
+- **No fixed line width.** Write each paragraph or list item as one unwrapped line. GitHub and other renderers reflow prose themselves, so hard wrapping only adds churn when a paragraph is edited.
+- **Write for the reader.** Be clear and concise, and know who it's for: a developer needs the context and reasoning to make a change, an agent needs precise instructions it can act on. Cut anything neither would miss.
+- **American English only**, in docs and everywhere else: color, behavior, organize, gray, canceled, license (never colour, behaviour, organise, grey, cancelled, licence).
