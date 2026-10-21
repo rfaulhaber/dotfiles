@@ -24,7 +24,6 @@
     hostTrustStore = {
       newt = {};
       forgejo-runner-default = {};
-      tumblr-alt-text-bot = {};
       jellyfin = {};
       # Plex Media Server's HTTP client verifies against its own bundle.
       plex.bundlePaths = ["/usr/lib/plexmediaserver/Resources/cacert.pem"];
@@ -77,12 +76,6 @@
         enable = true;
         # Open so atlas's Prometheus can scrape over the LAN at :9882.
         openFirewall = true;
-      };
-
-      tumblr-alt-text-bot = {
-        enable = true;
-        baseDir = "/zroot/apps/tumblr-alt-text-bot";
-        botBlog = "alt-text-bot";
       };
 
       # TRUST BOUNDARY: like the forgejo runners below, Wolf holds the rootful
