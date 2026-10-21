@@ -215,7 +215,7 @@ in {
           inherit providers;
           inherit (cfg) models;
 
-          # Same stance as programs.claude-code.settings.includeCoAuthoredBy.
+          # Same stance as programs.claude-code.settings.attribution.
           options.attribution = {
             trailer_style = mkDefault "none";
             generated_with = mkDefault false;

@@ -19,16 +19,14 @@ in {
         # Deliberately absent, despite being the two highest-frequency prompts:
         # `ssh` and `ssh-bash` (a blanket allow authorizes any remote command,
         # including deploy-rs and nixos-rebuild switch) and `python3`
-        # (arbitrary code). The prompt is the only thing gating those.
-
-        # Rust
-        "Bash(cargo *)"
+        # (arbitrary code). The prompt is the only thing gating those. `cargo`
+        # and `nix develop` stay out for the same reason: `cargo run`, build
+        # scripts and `nix develop -c` all execute arbitrary code.
 
         # Nix — evaluation, build, and query only. Nothing that activates a
         # system generation, and nothing that mutates the store.
         "Bash(nix eval*)"
         "Bash(nix build*)"
-        "Bash(nix develop*)"
         "Bash(nix fmt*)"
         "Bash(nix flake check*)"
         "Bash(nix flake metadata*)"
@@ -76,7 +74,7 @@ in {
         "Bash(nix run nixpkgs#glow *)"
         "Bash(nix run nixpkgs#htop *)"
         "Bash(nix run nixpkgs#btop *)"
-        "Read(*)"
+        "Read"
         "WebFetch(domain:crates.io)"
         "WebFetch(domain:docs.rs)"
         "WebFetch(domain:github.com)"
@@ -144,10 +142,6 @@ in {
       | join(" · ")
     '';
 
-    statusLine = pkgs.writeShellScript "claude-statusline" ''
-      exec ${pkgs.jq}/bin/jq -rf ${statusLineProgram}
-    '';
-
     # Formats .nix files as they are written, so `nix fmt` stops being a manual
     # step. Every failure path exits 0: a hook that fails would surface as a
     # tool error, and mid-edit files that don't parse yet are the common case,
@@ -213,6 +207,20 @@ in {
       direnv export bash >"$CLAUDE_ENV_FILE" 2>/dev/null || true
       exit 0
     '';
+
+    # A cold nix-direnv cache (a fresh worktree) evaluates the flake, which
+    # can outlast the default hook timeout.
+    direnvHook = [
+      {
+        hooks = [
+          {
+            type = "command";
+            command = "${direnvEnv}";
+            timeout = 120;
+          }
+        ];
+      }
+    ];
 
     # home-manager renders mcpServers into a plugin whose .mcp.json is a
     # world-readable store path, so a secret can never be written into it.
@@ -319,7 +327,7 @@ in {
         nixpkgs.overlays = [inputs.claude-code.overlays.default];
 
         user.packages = with pkgs; [
-          # some of the plugins below use python3 and assume it's globally available, which of course it isn't
+          # security-guidance's hooks look for python3 on PATH.
           python3
           sshBash
         ];
@@ -329,8 +337,10 @@ in {
           package = claudePackage;
 
           settings = {
-            # TODO replace, this is deprecated
-            includeCoAuthoredBy = false;
+            attribution = {
+              commit = "";
+              pr = "";
+            };
             tui = "fullscreen";
             remoteControlAtStartup = false;
             agentPushNotifEnabled = true;
@@ -344,11 +354,19 @@ in {
             permissions = {
               allow = cfg.allowedTools;
               deny = cfg.deniedTools;
+              defaultMode = "auto";
             };
+
+            # An allow rule approves a call before the auto-mode classifier
+            # sees it, so a prefix rule like `Bash(find *)` would wave through
+            # `find -exec` unjudged. This suspends every Bash allow rule while
+            # auto mode is active; they still apply in the other modes and
+            # still drive crush's and opencode's bash permissions.
+            autoMode.classifyAllShell = true;
 
             statusLine = {
               type = "command";
-              command = "${statusLine}";
+              command = "${pkgs.jq}/bin/jq -rf ${statusLineProgram}";
             };
 
             hooks = {
@@ -366,34 +384,12 @@ in {
                 }
               ];
 
-              # A cold nix-direnv cache (a fresh worktree) evaluates the flake,
-              # which can outlast the default hook timeout.
-              SessionStart = [
-                {
-                  hooks = [
-                    {
-                      type = "command";
-                      command = "${direnvEnv}";
-                      timeout = 120;
-                    }
-                  ];
-                }
-              ];
-              CwdChanged = [
-                {
-                  hooks = [
-                    {
-                      type = "command";
-                      command = "${direnvEnv}";
-                      timeout = 120;
-                    }
-                  ];
-                }
-              ];
+              SessionStart = direnvHook;
+              CwdChanged = direnvHook;
 
               PostToolUse = [
                 {
-                  matcher = "Edit|Write|MultiEdit";
+                  matcher = "Edit|Write";
                   hooks = [
                     {
                       type = "command";
@@ -438,7 +434,7 @@ in {
           # never sees. The two that were enabled are reproduced here verbatim;
           # home-manager renders them into its generated plugin's .lsp.json.
           # This should also only contain global LSP servers. Projects should
-          # define their own MCP servers.
+          # define their own LSP servers.
           lspServers = {
             rust-analyzer = {
               command = "rust-analyzer";
