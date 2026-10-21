@@ -8,7 +8,6 @@
     [
       ./conf.nix
       ./dotfiles.nix
-      ./emudhra_distrust_20261020.nix
       ./globals.nix
       ./gpg
       ./options.nix
