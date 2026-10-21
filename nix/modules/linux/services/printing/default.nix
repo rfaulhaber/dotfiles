@@ -43,7 +43,7 @@ in {
             # printer's SRV target when it registers and never follows a rename,
             # so a single rename leaves clients with a target that resolves to
             # nothing. Discovery works fine over v4 alone.
-            ipv6 = false;
+            settings.server.use-ipv6 = false;
             # use-ipv6=no only closes the v6 socket: publish-aaaa-on-ipv4 defaults
             # to yes, so avahi still tracks every v6 address and publishes its
             # AAAA record over v4, and the flap-driven renames continue. Dropping
