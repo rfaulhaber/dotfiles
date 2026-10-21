@@ -20,7 +20,7 @@
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:10e59a42c3445ff557f862f491be5d13b4c78cf662e2dab13ec5f0c94abf5bf5"
+      "digest": "sha256:0189c8287058b800cca825590e4c39946b3815344ca48678dd0b96616d639319"
     }
   },
   "forgejo-runner": {
