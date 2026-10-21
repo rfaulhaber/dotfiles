@@ -154,7 +154,9 @@
         nixosConfigurations = let
           mkHost = lib.my.mkNixOSHost;
         in {
-          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {};
+          hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
+            overlays = [(import ./nix/overlays/codegraph_20261021.nix)];
+          };
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {};
           janus = mkHost ./nix/hosts/janus/configuration.nix {};
           pallas = mkHost ./nix/hosts/pallas/configuration.nix {
@@ -304,6 +306,7 @@
       }: {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
+          overlays = [(import ./nix/overlays/codegraph_20261021.nix)];
         };
         formatter = pkgs.alejandra;
 
