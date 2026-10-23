@@ -269,7 +269,20 @@ in {
       mkdir -p -m 0700 "$CLAUDE_CODE_TMPDIR"
     '';
 
-    launcherSetup = tmpDirSetup + concatMapStrings launcherFor secretHeaders;
+    # A shell loads .envrc from its prompt hook, but zellij resurrects a
+    # session's command panes by exec'ing the recorded command straight from
+    # its server, so a restored claude started without the devshell. The Bash
+    # tool recovers it through direnvHook; the LSP and MCP servers claude
+    # spawns itself do not. Launched from a shell that already loaded the
+    # directory, the export is empty. It runs first so the variables set below
+    # win over anything a devshell exports.
+    direnvSetup = optionalString config.modules.programs.direnv.enable ''
+      if command -v direnv >/dev/null 2>&1; then
+        eval "$(direnv export bash)"
+      fi
+    '';
+
+    launcherSetup = direnvSetup + tmpDirSetup + concatMapStrings launcherFor secretHeaders;
 
     claudePackage =
       if launcherSetup == ""
