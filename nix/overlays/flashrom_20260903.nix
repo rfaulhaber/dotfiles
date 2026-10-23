@@ -30,21 +30,17 @@
 # 1.8.0 on an aarch64 host. Any version bump passes flashrom through untouched
 # and flips the eval warning into a removal reminder — if that bump still
 # fails, re-date the overlay rather than widening the condition.
-_final: prev: let
-  inherit (prev) lib;
-
-  overlayNeeded =
-    prev.flashrom.version
-    == "1.8.0"
-    && prev.stdenv.hostPlatform.isAarch64;
-in {
-  flashrom =
-    if overlayNeeded
-    then
-      lib.warn "temporary overlay for flashrom enabled: flashrom_20260903" (prev.flashrom.overrideAttrs (_old: {
-        doCheck = false;
-      }))
-    else
-      lib.warn "overlay flashrom_20260903 is superfluous (flashrom ${prev.flashrom.version} on ${prev.stdenv.hostPlatform.system}): remove nix/overlays/flashrom_20260903.nix and its entries in flake.nix"
-      prev.flashrom;
+(import ../lib/temporary-overlay.nix).mkTemporaryOverlay {
+  id = "flashrom_20260903";
+  attrPath = ["flashrom"];
+  fix = _final: prev: {
+    needed =
+      prev.flashrom.version
+      == "1.8.0"
+      && prev.stdenv.hostPlatform.isAarch64;
+    reason = "flashrom ${prev.flashrom.version} on ${prev.stdenv.hostPlatform.system}";
+    patched = prev.flashrom.overrideAttrs (_old: {
+      doCheck = false;
+    });
+  };
 }

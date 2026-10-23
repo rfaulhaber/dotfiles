@@ -26,35 +26,22 @@
 # package-set-wide is safe: nixpkgs may not reference its own aliases, so the
 # only possible consumers are out-of-tree expressions that are equally stale.
 #
-# Shaped differently from the other overlays here, on two counts.
-#
-# It takes the sops-nix source as an argument, because the expression that
-# decides whether this is still needed lives in that flake input rather than
-# anywhere in `prev`.
-#
-# It returns `{ overlay, warning }` instead of a bare overlay, and the message
-# is surfaced through the module system's `warnings` rather than `lib.warn`.
-# `lib.warn` has nowhere correct to live in this overlay: on the alias it would
-# fall silent once sops-nix is fixed, since the broken consumer is the only
-# thing that ever forces the alias — exactly when it should become a removal
-# reminder; on the overlay's own attrset it repeats dozens of times per
-# evaluation, once for every derived package set nixpkgs re-applies overlays
-# to (pkgsi686Linux, pkgsStatic, each `pkgs.extend`, ...). `warnings` is forced
-# once per host regardless of either.
+# Unlike the other overlays here, this file takes the sops-nix source as an
+# argument and returns the overlay, because the expression that decides
+# whether this is still needed lives in that flake input rather than anywhere
+# in `prev`. Wire it as `(import .../sops_install_secrets_20260917.nix
+# inputs.sops-nix)`.
 sops-nix: let
   consumer = "${sops-nix}/pkgs/sops-install-secrets/default.nix";
-
-  # TODO: narrow this to "sops-nix still asks for buildGo125Module", so that a
-  # flake update which pulls in the upstream fix flips the warning below.
-  overlayNeeded = builtins.pathExists consumer;
-in {
-  overlay = final: _prev:
-    if overlayNeeded
-    then {buildGo125Module = final.buildGoModule;}
-    else {};
-
-  warning =
-    if overlayNeeded
-    then "temporary overlay for sops-install-secrets enabled: sops_install_secrets_20260917"
-    else "overlay sops_install_secrets_20260917 is superfluous (sops-nix no longer asks for buildGo125Module): remove nix/overlays/sops_install_secrets_20260917.nix and its use in nix/modules/programs/sops/default.nix";
-}
+in
+  (import ../lib/temporary-overlay.nix).mkTemporaryOverlay {
+    id = "sops_install_secrets_20260917";
+    attrPath = ["buildGo125Module"];
+    fix = final: _prev: {
+      # TODO: narrow this to "sops-nix still asks for buildGo125Module", so that a
+      # flake update which pulls in the upstream fix flips the warning.
+      needed = builtins.pathExists consumer;
+      reason = "sops-nix no longer asks for buildGo125Module";
+      patched = final.buildGoModule;
+    };
+  }

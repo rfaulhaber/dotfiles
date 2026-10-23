@@ -2,8 +2,8 @@
   "pangolin": {
     "images": {
       "pangolin": {
-        "version": "1.24.0",
-        "digest": "sha256:17774ddbb4bf13f4a2b9e813cc2dfc3ca8ded1c5745823624af632bab0376488"
+        "version": "1.25.2",
+        "digest": "sha256:e652f01250e78f275861897daf479c0e2a07109b438b920f628600da79668b72"
       },
       "gerbil": {
         "version": "latest",
@@ -11,7 +11,7 @@
       },
       "traefik": {
         "version": "v3.7",
-        "digest": "sha256:6d3e069ee484ab1da5adfdda555a75eb9b1545ef09096a0cc7c3043101986a20"
+        "digest": "sha256:c8a121e4bb1347e8fd52657fab12f2cb70b68f8a018895e2068f92c9e519b9c2"
       }
     }
   },
@@ -42,7 +42,7 @@
   "pocket-id": {
     "image": {
       "version": "latest",
-      "digest": "sha256:323e7ef5bfacf7cf32f22f3d10ccdf48e0c97c94d67e7e40b0b996830deb5165"
+      "digest": "sha256:f085157f0b6ea4b2e8aa5ecfd99eada0d83a4960f3a3dcfd46014097d0ef7ab5"
     }
   },
   "podman-exporter": {

@@ -27,36 +27,31 @@
 # contain #672), codegraph passes through untouched and the eval warning flips
 # to a removal reminder. If nixpkgs instead backports #672 onto 0.19.2, the
 # patch below fails to apply as already present; remove the overlay then too.
-final: prev: let
-  inherit (prev) lib;
-
-  overlayNeeded = prev.patchelf.version == "0.19.2";
-
-  patchelf = prev.patchelf.overrideAttrs (old: {
-    patches =
-      (old.patches or [])
-      ++ [
-        (final.fetchpatch {
-          name = "patchelf-fix-overlapping-load-mappings.patch";
-          url = "https://github.com/NixOS/patchelf/commit/59acc3d98b4961cfddf02090d9426ac735603218.patch";
-          includes = ["src/*"];
-          hash = "sha256-rQWWZlCa4IRrcPcxMD2xrTTD4nLOsWfdZLOk9UoIOIs=";
-        })
-      ];
-  });
-in {
-  codegraph =
+(import ../lib/temporary-overlay.nix).mkTemporaryOverlay {
+  id = "codegraph_20261021";
+  attrPath = ["codegraph"];
+  fix = final: prev: let
+    patchelf = prev.patchelf.overrideAttrs (old: {
+      patches =
+        (old.patches or [])
+        ++ [
+          (final.fetchpatch {
+            name = "patchelf-fix-overlapping-load-mappings.patch";
+            url = "https://github.com/NixOS/patchelf/commit/59acc3d98b4961cfddf02090d9426ac735603218.patch";
+            includes = ["src/*"];
+            hash = "sha256-rQWWZlCa4IRrcPcxMD2xrTTD4nLOsWfdZLOk9UoIOIs=";
+          })
+        ];
+    });
+  in {
     # Only the Linux builds go through autoPatchelfHook.
-    if !prev.stdenv.hostPlatform.isLinux
-    then prev.codegraph
-    else if overlayNeeded
-    then
-      lib.warn "temporary overlay for codegraph enabled: codegraph_20261021" (prev.codegraph.overrideAttrs (old: {
-        # auto-patchelf runs whichever `patchelf` is first on PATH, and
-        # nativeBuildInputs come ahead of stdenv's own copy.
-        nativeBuildInputs = old.nativeBuildInputs ++ [patchelf];
-      }))
-    else
-      lib.warn "overlay codegraph_20261021 is superfluous (nixpkgs patchelf is ${prev.patchelf.version}): remove nix/overlays/codegraph_20261021.nix and its entries in flake.nix"
-      prev.codegraph;
+    applies = prev.stdenv.hostPlatform.isLinux;
+    needed = prev.patchelf.version == "0.19.2";
+    reason = "nixpkgs patchelf is ${prev.patchelf.version}";
+    patched = prev.codegraph.overrideAttrs (old: {
+      # auto-patchelf runs whichever `patchelf` is first on PATH, and
+      # nativeBuildInputs come ahead of stdenv's own copy.
+      nativeBuildInputs = old.nativeBuildInputs ++ [patchelf];
+    });
+  };
 }

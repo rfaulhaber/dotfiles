@@ -303,7 +303,14 @@
         inputs',
         system,
         ...
-      }: {
+      }: let
+        # Hosts report temporary overlays through `warnings`. perSystem has no
+        # equivalent, so the report rides on the devShell, the output that
+        # pulls in the overlaid packages.
+        warnTemporaryOverlays = value:
+          pkgs.lib.foldr pkgs.lib.warn value
+          ((import ./nix/lib/temporary-overlay.nix).temporaryOverlayWarnings pkgs);
+      in {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
           overlays = [(import ./nix/overlays/codegraph_20261021.nix)];
@@ -329,7 +336,7 @@
           statix.enable = true;
         };
 
-        devShells.default = pkgs.mkShell {
+        devShells.default = warnTemporaryOverlays (pkgs.mkShell {
           packages = with pkgs;
             [
               # Qualified because `with pkgs` loses to the lexically bound
@@ -352,7 +359,7 @@
               inputs'.nix-darwin.packages.default
             ];
           shellHook = config.pre-commit.installationScript;
-        };
+        });
       };
     });
 }

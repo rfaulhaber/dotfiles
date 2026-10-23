@@ -7,6 +7,7 @@
   nixos = import ./nixos.nix {inherit inputs lib;};
 in
   nixos
+  // import ./temporary-overlay.nix
   // {
     mkOpt = type: default: mkOption {inherit type default;};
 

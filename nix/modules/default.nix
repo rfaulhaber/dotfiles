@@ -13,6 +13,7 @@
       ./options.nix
       ./programs
       ./ssh
+      ./temporary-overlays.nix
       ./themes
     ]
     ++ lib.optionals isLinux [
