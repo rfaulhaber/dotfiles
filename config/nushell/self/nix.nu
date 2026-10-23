@@ -30,7 +30,8 @@ export def "flake-outdated" [...inputs: string]: nothing -> table {
         input: $r.input
         locked: ($o.lastModified * 1_000_000_000 | into datetime)
         latest: ($n.lastModified * 1_000_000_000 | into datetime)
-        rev: $"($o.rev? | default "" | str substring 0..6) → ($n.rev? | default "" | str substring 0..6)"
+        previous_rev: ($o.rev? | default "" | str substring 0..6)
+        latest_rev: ($n.rev? | default "" | str substring 0..6)
       }
     }
   }
