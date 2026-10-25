@@ -292,6 +292,23 @@
         # overlay traffic twice.
         networkInterface = "enp5s0";
         wallpaper.enable = true;
+        # Nothing suspends, so work left running unattended keeps going. Once
+        # the session is locked, by idle, bind or panel, locked_timeout blanks
+        # the outputs; screen-off's own timeout only matters if the idle lock
+        # never lands.
+        idle.behavior = {
+          lock = {
+            enabled = true;
+            action = "lock";
+            timeout = 300;
+          };
+          screen-off = {
+            enabled = true;
+            action = "screen_off";
+            timeout = 360;
+            locked_timeout = 10;
+          };
+        };
       };
       random-wallpaper = {
         enable = true;

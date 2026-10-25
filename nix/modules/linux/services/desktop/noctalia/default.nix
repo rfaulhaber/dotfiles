@@ -14,6 +14,7 @@ with lib; let
     inherit (cfg) networkInterface;
     allowEmptyPassword = config.modules.services.yubikey.enable;
     inherit (config.userInfo) location;
+    idleBehavior = cfg.idle.behavior;
     lockscreenOutputs = attrNames config.modules.desktop.environment.niri.outputs;
     vpn = {
       inherit (config.modules.services.airvpn) enable profile;
@@ -43,6 +44,39 @@ in {
       sums every non-loopback interface, so an overlay like netbird's wt0 is
       counted alongside the physical link it already egresses over.
     '';
+
+    idle.behavior = mkOption {
+      description = ''
+        noctalia `[idle.behavior.*]` entries, keyed by behavior name. Keys
+        beyond `action` and `timeout` (`enabled`, `locked_timeout`, `command`,
+        `resume_command`) are forwarded verbatim. Declaring any entry replaces
+        noctalia's built-in set; left empty, those defaults apply and every
+        behavior is disabled.
+      '';
+      type = types.attrsOf (types.submodule {
+        freeformType = types.attrsOf types.anything;
+        # noctalia starts a declared entry from a blank record rather than the
+        # same-named default, so a missing action or timeout makes it a silent
+        # no-op instead of an error.
+        options = {
+          action = mkOption {
+            description = "What the behavior does once its timeout elapses.";
+            type = types.enum ["lock" "screen_off" "suspend" "lock_and_suspend" "command"];
+          };
+          timeout = mkOption {
+            description = "Seconds without input before the action runs.";
+            type = types.ints.positive;
+          };
+        };
+      });
+      default = {};
+      example = literalExpression ''
+        {
+          lock = { enabled = true; action = "lock"; timeout = 600; };
+          screen-off = { enabled = true; action = "screen_off"; timeout = 660; };
+        }
+      '';
+    };
   };
 
   config = mkIf cfg.enable {

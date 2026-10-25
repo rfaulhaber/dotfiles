@@ -4,6 +4,7 @@
   networkInterface,
   allowEmptyPassword,
   location,
+  idleBehavior,
   lockscreenOutputs,
   wallpaper,
   vpn,
@@ -100,12 +101,7 @@ in {
       automation.enabled = false;
     };
 
-  # Locking is explicit (the bind, or lock-before-suspend); nothing fires on
-  # idle.
-  idle.behavior = {
-    lock.enabled = false;
-    screen-off.enabled = false;
-  };
+  idle.behavior = idleBehavior;
   weather = {
     enabled = true;
     refresh_minutes = 30;
@@ -137,6 +133,39 @@ in {
     launch_apps_as_systemd_services = true;
     # Translucent panel cards so the control center matches the frosted bar.
     panel.transparency_mode = "glass";
+
+    # Declaring any action replaces the whole default set. Logout is omitted
+    # because a single-user seat never leaves the session, and the countdown
+    # guards lock & suspend, which would freeze anything left running.
+    session.actions = [
+      {
+        action = "lock";
+        shortcut = "1";
+      }
+      {
+        action = "command";
+        label = "Lock & Screen Off";
+        glyph = "device-desktop-off";
+        # Runs under /bin/sh. The pause lets the lock surface draw and the
+        # triggering click or key release land before the outputs power off.
+        command = "noctalia msg session lock; sleep 1; niri msg action power-off-monitors";
+        shortcut = "2";
+      }
+      {
+        action = "lock_and_suspend";
+        countdown_seconds = 5;
+        shortcut = "3";
+      }
+      {
+        action = "reboot";
+        shortcut = "4";
+      }
+      {
+        action = "shutdown";
+        variant = "destructive";
+        shortcut = "5";
+      }
+    ];
   };
 
   theme = {
