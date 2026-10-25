@@ -160,11 +160,11 @@
     services = {
       zfs = {
         enable = true;
-        # Cache-class data carved out of the snapshotted home dataset. Both
-        # directories churn by the tens of GB (nix tarball cache, browser and
-        # spotify caches, rootless podman layers) and every byte written there
-        # was being retained by auto-snapshots long after deletion — the home
-        # dataset held 4x its live size in snapshots. Flat names with explicit
+        # Cache-class data on its own datasets, opted out of auto-snapshots.
+        # Both directories churn by the tens of GB (nix tarball cache, browser
+        # and spotify caches, rootless podman layers), and any snapshot of
+        # them retains every deleted byte — while home was snapshotted it held
+        # 4x its live size in snapshots. Flat names with explicit
         # mountpoints: nesting under `.local/share` would make `zfs create -p`
         # mount intermediate datasets over the live ~/.local.
         datasets = let
@@ -352,17 +352,8 @@
     };
   };
 
-  # Snapshots here are an undo buffer for the home dataset, not a backup
-  # (single NVMe, no replication). The weekly/monthly tiers only ever pinned
-  # months of deleted caches and build trees, so keep just the short window
-  # that catches a bad rm/reset. zfstools treats keep=0 as "create none and
-  # destroy any that exist", so the old weekly/monthly snapshots go away on
-  # the next timer run rather than needing a manual destroy.
-  services.zfs.autoSnapshot = {
-    daily = 3;
-    weekly = 0;
-    monthly = 0;
-  };
+  # I have never used snapshotting on this host, and everything on it is replaceable. it just eats up space while enabled
+  services.zfs.autoSnapshot.enable = false;
 
   # TODO move, set defaults
   # TODO separate hardware config

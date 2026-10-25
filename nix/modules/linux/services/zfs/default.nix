@@ -111,7 +111,7 @@ in {
     services.zfs = {
       autoScrub.enable = true;
       trim.enable = true;
-      autoSnapshot.enable = true;
+      autoSnapshot.enable = mkDefault true;
     };
 
     # TODO throw in some assertions to check this?
