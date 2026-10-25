@@ -73,8 +73,8 @@
   },
   "kept": {
     "image": {
-      "version": "1.9.0",
-      "digest": "sha256:e6817e58aa2ddc0b09745d42517ee960e4e46b8c6480af1c27764453ea5ff9b6"
+      "version": "1.9.1",
+      "digest": "sha256:93f6c4721fb6cc3da8537ddc9c3299ddcf2ce29650f44874fa5a7cbc1065f760"
     }
   },
   "kitchenowl": {
@@ -205,8 +205,8 @@
   },
   "slskd": {
     "image": {
-      "version": "0.26.1",
-      "digest": "sha256:588af49abc3088d639c8f1174d3bfad6e92c093a275a593140e3ac9311ebf6c4"
+      "version": "0.26.2",
+      "digest": "sha256:d0963a3e5b16facd295bf4f2156dad0182f246b1b21a032cae12f5494c694843"
     }
   },
   "sonarr": {
