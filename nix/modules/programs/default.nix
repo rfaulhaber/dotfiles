@@ -15,6 +15,7 @@
     ./mcp
     ./nushell
     ./nvtop
+    ./openchamber
     ./opencode
     ./pi
     ./sops

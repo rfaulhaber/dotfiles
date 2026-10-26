@@ -148,6 +148,10 @@
       heroic.enable = true;
       nvtop.enable = true;
       gh.enable = true;
+      openchamber = {
+        desktop.enable = true;
+        cli.enable = true;
+      };
       opencode = {
         enable = true;
         openrouterApiKeySecret = "openrouter-opencode-api-key";

@@ -33,6 +33,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Not in nixpkgs. Deliberately keeps its own nixpkgs: the flake bakes
+    # fixed-output hashes for its bun dependency trees (its own and the bundled
+    # OpenCode CLI's), which only hold for the bun in that pin. Upstream
+    # re-bakes them in a follow-up bot PR, so main fails with a hash mismatch
+    # in openchamber-bun-deps between a bun.lock change and that merge.
+    #
+    # Pinned because main is broken that way as of 2026-10-26 (0056bf6). This
+    # rev is the head of the re-bake PR, openchamber/openchamber#5618: main
+    # plus the fixed hashes. Unpin once it merges, or once #5601 (which drops
+    # the baked hashes entirely) does.
+    openchamber.url = "github:openchamber/openchamber/3033a27ac5e398997f775c873505b86766c2d4e5";
+
     # Claude Code plugin sources. nix/modules/programs/claude links these into
     # ~/.claude/skills as skills-dir plugins instead of letting Claude Code's
     # marketplace fetcher manage them, so their versions are pinned here.

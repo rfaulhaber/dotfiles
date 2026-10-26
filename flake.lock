@@ -869,6 +869,38 @@
         "type": "github"
       }
     },
+    "nixpkgs_10": {
+      "locked": {
+        "lastModified": 1790510107,
+        "narHash": "sha256-EVMNYv7hYDDD9TGVT/hIyTYgpiXA8y3m5xIEIxuGNU0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "3181085bfd08663b6b9e60bc7a8395c2aaa741bd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_11": {
+      "locked": {
+        "lastModified": 1785454630,
+        "narHash": "sha256-LQy14TZp77TwbQf40gg1V3jo8FwJG0jGDkAH+zRHqg8=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "1559d3daa3ecc813a650b79375ea61b6741b8746",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1782767157,
@@ -976,11 +1008,11 @@
     },
     "nixpkgs_9": {
       "locked": {
-        "lastModified": 1785454630,
-        "narHash": "sha256-LQy14TZp77TwbQf40gg1V3jo8FwJG0jGDkAH+zRHqg8=",
+        "lastModified": 1790323409,
+        "narHash": "sha256-VVTPf+Hyd5ebpjBMHmrLMSBIeW6ls48Bqtosj7CNKLA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "1559d3daa3ecc813a650b79375ea61b6741b8746",
+        "rev": "e94cb152ed51bd6e24eb4a41f1460252beb52cd2",
         "type": "github"
       },
       "original": {
@@ -1030,6 +1062,45 @@
         "type": "github"
       }
     },
+    "openchamber": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_9",
+        "opencode": "opencode"
+      },
+      "locked": {
+        "lastModified": 1793017937,
+        "narHash": "sha256-hwbCxgXNFlamqtk/2093BCZhEL5n8pu4+od9oG+F4+4=",
+        "owner": "openchamber",
+        "repo": "openchamber",
+        "rev": "3033a27ac5e398997f775c873505b86766c2d4e5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "openchamber",
+        "repo": "openchamber",
+        "rev": "3033a27ac5e398997f775c873505b86766c2d4e5",
+        "type": "github"
+      }
+    },
+    "opencode": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_10"
+      },
+      "locked": {
+        "lastModified": 1792750491,
+        "narHash": "sha256-ggL24qwcafvNzn1g0/UYk1PcHy8OJeLARZSicET10Zo=",
+        "owner": "anomalyco",
+        "repo": "opencode",
+        "rev": "68bc26b7da1990ce10ffecfbc1e09eb13aa5d824",
+        "type": "github"
+      },
+      "original": {
+        "owner": "anomalyco",
+        "ref": "v2.1.4",
+        "repo": "opencode",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "addy-agent-skills": "addy-agent-skills",
@@ -1054,6 +1125,7 @@
         "nixpkgs": "nixpkgs_8",
         "noctalia": "noctalia",
         "noctalia-greeter": "noctalia-greeter",
+        "openchamber": "openchamber",
         "rz": "rz",
         "sops-nix": "sops-nix",
         "superpowers": "superpowers",
@@ -1084,7 +1156,7 @@
     "rz": {
       "inputs": {
         "flake-parts": "flake-parts_4",
-        "nixpkgs": "nixpkgs_9",
+        "nixpkgs": "nixpkgs_11",
         "rust-overlay": "rust-overlay"
       },
       "locked": {
