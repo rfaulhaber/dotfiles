@@ -331,6 +331,7 @@
         codegraph
         feishin
         moonlight-qt
+        python314Packages.llm
         readest
         signal-desktop
         ungoogled-chromium

@@ -213,7 +213,7 @@
   # Without a scope avahi publishes across every podman bridge and veth pair
   # (~40 interfaces here) plus the netbird overlay; the printer only belongs on
   # the LAN.
-  services.avahi.allowInterfaces = ["eno2"];
+  services.avahi.settings.server.allow-interfaces = ["eno2"];
 
   sops.secrets = {
     "filebrowser/zfs-key" = {

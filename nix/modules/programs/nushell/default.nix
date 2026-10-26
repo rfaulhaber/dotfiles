@@ -62,6 +62,7 @@ in {
         };
       in {
         enable = true;
+        loadSessionVariables = false;
 
         # given the way nushell loads, this causes all the sourced files in the
         # dotfiles to not load correctly. so the way we avoid that is to have

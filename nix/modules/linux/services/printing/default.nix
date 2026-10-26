@@ -43,18 +43,21 @@ in {
             # printer's SRV target when it registers and never follows a rename,
             # so a single rename leaves clients with a target that resolves to
             # nothing. Discovery works fine over v4 alone.
-            settings.server.use-ipv6 = false;
-            # use-ipv6=no only closes the v6 socket: publish-aaaa-on-ipv4 defaults
-            # to yes, so avahi still tracks every v6 address and publishes its
-            # AAAA record over v4, and the flap-driven renames continue. Dropping
-            # AAAA publication is what removes v6 from avahi's view entirely.
-            extraConfig = ''
-              [publish]
-              publish-aaaa-on-ipv4=no
-            '';
-            publish = {
-              enable = true;
-              userServices = true;
+            settings = {
+              server.use-ipv6 = false;
+              publish = {
+                disable-publishing = false;
+                # cupsd registers the printer as a user service, and clients
+                # resolve its SRV target through this host's address records.
+                disable-user-service-publishing = false;
+                publish-addresses = true;
+                # use-ipv6=no only closes the v6 socket: publish-aaaa-on-ipv4
+                # defaults to yes, so avahi still tracks every v6 address and
+                # publishes its AAAA record over v4, and the flap-driven renames
+                # continue. Dropping AAAA publication is what removes v6 from
+                # avahi's view entirely.
+                publish-aaaa-on-ipv4 = false;
+              };
             };
           };
           printing = {
@@ -93,11 +96,10 @@ in {
             nssmdns4 = true;
             openFirewall = true;
             # Same v6 RA-lifetime flap as the server block; browsing needs v4 only.
-            ipv6 = false;
-            extraConfig = ''
-              [publish]
-              publish-aaaa-on-ipv4=no
-            '';
+            settings = {
+              server.use-ipv6 = false;
+              publish.publish-aaaa-on-ipv4 = false;
+            };
           };
         };
 
