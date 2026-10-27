@@ -91,6 +91,10 @@
             # GitHub PAT for the hosted GitHub MCP server, shared by every
             # agent opted into it in modules.programs.mcp
             "github_mcp"
+            # eBay developer keyset the local eBay MCP server mints its
+            # application tokens from
+            "ebay-mcp/client-id"
+            "ebay-mcp/client-secret"
           ] (_: userSecret);
       };
       claude.enable = true;

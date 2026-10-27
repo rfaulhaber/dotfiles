@@ -62,6 +62,18 @@
           # WireGuard config from AirVPN's Config Generator; root-only since
           # only `sudo wg-quick` reads it.
           "airvpn.conf" = {};
+          # eBay developer keyset the local eBay MCP server mints its
+          # application tokens from
+          "ebay-mcp/client-id" = {
+            owner = config.user.name;
+            group = "staff";
+            mode = "0400";
+          };
+          "ebay-mcp/client-secret" = {
+            owner = config.user.name;
+            group = "staff";
+            mode = "0400";
+          };
         };
       };
     };
