@@ -45,10 +45,7 @@
     allowed-users = ["ryan"];
   };
 
-  security.pam = {
-    sshAgentAuth.enable = true;
-    services.ryan.sshAgentAuth = true;
-  };
+  security.pam.sshAgentAuth.enable = true;
 
   system.stateVersion = "25.05";
 }

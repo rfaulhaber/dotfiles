@@ -41,9 +41,7 @@ in {
 
   config = let
     keys =
-      if cfg.useDefaultKeys
-      then (import ./keys.nix) ++ cfg.extraKeys
-      else cfg.extraKeys;
+      lib.optionals cfg.useDefaultKeys (import ./keys.nix) ++ cfg.extraKeys;
   in
     mkIf cfg.enable {
       assertions = [
@@ -54,16 +52,18 @@ in {
       ];
       services.openssh = {
         enable = true;
+        # Only the declared keys in /etc/ssh/authorized_keys.d grant login, so
+        # anything running as the user can't plant one that outlives a rebuild.
+        authorizedKeysInHomedir = false;
         settings = {
           PasswordAuthentication = false;
+          # Otherwise any auth module later added to sshd's PAM stack would
+          # reopen password-style login despite PasswordAuthentication.
+          KbdInteractiveAuthentication = false;
           PermitRootLogin = lib.mkDefault "no";
+          AllowTcpForwarding = lib.mkDefault true;
         };
-        extraConfig =
-          ''
-            PermitEmptyPasswords no
-            AllowTcpForwarding yes
-          ''
-          + cfg.extraConfig;
+        inherit (cfg) extraConfig;
         ports = [cfg.port];
       };
 
@@ -91,10 +91,8 @@ in {
       # TODO support multiple users?
       user.openssh.authorizedKeys.keys = keys;
 
-      security.pam = {
-        # TODO are both necessary?
-        sshAgentAuth.enable = true;
-        services.${config.user.name}.sshAgentAuth = true;
-      };
+      # nixpkgs' sudo and sudo-rs modules opt their own PAM service in; this
+      # only switches pam_ssh_agent_auth on.
+      security.pam.sshAgentAuth.enable = true;
     };
 }
