@@ -10,6 +10,7 @@
     ./hardware
     ./keepalived
     ./keystats
+    ./llama-server
     ./netbird
     ./nfs
     ./nix-cache
