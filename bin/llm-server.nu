@@ -27,6 +27,15 @@ def models []: nothing -> table {
     } catch { [] }
 }
 
+# The models the router holds in any state but unloaded, as "<id> (<status>)"
+# joined by commas. Null when there are none or the router is not reachable.
+def loaded []: nothing -> oneof<string, nothing> {
+    let held = models
+        | where status != "unloaded"
+        | each {|model| $"($model.id) \(($model.status)\)" }
+    if ($held | is-empty) { null } else { $held | str join ", " }
+}
+
 # GPU memory as "<used> / <total> MiB". Null when nvidia-smi is missing or
 # fails, which it does after a driver/library mismatch and has done by crashing
 # on this host, so status never depends on it.
@@ -50,9 +59,14 @@ def main []: nothing -> record {
     main status
 }
 
-# Show the unit state, every model's load state and GPU memory use.
+# Show the unit state, the models currently held and GPU memory use.
 def "main status" []: nothing -> record {
-    {unit: (unit-state), models: (models), vram: (vram)}
+    {unit: (unit-state), loaded: (loaded), vram: (vram)}
+}
+
+# List every model the router serves with its load state.
+def "main models" []: nothing -> table {
+    models
 }
 
 # Start the router and wait until it answers /health.

@@ -28,8 +28,9 @@ with lib; let
     # The script resolves systemctl and journalctl from PATH and takes its
     # endpoint from the environment, so it runs and debugs unchanged from
     # bin/. This preamble is all the packaged copy adds: the address this
-    # module configures.
+    # module configures, and systemd's tools for callers with a minimal PATH.
     ''
+      $env.PATH = ($env.PATH | prepend "${config.systemd.package}/bin")
       $env.LLM_SERVER_URL = ($env.LLM_SERVER_URL? | default "${serverUrl}")
     ''
     + builtins.readFile "${config.dotfiles.binDir}/llm-server.nu"
