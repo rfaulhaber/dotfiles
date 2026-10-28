@@ -5,6 +5,10 @@
 
 local unit = require("./unit.luau")
 
+-- noctalia kills a command after 5 s by default, but `llm-server toggle` waits
+-- up to 30 s, so this covers that bound plus systemctl's own latency.
+local TOGGLE_TIMEOUT_MS = 40000
+
 local active = noctalia.state.get("active") == true
 -- `llm-server toggle` can block for up to 30 s while the router comes up or
 -- the model processes exit, so the tile stays disabled until it returns.
@@ -50,7 +54,7 @@ function onClick()
       noctalia.state.set("active", value)
       apply(value)
     end)
-  end)
+  end, TOGGLE_TIMEOUT_MS)
 end
 
 render()
