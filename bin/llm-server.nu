@@ -18,12 +18,18 @@ def unit-state []: nothing -> string {
 }
 
 # Every model the router knows about, with its load state. Empty when the router
-# is not reachable.
-def models []: nothing -> table {
+# is not reachable. The router scans its model folders only at startup, so
+# --reload makes it rescan them first, which also clears failed-load markers.
+def models [--reload]: nothing -> table {
+    let query = if $reload { "?reload=1" } else { "" }
     try {
-        http get --max-time 5sec $"(endpoint)/v1/models"
+        http get --max-time 5sec $"(endpoint)/v1/models($query)"
             | get data
-            | each {|model| {id: $model.id, status: $model.status?.value?} }
+            | each {|model|
+                # A failed load leaves `value` at "unloaded" and flags `failed` beside it.
+                let failed = $model.status?.failed? == true
+                {id: $model.id, status: (if $failed { "failed" } else { $model.status?.value? })}
+            }
     } catch { [] }
 }
 
@@ -67,6 +73,13 @@ def "main status" []: nothing -> record {
 # List every model the router serves with its load state.
 def "main models" []: nothing -> table {
     models
+}
+
+# Make the router rescan its models folder and download cache, then list every
+# model as `models` does. Run it after dropping a GGUF into the models folder.
+# It also clears failed-load markers, so check `models` or `status` first.
+def "main rescan" []: nothing -> table {
+    models --reload
 }
 
 # Start the router and wait until it answers /health.

@@ -262,6 +262,9 @@ in {
       };
     };
 
+    # No wantedBy: the unit runs only when started by hand. A switch restarts it
+    # only if it is running and its definition changed, which drops the loaded
+    # model and any in-flight requests; when it is off, a switch leaves it off.
     systemd.user.services.llama-server = {
       description = "llama.cpp model server (router mode)";
       # Beside modelsDir, not inside it: the router treats every subdirectory
@@ -287,6 +290,15 @@ in {
           "--models-max"
           "1"
           "--no-webui"
+          # llama.cpp defaults to echoing any page's Origin back with
+          # credentials, and /slots returns each slot's prompt and generated
+          # text, so any open web page could read what is being asked. The
+          # router's flags carry over to every model process, and no client
+          # here uses either.
+          "--cors-origins"
+          "localhost"
+          "--no-cors-credentials"
+          "--no-slots"
         ];
         Restart = "on-failure";
         # llama.cpp gives each model process 10 s to exit before SIGKILL. The
@@ -302,8 +314,10 @@ in {
     # lookups, so this is plain OpenAI-compatible. Discovered models arrive
     # with a context window of 0, which turns off auto-summarize, so the
     # presets are listed with their real figures. Discovery only runs on its
-    # own when `models` is empty, hence `discover_models`, which keeps the
-    # router's Hugging Face cache entries in the picker. Defined only here:
+    # own when `models` is empty, hence `discover_models`, which adds the
+    # ad-hoc models to the picker: GGUFs in the models folder and cached
+    # downloads that no preset covers. It runs when crush starts, and the
+    # router only sees new files after `llm-server rescan`. Defined only here:
     # `providers` is shallow-merged per provider id, so a second definition
     # would drop keys.
     modules.programs.crush.providers = mkIf (isActive "crush") {
