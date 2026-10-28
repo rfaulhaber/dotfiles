@@ -10,6 +10,15 @@ with lib; let
   modelsDir = "${cfg.dataDir}/models";
   cacheDir = "${cfg.dataDir}/hf";
 
+  baseUrl = "http://${cfg.host}:${toString cfg.port}/v1";
+
+  providerName = "llama.cpp (local)";
+
+  agentNames = ["crush" "opencode" "pi" "llm"];
+
+  # llm has no module of its own, so only its flag decides.
+  isActive = agent: cfg.agents.${agent} && (agent == "llm" || config.modules.programs.${agent}.enable);
+
   # The preset INI is text, so floats have no type of their own and are
   # written as strings.
   settingsType = types.attrsOf (types.oneOf [types.bool types.int types.str]);
@@ -173,6 +182,12 @@ in {
       type = types.package;
       readOnly = true;
     };
+
+    # Each enabled client gets a `llama-local` provider listing `models`. The
+    # id is not `llama.cpp` because pi reserves that for its own built-in
+    # provider. A fixed set of options rather than an attrset of booleans, so a
+    # typo such as `agents.crsuh` fails evaluation instead of doing nothing.
+    agents = genAttrs agentNames (agent: mkEnableOption "the ${agent} client's llama-local provider");
   };
 
   config = mkIf cfg.enable {
@@ -266,6 +281,86 @@ in {
         # a stopped unit has released the GPU.
         TimeoutStopSec = 30;
       };
+    };
+
+    # crush's `llamacpp` type would double the `/v1` prefix in its model
+    # lookups, so this is plain OpenAI-compatible. Discovered models arrive
+    # with a context window of 0, which turns off auto-summarize, so the
+    # presets are listed with their real figures. Discovery only runs on its
+    # own when `models` is empty, hence `discover_models`, which keeps the
+    # router's Hugging Face cache entries in the picker. Defined only here:
+    # `providers` is shallow-merged per provider id, so a second definition
+    # would drop keys.
+    modules.programs.crush.providers = mkIf (isActive "crush") {
+      llama-local = {
+        name = providerName;
+        type = "openai-compat";
+        base_url = baseUrl;
+        discover_models = true;
+        models =
+          mapAttrsToList (id: model: {
+            inherit id;
+            inherit (model) name;
+            context_window = model.contextWindow;
+            default_max_tokens = model.maxTokens;
+          })
+          cfg.models;
+      };
+    };
+
+    home.programs.opencode.settings = mkIf (isActive "opencode") {
+      provider.llama-local = {
+        npm = "@ai-sdk/openai-compatible";
+        name = providerName;
+        options.baseURL = baseUrl;
+        models =
+          mapAttrs (_: model: {
+            inherit (model) name;
+            tool_call = true;
+            # Without a limit opencode assumes a 200k context.
+            limit = {
+              context = model.contextWindow;
+              output = model.maxTokens;
+            };
+          })
+          cfg.models;
+      };
+    };
+
+    home.programs.pi-coding-agent.models = mkIf (isActive "pi") {
+      providers.llama-local = {
+        name = providerName;
+        inherit baseUrl;
+        api = "openai-completions";
+        # pi hides providers that have no key. llama-server never checks it.
+        apiKey = "local";
+        # Mirrors pi's built-in llama.cpp provider.
+        compat = {
+          supportsStore = false;
+          supportsDeveloperRole = false;
+          supportsReasoningEffort = false;
+          maxTokensField = "max_tokens";
+        };
+        models =
+          mapAttrsToList (id: model: {
+            inherit id;
+            inherit (model) name contextWindow maxTokens;
+          })
+          cfg.models;
+      };
+    };
+
+    # With `api_base` set llm sends a placeholder key, so no `api_key_name`.
+    home.configFile = mkIf (isActive "llm") {
+      "io.datasette.llm/extra-openai-models.yaml".source = (pkgs.formats.yaml {}).generate "extra-openai-models.yaml" (
+        mapAttrsToList (id: _: {
+          model_id = id;
+          model_name = id;
+          api_base = baseUrl;
+          supports_tools = true;
+        })
+        cfg.models
+      );
     };
   };
 }
