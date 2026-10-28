@@ -10,7 +10,8 @@ with lib; let
   modelsDir = "${cfg.dataDir}/models";
   cacheDir = "${cfg.dataDir}/hf";
 
-  baseUrl = "http://${cfg.host}:${toString cfg.port}/v1";
+  serverUrl = "http://${cfg.host}:${toString cfg.port}";
+  baseUrl = "${serverUrl}/v1";
 
   providerName = "llama.cpp (local)";
 
@@ -22,6 +23,17 @@ with lib; let
   # The preset INI is text, so floats have no type of their own and are
   # written as strings.
   settingsType = types.attrsOf (types.oneOf [types.bool types.int types.str]);
+
+  llm-server = lib.my.writeNushellScriptBin pkgs "llm-server" (
+    # The script resolves systemctl and journalctl from PATH and takes its
+    # endpoint from the environment, so it runs and debugs unchanged from
+    # bin/. This preamble is all the packaged copy adds: the address this
+    # module configures.
+    ''
+      $env.LLM_SERVER_URL = ($env.LLM_SERVER_URL? | default "${serverUrl}")
+    ''
+    + builtins.readFile "${config.dotfiles.binDir}/llm-server.nu"
+  );
 
   gpuPackage = {
     nvidia = pkgs.llama-cpp.override ({cudaSupport = true;}
@@ -282,6 +294,8 @@ in {
         TimeoutStopSec = 30;
       };
     };
+
+    user.packages = [llm-server];
 
     # crush's `llamacpp` type would double the `/v1` prefix in its model
     # lookups, so this is plain OpenAI-compatible. Discovered models arrive
