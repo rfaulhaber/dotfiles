@@ -1,0 +1,20 @@
+id          = "ryan/llm"
+name        = "Local LLM"
+version     = "1.0.0"
+# 24 introduced the argv form of runAsync, which runs the command without a
+# shell.
+plugin_api  = 24
+author      = "ryan"
+icon        = "cpu"
+description = "Start and stop the local llama.cpp model server."
+
+# The service is the only entry that polls. A shortcut's own update timer runs
+# only while the control center is open, so a tile that polled for itself
+# would show stale state for the first interval after every open.
+[[service]]
+id    = "poll"
+entry = "service.luau"
+
+[[shortcut]]
+id    = "toggle"
+entry = "shortcut.luau"

@@ -19,6 +19,9 @@ with lib; let
     vpn = {
       inherit (config.modules.services.airvpn) enable profile;
     };
+    llm = {
+      inherit (config.modules.services.llama-server) enable;
+    };
     ime = {
       inherit (config.modules.desktop.inputMethod) enable layoutInputMethod;
     };

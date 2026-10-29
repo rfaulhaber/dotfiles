@@ -8,6 +8,7 @@
   lockscreenOutputs,
   wallpaper,
   vpn,
+  llm,
   ime,
 }: let
   # The tile only makes sense with the service whose units it starts.
@@ -208,15 +209,17 @@ in {
           else "notification"
         )
       ]
+      ++ lib.optional llm.enable "ryan/llm:toggle"
       ++ ["session"]
       ++ lib.optional wallpaperTile "ryan/random-wallpaper:pick";
   in
     map mkShortcut shortcuts;
 
-  plugins = lib.mkIf (wallpaperTile || vpn.enable || ime.enable) {
+  plugins = lib.mkIf (wallpaperTile || vpn.enable || llm.enable || ime.enable) {
     enabled =
       lib.optional wallpaperTile "ryan/random-wallpaper"
       ++ lib.optional vpn.enable "ryan/vpn"
+      ++ lib.optional llm.enable "ryan/llm"
       ++ lib.optional ime.enable "ryan/ime";
     # Declaring any source replaces noctalia's default official and community
     # git sources, so nothing is cloned or auto-updated: the plugins come from

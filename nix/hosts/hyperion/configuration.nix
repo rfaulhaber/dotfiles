@@ -116,36 +116,6 @@
         openrouterApiKeySecret = "openrouter-crush-api-key";
         providers = {
           openrouter = {};
-          # vulcan (192.168.0.105) serves a native Ollama on the LAN with its
-          # firewall open. `discover_models = true` keeps auto-discovery on even
-          # though `models` is non-empty, so every model vulcan hosts still shows
-          # up in the picker (merged via /v1/models + /api/show enrichment).
-          # Discovery auto-triggers only when `models` is empty, so listing Gemma
-          # below would otherwise silently disable it. User-listed models win over
-          # discovered ones by ID, so the Gemma entry keeps its settings.
-          vulcan = {
-            name = "vulcan (ollama)";
-            type = "ollama";
-            base_url = "http://192.168.0.105:11434/v1/";
-            discover_models = true;
-            models = [
-              {
-                name = "Gemma 4 26b";
-                id = "gemma4:26b";
-                context_window = 32768;
-                default_max_tokens = 8192;
-                supports_tools = true;
-                # Gemma 4 reasons by default; at vulcan's ~16 tok/s that burns the
-                # whole token budget on chain-of-thought before it answers. Crush's
-                # `ollama` provider type sends no reasoning control, and Ollama only
-                # honours `reasoning_effort: none` (not enable_thinking, Modelfile
-                # params, or a system prompt). The typed field rejects "none", so
-                # pass it through extra_body, which crush forwards verbatim. Scoped
-                # to this model's `options` so discovered models are unaffected.
-                options.provider_options.extra_body.reasoning_effort = "none";
-              }
-            ];
-          };
         };
       };
       steam.enable = true;
@@ -235,6 +205,62 @@
         endpoint = "america3.vpn.airdns.org:1637";
       };
       keystats.enable = true;
+      llama-server = {
+        enable = true;
+        gpu = "nvidia";
+        # The RTX 4080 is Ada (sm_89); the default set compiles every
+        # architecture the toolkit supports.
+        cudaCapabilities = ["8.9"];
+        dataDir = "/bulk/llm";
+        dataset = "bulk/llm";
+        agents = {
+          crush = true;
+          opencode = true;
+          pi = true;
+          llm = true;
+        };
+        # No gpu-layers or n-cpu-moe: llama.cpp's `fit` sizes the GPU/CPU
+        # split from the VRAM free at load time, and setting n-cpu-moe
+        # turns it off.
+        models = {
+          qwen3-coder-30b = {
+            name = "Qwen3 Coder 30B A3B";
+            # Sampling defaults are embedded in the GGUF.
+            settings.hf-repo = "ggml-org/Qwen3-Coder-30B-A3B-Instruct-GGUF:Q4_K_M";
+          };
+          qwen3-14b = {
+            name = "Qwen3 14B";
+            settings = {
+              hf-repo = "unsloth/Qwen3-14B-GGUF:IQ4_XS";
+              reasoning = "off";
+              temp = "0.7";
+              top-p = "0.8";
+              top-k = 20;
+              # The model card asks for 0; llama.cpp's own default is 0.05.
+              min-p = "0";
+            };
+          };
+          gpt-oss-20b = {
+            name = "gpt-oss 20B";
+            settings = {
+              hf-repo = "ggml-org/gpt-oss-20b-GGUF:MXFP4";
+              # gpt-oss cannot turn reasoning off; low is its floor.
+              reasoning-effort = "low";
+              temp = "1.0";
+              top-p = "1.0";
+            };
+          };
+          gemma4-26b = {
+            name = "Gemma 4 26B A4B";
+            settings = {
+              hf-repo = "ggml-org/gemma-4-26B-A4B-it-GGUF:Q4_0";
+              # Skips the vision projector, about 1 GiB of VRAM.
+              no-mmproj = true;
+              reasoning = "off";
+            };
+          };
+        };
+      };
     };
     # No OCI services run here; registryAuth alone gives interactive
     # podman/skopeo credentials for the forgejo registry. The auth file is
