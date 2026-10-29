@@ -5,7 +5,7 @@
   isDarwin,
   ...
 }: let
-  inherit (lib) mkOption types mkIf optionalAttrs;
+  inherit (lib) mkOption types mkIf optional optionalAttrs mapAttrs;
   cfg = config.modules.services.ssh.client;
 in {
   options.modules.services.ssh.client = {
@@ -40,16 +40,56 @@ in {
     deployForward = optionalAttrs cfg.deployAgent.enable {
       ForwardAgent = deployAgentSocket;
     };
-    janusHost = "janus.netbird.selfhosted";
-    janusPort = 6674;
+    hostKeys = import ./host-keys.nix;
+    netbirdName = name: "${name}.netbird.selfhosted";
+    # Where each host's sshd listens. janus has no LAN address because it
+    # accepts SSH only over netbird.
+    fleet = {
+      atlas = {
+        address = "192.168.0.3";
+        port = 10222;
+      };
+      hecate = {
+        address = "192.168.0.77";
+        port = 17263;
+      };
+      janus = {
+        address = null;
+        port = 6674;
+      };
+      pallas = {
+        address = "192.168.0.2";
+        port = 12981;
+      };
+      prometheus = {
+        address = "192.168.0.228";
+        port = 13571;
+      };
+      vulcan = {
+        address = "192.168.0.105";
+        port = 13308;
+      };
+    };
+    # An unknown or changed host key fails outright instead of prompting: a
+    # prompt accepted for an impostor would hand it the forwarded agent.
+    fleetAlias = name: hostName: {
+      HostName = hostName;
+      User = config.user.name;
+      Port = fleet.${name}.port;
+      StrictHostKeyChecking = "yes";
+    };
+    lanAlias = name: fleetAlias name fleet.${name}.address // {ForwardAgent = true;};
+    netbirdAlias = name: fleetAlias name (netbirdName name) // {ForwardAgent = true;};
   in
     mkIf cfg.enable ({
-        # janus is only reachable over the overlay, so pin its host key rather
-        # than trusting whatever answers on the first connection.
-        programs.ssh.knownHosts.janus = {
-          hostNames = ["[${janusHost}]:${toString janusPort}"];
-          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII9A+fHVGRpFJJZqMRlp4McKEaKbS5Cq7jYB+nwBS3Y9";
-        };
+        programs.ssh.knownHosts =
+          mapAttrs (name: host: {
+            hostNames =
+              map (h: "[${h}]:${toString host.port}")
+              (optional (host.address != null) host.address ++ [(netbirdName name)]);
+            publicKey = hostKeys.${name};
+          })
+          fleet;
 
         home.programs.ssh = {
           enable = true;
@@ -82,19 +122,8 @@ in {
                 UseKeychain = "yes";
               };
 
-            "atlas" = {
-              HostName = mkLocalHostname "3";
-              User = config.user.name;
-              Port = 10222;
-              ForwardAgent = true;
-            };
-
-            "atlas-netbird" = {
-              HostName = "atlas.netbird.selfhosted";
-              User = config.user.name;
-              Port = 10222;
-              ForwardAgent = true;
-            };
+            "atlas" = lanAlias "atlas";
+            "atlas-netbird" = netbirdAlias "atlas";
 
             "codeberg.org" = {
               HostName = "codeberg.org";
@@ -118,19 +147,8 @@ in {
               PreferredAuthentications = "publickey";
             };
 
-            "pallas" = {
-              HostName = mkLocalHostname "2";
-              ForwardAgent = true;
-              User = "ryan";
-              Port = 12981;
-            };
-
-            "pallas-netbird" = {
-              HostName = "pallas.netbird.selfhosted";
-              ForwardAgent = true;
-              User = "ryan";
-              Port = 12981;
-            };
+            "pallas" = lanAlias "pallas";
+            "pallas-netbird" = netbirdAlias "pallas";
 
             "*sr.ht" = {
               PreferredAuthentications = "publickey";
@@ -160,34 +178,11 @@ in {
             #
             # janus accepts no SSH on its public address; if the overlay is
             # down, the provider's web console is the way in.
-            "janus" =
-              {
-                HostName = janusHost;
-                User = config.user.name;
-                Port = janusPort;
-              }
-              // deployForward;
+            "janus" = fleetAlias "janus" (netbirdName "janus") // deployForward;
 
-            "hecate" = {
-              HostName = mkLocalHostname "77";
-              ForwardAgent = true;
-              User = "ryan";
-              Port = 17263;
-            };
-
-            "vulcan" = {
-              HostName = mkLocalHostname "105";
-              ForwardAgent = true;
-              User = "ryan";
-              Port = 13308;
-            };
-
-            "prometheus" = {
-              HostName = mkLocalHostname "228";
-              ForwardAgent = true;
-              User = "ryan";
-              Port = 13571;
-            };
+            "hecate" = lanAlias "hecate";
+            "vulcan" = lanAlias "vulcan";
+            "prometheus" = lanAlias "prometheus";
           };
         };
       }

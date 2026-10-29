@@ -13,7 +13,7 @@
   builderUser = "nixremote";
   builderHost = "192.168.0.105"; # vulcan
   builderPort = 13308;
-  builderHostKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxqfiVtzbwTehEsXuYFXBAIUkMhQtKG4q4apRm4Fite";
+  builderHostKey = (import ../../../ssh/host-keys.nix).vulcan;
 in {
   options.modules.services.remote-builder = {
     server = {
