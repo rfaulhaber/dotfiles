@@ -26,8 +26,8 @@ in {
       description = ''
         If true, run a dedicated ssh-agent holding only the janus deploy
         key and forward it to janus, restoring pam_ssh_agent_auth sudo
-        there without exposing the fleet agent. The agent service is
-        Linux-only (systemd user unit).
+        there without exposing the fleet agent. Runs as a systemd user
+        unit on Linux and a launchd user agent on macOS.
       '';
       type = types.bool;
       default = false;
@@ -181,8 +181,11 @@ in {
             "janus" = fleetAlias "janus" (netbirdName "janus") // deployForward;
 
             "hecate" = lanAlias "hecate";
+            "hecate-netbird" = netbirdAlias "hecate";
             "vulcan" = lanAlias "vulcan";
+            "vulcan-netbird" = netbirdAlias "vulcan";
             "prometheus" = lanAlias "prometheus";
+            "prometheus-netbird" = netbirdAlias "prometheus";
           };
         };
       }
@@ -206,6 +209,35 @@ in {
             StandardOutput = "null";
             Restart = "on-failure";
             SuccessExitStatus = "0 2";
+          };
+        };
+      }
+      // optionalAttrs isDarwin {
+        launchd.user.agents.janus-deploy-agent = mkIf cfg.deployAgent.enable {
+          serviceConfig = {
+            Label = "com.user.janus-deploy-agent";
+            # launchd needs a job that stays in the foreground. In command
+            # mode ssh-agent execs its command as that job and serves the
+            # socket from a child that exits once the command does, so the
+            # script re-enters itself as the command to load the key and hold.
+            ProgramArguments = [
+              (lib.getExe (pkgs.writeShellApplication {
+                name = "janus-deploy-agent";
+                runtimeInputs = [pkgs.openssh pkgs.coreutils];
+                text = ''
+                  if [ "''${1:-}" = hold ]; then
+                    ssh-add "${deployAgentKey}"
+                    exec sleep infinity
+                  fi
+                  [ -f "${deployAgentKey}" ] || exit 0
+                  rm -f "${deployAgentSocket}"
+                  exec ssh-agent -a "${deployAgentSocket}" "$0" hold
+                '';
+              }))
+            ];
+            RunAtLoad = true;
+            KeepAlive = {SuccessfulExit = false;};
+            StandardErrorPath = "/tmp/janus-deploy-agent.err";
           };
         };
       });

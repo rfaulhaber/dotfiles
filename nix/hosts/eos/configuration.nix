@@ -79,7 +79,10 @@
     };
     services = {
       gpg.enable = true;
-      ssh.client.enable = true;
+      ssh.client = {
+        enable = true;
+        deployAgent.enable = true;
+      };
     };
   };
 
