@@ -87,6 +87,7 @@
   user.packages = with pkgs; [
     inputs.rz.packages.${pkgs.stdenv.hostPlatform.system}.default
     feishin
+    gh
   ];
 
   # Determinate Nix (its installer, not nix-darwin) owns /etc/nix/nix.conf on
