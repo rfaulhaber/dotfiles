@@ -40,8 +40,17 @@ in {
     deployForward = optionalAttrs cfg.deployAgent.enable {
       ForwardAgent = deployAgentSocket;
     };
+    janusHost = "janus.netbird.selfhosted";
+    janusPort = 6674;
   in
     mkIf cfg.enable ({
+        # janus is only reachable over the overlay, so pin its host key rather
+        # than trusting whatever answers on the first connection.
+        programs.ssh.knownHosts.janus = {
+          hostNames = ["[${janusHost}]:${toString janusPort}"];
+          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII9A+fHVGRpFJJZqMRlp4McKEaKbS5Cq7jYB+nwBS3Y9";
+        };
+
         home.programs.ssh = {
           enable = true;
           enableDefaultConfig = false;
@@ -148,19 +157,14 @@ in {
             # dedicated agent holding only the janus deploy key, giving
             # pam_ssh_agent_auth a key to challenge for sudo while the socket
             # grants nothing janus's root doesn't already have.
+            #
+            # janus accepts no SSH on its public address; if the overlay is
+            # down, the provider's web console is the way in.
             "janus" =
               {
-                HostName = "66.63.168.153";
+                HostName = janusHost;
                 User = config.user.name;
-                Port = 6674;
-              }
-              // deployForward;
-
-            "janus-netbird" =
-              {
-                HostName = "janus.netbird.selfhosted";
-                User = config.user.name;
-                Port = 6674;
+                Port = janusPort;
               }
               // deployForward;
 

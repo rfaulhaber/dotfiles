@@ -37,11 +37,21 @@ in {
       type = types.str;
       default = "";
     };
+
+    allowedSources = mkOption {
+      description = ''
+        IPv4 CIDRs allowed to reach SSH directly. Netbird interfaces are
+        always allowed, so an empty list makes SSH overlay-only.
+      '';
+      type = types.listOf types.str;
+      default = ["192.168.0.0/24"];
+    };
   };
 
   config = let
     keys =
       lib.optionals cfg.useDefaultKeys (import ./keys.nix) ++ cfg.extraKeys;
+    netbirdInterfaces = mapAttrsToList (_: c: c.interface) config.services.netbird.clients;
   in
     mkIf cfg.enable {
       assertions = [
@@ -49,9 +59,27 @@ in {
           assertion = (builtins.length keys) > 0;
           message = "SSH client must have at least one authorized key";
         }
+        {
+          assertion = cfg.allowedSources != [] || netbirdInterfaces != [];
+          message = "SSH server is unreachable: allowedSources is empty and no netbird client is configured";
+        }
       ];
+
+      # The stock firewall opens ports per interface only, and internet IPv6
+      # arrives on the same NIC as the LAN, so direct access is matched on
+      # source address instead. IPv6 gets no rule: nothing reaches SSH over it.
+      networking.firewall = {
+        interfaces = genAttrs netbirdInterfaces (_: {allowedTCPPorts = [cfg.port];});
+        extraCommands =
+          concatMapStrings (src: ''
+            iptables -A nixos-fw -p tcp -s ${src} --dport ${toString cfg.port} -j nixos-fw-accept
+          '')
+          cfg.allowedSources;
+      };
+
       services.openssh = {
         enable = true;
+        openFirewall = false;
         # Only the declared keys in /etc/ssh/authorized_keys.d grant login, so
         # anything running as the user can't plant one that outlives a rebuild.
         authorizedKeysInHomedir = false;

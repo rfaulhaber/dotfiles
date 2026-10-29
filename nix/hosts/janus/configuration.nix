@@ -52,6 +52,9 @@ in {
         server = {
           enable = true;
           port = 6674;
+          # Overlay-only: ens3 faces the internet, and the provider's web
+          # console is the fallback if netbird is down.
+          allowedSources = [];
           # Deploy key held by the scoped agent hyperion forwards here
           # (see deployAgent in nix/modules/ssh/client.nix); authorizes
           # pam_ssh_agent_auth sudo for deploy-rs on janus only.
