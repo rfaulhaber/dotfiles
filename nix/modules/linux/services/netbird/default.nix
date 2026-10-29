@@ -84,8 +84,12 @@ in {
         login = mkIf (cfg.setupKeyFile != null) {
           enable = true;
           inherit (cfg) setupKeyFile;
+          # sops-nix only has an install unit in systemd-activation mode; by
+          # default it writes secrets during activation, before services start.
+          # A Requires= on the missing unit makes systemd drop this one silently.
           systemdDependencies =
-            lib.optional config.modules.programs.sops.enable
+            lib.optional
+            (config.modules.programs.sops.enable && config.sops.useSystemdActivation)
             "sops-install-secrets.service";
         };
       };
