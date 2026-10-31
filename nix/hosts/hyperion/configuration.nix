@@ -219,9 +219,6 @@
           pi = true;
           llm = true;
         };
-        # No gpu-layers or n-cpu-moe: llama.cpp's `fit` sizes the GPU/CPU
-        # split from the VRAM free at load time, and setting n-cpu-moe
-        # turns it off.
         models = import ./models.nix;
       };
     };

@@ -279,7 +279,7 @@ in {
     # Widgets sit in their own pills on top of the strip; the group below shares
     # one. The taskbar opts out because its workspace groups draw their own.
     capsule = true;
-    capsule_fill = "surface_variant";
+    capsule_fill = "surface_container";
     capsule_opacity = 0.8;
 
     start = ["workspaces" "taskbar" "active_window"];
