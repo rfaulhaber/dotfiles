@@ -60,6 +60,7 @@ in {
           # pam_ssh_agent_auth sudo for deploy-rs on janus only.
           extraKeys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJqkUnhTJdiPckPuOSRSehi4GHCc1E0niIH28Klx0nQx janus-deploy@hyperion"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIONnZLO3QG4DCU61LSiTrfTlXQtasRneSIc5yoeTtalw janus-deploy@eos"
           ];
         };
       };
