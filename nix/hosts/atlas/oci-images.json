@@ -38,7 +38,7 @@
   "gluetun": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c2ee4191762fca6b6a3c3359a731198a95d9c9af4db32d466e223bf3a84e779b"
+      "digest": "sha256:4af0c804003481e100180e1f8d4d5e9c48163fedc0f88d061881b615aef9d183"
     }
   },
   "grafana": {
@@ -73,8 +73,8 @@
   },
   "kept": {
     "image": {
-      "version": "1.9.2",
-      "digest": "sha256:58849649e6275bceb5bd8ae325ef117dbd67e0cccb52217112d47d66a8591de6"
+      "version": "1.9.3",
+      "digest": "sha256:4f913fe813650c4bdc269d20930b808366c7ec7af235e618a11fd67db044f2fe"
     }
   },
   "kitchenowl": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:e3f35175a0c68db1ea7e438c65af33ad3b4dece87c914cbbb35751cc68c23479"
+      "digest": "sha256:f2c4315d3d1b5be3bc94d2fb979e7fb999a3c2b9180ef995ec97f5be8567140f"
     }
   },
   "linkding": {
@@ -128,13 +128,13 @@
   "nzbget": {
     "image": {
       "version": "latest",
-      "digest": "sha256:631a76760263014e846a3f1ddeaba789a103dea27c9f131846bdd8b39c281efd"
+      "digest": "sha256:adea51082575ce3e09d3b636b320c039109df7e21afd1234ad7c97b9df7c79c8"
     }
   },
   "paperless": {
     "image": {
       "version": "latest",
-      "digest": "sha256:9bc6e8248891bcfa6f52fffe8b81e4ea8cae75790c3ec1b9906961a7ba55c969"
+      "digest": "sha256:1a08d8dfc2b51a08de09652dd86ad4d0c611c362382f944533ad38b73125fbc4"
     },
     "postgres": {
       "image": {
@@ -145,7 +145,7 @@
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:47b08295737773de3b711fb86f13ae802f5074e96a9a2d29f5f80164ac08c046"
+        "digest": "sha256:21090af93f8324db2f0f0f4f38a7c60369d47d917e000c3423d89d2ae2883537"
       }
     }
   },
@@ -200,7 +200,7 @@
   "shelfmark": {
     "image": {
       "version": "latest",
-      "digest": "sha256:acfa46b8be80f1e2f084a7703ff027ab274397feb24006114e92c05c140b62c3"
+      "digest": "sha256:51091200afb8afd9f1dba07596e9e81a96d499e42ff96fee676b29a7cac24016"
     }
   },
   "slskd": {
@@ -212,7 +212,7 @@
   "sonarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:48e36b608b461273b9dae857725cd0561a127f2c694b687318f6d0c5ce63e5c9"
+      "digest": "sha256:386c962ee6e260e3a5656b25df2ed056bcc9b6410e197d075f9547fd14c23bca"
     }
   },
   "soularr": {
@@ -224,7 +224,7 @@
   "syncthing": {
     "image": {
       "version": "latest",
-      "digest": "sha256:6dadb221ef64ce50fa5121120da316486c6feeb9f93d279ef8df198520203ddb"
+      "digest": "sha256:5c1276a655498fb9774e22e42ceeb5279eb2d7c46e3c209ce8285a7b0bae4925"
     }
   },
   "tautulli": {
@@ -236,7 +236,7 @@
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ebefa8cb3e36a8ce667b7739f51b86c24e9fd07f367e9fee9f21df48ea4e6542"
+      "digest": "sha256:5b3c27a96c8a37c878a525ebf377a32032c3a3acfe845ecaa7c3eb10b09c2caa"
     }
   },
   "vikunja": {
@@ -248,7 +248,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:672d84002b5841e093879ddbad53913b2a8e99be9fce331f64ce09187eff8b39"
+      "digest": "sha256:fef737885654879490ed4ce70b6e8566a77b55714edb7e777714ca66b0a0ff95"
     },
     "postgres": {
       "image": {
@@ -259,7 +259,7 @@
     "redis": {
       "image": {
         "version": "8-alpine",
-        "digest": "sha256:47b08295737773de3b711fb86f13ae802f5074e96a9a2d29f5f80164ac08c046"
+        "digest": "sha256:21090af93f8324db2f0f0f4f38a7c60369d47d917e000c3423d89d2ae2883537"
       }
     }
   }
