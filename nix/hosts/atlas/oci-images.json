@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:f2c4315d3d1b5be3bc94d2fb979e7fb999a3c2b9180ef995ec97f5be8567140f"
+      "digest": "sha256:74a43ae3b1e41ad40137241b01d214147131d844d2c5e61d6681ea4976f8071c"
     }
   },
   "linkding": {
