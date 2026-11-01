@@ -100,6 +100,21 @@ in {
       default = [];
       description = "Tool patterns to always deny.";
     };
+
+    memoryDir = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      example = "~/.claude-memory";
+      description = ''
+        Directory for Claude Code's auto memory, written to `autoMemoryDirectory`.
+        The default location, `~/.claude/projects/<project>/memory`, is named after
+        the repository's absolute path, so the same repo checked out at different
+        paths on two machines gets two unrelated directories. Pointing every host
+        at one `~/`-relative directory and syncing that directory (Syncthing, say)
+        shares memory between machines. Must be absolute or start with `~/`; a Nix
+        path literal would copy the directory into the store.
+      '';
+    };
   };
 
   config = let
@@ -492,6 +507,10 @@ in {
         # claude-code module has no option for this directory.
         home.file.".claude/workflows".source = ../../../../config/claude/workflows;
       }
+
+      (mkIf (cfg.memoryDir != null) {
+        home.programs.claude-code.settings.autoMemoryDirectory = cfg.memoryDir;
+      })
 
       (optionalAttrs isLinux {
         systemd.user.tmpfiles.users.${config.user.name}.rules = [

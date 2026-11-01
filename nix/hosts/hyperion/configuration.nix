@@ -97,7 +97,10 @@
             "ebay-mcp/client-secret"
           ] (_: userSecret);
       };
-      claude.enable = true;
+      claude = {
+        enable = true;
+        memoryDir = "~/.claude-memory";
+      };
       mcp.servers = {
         codegraph.agents = {
           claude = true;

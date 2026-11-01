@@ -26,7 +26,10 @@
     };
     programs = {
       btop.enable = true;
-      claude.enable = true;
+      claude = {
+        enable = true;
+        memoryDir = "~/.claude-memory";
+      };
       emacs = {
         enable = true;
         # eos temporarily will use stable emacs for faster builds
