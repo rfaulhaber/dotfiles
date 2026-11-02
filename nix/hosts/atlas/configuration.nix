@@ -179,6 +179,21 @@
         enable = true;
         linger = true;
       };
+      archivr = {
+        enable = true;
+        archiveRoot = "/data/archive/tumblr/archivr";
+        mountPoint = "/data/archive/tumblr";
+        jobs = {
+          html = {
+            blogSecret = "archivr/blog";
+            extraArgs = ["--save-images"];
+          };
+          json = {
+            blogSecret = "archivr/blog";
+            extraArgs = ["--json" "--save-images"];
+          };
+        };
+      };
     };
 
     # NOTE: the open drivers do not work on atlas (GTX 1050 Ti, Pascal)

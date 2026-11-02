@@ -1,6 +1,7 @@
 {
   imports = [
     ./airvpn
+    ./archivr
     ./bandcamp-import
     ./cachix
     ./desktop

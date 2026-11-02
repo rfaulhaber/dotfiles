@@ -114,6 +114,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rz.url = "github:rfaulhaber/rz";
+    archivr = {
+      url = "github:rfaulhaber/archivr";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
     ghostel = {
       url = "github:rfaulhaber/ghostel-flake";
       inputs.nixpkgs.follows = "nixpkgs";
