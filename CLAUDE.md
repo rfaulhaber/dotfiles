@@ -145,6 +145,7 @@ Nushell scripts in `/bin/` for system tasks:
 - `nix-lines-history.nu` - Emit CSV of file line counts sampled across git history
 - `vpn.nu` - Switch NetworkManager VPN profiles (`status`, `up`, `down`, `toggle [name]`); packaged as `vpn` by `modules.services.airvpn`, default profile from `VPN_PROFILE`
 - `llm-server.nu` - Switch the local llama.cpp router on hyperion (`status`, `up`, `down`, `toggle`, `models`, `rescan` to pick up GGUFs dropped into the models folder); packaged as `llm-server` by `modules.services.llama-server`, endpoint from `LLM_SERVER_URL`
+- `claude-memory.nu` - Opt the current repo into Claude Code memory synced between machines: writes `autoMemoryDirectory = <root>/<repo>` to the checkout's `.claude/settings.local.json` and seeds that directory from the default per-path one; packaged as `claude-memory` by `modules.programs.claude` when `memoryRoot` is set, root from `CLAUDE_MEMORY_ROOT`
 - `update-oci-digests.nu` - Refresh pinned container digests in `nix/hosts/*/oci-images.json`, and warn when an explicitly-versioned entry has a newer upstream release on the same tag line (a digest refresh can't move those). Dual-purpose: run by hand for an urgent bump, and invoked by `oci-update.yml` weekly. The `update <host>.<path> [version]` subcommand bumps one pinned entry, writing version and digest together. Needs `skopeo`.
 
 ### CI / Automation
