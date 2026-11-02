@@ -42,7 +42,7 @@
   "wolf": {
     "image": {
       "version": "stable",
-      "digest": "sha256:b0ef253739f9bd49b71eba7e150c955fd05990c0d409e666d89236995351551a"
+      "digest": "sha256:47ce7a0b67ee6645d2c6fefd8fdda7fee49a00e327c39597a04e84a0cd052910"
     }
   },
   "wolf-den": {

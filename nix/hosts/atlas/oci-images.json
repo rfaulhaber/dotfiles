@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:f2c4315d3d1b5be3bc94d2fb979e7fb999a3c2b9180ef995ec97f5be8567140f"
+      "digest": "sha256:74a43ae3b1e41ad40137241b01d214147131d844d2c5e61d6681ea4976f8071c"
     }
   },
   "linkding": {
@@ -104,7 +104,7 @@
   "miniflux": {
     "image": {
       "version": "latest",
-      "digest": "sha256:72e49f513a63104506aab98ba8cfc3a409d4fde23550a583dec07ec941f1e94e"
+      "digest": "sha256:8fd6c3c434ecc3d4083306f83e03c0bb74c632e0f8378da5ead7e1773b0b89c9"
     },
     "postgres": {
       "image": {
@@ -170,7 +170,7 @@
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:084b3b2ab1d0ef930660727259546a241f2bdf67c9ed085d54bf1486a6887c9b"
+      "digest": "sha256:ade5937813c6ae415b29db729386e53fea3ecf067a019849bafbe2d2a6ec02ba"
     }
   },
   "recyclarr": {
@@ -200,7 +200,7 @@
   "shelfmark": {
     "image": {
       "version": "latest",
-      "digest": "sha256:51091200afb8afd9f1dba07596e9e81a96d499e42ff96fee676b29a7cac24016"
+      "digest": "sha256:0e5c9ff5f858a9695dc18bc355d8aa29dfee5c0d9c634919484c2bab9955ad5a"
     }
   },
   "slskd": {
