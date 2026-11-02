@@ -19,10 +19,34 @@
   inputs,
   ...
 }: let
-  inherit (lib) mkIf mkEnableOption mkOption types optional optionalAttrs escapeShellArgs literalExpression mapAttrs' mapAttrsToList nameValuePair listToAttrs unique;
+  inherit (lib) mkIf mkEnableOption mkOption types optional optionals optionalAttrs escapeShellArgs literalExpression mapAttrs' mapAttrsToList nameValuePair listToAttrs unique;
   cfg = config.modules.services.archivr;
   stateDir = "/var/lib/archivr";
   envTemplate = name: "archivr-${name}-env";
+
+  jobDir = name: "${cfg.archiveRoot}/${name}";
+
+  # Paths are passed ahead of "$@" so a flag given on the command line, such
+  # as --output for a scratch build, overrides the configured one.
+  archivr-index = let
+    indexer =
+      pkgs.writers.writePython3Bin "archivr-index-unwrapped" {}
+      (builtins.readFile "${config.dotfiles.binDir}/archivr-index.py");
+    args =
+      ["--json-dir" (jobDir cfg.search.jsonJob) "--output" cfg.search.database]
+      ++ optionals (cfg.search.htmlJob != null) ["--html-dir" (jobDir cfg.search.htmlJob)];
+  in
+    pkgs.writeShellScriptBin "archivr-index" ''
+      exec ${indexer}/bin/archivr-index-unwrapped ${escapeShellArgs args} "$@"
+    '';
+
+  archivr-search = lib.my.writeNushellScriptBin pkgs "archivr-search" (
+    ''
+      $env.PATH = ($env.PATH | prepend "${pkgs.sqlite}/bin")
+      $env.ARCHIVR_DB = ($env.ARCHIVR_DB? | default "${cfg.search.database}")
+    ''
+    + builtins.readFile "${config.dotfiles.binDir}/archivr-search.nu"
+  );
 
   jobArgs = name: job:
     [
@@ -172,6 +196,34 @@ in {
       default = "12h";
     };
 
+    search = {
+      enable = mkEnableOption ''
+        the archivr-index and archivr-search commands. archivr-index builds a
+        full-text-searchable SQLite database from a --json job's archive; it
+        is run by hand and the database is not refreshed by the backup timers
+      '';
+
+      jsonJob = mkOption {
+        description = "Job whose --json archive is indexed.";
+        type = types.str;
+        example = "json";
+      };
+
+      htmlJob = mkOption {
+        description = "Job holding the matching HTML archive; indexed posts link to their page there.";
+        type = types.nullOr types.str;
+        default = null;
+        example = "html";
+      };
+
+      database = mkOption {
+        description = "Database archivr-index writes and archivr-search reads.";
+        type = types.str;
+        default = "${cfg.archiveRoot}/posts.db";
+        defaultText = literalExpression ''"''${archiveRoot}/posts.db"'';
+      };
+    };
+
     timer = {
       onCalendar = mkOption {
         description = "systemd OnCalendar expression shared by every job.";
@@ -192,6 +244,14 @@ in {
       {
         assertion = cfg.jobs != {};
         message = "modules.services.archivr.jobs must not be empty.";
+      }
+      {
+        assertion = !cfg.search.enable || builtins.elem "--json" (cfg.jobs.${cfg.search.jsonJob}.extraArgs or []);
+        message = "modules.services.archivr.search.jsonJob must name a job run with --json.";
+      }
+      {
+        assertion = !cfg.search.enable || cfg.search.htmlJob == null || cfg.jobs ? ${cfg.search.htmlJob};
+        message = "modules.services.archivr.search.htmlJob must name a configured job.";
       }
     ];
 
@@ -217,7 +277,7 @@ in {
     systemd.tmpfiles.rules = ["d ${stateDir} 0700 ${cfg.user} ${cfg.group} -"];
 
     # On PATH for seeding the token and for ad-hoc runs.
-    environment.systemPackages = [cfg.package];
+    environment.systemPackages = [cfg.package] ++ optionals cfg.search.enable [archivr-index archivr-search];
 
     systemd.services = forJobs mkService;
     systemd.timers = forJobs mkTimer;

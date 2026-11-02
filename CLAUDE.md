@@ -141,6 +141,7 @@ Nushell scripts in `/bin/` for system tasks:
 - `open-ssh-session.nu` - Pick a login host from `~/.ssh/config` via `noctalia dmenu` and open (or re-attach) an `ssh-<host>` zellij session running `ssh <host>`
 - `launch-executable.nu` - Pick an executable from PATH via `noctalia dmenu` and run it
 - `bandcamp-import.nu` - Import Bandcamp purchases into the atlas music library, with Lidarr catalog registration
+- `archivr-index.py` / `archivr-search.nu` - Build an FTS5-searchable SQLite database from an archivr `--json` Tumblr archive (run by hand; nothing refreshes it), and query it as a nushell table; packaged as `archivr-index` / `archivr-search` by `modules.services.archivr.search`, database from `ARCHIVR_DB`. The only Python in `bin/`: `writePython3Bin` lints it with flake8 at build time
 - `build-fan-out.nu` - Build every host's toplevel in parallel
 - `nix-lines-history.nu` - Emit CSV of file line counts sampled across git history
 - `vpn.nu` - Switch NetworkManager VPN profiles (`status`, `up`, `down`, `toggle [name]`); packaged as `vpn` by `modules.services.airvpn`, default profile from `VPN_PROFILE`

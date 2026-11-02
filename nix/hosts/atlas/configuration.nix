@@ -193,6 +193,11 @@
             extraArgs = ["--json" "--save-images"];
           };
         };
+        search = {
+          enable = true;
+          jsonJob = "json";
+          htmlJob = "html";
+        };
       };
     };
 
