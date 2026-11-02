@@ -101,18 +101,23 @@ in {
       description = "Tool patterns to always deny.";
     };
 
-    memoryDir = mkOption {
+    memoryRoot = mkOption {
       type = types.nullOr types.str;
       default = null;
       example = "~/.claude-memory";
       description = ''
-        Directory for Claude Code's auto memory, written to `autoMemoryDirectory`.
-        The default location, `~/.claude/projects/<project>/memory`, is named after
-        the repository's absolute path, so the same repo checked out at different
-        paths on two machines gets two unrelated directories. Pointing every host
-        at one `~/`-relative directory and syncing that directory (Syncthing, say)
-        shares memory between machines. Must be absolute or start with `~/`; a Nix
-        path literal would copy the directory into the store.
+        Directory, synced between machines (Syncthing, say), holding one auto
+        memory directory per repository. Claude Code's default location,
+        `~/.claude/projects/<project>/memory`, is named after the checkout's
+        absolute path, so the same repo at different paths on two machines gets
+        unrelated memory. Setting this installs `claude-memory`, which opts the
+        current checkout in by writing `autoMemoryDirectory = <root>/<repo>` to
+        its `.claude/settings.local.json` and seeding that directory from the
+        default one. Repositories that are not opted in keep the default. The
+        user-level `autoMemoryDirectory` is deliberately left unset: Claude Code
+        uses it as one flat directory shared by every repository. Must be
+        absolute or start with `~/`; a Nix path literal would copy the
+        directory into the store.
       '';
     };
   };
@@ -329,6 +334,13 @@ in {
       exec ssh "$@" bash -s
     '';
 
+    claudeMemory = lib.my.writeNushellScriptBin pkgs "claude-memory" (
+      ''
+        $env.CLAUDE_MEMORY_ROOT = ($env.CLAUDE_MEMORY_ROOT? | default "${cfg.memoryRoot}")
+      ''
+      + builtins.readFile ../../../../bin/claude-memory.nu
+    );
+
     mcpServers =
       mapAttrs (
         _: server:
@@ -363,6 +375,12 @@ in {
         home.programs.claude-code = {
           enable = true;
           package = claudePackage;
+
+          # settings.json becomes a writable file that activation merges these
+          # settings into, so /model, /effort and /config can persist what this
+          # leaves undeclared. Declared keys are reset on every switch;
+          # declarations removed here linger in the file until deleted by hand.
+          mutableSettings = true;
 
           settings = {
             attribution = {
@@ -508,8 +526,8 @@ in {
         home.file.".claude/workflows".source = ../../../../config/claude/workflows;
       }
 
-      (mkIf (cfg.memoryDir != null) {
-        home.programs.claude-code.settings.autoMemoryDirectory = cfg.memoryDir;
+      (mkIf (cfg.memoryRoot != null) {
+        user.packages = [claudeMemory];
       })
 
       (optionalAttrs isLinux {

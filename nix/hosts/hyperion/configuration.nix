@@ -99,7 +99,7 @@
       };
       claude = {
         enable = true;
-        memoryDir = "~/.claude-memory";
+        memoryRoot = "~/.claude-memory";
       };
       mcp.servers = {
         codegraph.agents = {

@@ -28,7 +28,7 @@
       btop.enable = true;
       claude = {
         enable = true;
-        memoryDir = "~/.claude-memory";
+        memoryRoot = "~/.claude-memory";
       };
       emacs = {
         enable = true;
