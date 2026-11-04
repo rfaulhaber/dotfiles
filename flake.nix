@@ -172,7 +172,9 @@
           mkHost = lib.my.mkNixOSHost;
         in {
           hyperion = mkHost ./nix/hosts/hyperion/configuration.nix {
-            overlays = [(import ./nix/overlays/codegraph_20261021.nix)];
+            overlays = [
+              (import ./nix/overlays/opencode_20261104.nix)
+            ];
           };
           atlas = mkHost ./nix/hosts/atlas/configuration.nix {};
           janus = mkHost ./nix/hosts/janus/configuration.nix {};
