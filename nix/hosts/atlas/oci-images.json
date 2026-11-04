@@ -2,7 +2,7 @@
   "bazarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:9a625883f054e722795affe5e3ca71057e6ed817ecdf99f4a99624346fcc509c"
+      "digest": "sha256:7ef0e58216900dbce30b123e0eb65f5cb30e36f126de9474acdd2022fb069c54"
     }
   },
   "calibre": {
@@ -55,7 +55,7 @@
     "postgres": {
       "image": {
         "version": "14-vectorchord1.1.1-pgvector0.8.5",
-        "digest": "sha256:1fb2585c687cd58ddf10ed4eb34eac6fd0e4f0bc7cae41c1309f3847bc93c8f4"
+        "digest": "sha256:b38cad4a8bdb716d19b07e5afb4a6e2ed9e7f8a5a93f428aae35f495c72d3498"
       }
     },
     "redis": {
@@ -86,7 +86,7 @@
   "lidarr": {
     "image": {
       "version": "nightly",
-      "digest": "sha256:74a43ae3b1e41ad40137241b01d214147131d844d2c5e61d6681ea4976f8071c"
+      "digest": "sha256:6001d6721e43233b8f1084a3ed9fa8d4d6a14a4f05f91dfadfa0591aae8a40dd"
     }
   },
   "linkding": {
@@ -122,7 +122,7 @@
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c89f01cb387bf6c598959036cbf56306b068a43e8784345bee7398b7af8ee2e1"
+      "digest": "sha256:2170e673c4c72d905764fa22e83d0ae0aa3239fb1ab3b9fcaefb2b00fffb2d6e"
     }
   },
   "nzbget": {
@@ -134,7 +134,7 @@
   "paperless": {
     "image": {
       "version": "latest",
-      "digest": "sha256:1a08d8dfc2b51a08de09652dd86ad4d0c611c362382f944533ad38b73125fbc4"
+      "digest": "sha256:d704e84f88300eb6ab001ab15720a2330ff99169cf9f94d6b8fcc44b63a84c84"
     },
     "postgres": {
       "image": {
@@ -164,7 +164,7 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:b8b1bb2c5514b46128309411d007c20c6372e8cef09977ee135488e22b0c1962"
+      "digest": "sha256:e2382127fec5c61ca6b6eb528fd4dcf8a8255ef2957ca334d782dbaf46d4c0c7"
     }
   },
   "radarr": {
@@ -236,7 +236,7 @@
   "transmission": {
     "image": {
       "version": "latest",
-      "digest": "sha256:5b3c27a96c8a37c878a525ebf377a32032c3a3acfe845ecaa7c3eb10b09c2caa"
+      "digest": "sha256:fb8fe625941cf15eb69aba4e5c0a678e035ddb11605fd85af4516a4e641f2687"
     }
   },
   "vikunja": {
@@ -248,7 +248,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:fef737885654879490ed4ce70b6e8566a77b55714edb7e777714ca66b0a0ff95"
+      "digest": "sha256:583ce3b69ffa9622441720487a4e983af08b2e278fc8255a2635898ef47d64ef"
     },
     "postgres": {
       "image": {

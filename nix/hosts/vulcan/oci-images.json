@@ -8,19 +8,19 @@
   "plex": {
     "image": {
       "version": "latest",
-      "digest": "sha256:01a53d9c7adcbb3701fbb0a4230c0a37c85453759b6b05a67356c3c7a09de08d"
+      "digest": "sha256:0c2f1122a4275efeea953a9882359f3809b27279d3c3022392e8e610a2eccc67"
     }
   },
   "jellyfin": {
     "image": {
       "version": "latest",
-      "digest": "sha256:3894d9eae88418d3cf9ac6349392d2c4dad818365a59565d19edc38098897044"
+      "digest": "sha256:b7eabe1f098f4e850bfd63d6721369117195410a471db1a41748ab768b81a639"
     }
   },
   "newt": {
     "image": {
       "version": "latest",
-      "digest": "sha256:c89f01cb387bf6c598959036cbf56306b068a43e8784345bee7398b7af8ee2e1"
+      "digest": "sha256:2170e673c4c72d905764fa22e83d0ae0aa3239fb1ab3b9fcaefb2b00fffb2d6e"
     }
   },
   "forgejo-runner": {
