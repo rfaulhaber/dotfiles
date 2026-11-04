@@ -278,6 +278,11 @@
         iptables -I INPUT 1 -p tcp -m tcp --dport 4711 -i lo -j ACCEPT
         iptables -I INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
       '';
+      # The Prometheus container self-scrapes node_exporter via
+      # host.containers.internal, which lands on a podman bridge rather than
+      # eno2, so the agent's eno2-scoped allow doesn't cover it. Wildcarded
+      # because podman numbers its bridges by creation order.
+      interfaces."podman+".allowedTCPPorts = [config.services.prometheus.exporters.node.port];
     };
   };
 }
