@@ -92,7 +92,11 @@
 ;; :around advice on ghostel--redraw must match the native fn's arity
 ;; (v0.44.0 added FORCE-SYNC; a stale advice signals
 ;; wrong-number-of-arguments on every redraw and blanks the terminal).
-(let ((ghostel-pin "97ec8f16eb90cd0de87dbf5643d7371cf9895686"))
+;; bump the version using this:
+;; gh api repos/dakra/ghostel/commits/HEAD --jq .sha
+;; or
+;; git ls-remote https://github.com/dakra/ghostel HEAD | split column --regex \s+ hash | get hash | first
+(let ((ghostel-pin "a63db707e0d71e49eb4de95b198e288788eb92f8"))
   (package! ghostel :pin ghostel-pin)
   (package! evil-ghostel :pin ghostel-pin))
 
