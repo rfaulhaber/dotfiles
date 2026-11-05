@@ -89,9 +89,7 @@
           }
           // lib.genAttrs [
             "anthropic-api-key"
-            "openrouter-crush-api-key"
             "openrouter-opencode-api-key"
-            "openrouter-pi-api-key"
             # GitHub PAT for the hosted GitHub MCP server, shared by every
             # agent opted into it in modules.programs.mcp
             "github_mcp"
@@ -118,13 +116,6 @@
         };
         ebay.agents.claude = true;
       };
-      crush = {
-        enable = true;
-        openrouterApiKeySecret = "openrouter-crush-api-key";
-        providers = {
-          openrouter = {};
-        };
-      };
       steam.enable = true;
       heroic.enable = true;
       nvtop.enable = true;
@@ -136,10 +127,6 @@
       opencode = {
         enable = true;
         openrouterApiKeySecret = "openrouter-opencode-api-key";
-      };
-      pi = {
-        enable = true;
-        openrouterApiKeySecret = "openrouter-pi-api-key";
       };
     };
     services = {
