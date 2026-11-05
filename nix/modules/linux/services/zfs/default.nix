@@ -54,14 +54,6 @@ in {
         };
       });
     };
-    # NOTE in order for this to work properly, see the following:
-    # - https://wiki.archlinux.org/title/ZFS (section 6.1.2)
-    # - https://www.reddit.com/r/NixOS/comments/tzksw4/comment/i4dw7f8
-    encryptedHome = mkOption {
-      description = "Home dataset to be decrypted on boot.";
-      type = types.nullOr types.str;
-      default = null;
-    };
     encryptedDatasets = mkOption {
       description = ''
         Non-root encrypted ZFS datasets unlocked in stage 2 by a userspace
@@ -114,19 +106,14 @@ in {
       autoSnapshot.enable = mkDefault true;
     };
 
-    # TODO throw in some assertions to check this?
-    security.pam.zfs = mkIf (cfg.encryptedHome != null) {
-      enable = true;
-      homes = cfg.encryptedHome;
-    };
-
     # Datasets in `encryptedDatasets` get a dedicated zfs-load-key-<name> unit
     # below. Leaving upstream's blanket sweep on would load the same keys a
     # second time during pool import, and a single failure there fails
-    # zfs-import-<pool>.service and every mount that requires it. Note this
-    # also disables the initrd root-pool passphrase prompt; a host needing
-    # both must use upstream's list form instead of this boolean.
-    boot.zfs.requestEncryptionCredentials = cfg.encryptedHome == null && cfg.encryptedDatasets == {};
+    # zfs-import-<pool>.service and every mount that requires it. Turning the
+    # sweep off also drops the initrd root-pool passphrase prompt, so a host
+    # that needs both overrides this with upstream's list form, naming the
+    # encryption roots to prompt for.
+    boot.zfs.requestEncryptionCredentials = mkDefault (cfg.encryptedDatasets == {});
 
     systemd.services = mkMerge [
       (mkIf (cfg.datasets != {}) {

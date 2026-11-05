@@ -73,6 +73,10 @@
         };
       in {
         enable = true;
+        # On zroot/enc/keys, mounted in the initrd by the fileSystems entry
+        # below. sshd is off here, so no SSH host key doubles as an identity.
+        keyFile = "/var/lib/host-keys/sops.age";
+        sshKeyPaths = [];
         secrets =
           {
             unsplash = userSecret // {mode = "0440";};
@@ -167,8 +171,8 @@
             mode = "0755";
           };
         in {
-          "zroot/home/${config.user.name}/cache" = cacheDataset "${config.user.home}/.cache";
-          "zroot/home/${config.user.name}/containers" = cacheDataset "${config.user.home}/.local/share/containers";
+          "zroot/enc/home/${config.user.name}/cache" = cacheDataset "${config.user.home}/.cache";
+          "zroot/enc/home/${config.user.name}/containers" = cacheDataset "${config.user.home}/.local/share/containers";
           "games/steam" = publicDataset "/games/steam";
           "games/heroic" = publicDataset "/games/heroic";
         };
@@ -364,6 +368,12 @@
     zfs = {
       extraPools = ["zroot" "games" "bulk"];
       forceImportRoot = false;
+      # Home lives under this encryption root, unlocked by the initrd prompt
+      # before stage 2 mounts anything. Pinned rather than left to the zfs
+      # module's boolean: that flips to false as soon as this host gains an
+      # `encryptedDatasets` entry, which would drop the prompt and leave Home
+      # Manager writing into the bare /home/ryan mountpoint.
+      requestEncryptionCredentials = ["zroot/enc"];
     };
   };
 
@@ -387,17 +397,19 @@
   # networkd.
   services.resolved.enable = true;
 
-  # TODO implement encrypted home
-  # security.pam.zfs = {
-  #   enable = true;
-  #   homes = "zroot/home";
-  # };
-
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   # TODO move
   virtualisation.podman = {
     enable = true;
     dockerCompat = true;
+  };
+
+  # TODO put elsewhere?
+  fileSystems."/var/lib/host-keys" = {
+    device = "zroot/enc/keys";
+    fsType = "zfs";
+    options = ["zfsutil"];
+    neededForBoot = true;
   };
 }
