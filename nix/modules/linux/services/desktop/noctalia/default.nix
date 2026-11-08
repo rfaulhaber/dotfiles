@@ -12,6 +12,8 @@ with lib; let
     inherit lib;
     inherit (config.modules.themes) font;
     inherit (cfg) networkInterface;
+    builtinScheme = cfg.theme.builtin;
+    greeterSync = config.modules.desktop.noctalia-greeter.enable;
     allowEmptyPassword = config.modules.services.yubikey.enable;
     inherit (config.userInfo) location;
     idleBehavior = cfg.idle.behavior;
@@ -40,6 +42,11 @@ in {
       dropped, the random-wallpaper service drives noctalia over IPC instead,
       and the control center gains a tile that fetches a new wallpaper for the
       focused monitor.
+    '';
+
+    theme.builtin = lib.my.mkOptDesc types.str "Tokyo-Night" ''
+      noctalia builtin color scheme. The greeter ships the same builtins and
+      mirrors this, so the login screen follows the shell's palette.
     '';
 
     networkInterface = lib.my.mkOptDesc types.str "" ''

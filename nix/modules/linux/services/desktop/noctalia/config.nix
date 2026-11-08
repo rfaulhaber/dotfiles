@@ -1,6 +1,8 @@
 {
   lib,
   font,
+  builtinScheme,
+  greeterSync,
   networkInterface,
   allowEmptyPassword,
   location,
@@ -134,6 +136,10 @@ in {
     launch_apps_as_systemd_services = true;
     # Translucent panel cards so the control center matches the frosted bar.
     panel.transparency_mode = "glass";
+    # The greeter's font, and its wallpaper when noctalia paints one, reach it
+    # only through this sync: a builtin scheme ignores a declared font, and the
+    # wallpaper downloads live in the encrypted home.
+    greeter_sync.auto_sync = greeterSync;
 
     # Declaring any action replaces the whole default set. Logout is omitted
     # because a single-user seat never leaves the session, and the countdown
@@ -172,7 +178,7 @@ in {
   theme = {
     mode = "dark";
     source = "builtin";
-    builtin = "Tokyo-Night";
+    builtin = builtinScheme;
     templates = {
       # Templates render theme files into *other* applications' config dirs,
       # which this repo already owns declaratively via base16.

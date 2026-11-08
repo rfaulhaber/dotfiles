@@ -33,7 +33,26 @@ with lib; let
     # greeter still holds create_session — and therefore that cue — behind a
     # non-empty password field until empty submissions are permitted.
     auth.allow_empty_password = config.modules.services.yubikey.enable;
+    # Wallpaper is deliberately absent: any key here would shadow the
+    # per-output images the shell syncs into the greeter's state dir. Font and
+    # theme mode are absent too, because the greeter honors them here only
+    # alongside a complete [appearance.palette]; with a builtin scheme the font
+    # comes from the shell's sync.
+    appearance = {
+      scheme = config.modules.desktop.noctalia.theme.builtin;
+      hide_logo = true;
+      # A pinned scheme overrides any pick made on the login screen.
+      scheme_selector_position = "hidden";
+    };
+    # The lock screen's time format, and the bar's date tooltip minus the year.
+    clock = {
+      time_format = "{:%I:%M %p}";
+      date_format = "%A, %B %d";
+    };
     output = {
+      # The keys below already beat sync's layout; this also stops the synced
+      # layout from filling in for any of them that niri leaves empty.
+      use_synced_settings = false;
       inherit layout transforms scales;
       width = spanFor "x" "width";
       height = spanFor "y" "height";
@@ -73,6 +92,11 @@ in {
       enable = true;
       package = pkgs.noctalia-greeter;
       settings = recursiveUpdate derivedSettings cfg.settings;
+      # Auto-sync fires on every wallpaper rotation, usually unattended, so
+      # without this each one would raise an authentication prompt. The
+      # upstream rule covers only the constrained `--sync` helper mode, so this
+      # grants no general root access.
+      passwordless-sync-users = optional config.modules.desktop.noctalia.enable config.user.name;
     };
   };
 }
