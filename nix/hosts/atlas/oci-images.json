@@ -73,8 +73,8 @@
   },
   "kept": {
     "image": {
-      "version": "1.9.3",
-      "digest": "sha256:4f913fe813650c4bdc269d20930b808366c7ec7af235e618a11fd67db044f2fe"
+      "version": "1.9.4",
+      "digest": "sha256:7f9f93b0ae17ae0946917b0edaae5f60f841d99ed1b3339e37940046ef8b02c7"
     }
   },
   "kitchenowl": {
@@ -157,20 +157,20 @@
   },
   "prometheus": {
     "image": {
-      "version": "v3.15.1",
-      "digest": "sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2"
+      "version": "v3.16.0",
+      "digest": "sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06"
     }
   },
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:e2382127fec5c61ca6b6eb528fd4dcf8a8255ef2957ca334d782dbaf46d4c0c7"
+      "digest": "sha256:5db7018b2f18de5f6f4265eb54e210ad3880be6692f23648b193020fdad6ad50"
     }
   },
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ade5937813c6ae415b29db729386e53fea3ecf067a019849bafbe2d2a6ec02ba"
+      "digest": "sha256:51a9ac2a9eb47afc833541e5fd6c11b86eb9f810694c22fa2429e3078e9194b2"
     }
   },
   "recyclarr": {
@@ -200,7 +200,7 @@
   "shelfmark": {
     "image": {
       "version": "latest",
-      "digest": "sha256:0e5c9ff5f858a9695dc18bc355d8aa29dfee5c0d9c634919484c2bab9955ad5a"
+      "digest": "sha256:0b400a5d58951b35bfede3d9943b632551259c31e130316fe56c5cc0e2e4faea"
     }
   },
   "slskd": {
@@ -248,7 +248,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:583ce3b69ffa9622441720487a4e983af08b2e278fc8255a2635898ef47d64ef"
+      "digest": "sha256:ae88ef39e9664dbd37be1801a2502189ea306a2741a9b0ce30767a65c51458d4"
     },
     "postgres": {
       "image": {
