@@ -248,7 +248,7 @@
   "sure": {
     "image": {
       "version": "latest",
-      "digest": "sha256:ae88ef39e9664dbd37be1801a2502189ea306a2741a9b0ce30767a65c51458d4"
+      "digest": "sha256:e665ace295942700511a616da3850693ab7e373027061d60c74e8025f6b17ff3"
     },
     "postgres": {
       "image": {

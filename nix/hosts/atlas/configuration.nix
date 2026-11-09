@@ -190,7 +190,9 @@
           };
           json = {
             blogSecret = "archivr/blog";
-            extraArgs = ["--json" "--save-images"];
+            # The database lives here rather than in the HTML archive because
+            # only a --json archive can backfill it offline (--sqlite-from-json).
+            extraArgs = ["--json" "--save-images" "--sqlite"];
           };
         };
       };
