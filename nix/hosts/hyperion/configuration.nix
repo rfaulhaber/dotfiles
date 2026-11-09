@@ -56,7 +56,13 @@
         # slot; dim it to the comment grey so it reads as a suggestion, not input.
         colorOverrides.hints = config.modules.themes.colors.grey;
         plugins = with pkgs.nushellPlugins; [
-          polars
+          # rustPlatform's cargoSetupHook forces zstd-sys, aws-lc-sys and (via
+          # the nu-command dev-dependency built for checkPhase) libgit2-sys onto
+          # system libraries, but nixpkgs' polars doesn't list them. Drop the
+          # override once upstream adds them to buildInputs.
+          (polars.overrideAttrs (old: {
+            buildInputs = old.buildInputs ++ [pkgs.zstd pkgs.aws-lc pkgs.libgit2];
+          }))
         ];
       };
       direnv.enable = true;
