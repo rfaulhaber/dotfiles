@@ -326,7 +326,11 @@
         codegraph
         feishin
         moonlight-qt
-        python314Packages.llm
+        (llm.withPlugins
+          {
+            llm-anthropic = true;
+            llm-openrouter = true;
+          })
         readest
         signal-desktop
         ungoogled-chromium
