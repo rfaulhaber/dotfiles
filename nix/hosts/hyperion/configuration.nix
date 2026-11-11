@@ -122,6 +122,7 @@
         };
         ebay.agents.claude = true;
       };
+      project-notes.enable = true;
       steam.enable = true;
       heroic.enable = true;
       nvtop.enable = true;

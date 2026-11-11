@@ -18,6 +18,7 @@
     ./openchamber
     ./opencode
     ./pi
+    ./project-notes
     ./sops
     ./steam
     ./zellij

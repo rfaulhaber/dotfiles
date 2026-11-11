@@ -38,6 +38,7 @@
       };
       ghostty.enable = true;
       direnv.enable = true;
+      project-notes.enable = true;
       zellij.enable = true;
       git = {
         enable = true;
