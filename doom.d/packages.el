@@ -96,7 +96,7 @@
 ;; gh api repos/dakra/ghostel/commits/HEAD --jq .sha
 ;; or
 ;; git ls-remote https://github.com/dakra/ghostel HEAD | split column --regex \s+ hash | get hash | first
-(let ((ghostel-pin "a63db707e0d71e49eb4de95b198e288788eb92f8"))
+(let ((ghostel-pin "c6f24788b5e114ad6569b3943702bd1609617a5e"))
   (package! ghostel :pin ghostel-pin)
   (package! evil-ghostel :pin ghostel-pin))
 
