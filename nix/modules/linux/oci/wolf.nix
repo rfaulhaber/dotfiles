@@ -9,6 +9,7 @@ with lib; let
   ociLib = config.modules.linux.oci.lib;
   imageLib = import ./lib.nix {inherit lib;};
   appCatalog = import ./wolf-apps.nix;
+  templateCacheFile = "${cfg.baseDir}/nix-baseline-template.json";
   # Wire shape of Wolf's profile API: pin is a per-digit short array, keys
   # are snake_case. Rendered to JSON and handed to the sync script by path.
   profilesSpec =
@@ -129,6 +130,30 @@ in {
       };
     };
 
+    sessionEnv = mkOption {
+      description = ''
+        Environment variables set on every session app: written into each
+        docker app's runner env in config.toml and in the profile sync's
+        baseline cache before Wolf starts, and added to catalog apps in
+        declared profiles, so every source a profile is rebuilt from
+        already carries them. The file is the only
+        route to Wolf UI's entry, which lives in the moonlight profile the
+        management API never exposes. A declared value replaces an app's
+        own entry for the same key; dropping a key here leaves its last
+        value behind in config.toml.
+
+        The default carries the host timezone. Every GOW image bakes in
+        TZ=Europe/London, and Wolf forwards neither TZ nor /etc/localtime
+        into session containers — so without an explicit TZ every session
+        clock runs on London time. Podman's containers.conf can't help
+        either: its `env` ranks below image ENV, and `tz = "local"` only
+        writes /etc/localtime, which glibc ignores while TZ is set.
+      '';
+      type = types.attrsOf types.str;
+      default = optionalAttrs (config.time.timeZone != null) {TZ = config.time.timeZone;};
+      defaultText = literalExpression ''{ TZ = config.time.timeZone; }'';
+    };
+
     profiles = mkOption {
       description = ''
         Wolf profiles to ensure exist, keyed by profile id. Profiles are app
@@ -211,12 +236,17 @@ in {
           map (
             n: let
               app = appCatalog.${n};
+              catalogEnv =
+                filter (e: !(cfg.sessionEnv ? ${head (splitString "=" e)})) (app.runner.env or []);
             in
               app
               // {
                 runner =
                   app.runner
-                  // {mounts = (app.runner.mounts or []) ++ (cfg.appMounts.${n} or []);};
+                  // {
+                    mounts = (app.runner.mounts or []) ++ (cfg.appMounts.${n} or []);
+                    env = catalogEnv ++ mapAttrsToList (k: v: "${k}=${v}") cfg.sessionEnv;
+                  };
               }
           )
           config.includeApps;
@@ -351,11 +381,23 @@ in {
         };
     };
 
-    systemd.services."podman-wolf" = ociLib.mkServiceConfig {
-      networks = [];
-      extraAfter = ["podman.socket"];
-      extraRequires = ["podman.socket"];
-    };
+    systemd.services."podman-wolf" = mkMerge [
+      (ociLib.mkServiceConfig {
+        networks = [];
+        extraAfter = ["podman.socket"];
+        extraRequires = ["podman.socket"];
+      })
+      # Wolf is stopped while ExecStartPre runs, so nothing races the
+      # rewrite. The script always exits 0.
+      (mkIf (cfg.sessionEnv != {}) {
+        preStart = mkAfter (let
+          patchScript =
+            lib.my.writeNushellScriptBin pkgs "wolf-session-env"
+            (builtins.readFile ./wolf-session-env.nu);
+          specFile = pkgs.writeText "wolf-session-env.json" (builtins.toJSON cfg.sessionEnv);
+        in "${patchScript}/bin/wolf-session-env --config ${cfg.baseDir}/config.toml --template-cache-file ${templateCacheFile} --spec ${specFile}");
+      })
+    ];
 
     # Profile reconciliation is deliberately best-effort (the script always
     # exits 0): it runs during activation, and a sync hiccup must not fail —
@@ -375,7 +417,7 @@ in {
             lib.my.writeNushellScriptBin pkgs "wolf-profiles-sync"
             (builtins.readFile ./wolf-profiles-sync.nu);
           specFile = pkgs.writeText "wolf-profiles.json" (builtins.toJSON profilesSpec);
-        in "${syncScript}/bin/wolf-profiles-sync --file ${specFile} --state-file ${cfg.baseDir}/nix-profiles-last-applied.json --template-cache-file ${cfg.baseDir}/nix-baseline-template.json --socket /tmp/sockets/wolf.sock";
+        in "${syncScript}/bin/wolf-profiles-sync --file ${specFile} --state-file ${cfg.baseDir}/nix-profiles-last-applied.json --template-cache-file ${templateCacheFile} --socket /tmp/sockets/wolf.sock";
       };
     };
 
