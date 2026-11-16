@@ -112,8 +112,13 @@ def main [
       continue
     }
 
+    let keep = $p.base_apps
     let base_apps = if $template == null { [] } else {
-      $template | get apps | where {|a| ($a.title? | default "") not-in $p.exclude_apps }
+      $template | get apps | where {|a|
+        let title = $a.title? | default ""
+        let kept = if $keep == null { true } else { $title in $keep }
+        $kept and ($title not-in $p.exclude_apps)
+      }
     }
     let extra_apps = $p.extra_apps | each {|a| complete-app $a $donor }
     mut profile = if $template == null {

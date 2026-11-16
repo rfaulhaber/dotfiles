@@ -101,10 +101,8 @@
             server = "atlas";
             path = "/data/llm/models";
           };
-          # ROM library for wolf's retro emulators: bind /mnt/games/roms/roms
-          # into emulator sessions at /home/retro/ROMs via the app's mounts in
-          # config.toml (a subpath — /home/retro itself is taken by app state,
-          # see wolf issue #461 above).
+          # ROM library for wolf's EmulationStation: its roms/ subdirectory is
+          # bound into sessions at /ROMs by wolf.appMounts.es-de in oci.nix.
           "/mnt/games/roms" = {
             server = "atlas";
             path = "/data/games/roms";

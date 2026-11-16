@@ -104,16 +104,25 @@
         # Heroic's own "Default Install Path" has to point here — it is
         # runtime state in config.json, not something nix sets.
         appMounts.heroic = ["/store/games/heroic:/home/retro/Games/Heroic/Library:rw"];
+        # atlas's ROM library (NFS, see configuration.nix). Read-only: saves
+        # and states live in each profile's app state, not beside the ROMs.
+        appMounts.es-de = ["/mnt/games/roms/roms:/ROMs:ro"];
 
         # Picked inside the Wolf UI session; each profile keeps its own
         # Steam login and per-app state, shared across every device that
         # person pairs. PINs can be added later via `pin = "...."` — they
         # gate the picker UI only, nothing cryptographic.
+        # EmulationStation swaps the image-default entry for the catalog one
+        # so its ROM mount is declared rather than hand-edited live.
         profiles = {
           ryan = {
-            includeApps = ["heroic"];
+            baseApps = ["Steam"];
+            includeApps = ["es-de" "heroic"];
           };
-          juni = {};
+          juni = {
+            baseApps = ["Steam"];
+            includeApps = ["es-de" "heroic"];
+          };
         };
       };
 

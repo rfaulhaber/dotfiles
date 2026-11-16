@@ -22,6 +22,7 @@ with lib; let
         else map toInt (stringToCharacters p.pin);
       icon_png_path = p.iconPngPath;
       extra_apps = p.extraApps;
+      base_apps = p.baseApps;
       exclude_apps = p.excludeApps;
     })
     cfg.profiles;
@@ -166,7 +167,8 @@ in {
         Reconciled after service start through the management API rather
         than by templating config.toml, which Wolf rewrites on every
         pairing. Each profile starts from the image-default `user` profile's
-        app list minus excludeApps plus includeApps/extraApps, and is only rebuilt when
+        app list (narrowed to baseApps when set) minus excludeApps plus
+        includeApps/extraApps, and is only rebuilt when
         its declaration here changes — runtime edits made via the API or
         Wolf UI survive otherwise. Profiles removed from this set are left
         in place, not deleted. The baseline profile is cached beside the
@@ -223,6 +225,18 @@ in {
             '';
             type = types.listOf (types.attrsOf types.anything);
             default = [];
+          };
+
+          baseApps = mkOption {
+            description = ''
+              Titles of image-default apps to keep, dropping every other one;
+              null keeps them all. An allowlist rather than excludeApps, so
+              apps added to the image's default set later don't appear in
+              the profile unasked.
+            '';
+            type = types.nullOr (types.listOf types.str);
+            default = null;
+            example = ["Steam"];
           };
 
           excludeApps = mkOption {
