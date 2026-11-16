@@ -97,8 +97,8 @@
   },
   "loki": {
     "image": {
-      "version": "3.7.9",
-      "digest": "sha256:0db216b630ae1f348a1584c67f3cead8b4c1fc839169a39501db664744158e28"
+      "version": "3.7.10",
+      "digest": "sha256:b43c257ccfc925d4a50b8717cac61a3b51df8c48d01847936057e5c4075a24a7"
     }
   },
   "miniflux": {
@@ -164,13 +164,13 @@
   "prowlarr": {
     "image": {
       "version": "develop",
-      "digest": "sha256:5ec14c4970719d112664557a824b468512adc3b07e9f394a4f0b856dc2a777c0"
+      "digest": "sha256:330fda8552e6b27cb6e2d6830fdeb5bfd6cfe2d35d699bcc0772234ae9228164"
     }
   },
   "radarr": {
     "image": {
       "version": "latest",
-      "digest": "sha256:51a9ac2a9eb47afc833541e5fd6c11b86eb9f810694c22fa2429e3078e9194b2"
+      "digest": "sha256:044788f5508b7f67a3e0368cdd142c77c4d4cd5aec2efaba53e1a68b6b6231e7"
     }
   },
   "recyclarr": {
@@ -253,7 +253,7 @@
     "postgres": {
       "image": {
         "version": "16-alpine",
-        "digest": "sha256:f377d590e5474681d4d7838635031a2b50647923b7abfa803ce9b5ff35d5c663"
+        "digest": "sha256:81e77a4833487b8132fe4b00bedd39dc3f74b8641e387f19312a48f7de218c2e"
       }
     },
     "redis": {
