@@ -11,7 +11,7 @@
       },
       "traefik": {
         "version": "v3.7",
-        "digest": "sha256:c1ea95f3b3eab04ba8868d201b8494e12284e424f7cec2127e3194bca1c6641c"
+        "digest": "sha256:b7b1b31e6440de0b1f7c4e0f6cf0a0f3f004866761d30c025fe00c80daaf7d9c"
       }
     }
   },
@@ -19,23 +19,23 @@
     "images": {
       "dashboard": {
         "version": "latest",
-        "digest": "sha256:dbbec81fff42f6eb42ce0594033eafc1ae1c69b25a2595cc90e8097f0bcd468d"
+        "digest": "sha256:203b2dc90dc20d3fd45729caac7c922deb399586a68202e0a35be099720bac7d"
       },
       "signal": {
         "version": "latest",
-        "digest": "sha256:1735ff3b09c4fdace66ef38ffe6cded1821800ef78755560d918079aff2c7608"
+        "digest": "sha256:9ceb99a656b3b35b573afcce91507db8c39e0f9412a7634be0a620f4e74c5b58"
       },
       "relay": {
         "version": "latest",
-        "digest": "sha256:9f917fb289872b3f15f139ed061ba6543a2b843aa41f41d9fb5c9df0c755ec7d"
+        "digest": "sha256:7b52c1077c964ea01535c311a5e57d7c1c9b7ff4c974ff42995772e4c3546d1a"
       },
       "management": {
         "version": "latest",
-        "digest": "sha256:cbdd58b5ea70072afa4684c4ad191522e4cc32e753ba3fdd8dab7ffc16f61120"
+        "digest": "sha256:77c74f342e4d36251ad4b920c2f21a9f13e62c69d8ae51a2ec5060052cd485d8"
       },
       "coturn": {
         "version": "latest",
-        "digest": "sha256:bbefd3e1fdfdc0d58770fe01b581fd8b00d9f3a5580d00acb77cf719a6bc78e3"
+        "digest": "sha256:0a3c026baaab092c79c9005823a72747bd09bf211071d537bb0865d95eae4638"
       }
     }
   },
