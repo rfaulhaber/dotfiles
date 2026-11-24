@@ -2,8 +2,8 @@
   "pangolin": {
     "images": {
       "pangolin": {
-        "version": "1.26.0",
-        "digest": "sha256:a8285fd7c4ba400ef011dd62d4116e69298b51df242cdc4f26ba9f2b5d57ff6c"
+        "version": "1.27.1",
+        "digest": "sha256:4ed4ac98054a33646848e419f8196fdedd80dacc7c6cb37fdee22c20ab6a29f3"
       },
       "gerbil": {
         "version": "latest",
@@ -11,7 +11,7 @@
       },
       "traefik": {
         "version": "v3.7",
-        "digest": "sha256:b7b1b31e6440de0b1f7c4e0f6cf0a0f3f004866761d30c025fe00c80daaf7d9c"
+        "digest": "sha256:a6c0194dda77bcb804824580f36fa7edc56e315b1acfe933366c8b52844a78a4"
       }
     }
   },
@@ -19,23 +19,23 @@
     "images": {
       "dashboard": {
         "version": "latest",
-        "digest": "sha256:203b2dc90dc20d3fd45729caac7c922deb399586a68202e0a35be099720bac7d"
+        "digest": "sha256:3e8a714e2966f96201b817657cf5b6e4304b947b88341fe99639214fb440ea9c"
       },
       "signal": {
         "version": "latest",
-        "digest": "sha256:9ceb99a656b3b35b573afcce91507db8c39e0f9412a7634be0a620f4e74c5b58"
+        "digest": "sha256:075086a1b38cca814ec0699ec9aa509b6a0f078453f19ebac52934593fd5d6de"
       },
       "relay": {
         "version": "latest",
-        "digest": "sha256:7b52c1077c964ea01535c311a5e57d7c1c9b7ff4c974ff42995772e4c3546d1a"
+        "digest": "sha256:1b27bbadef5ae7632c46c086c91a872dad7a024aaeb2e0ee7a99faeba23c859f"
       },
       "management": {
         "version": "latest",
-        "digest": "sha256:77c74f342e4d36251ad4b920c2f21a9f13e62c69d8ae51a2ec5060052cd485d8"
+        "digest": "sha256:e9336e426dbdcd8fc8c65cde3183ffaf4007ed9f128d868e9e4f4f8b923bec84"
       },
       "coturn": {
         "version": "latest",
-        "digest": "sha256:81f69dc7cb672eb73ab3414afbb199637c37ab8069919d1c6caaed96ff16fb88"
+        "digest": "sha256:ccdbc51e6f072130b0fc9eebda21f8d026d0a25581746c52557e887818011a3f"
       }
     }
   },

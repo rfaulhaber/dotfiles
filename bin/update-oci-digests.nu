@@ -150,17 +150,30 @@ def eval-toplevel [host: string] {
 }
 
 # Resolve the current manifest digest of repo:tag against the registry.
-# `--no-tags` skips the post-inspect /tags/list call we don't need.
+# Digests the raw top-level manifest (the multi-arch index, when there is one)
+# rather than using `skopeo inspect --format {{.Digest}}`: a non-raw inspect
+# must also resolve the index to the *running* platform's image, which fails
+# outright on macOS since no image ships a darwin variant. The raw digest is
+# platform-independent and is what the stored digests already are.
 # Returns {ok, digest, error} rather than raising: upstreams retire tags
 # unilaterally (recyclarr dropped :latest mid-8.x), and a tag that no longer
 # exists must not be able to freeze every other host's refresh.
 def fetch-digest [repo: string, tag: string] {
     let url = $"docker://($repo):($tag)"
-    let result = (^skopeo inspect --no-tags --format "{{.Digest}}" $url | complete)
+    let result = (^skopeo inspect --raw $url | complete)
     if $result.exit_code != 0 {
-        {ok: false, digest: null, error: $"skopeo inspect failed for ($url): ($result.stderr | str trim)"}
+        return {ok: false, digest: null, error: $"skopeo inspect failed for ($url): ($result.stderr | str trim)"}
+    }
+    # manifest-digest only reads from a file; it also handles the signed
+    # schema1 case where the digest is not a plain sha256 of the bytes.
+    let manifest = (mktemp -t oci-manifest.XXXXXX)
+    $result.stdout | save -f $manifest
+    let digest = (^skopeo manifest-digest $manifest | complete)
+    rm -f $manifest
+    if $digest.exit_code != 0 {
+        {ok: false, digest: null, error: $"skopeo manifest-digest failed for ($url): ($digest.stderr | str trim)"}
     } else {
-        {ok: true, digest: ($result.stdout | str trim), error: null}
+        {ok: true, digest: ($digest.stdout | str trim), error: null}
     }
 }
 
