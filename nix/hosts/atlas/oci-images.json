@@ -25,8 +25,8 @@
   },
   "forgejo": {
     "image": {
-      "version": "17.0.1",
-      "digest": "sha256:fcd19ff4ebc85fb098a67e8e1d0d5a84d07dd6e8a23edcfdfd5b71a6178953be"
+      "version": "17.0.2",
+      "digest": "sha256:879f4f10a98e3e167b32cde5f7ae3af0163d50bfacf567559a27a0e95a95670c"
     },
     "postgres": {
       "image": {
@@ -73,8 +73,8 @@
   },
   "kept": {
     "image": {
-      "version": "1.9.5",
-      "digest": "sha256:363df940ff23b6bc83f5c2b37d64f6c401f0fa0034c0d3783e07db6f16417d6b"
+      "version": "1.9.8",
+      "digest": "sha256:eb405f090bc3a5d04ee747f058ea2c9d6dcb6510ecb247a1ef8b3b0a33abb4a8"
     }
   },
   "kitchenowl": {

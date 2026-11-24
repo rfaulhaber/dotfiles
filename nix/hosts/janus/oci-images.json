@@ -2,8 +2,8 @@
   "pangolin": {
     "images": {
       "pangolin": {
-        "version": "1.26.0",
-        "digest": "sha256:a8285fd7c4ba400ef011dd62d4116e69298b51df242cdc4f26ba9f2b5d57ff6c"
+        "version": "1.27.1",
+        "digest": "sha256:4ed4ac98054a33646848e419f8196fdedd80dacc7c6cb37fdee22c20ab6a29f3"
       },
       "gerbil": {
         "version": "latest",
