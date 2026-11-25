@@ -74,14 +74,17 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # nix-community is the one public cache eos uses beyond cache.nixos.org
-      # (see nix/modules/conf.nix). Without it here, paths eos would fetch
-      # from there get built and exported as eos-only.
+      # A hosted runner has none of the fleet's nix.conf, so this restates
+      # what eos needs from nix/modules/conf.nix: the experimental features
+      # the flake's own code uses (`|>` in nix/lib), and nix-community, the
+      # one public cache eos uses beyond cache.nixos.org. Without the cache,
+      # paths eos would fetch from there get built and exported as eos-only.
       - uses: DeterminateSystems/determinate-nix-action@v3
         with:
           extra-conf: |
             extra-substituters = https://nix-community.cachix.org
             extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
+            extra-experimental-features = nix-command flakes pipe-operators
 
       - name: Build eos
         id: build
