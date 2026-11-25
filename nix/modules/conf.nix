@@ -30,6 +30,15 @@
     "http://prometheus.lan:4965"
   ];
 
+  # eos's own paths, which no public cache serves: build-and-cache.yml builds
+  # them on a GitHub-hosted macOS runner and publishes them to a static cache
+  # on vulcan (nix/hosts/vulcan/eos-cache.nix). Addressed by its netbird name
+  # so it resolves off the LAN too; priority 50 ranks it behind the public
+  # caches, which serve the rest of the closure.
+  darwinOnlySubstituters = [
+    "http://vulcan.netbird.selfhosted:4966?priority=50"
+  ];
+
   substituters =
     lib.filter
     (s: !(lib.hasInfix config.networking.hostName s))
@@ -39,16 +48,21 @@
         "https://nix-community.cachix.org"
       ]
       ++ lib.optionals isLinux linuxOnlySubstituters
+      ++ lib.optionals isDarwin darwinOnlySubstituters
     );
 
-  trustedPublicKeys = [
-    "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
-    "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-    "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="
-    "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964="
-    "vulcan.lan-1:Zu8N+6EtaIeDTyCVpR15uvIYYByZqMmd8W09vu8GKl8="
-    "prometheus.lan-1:GetZTCVHg6NcVVteshbEZQbyMzZfIATcsIgt7si5Lmo="
-  ];
+  trustedPublicKeys =
+    [
+      "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "nixos-raspberrypi.cachix.org-1:4iMO9LXa8BqhU+Rpg6LQKiGa2lsNh/j2oiYLNOQ5sPI="
+      "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964="
+      "vulcan.lan-1:Zu8N+6EtaIeDTyCVpR15uvIYYByZqMmd8W09vu8GKl8="
+      "prometheus.lan-1:GetZTCVHg6NcVVteshbEZQbyMzZfIATcsIgt7si5Lmo="
+    ]
+    # Held only by the macOS CI job (the EOS_CACHE_SIGNING_KEY secret), so only
+    # the hosts that consume that cache trust it.
+    ++ lib.optional isDarwin "eos-cache-1:RxLEDSVd1JpztJH/RVPoiSddFtVpwcVXK/QH8WukK7o=";
 
   # Platform-neutral baseline. The two branches below differ only in how they
   # reach the daemon and in the key spelling for the append-style settings.

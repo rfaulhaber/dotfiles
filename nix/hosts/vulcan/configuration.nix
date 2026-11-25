@@ -11,6 +11,7 @@
     ./hardware.nix
     inputs.determinate.nixosModules.default
     ./oci.nix
+    ./eos-cache.nix
   ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

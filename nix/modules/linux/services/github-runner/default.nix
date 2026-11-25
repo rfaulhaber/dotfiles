@@ -55,6 +55,17 @@ in {
       default = [];
       example = ["nix-aarch64"];
     };
+
+    serviceOverrides = mkOption {
+      description = ''
+        Extra systemd serviceConfig for every runner instance. The upstream
+        unit runs under ProtectSystem=strict as a DynamicUser, so a workflow
+        that writes outside its workspace needs the path in ReadWritePaths
+        and a static group granting access in SupplementaryGroups.
+      '';
+      type = types.attrs;
+      default = {};
+    };
   };
 
   config = mkIf cfg.enable {
@@ -62,7 +73,7 @@ in {
         inherit name;
         value = {
           enable = true;
-          inherit (cfg) url tokenFile extraLabels;
+          inherit (cfg) url tokenFile extraLabels serviceOverrides;
           # De-register and wipe state after every job. The repo is public:
           # a workflow run should not leave anything behind for the next
           # one to find. Requires the PAT-based tokenFile above.

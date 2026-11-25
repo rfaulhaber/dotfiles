@@ -62,3 +62,70 @@ jobs:
         run: |
           nix build ".#nixosConfigurations.${HOST}.config.system.build.toplevel" \
             --no-link --print-build-logs
+
+  # eos is aarch64-darwin, which no fleet host can build, so it builds on a
+  # GitHub-hosted macOS runner. That store is discarded with the VM: what
+  # survives is the slice of the closure no public cache serves, exported as
+  # a signed binary cache and handed to eos-publish below. eos substitutes it
+  # from vulcan over netbird (nix/hosts/vulcan/eos-cache.nix).
+  eos:
+    runs-on: macos-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v7
+
+      # nix-community is the one public cache eos uses beyond cache.nixos.org
+      # (see nix/modules/conf.nix). Without it here, paths eos would fetch
+      # from there get built and exported as eos-only.
+      - uses: DeterminateSystems/determinate-nix-action@v3
+        with:
+          extra-conf: |
+            extra-substituters = https://nix-community.cachix.org
+            extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
+
+      - name: Build eos
+        id: build
+        shell: bash
+        run: |
+          system=$(nix build .#darwinConfigurations.eos.system \
+            --no-link --print-out-paths --print-build-logs)
+          echo "system=${system}" >> "$GITHUB_OUTPUT"
+
+      - name: Export eos-only paths
+        shell: bash
+        env:
+          SIGNING_KEY: ${{ secrets.EOS_CACHE_SIGNING_KEY }}
+          SYSTEM: ${{ steps.build.outputs.system }}
+        run: |
+          if [ -z "${SIGNING_KEY}" ]; then
+            echo "::error::EOS_CACHE_SIGNING_KEY is not set; the build succeeded but nothing can be published"
+            exit 1
+          fi
+          key="${RUNNER_TEMP}/eos-cache-1.secret"
+          (umask 077; printf '%s' "${SIGNING_KEY}" > "${key}")
+          nix run --inputs-from . nixpkgs#nushell -- \
+            .github/scripts/eos-cache-export.nu "${SYSTEM}" eos-cache "${key}"
+
+      # NARs are zstd already; zipping them again only costs time.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: eos-cache
+          path: eos-cache
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
+
+  # The `nix` label is vulcan's alone, which is where the cache is served.
+  eos-publish:
+    runs-on: nix
+    needs: eos
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: eos-cache
+          path: eos-cache
+
+      - name: Publish to vulcan's eos cache
+        run: nu .github/scripts/eos-cache-publish.nu eos-cache /var/lib/eos-cache
