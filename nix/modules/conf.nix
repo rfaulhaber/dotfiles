@@ -16,19 +16,30 @@
   # One union list for every build host, deliberately coarse: any of them may
   # build any host's closure (hyperion for deploys, the CI runners for
   # whole-fleet fan-outs), and per-host precision is exactly the copy-paste
-  # drift this replaces. The one refinement is dropping the host's own
-  # harmonia — querying your own store over HTTP is a pure wasted roundtrip.
+  # drift this replaces. Two refinements: a host drops its own harmonia, since
+  # querying your own store over HTTP is a pure wasted roundtrip, and darwin
+  # drops the caches that only ever hold Linux store paths. Store paths embed
+  # the platform, so those can never hit there; the harmonias only serve what
+  # the Linux-only CI matrix built, and unreachable .lan names cost every nix
+  # invocation its download retries whenever eos is off the LAN. Their keys
+  # stay trusted, which on its own makes Nix query nothing.
+  linuxOnlySubstituters = [
+    "https://nixos-raspberrypi.cachix.org"
+    "https://niri.cachix.org"
+    "http://vulcan.lan:4965"
+    "http://prometheus.lan:4965"
+  ];
+
   substituters =
     lib.filter
     (s: !(lib.hasInfix config.networking.hostName s))
-    [
-      "https://install.determinate.systems"
-      "https://nix-community.cachix.org"
-      "https://nixos-raspberrypi.cachix.org"
-      "https://niri.cachix.org"
-      "http://vulcan.lan:4965"
-      "http://prometheus.lan:4965"
-    ];
+    (
+      [
+        "https://install.determinate.systems"
+        "https://nix-community.cachix.org"
+      ]
+      ++ lib.optionals isLinux linuxOnlySubstituters
+    );
 
   trustedPublicKeys = [
     "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
