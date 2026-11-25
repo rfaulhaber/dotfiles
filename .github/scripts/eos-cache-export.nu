@@ -42,7 +42,10 @@ def main [
   }
 
   let targets = $exported_names | each {|n| $"($store)/($n)" }
-  ^nix copy --no-recursive --to $"file://($out)?secret-key=($key_file)&compression=zstd" ...$targets
+  # A file:// store needs an absolute path: `file://eos-cache` parses with
+  # eos-cache as the host and fails.
+  let store_url = $"file://($out | path expand)?secret-key=($key_file | path expand)&compression=zstd"
+  ^nix copy --no-recursive --to $store_url ...$targets
   for f in $placeholders { rm $f }
 
   let nar_size = $exported | get meta.narSize | math sum | into filesize
