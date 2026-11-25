@@ -62,7 +62,7 @@
     ]
     # Held only by the macOS CI job (the EOS_CACHE_SIGNING_KEY secret), so only
     # the hosts that consume that cache trust it.
-    ++ lib.optional isDarwin "eos-cache-1:RxLEDSVd1JpztJH/RVPoiSddFtVpwcVXK/QH8WukK7o=";
+    ++ lib.optional isDarwin "eos-cache-1:ntdEHCcdbOjA2mF8z0Dm1X4o4gjoqBIz1luGbGdVDoc=";
 
   # Platform-neutral baseline. The two branches below differ only in how they
   # reach the daemon and in the key spelling for the append-style settings.
