@@ -63,14 +63,20 @@ jobs:
           nix build ".#nixosConfigurations.${HOST}.config.system.build.toplevel" \
             --no-link --print-build-logs
 
-  # eos is aarch64-darwin, which no fleet host can build, so it builds on a
-  # GitHub-hosted macOS runner. That store is discarded with the VM: what
-  # survives is the slice of the closure no public cache serves, exported as
-  # a signed binary cache and handed to eos-publish below. eos substitutes it
-  # from vulcan over netbird (nix/hosts/vulcan/eos-cache.nix).
-  eos:
+  # eos only builds when its system is missing from vulcan's eos cache, since
+  # a full build takes most of an hour and most pushes leave eos untouched.
+  # Asking the cache rather than diffing against the previous commit keeps a
+  # build that cancel-in-progress cut short from being skipped for good.
+  #
+  # Evaluating eos needs a Mac: doom-emacs-unstraightened builds
+  # doom-intermediates for aarch64-darwin as import-from-derivation, so
+  # vulcan cannot even compute the out path. A hosted runner evaluates, and
+  # vulcan, which holds the cache, decides.
+  eos-eval:
     runs-on: macos-latest
-    timeout-minutes: 240
+    timeout-minutes: 30
+    outputs:
+      system: ${{ steps.eval.outputs.system }}
     steps:
       - uses: actions/checkout@v7
 
@@ -79,12 +85,61 @@ jobs:
       # the flake's own code uses (`|>` in nix/lib), and nix-community, the
       # one public cache eos uses beyond cache.nixos.org. Without the cache,
       # paths eos would fetch from there get built and exported as eos-only.
-      - uses: DeterminateSystems/determinate-nix-action@v3
+      - &install-nix
+        uses: DeterminateSystems/determinate-nix-action@v3
         with:
           extra-conf: |
             extra-substituters = https://nix-community.cachix.org
             extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
             extra-experimental-features = nix-command flakes pipe-operators
+
+      - name: Evaluate eos
+        id: eval
+        shell: bash
+        run: |
+          system=$(nix eval --raw .#darwinConfigurations.eos.system.outPath)
+          echo "system=${system}" >> "$GITHUB_OUTPUT"
+
+  # Every export carries the system's own narinfo, and eos-cache-publish.nu
+  # places it last, so its presence means the whole build was published.
+  # The prune timer expires it 14 days after the last publish; an eos left
+  # unchanged that long gets rebuilt once on the next push.
+  eos-check:
+    runs-on: nix
+    needs: eos-eval
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    steps:
+      - name: Look up eos in the cache
+        id: check
+        shell: bash
+        env:
+          SYSTEM: ${{ needs.eos-eval.outputs.system }}
+        run: |
+          name=$(basename "${SYSTEM}")
+          if [ -e "/var/lib/eos-cache/${name:0:32}.narinfo" ]; then
+            echo "::notice::${SYSTEM} is already published; skipping the eos build"
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # eos is aarch64-darwin, which no fleet host can build, so it builds on a
+  # GitHub-hosted macOS runner. That store is discarded with the VM: what
+  # survives is the slice of the closure no public cache serves, exported as
+  # a signed binary cache and handed to eos-publish below. eos substitutes it
+  # from vulcan over netbird (nix/hosts/vulcan/eos-cache.nix).
+  eos:
+    runs-on: macos-latest
+    needs: eos-check
+    if: needs.eos-check.outputs.build == 'true'
+    timeout-minutes: 240
+    outputs:
+      system: ${{ steps.build.outputs.system }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - *install-nix
 
       - name: Build eos
         id: build
@@ -131,4 +186,6 @@ jobs:
           path: eos-cache
 
       - name: Publish to vulcan's eos cache
-        run: nu .github/scripts/eos-cache-publish.nu eos-cache /var/lib/eos-cache
+        env:
+          SYSTEM: ${{ needs.eos.outputs.system }}
+        run: nu .github/scripts/eos-cache-publish.nu eos-cache /var/lib/eos-cache "${SYSTEM}"
