@@ -56,6 +56,18 @@ in {
       example = "https://paperless.3679.space";
     };
 
+    allowedHosts = mkOption {
+      description = ''
+        Host headers paperless accepts beyond the PAPERLESS_URL host and
+        localhost, which it always allows. Once PAPERLESS_URL is set every
+        other host gets a 400, so the default admits the container's network
+        alias — the name newt's Pangolin health check and other containers on
+        the network use to reach it.
+      '';
+      type = types.listOf types.str;
+      default = ["paperless"];
+    };
+
     timezone = mkOption {
       description = "PAPERLESS_TIME_ZONE for the paperless container.";
       type = types.str;
@@ -462,6 +474,9 @@ in {
           "PAPERLESS_OCR_LANGUAGE" = cfg.ocrLanguage;
           "PAPERLESS_ADMIN_USER" = cfg.adminUsername;
           "PAPERLESS_ADMIN_MAIL" = cfg.adminEmail;
+        }
+        // optionalAttrs (cfg.allowedHosts != []) {
+          "PAPERLESS_ALLOWED_HOSTS" = concatStringsSep "," cfg.allowedHosts;
         }
         // optionalAttrs cfg.oidc.enable {
           "PAPERLESS_APPS" = "allauth.socialaccount.providers.openid_connect";
