@@ -30,6 +30,8 @@ nix run '.#deploy-rs' '.#<hostname>'
 # Available remote hosts: atlas, pallas, hecate, janus, vulcan, prometheus
 ```
 
+The `deploy-rs` app and the dev shell's `deploy` pass `--skip-checks` themselves, because deploy-rs's pre-deploy `nix flake check` evaluates every host and one broken host would block deploying any other. Run `nix flake check` by hand to get that check back; passing `-s` as well is harmless.
+
 ### Development Environment
 
 ```bash

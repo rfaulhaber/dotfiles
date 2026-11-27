@@ -81,6 +81,8 @@ deleted is a real scenario here.
 nix run '.#deploy-rs' '.#<host>'
 ```
 
+The app skips deploy-rs's own `nix flake check` pre-flight, so the Phase 1 build is the only gate before activation — don't skip it.
+
 Deploy one host at a time and verify before moving to the next, even when the change touches
 several. Watch for the activation output and the confirmation — a deploy that reports success but
 whose confirmation timed out has already rolled back.

@@ -327,6 +327,28 @@
         warnTemporaryOverlays = value:
           pkgs.lib.foldr pkgs.lib.warn value
           ((import ./nix/lib/temporary-overlay.nix).temporaryOverlayWarnings pkgs);
+
+        # deploy-rs runs `nix flake check` before deploying, which evaluates
+        # every host, so one broken host blocks deploying any other. CI already
+        # builds every host, so this skips the check by default; run
+        # `nix flake check` by hand to get it back. deploy-rs rejects a
+        # repeated --skip-checks, so one the caller already passed (alone or
+        # bundled, as in -ds) is left to stand on its own.
+        deployCli = let
+          deploy = pkgs.lib.getExe' pkgs.deploy-rs "deploy";
+        in
+          pkgs.writeShellApplication {
+            name = "deploy";
+            text = ''
+              for arg in "$@"; do
+                [[ $arg == -- ]] && break
+                if [[ $arg == --skip-checks || $arg =~ ^-[[:alpha:]]*s[[:alpha:]]*$ ]]; then
+                  exec ${deploy} "$@"
+                fi
+              done
+              exec ${deploy} --skip-checks "$@"
+            '';
+          };
       in {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
@@ -338,7 +360,7 @@
           # per a conversation I had here: https://github.com/serokell/deploy-rs/issues/155
           deploy-rs = {
             type = "app";
-            program = pkgs.lib.getExe' pkgs.deploy-rs "deploy";
+            program = pkgs.lib.getExe deployCli;
           };
         };
         packages.generated-configs = import ./nix/generated {
@@ -355,9 +377,7 @@
         devShells.default = warnTemporaryOverlays (pkgs.mkShell {
           packages = with pkgs;
             [
-              # Qualified because `with pkgs` loses to the lexically bound
-              # deploy-rs flake input of the same name.
-              pkgs.deploy-rs
+              deployCli
               inputs'.nil.packages.default
               inputs'.sops-nix.packages.default
               codegraph
